@@ -1,0 +1,20 @@
+.dropdown-wrapper {
+  height: 100%;
+}
+
+.dropdown-content {
+  overflow: hidden;
+  padding: 0;
+}
+
+.dropdown-item {
+  max-width: 14rem;
+}
+
+.selected {
+  background-color: aquamarine;
+}
+
+.input {
+  width: 14rem;
+}
