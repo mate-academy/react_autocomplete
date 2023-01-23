@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import cn from 'classnames';
 import React, { useCallback, useState } from 'react';
 import './App.scss';
@@ -66,15 +67,16 @@ export const App: React.FC = () => {
               onChange={handleQueryChange}
             />
             {query && (
-              <button
-                className="icon is-small is-right is-clickable button-custom"
-                type="button"
-                onClick={() => clearQuery()}
+              <span
+                className="icon is-right"
+                style={{ pointerEvents: 'all' }}
               >
-                <i
-                  className="fas fa-times"
+                <button
+                  type="button"
+                  className="delete"
+                  onClick={() => clearQuery()}
                 />
-              </button>
+              </span>
             )}
           </div>
 
