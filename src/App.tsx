@@ -22,13 +22,16 @@ export const App: React.FC<{ delay?: number }> = ({ delay = 800 }) => {
   const lastQuery = useMemo(() => query, [timer]);
 
   useEffect(() => {
-    const timerId = setTimeout(
-      setTimer, delay, query.length,
-    );
+    let timerId = 0;
 
-    setIsLoaded(lastQuery === query);
+    if (isActive) {
+      timerId = window.setTimeout(
+        setTimer, delay, query.length,
+      );
+      setIsLoaded(lastQuery === query);
+    }
 
-    return () => clearTimeout(timerId);
+    return () => window.clearTimeout(timerId);
   }, [query]);
 
   useEffect(() => {
