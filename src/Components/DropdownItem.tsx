@@ -8,25 +8,20 @@ type Props = {
 };
 
 export const DropdownItem:React.FC<Props> = React.memo(
-  ({ person, onSelected }) => {
-    // eslint-disable-next-line no-console
-    console.log('rendring item');
-
-    return (
-      <button
-        type="button"
-        className="dropdown-item button-custom"
-        onClick={() => onSelected(person)}
+  ({ person, onSelected }) => (
+    <button
+      type="button"
+      className="dropdown-item button-custom"
+      onClick={() => onSelected(person)}
+    >
+      <p
+        className={cn({
+          'has-text-link': person.sex === 'm',
+          'has-text-danger': person.sex === 'f',
+        })}
       >
-        <p
-          className={cn({
-            'has-text-link': person.sex === 'm',
-            'has-text-danger': person.sex === 'f',
-          })}
-        >
-          {person.name}
-        </p>
-      </button>
-    );
-  },
+        {person.name}
+      </p>
+    </button>
+  ),
 );

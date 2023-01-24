@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import cn from 'classnames';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './App.scss';
 import debounce from 'lodash/debounce';
 import { peopleFromServer } from './data/people';
@@ -11,34 +11,33 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [visiblePeople, setVisiblePeople] = useState<Person[]>([]);
 
   const applyQuery = useCallback(
     debounce(setDebouncedQuery, 500),
     [],
   );
-  const clearQuery = () => {
+  const clearQuery = useCallback(() => {
     setQuery('');
     setDebouncedQuery('');
-  };
+  }, [debouncedQuery]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
   };
 
-  let visiblePeople: Person[] = [];
-
-  if (debouncedQuery) {
-    visiblePeople = peopleFromServer.filter(
+  useEffect(() => {
+    setVisiblePeople(peopleFromServer.filter(
       person => person.name.toLowerCase()
         .includes(debouncedQuery.toLowerCase()),
-    );
-  }
+    ));
+  }, [debouncedQuery, peopleFromServer]);
 
-  const selectPerson = (person: Person) => {
+  const selectPerson = useCallback((person: Person) => {
     setSelectedPerson(person);
     clearQuery();
-  };
+  }, [setSelectedPerson, clearQuery]);
 
   return (
     <main className="section">
