@@ -35,30 +35,29 @@ export const App: React.FC<{ delay?: number }> = ({ delay = 800 }) => {
     setIsLoaded(true);
   }, [timer, isActive]);
 
-  const visiblePeople = useMemo(() => {
-    return isActive
+  const visiblePeople = useMemo(() => (
+    isActive
       ? peopleFromServer.filter(person => (
         RegExp(query, 'i').test(person.name)
       ))
-      : peopleFromServer;
-  }, [timer]);
+      : peopleFromServer
+  ), [timer]);
 
-  const onFocus = useCallback(
-    () => {
-      setQuery('');
-      setIsActive(true);
-    },
-    [],
-  );
+  const onFocus = useCallback(() => {
+    setQuery('');
+    setIsActive(true);
+  }, []);
 
-  const onSelect = useCallback(
-    (person: Person) => {
-      setSelectedPerson(person);
-      setQuery(person.name);
-      setIsActive(false);
-    },
-    [],
-  );
+  const onSelect = useCallback((person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+    setIsActive(false);
+  }, []);
+
+  const onClear = useCallback(() => {
+    setSelectedPerson(null);
+    setQuery('');
+  }, []);
 
   return (
     <main className="section">
@@ -71,7 +70,7 @@ export const App: React.FC<{ delay?: number }> = ({ delay = 800 }) => {
           // eslint-disable-next-line jsx-a11y/control-has-associated-label
           <button
             type="button"
-            onClick={() => setSelectedPerson(null)}
+            onClick={onClear}
             className="delete ml-3"
           />
         )}
