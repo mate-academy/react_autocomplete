@@ -7,8 +7,8 @@ type Props = {
   onSelect: (slug: string) => void
 };
 
-export const Autocomplete: React.FC<Props> = ({ dropDownList, onSelect }) => {
-  return (
+export const Autocomplete: React.FC<Props> = React.memo(
+  ({ dropDownList, onSelect }) => (
     <div className="dropdown-content">
       {
         dropDownList.length
@@ -39,5 +39,5 @@ export const Autocomplete: React.FC<Props> = ({ dropDownList, onSelect }) => {
           )
       }
     </div>
-  );
-};
+  ),
+);

@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { debounce } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import debounce from 'lodash/debounce';
 import cn from 'classnames';
 import './App.scss';
 import { peopleFromServer } from './data/people';
@@ -15,16 +15,16 @@ export const App: React.FC = () => {
     .find(person => person.slug === selectedPersonSlug);
 
   const applyQuery = useCallback(
-    debounce(setDebouncedQuery, 1000),
+    debounce(setDebouncedQuery, 500),
     [],
   );
 
-  const onSelect = (slug: string) => {
+  const onSelect = useCallback((slug: string) => {
     setSelectedPersonSlug(slug);
-  };
+  }, [debouncedQuery]);
 
   const applyTypingDelay = useCallback(
-    debounce(setIsTyping, 1000),
+    debounce(setIsTyping, 500),
     [],
   );
 
@@ -41,9 +41,11 @@ export const App: React.FC = () => {
     setIsTyping(false);
   }, [selectedPerson]);
 
-  const dropDownList = peopleFromServer.filter(person => (
-    person.name.toLowerCase().includes(debouncedQuery.toLowerCase())
-  ));
+  const dropDownList = useMemo(() => {
+    return peopleFromServer.filter(person => (
+      person.name.toLowerCase().includes(debouncedQuery.toLowerCase())
+    ));
+  }, [debouncedQuery]);
 
   return (
     <main className="section">
