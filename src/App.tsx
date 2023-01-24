@@ -90,7 +90,7 @@ export const App: React.FC<{ delay?: number }> = ({ delay = 800 }) => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            value={isActive ? query : name}
+            value={query}
             onFocus={onFocus}
             onChange={(event) => setQuery(event.target.value)}
           />
