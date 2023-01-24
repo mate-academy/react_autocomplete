@@ -1,3 +1,22 @@
 iframe {
   display: none;
 }
+
+.person {
+  padding: 5px;
+  transition: all 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #eef;
+    border-radius: 5px;
+  }
+
+  &--alt {
+    text-align: center;
+  }
+}
+
+.delete {
+  transform: translateY(50%);
+}
