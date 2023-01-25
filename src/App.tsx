@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -19,11 +19,14 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
 
-  const onSelect = (person: Person) => {
-    setSelectedPerson(person);
-  };
-
   const debouncedQuery = useDebounce(query, 300);
+
+  const onSelect = useCallback(
+    (person: Person) => {
+      setSelectedPerson(person);
+    },
+    [debouncedQuery],
+  );
 
   const filteredPeople = useMemo(() => {
     return search(peopleFromServer, debouncedQuery);
