@@ -20,4 +20,4 @@ that will suggest people matching an entered text.
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
 - Replace `<your_account>` with your Github username in the [DEMO
-  LINK](https://ysrckr.github.io/react_movies-list-add-form/) and add it to the PR description.
+  LINK](https://ysrckr.github.io/react_autocomplete/) and add it to the PR description.
