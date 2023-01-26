@@ -1,4 +1,4 @@
-export interface Person {
+export interface PersonType {
   name: string,
   sex: 'm' | 'f',
   born: number,
