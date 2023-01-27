@@ -3,7 +3,10 @@ import { Dropdown } from './components/Dropdown';
 import { peopleFromServer } from './data/people';
 
 export const App: React.FC = () => {
-  const [selectedPerson, setSelectedPerson] = useState('Carolus Haverbeke');
+  const [
+    selectedPersonName,
+    setSelectedPersonName,
+  ] = useState('Carolus Haverbeke');
   const [state] = React.useState({
     records: [
       {
@@ -14,13 +17,13 @@ export const App: React.FC = () => {
 
   const { words } = state.records[0];
 
-  const data = peopleFromServer
-    .find(person => person.name === selectedPerson);
+  const selectedPerson = peopleFromServer
+    .find(person => person.name === selectedPersonName);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${data?.name} (${data?.born} = ${data?.died})`}
+        {`${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`}
       </h1>
 
       <Dropdown
@@ -28,7 +31,7 @@ export const App: React.FC = () => {
         placeholder="Enter search"
         delay={400}
         save={(name: string) => {
-          setSelectedPerson(name);
+          setSelectedPersonName(name);
         }}
       />
 

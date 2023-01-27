@@ -9,10 +9,16 @@
 
 .dropdown-item {
   max-width: 14rem;
+  background-color: #fff;
+  border: none;
+}
+
+.dropdown-item + .dropdown-item {
+  border-top: 1px solid #222;
 }
 
 .selected {
-  background-color: aquamarine;
+  background-color: #ccd;
 }
 
 .input {

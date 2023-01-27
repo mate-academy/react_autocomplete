@@ -24,26 +24,38 @@ export const Dropdown: React.FC<Props> = ({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [pending, setPending] = useState(true);
   const [selectedSug, setSelectedSug] = useState(-1);
-  const [lastSelected, setLastSelected] = useState(-1);
   const [listOffset, setListOffset] = useState(0);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const dropdItemRef = useRef<HTMLButtonElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const itemHeight = 36;
-  const dropdownHeight = 300;
-  const noOfItems = dropdownHeight / itemHeight;
+  const itemHeight = 40;
+  const dropdownHeight = 240;
+  const noOVisibleItems = dropdownHeight / itemHeight;
 
-  const assertVisible = (index: number) => {
-    if (dropdownRef.current && dropdItemRef.current) {
-      const offset = (index - (noOfItems - 2)) * itemHeight;
+  const assertVisible = useCallback(
+    (index: number) => {
+      if (!dropdownRef.current || !dropdItemRef.current) {
+        return;
+      }
 
       if (index === suggestions.length - 1) {
-        setListOffset(offset > 0 ? -offset + itemHeight : 0);
-      } else {
-        setListOffset(offset > 0 ? -offset : 0);
+        setListOffset((noOVisibleItems - index - 1) * itemHeight);
+
+        return; // One too many ifs for readibility of component
       }
-    }
-  };
+
+      const offset = (index - (noOVisibleItems - 2)) * itemHeight;
+
+      if (offset <= 0) {
+        setListOffset(0);
+
+        return;
+      }
+
+      setListOffset(-offset);
+    },
+    [setListOffset, suggestions.length],
+  );
 
   useEffect(() => {
     function handleClickOutside(event: any) {
@@ -84,54 +96,64 @@ export const Dropdown: React.FC<Props> = ({
     () => {
       setPending(true);
       setSuggestionsDebounced();
-    }, [],
+    }, [setPending, setSuggestionsDebounced],
   );
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      switch (e.key) {
-        case 'ArrowDown':
-          if (selectedSug < suggestions.length - 1) {
-            assertVisible(selectedSug + 1);
-            setSelectedSug(prev => prev + 1);
-          } else {
-            assertVisible(0);
-            setSelectedSug(0);
-          }
+  const onArrowDown = useCallback(() => {
+    if (selectedSug < suggestions.length - 1) {
+      assertVisible(selectedSug + 1);
+      setSelectedSug(prev => prev + 1);
+    } else {
+      assertVisible(0);
+      setSelectedSug(0);
+    }
+  }, [selectedSug, setSelectedSug, suggestions.length, assertVisible]);
+  const onArrowUp = useCallback(() => {
+    if (selectedSug > 0) {
+      assertVisible(selectedSug - 1);
+      setSelectedSug(prev => prev - 1);
+    } else {
+      assertVisible(suggestions.length - 1);
+      setSelectedSug(suggestions.length - 1);
+    }
+  }, [selectedSug, setSelectedSug, suggestions.length, assertVisible]);
+  const onEnter = useCallback(() => {
+    if (!inputRef.current) {
+      return;
+    }
 
-          break;
-        case 'ArrowUp':
-          if (selectedSug > 0) {
-            assertVisible(selectedSug - 1);
-            setSelectedSug(prev => prev - 1);
-          } else {
-            assertVisible(suggestions.length - 1);
-            setSelectedSug(suggestions.length - 1);
-          }
+    setPending(true);
 
-          break;
-        case 'Enter':
-          if (inputRef?.current?.value) {
-            if (selectedSug === -1) {
-              if (suggestions.includes(inputRef.current.value)) {
-                save(inputRef.current.value);
-                inputRef.current.value = '';
-              }
-            } else {
-              inputRef.current.value = suggestions[selectedSug];
-              save(suggestions[selectedSug]);
-              assertVisible(-1);
-              setSelectedSug(-1);
-            }
-          }
+    if (selectedSug !== -1) {
+      inputRef.current.value = suggestions[selectedSug];
+      save(suggestions[selectedSug]);
+      assertVisible(-1);
+      setSelectedSug(-1);
 
-          setPending(true);
-          break;
-        default:
-          break;
-      }
-    }, [selectedSug, setSelectedSug, save, setPending, inputRef, assertVisible],
-  );
+      return;
+    }
+
+    if (suggestions.includes(inputRef.current.value)) {
+      save(inputRef.current.value);
+      inputRef.current.value = '';
+    }
+  }, [selectedSug, setSelectedSug, suggestions, assertVisible]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    switch (e.key) {
+      case 'ArrowUp':
+        onArrowUp();
+        break;
+      case 'ArrowDown':
+        onArrowDown();
+        break;
+      case 'Enter':
+        onEnter();
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <div className="dropdown is-active">
@@ -161,12 +183,8 @@ export const Dropdown: React.FC<Props> = ({
                     type="button"
                     ref={selectedSug === i ? dropdItemRef : null}
                     key={word}
-                    onMouseOver={() => {
-                      setLastSelected(selectedSug);
+                    onMouseEnter={() => {
                       setSelectedSug(i);
-                    }}
-                    onMouseLeave={() => {
-                      setSelectedSug(lastSelected);
                     }}
                     onClick={() => {
                       if (inputRef.current) {
@@ -197,7 +215,7 @@ export const Dropdown: React.FC<Props> = ({
           && (
             <div className="dropdown-content">
               <div>
-                <p>
+                <p style={{ padding: '5px 10px' }}>
                   No matching suggestions
                 </p>
               </div>
