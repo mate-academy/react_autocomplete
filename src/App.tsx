@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { DropDownMenu } from './components/DropDownMenu';
 import { peopleFromServer } from './data/people';
+import { debounce } from './desounce';
 import { PersonType } from './types/PersonType';
 
 export const App: React.FC = () => {
@@ -9,18 +10,6 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<PersonType | null>(null);
   const [showList, setShowList] = useState(false);
-
-  const debounce = (
-    f: (args: string) => void,
-    delay: number,
-  ) => {
-    let timerId: number;
-
-    return (args: string) => {
-      clearTimeout(timerId);
-      timerId = window.setTimeout(f, delay, args);
-    };
-  };
 
   const applyQuery = useCallback(
     debounce(
@@ -31,7 +20,7 @@ export const App: React.FC = () => {
 
   const visiblePeople = useMemo(() => (
     peopleFromServer.filter((person) => (
-      person.name.toLowerCase().includes(query.trim().toLowerCase())))
+      person.name.toLowerCase().includes(appliedQuery.trim().toLowerCase())))
   ),
   [peopleFromServer, appliedQuery]);
 
@@ -39,7 +28,7 @@ export const App: React.FC = () => {
     setSelectedPerson(person);
     setQuery(person.name);
     setShowList(false);
-  }, [applyQuery]);
+  }, [setSelectedPerson, setQuery, setShowList]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -67,9 +56,7 @@ export const App: React.FC = () => {
         </div>
 
         {showList && (
-          <div className="dropdown-menu" role="menu">
-            <DropDownMenu list={visiblePeople} onSelect={handleSelect} />
-          </div>
+          <DropDownMenu list={visiblePeople} onSelect={handleSelect} />
         )}
       </div>
     </main>

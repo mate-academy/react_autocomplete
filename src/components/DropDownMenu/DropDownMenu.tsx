@@ -9,17 +9,18 @@ type Props = {
 
 export const DropDownMenu: React.FC<Props> = React.memo(
   ({ list, onSelect }) => (
-    <ul className="dropdown-content">
-      {(list.length > 0)
-        ? list.map((person) => (
-          <li
-            className="dropdown-item"
-            key={person.slug}
-          >
-            <DropDownItem item={person} onSelect={onSelect} />
-          </li>
-        ))
-        : <p>No matching suggestions</p>}
-    </ul>
+    <div className="dropdown-menu" role="menu">
+      <ul className="dropdown-content">
+        {list.length
+          ? list.map((person) => (
+            <DropDownItem
+              item={person}
+              onSelect={onSelect}
+              key={person.slug}
+            />
+          ))
+          : <p>No matching suggestions</p>}
+      </ul>
+    </div>
   ),
 );
