@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Dropdown } from './Drowpdown';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const [selectedPerson, setSelectedPerson] = useState(peopleFromServer[0]);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [people] = useState(peopleFromServer);
 
   return (
