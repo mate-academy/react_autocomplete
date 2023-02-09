@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-/* eslint-disable operator-linebreak */
-/* eslint-disable no-useless-concat */
+
 import cn from 'classnames';
 import React, { useCallback, useEffect, useState } from 'react';
 import './App.scss';
@@ -44,15 +43,9 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson ? (
-          `${selectedPerson.name} `
-        +
-          `(  ${selectedPerson.born}` + `- ${selectedPerson.died}  )`
-        )
-          :
-          (
-            'No person is selected'
-          )}
+        {selectedPerson
+          ? `${selectedPerson.name} - ${selectedPerson.born} - ${selectedPerson.died}`
+          : 'No person is selected'}
       </h1>
 
       <div className={cn(
