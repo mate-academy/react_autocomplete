@@ -6,7 +6,6 @@ import { Person } from "./types/Person";
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [people] = useState(peopleFromServer);
 
   return (
     <main className="section">
@@ -16,7 +15,7 @@ export const App: React.FC = () => {
           : "No selected person"}
       </h1>
 
-      <Dropdown onSelect={setSelectedPerson} people={people} />
+      <Dropdown onSelect={setSelectedPerson} people={peopleFromServer} />
     </main>
   );
 };

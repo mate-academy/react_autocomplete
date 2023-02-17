@@ -24,9 +24,15 @@ export const Dropdown: React.FC<Props> = ({ onSelect, people }) => {
     };
   }, [query]);
 
-  const visiblePeople = people.filter((person) => {
-    return person.name.toLowerCase().includes(debouncedQuery.toLowerCase());
+  const visiblePeople = people.filter(({ name }) => {
+    return name.toLowerCase().includes(debouncedQuery.toLowerCase());
   });
+
+  const handleSelect = (person: Person) => {
+    onSelect(person);
+    setDebouncedQuery("");
+    setQuery("");
+  };
 
   return (
     <div className="dropdown is-active">
@@ -44,16 +50,15 @@ export const Dropdown: React.FC<Props> = ({ onSelect, people }) => {
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {debouncedQuery.length > 0 &&
+          {debouncedQuery.length &&
             !isTyping &&
             visiblePeople.map((person) => (
               <button
                 type="button"
                 className="dropdown-item"
+                key={person.name}
                 onClick={() => {
-                  onSelect(person);
-                  setDebouncedQuery("");
-                  setQuery("");
+                  handleSelect(person);
                 }}
               >
                 <p
@@ -67,7 +72,7 @@ export const Dropdown: React.FC<Props> = ({ onSelect, people }) => {
               </button>
             ))}
 
-          {debouncedQuery.length > 0 && !visiblePeople.length && (
+          {debouncedQuery.length && !visiblePeople.length && (
             <h2>No matching suggestions</h2>
           )}
         </div>
