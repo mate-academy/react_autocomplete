@@ -1,81 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import cn from "classnames";
 import { Person } from "./types/Person";
 
 type Props = {
+  visiblePeople: Person[];
   onSelect: (person: Person) => void;
-  people: Person[];
 };
-
-export const Dropdown: React.FC<Props> = ({ onSelect, people }) => {
-  const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-
-  useEffect(() => {
-    const timerId = setTimeout(() => {
-      setDebouncedQuery(query);
-      setIsTyping(false);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timerId);
-      setIsTyping(true);
-    };
-  }, [query]);
-
-  const visiblePeople = people.filter(({ name }) => {
-    return name.toLowerCase().includes(debouncedQuery.toLowerCase());
-  });
-
-  const handleSelect = (person: Person) => {
-    onSelect(person);
-    setDebouncedQuery("");
-    setQuery("");
-  };
-
+export const Dropdown: React.FC<Props> = ({ visiblePeople, onSelect }) => {
   return (
-    <div className="dropdown is-active">
-      <div className="dropdown-trigger">
-        <input
-          type="text"
-          placeholder="Enter a part of the name"
-          className="input"
-          value={query}
-          onChange={(event) => {
-            setQuery(event.target.value);
-          }}
-        />
-      </div>
-
-      <div className="dropdown-menu" role="menu">
-        <div className="dropdown-content">
-          {debouncedQuery.length &&
-            !isTyping &&
-            visiblePeople.map((person) => (
-              <button
-                type="button"
-                className="dropdown-item"
-                key={person.name}
-                onClick={() => {
-                  handleSelect(person);
-                }}
+    <div className="dropdown-menu" role="menu">
+      <div className="dropdown-content">
+        {visiblePeople.length === 0 ? (
+          <div className="dropdown-item">No matching suggestions</div>
+        ) : (
+          visiblePeople.map((person) => (
+            <button
+              type="button"
+              className="dropdown-item button-custom"
+              onClick={() => onSelect(person)}
+            >
+              <p
+                className={cn({
+                  "has-text-link": person.sex === "m",
+                  "has-text-danger": person.sex === "f",
+                })}
               >
-                <p
-                  className={cn({
-                    "has-text-link": person.sex === "m",
-                    "has-text-danger": person.sex === "f",
-                  })}
-                >
-                  {person.name}
-                </p>
-              </button>
-            ))}
-
-          {debouncedQuery.length && !visiblePeople.length && (
-            <h2>No matching suggestions</h2>
-          )}
-        </div>
+                {person.name}
+              </p>
+            </button>
+          ))
+        )}
       </div>
     </div>
   );
