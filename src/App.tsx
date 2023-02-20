@@ -23,12 +23,13 @@ export const App: React.FC = () => {
     applyQuery(event.target.value);
   };
 
-  const handleVisiblePeople = () => {
-    const visiblePeople = peopleFromServer.filter((person) =>
-      person.name.toLowerCase().includes(debouncedQuery.toLowerCase())
+  function handleVisiblePeople() {
+    setVisiblePeople(
+      peopleFromServer.filter((person) => {
+        return person.name.toLowerCase().includes(debouncedQuery.toLowerCase());
+      })
     );
-    setVisiblePeople(visiblePeople);
-  };
+  }
 
   useEffect(() => {
     handleVisiblePeople();
@@ -38,12 +39,13 @@ export const App: React.FC = () => {
     setSelectedPerson(person);
     clearQuery();
   };
+
   return (
     <main className="section">
       <h1 className="title">
         {selectedPerson
           ? `${selectedPerson.name} - ${selectedPerson.born} - ${selectedPerson.died}`
-          : "No person is selected"}
+          : "No selected person"}
       </h1>
 
       <div className={cn("dropdown", { "is-active": debouncedQuery })}>

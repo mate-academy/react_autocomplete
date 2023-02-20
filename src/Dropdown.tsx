@@ -1,6 +1,6 @@
-import React from "react";
-import cn from "classnames";
-import { Person } from "./types/Person";
+import React from 'react';
+import cn from 'classnames';
+import { Person } from './types/Person';
 
 type Props = {
   visiblePeople: Person[];
@@ -21,8 +21,8 @@ export const Dropdown: React.FC<Props> = ({ visiblePeople, onSelect }) => {
             >
               <p
                 className={cn({
-                  "has-text-link": person.sex === "m",
-                  "has-text-danger": person.sex === "f",
+                  'has-text-link': person.sex === 'm',
+                  'has-text-danger': person.sex === 'f',
                 })}
               >
                 {person.name}
