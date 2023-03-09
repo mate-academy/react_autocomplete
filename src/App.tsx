@@ -54,7 +54,8 @@ export const App: React.FC = () => {
   }, [peopleFromServer, appliedQuery]);
 
   const shouldShowDropdown = appliedQuery.trim().length > 0
-    && !isInputActive && query.length > 0;
+    && !isInputActive
+    && query.length > 0;
 
   return (
     <main className="section">
