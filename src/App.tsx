@@ -85,20 +85,6 @@ export const App: React.FC = () => {
           />
         </div>
 
-        <div className="dropdown-trigger">
-          <button
-            type="button"
-            className="button"
-            aria-haspopup="true"
-            aria-controls="dropdown-menu"
-          >
-            <span>Dropdown button</span>
-            <span className="icon is-small">
-              <i className="fas fa-angle-down" aria-hidden="true" />
-            </span>
-          </button>
-        </div>
-
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
             {visiblePeople.map((person) => (
