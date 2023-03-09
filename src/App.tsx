@@ -50,7 +50,7 @@ export const App: React.FC = () => {
   });
 
   const shouldShowDropdown = appliedQuery.trim().length > 0
-  && visiblePeople.length > 0 && !isInputActive;
+    && !isInputActive && query.length > 0;
 
   return (
     <main className="section">
@@ -62,40 +62,60 @@ export const App: React.FC = () => {
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-            value={query}
-            onChange={handleQueryChange}
-          />
+          <div className="control has-icons-right">
+            <input
+              type="text"
+              placeholder="Enter a part of the name"
+              className="input"
+              value={query}
+              onChange={handleQueryChange}
+            />
+
+            {query && (
+              <span
+                className="icon is-right"
+              >
+                <button
+                  type="button"
+                  className="delete"
+                  onClick={() => setQuery('')}
+                  aria-label="Delete search"
+                />
+              </span>
+            )}
+          </div>
         </div>
 
         {shouldShowDropdown && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
-              { visiblePeople.map((person, index) => (
-                <div
-                  key={person.slug}
-                  className="dropdown-item"
-                  onClick={() => {
-                    setSelectedPerson(person);
-                    setQuery(person.name);
-                  }}
-                  onKeyDown={() => {}}
-                  role="link"
-                  tabIndex={index}
-                >
-                  <p
-                    className={cn({
-                      'has-text-link': person.sex === 'm',
-                      'has-text-danger': person.sex === 'f',
-                    })}
+              { visiblePeople.length === 0
+                ? (
+                  <div className="dropdown-item">
+                    <p>No matching suggestions</p>
+                  </div>
+                )
+                : visiblePeople.map((person, index) => (
+                  <button
+                    type="button"
+                    key={person.slug}
+                    className={cn(
+                      'dropdown-item button is-ghost',
+                      {
+                        'has-text-link': person.sex === 'm',
+                        'has-text-danger': person.sex === 'f',
+                      },
+                    )}
+                    onClick={() => {
+                      setSelectedPerson(person);
+                      setQuery('');
+                    }}
+                    onKeyDown={() => {}}
+                    tabIndex={index}
                   >
                     {person.name}
-                  </p>
-                </div>
-              ))}
+                  </button>
+                ))}
             </div>
           </div>
         )}
