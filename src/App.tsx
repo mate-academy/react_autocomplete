@@ -20,18 +20,6 @@ export const App: React.FC = () => {
   // eslint-disable-next-line max-len
   const [selectedPerson, setSelectedPerson] = useState<Person | undefined>(undefined);
 
-  // const debounce = (
-  //   f: (...args: any[]) => void,
-  //   delay: number,
-  // ) => {
-  //   let timerId: number;
-
-  //   return (...args: any[]) => {
-  //     clearTimeout(timerId);
-  //     timerId = window.setTimeout(f, delay, ...args);
-  //   };
-  // };
-
   const applyQuery = useCallback(
     debounce(
       setAppliedQuery,
@@ -95,6 +83,20 @@ export const App: React.FC = () => {
             }}
             ref={inputRef}
           />
+        </div>
+
+        <div className="dropdown-trigger">
+          <button
+            type="button"
+            className="button"
+            aria-haspopup="true"
+            aria-controls="dropdown-menu"
+          >
+            <span>Dropdown button</span>
+            <span className="icon is-small">
+              <i className="fas fa-angle-down" aria-hidden="true" />
+            </span>
+          </button>
         </div>
 
         <div className="dropdown-menu" role="menu">
