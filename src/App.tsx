@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -43,11 +43,15 @@ export const App: React.FC = () => {
     inputWrapper(false);
   };
 
-  const visiblePeople = peopleFromServer.filter(person => {
-    const lowerName = person.name.toLowerCase();
+  const visiblePeople = useMemo(() => {
+    const trimmedLowerQuery = appliedQuery.trim().toLowerCase();
 
-    return lowerName.includes(appliedQuery.trim().toLowerCase());
-  });
+    return peopleFromServer.filter(person => {
+      const lowerName = person.name.toLowerCase();
+
+      return lowerName.includes(trimmedLowerQuery);
+    });
+  }, [peopleFromServer, appliedQuery]);
 
   const shouldShowDropdown = appliedQuery.trim().length > 0
     && !isInputActive && query.length > 0;
