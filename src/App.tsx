@@ -18,7 +18,7 @@ export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [appliedQuery, setAppliedQuery] = useState('');
   // eslint-disable-next-line max-len
-  const [selectedPerson, setSelectedPerson] = useState<Person | undefined>(undefined);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const applyQuery = useCallback(
     debounce(
@@ -37,24 +37,6 @@ export const App: React.FC = () => {
       appliedQuery.toLocaleLowerCase().trim(),
     ))
   ), [appliedQuery]);
-
-  const findPerson = (slug: string) => {
-    setSelectedPerson(
-      people.find((person) => person.slug === slug),
-    );
-  };
-
-  // const findPerson = useMemo(() => (
-  //   (slug: string) => setSelectedPerson(
-  //     people.find((person) => person.slug === slug),
-  //   )
-  // ), []);
-
-  // const findPerson = useCallback((slug: string) => {
-  //   setSelectedPerson(
-  //     people.find((person) => person.slug === slug),
-  //   );
-  // }, [people]);
 
   return (
     <main className="section">
@@ -93,8 +75,8 @@ export const App: React.FC = () => {
                 className="dropdown-item"
                 key={person.slug}
                 onClick={() => {
-                  findPerson(person.slug);
-                  setQuery('');
+                  setSelectedPerson(person);
+                  setQuery(person.name);
                   setAppliedQuery('');
                 }}
               >
