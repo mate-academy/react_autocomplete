@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import classNames from 'classnames';
 import React, {
   useCallback,
@@ -17,8 +16,10 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const [appliedQuery, setAppliedQuery] = useState('');
-  // eslint-disable-next-line max-len
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [
+    selectedPerson,
+    setSelectedPerson,
+  ] = useState<Person | null>(null);
 
   const applyQuery = useCallback(
     debounce(
@@ -37,6 +38,12 @@ export const App: React.FC = () => {
       appliedQuery.toLocaleLowerCase().trim(),
     ))
   ), [appliedQuery]);
+
+  const handleOnclick = (person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+    setAppliedQuery('');
+  };
 
   return (
     <main className="section">
@@ -74,11 +81,7 @@ export const App: React.FC = () => {
                 type="button"
                 className="dropdown-item"
                 key={person.slug}
-                onClick={() => {
-                  setSelectedPerson(person);
-                  setQuery(person.name);
-                  setAppliedQuery('');
-                }}
+                onClick={() => handleOnclick(person)}
               >
                 <p
                   className={classNames(
