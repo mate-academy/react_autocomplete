@@ -83,6 +83,7 @@ export const App: React.FC = () => {
               {filteredPeople.length > 0 ? (
                 filteredPeople.map((person: Person) => (
                   <DropDownItem
+                    key={person.slug}
                     person={person}
                     onSelect={onSelect}
                     onQuery={onQuery}
