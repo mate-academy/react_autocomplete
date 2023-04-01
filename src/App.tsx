@@ -1,6 +1,5 @@
 import React, {
   useCallback,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -8,33 +7,8 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { DropDownItem } from './components/DropDownItem';
-
-export const useDebounce = (value: string, delay: number) => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(
-    () => {
-      const handler = setTimeout(() => {
-        setDebouncedValue(value);
-      }, delay);
-
-      return () => {
-        clearTimeout(handler);
-      };
-    },
-    [value, delay],
-  );
-
-  return debouncedValue;
-};
-
-const searchedPeople = (peopleData: Person[], searchQuery: string) => {
-  const lowerQuery = searchQuery.trim().toLocaleLowerCase();
-
-  return peopleData.filter(people => people.name
-    .toLowerCase()
-    .includes(lowerQuery));
-};
+import { useDebounce } from './hooks/useDebounce';
+import { searchedPeople } from './helpers';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -49,7 +23,7 @@ export const App: React.FC = () => {
     [debouncedQuery],
   );
 
-  const onQuery = useCallback(() => setQuery(''), [debouncedQuery]);
+  const onQuery = () => setQuery('');
 
   const filteredPeople = useMemo(() => {
     return searchedPeople(peopleFromServer, debouncedQuery);
@@ -70,9 +44,7 @@ export const App: React.FC = () => {
             placeholder="Enter a part of the name"
             className="input"
             value={query}
-            onChange={(element) => {
-              setQuery(element.target.value);
-            }}
+            onChange={(element) => setQuery(element.target.value)}
           />
         </div>
 

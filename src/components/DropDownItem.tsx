@@ -13,22 +13,28 @@ export const DropDownItem: React.FC<Props> = ({
   onSelect,
   onQuery,
 }) => {
+  const { name, sex } = person;
+  const onClickItem = (
+    e: { preventDefault: () => void; },
+    currentPerson: Person,
+  ) => {
+    e.preventDefault();
+    onSelect(currentPerson);
+    onQuery();
+  };
+
   return (
     <div className="dropdown-item">
       <p>
         <a
           href="#item"
           className={classNames({
-            'has-text-link': person.sex === 'm',
-            'has-text-danger': person.sex === 'f',
+            'has-text-link': sex === 'm',
+            'has-text-danger': sex === 'f',
           })}
-          onClick={(e) => {
-            e.preventDefault();
-            onSelect(person);
-            onQuery();
-          }}
+          onClick={(e) => onClickItem(e, person)}
         >
-          {person.name}
+          {name}
         </a>
       </p>
     </div>
