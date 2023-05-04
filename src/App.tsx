@@ -1,54 +1,87 @@
-import React from 'react';
-import './App.scss';
+import React, {
+  useState, useRef, useMemo, useCallback, useEffect,
+} from 'react';
+import debounce from 'lodash.debounce';
+import { Person } from './types/Person';
 import { peopleFromServer } from './data/people';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+export const App = () => {
+  const [people] = useState<Person[]>(peopleFromServer);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceQuery = useRef(
+    debounce((search: string) => setSearchQuery(search), 200),
+  ).current;
+
+  const filteredPeople = useMemo(
+    () => people.filter((person) => person.name.toLowerCase()
+      .includes(searchQuery.trim().toLowerCase())),
+    [people, searchQuery],
+  );
+
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const handleOnClick = useCallback((person: Person) => {
+    setSelectedPerson(person);
+    setSearchQuery(person.name);
+    setIsMenuOpen(false);
+  }, []);
+
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const search = event.target.value;
+
+      if (!search) {
+        setIsMenuOpen(false);
+      } else {
+        setIsMenuOpen(true);
+      }
+
+      setSearchQuery(search);
+      debounceQuery(search);
+    }, [debounceQuery],
+  );
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
-
-      <div className="dropdown is-active">
+      <div className={`dropdown ${isMenuOpen ? 'is-active' : ''}`}>
         <div className="dropdown-trigger">
           <input
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={searchQuery}
+            onChange={handleInputChange}
+            ref={inputRef}
           />
         </div>
-
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
+            {filteredPeople.length
+              ? filteredPeople.map((person) => (
+                <button
+                  type="button"
+                  className="dropdown-item"
+                  key={person.slug}
+                  onClick={() => {
+                    handleOnClick(person);
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <p className="has-text-link">{person.name}</p>
+                </button>
+              ))
+              : <p>No matching suggestions</p>}
           </div>
         </div>
       </div>
