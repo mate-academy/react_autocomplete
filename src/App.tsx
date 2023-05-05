@@ -1,4 +1,4 @@
-import React, {
+import {
   useState, useRef, useMemo, useCallback, useEffect,
 } from 'react';
 import debounce from 'lodash.debounce';
@@ -6,7 +6,6 @@ import { Person } from './types/Person';
 import { peopleFromServer } from './data/people';
 
 export const App = () => {
-  const [people] = useState<Person[]>(peopleFromServer);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -15,6 +14,7 @@ export const App = () => {
     debounce((search: string) => setSearchQuery(search), 200),
   ).current;
 
+  const people = peopleFromServer;
   const filteredPeople = useMemo(
     () => people.filter((person) => person.name.toLowerCase()
       .includes(searchQuery.trim().toLowerCase())),
@@ -32,12 +32,7 @@ export const App = () => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const search = event.target.value;
 
-      if (!search) {
-        setIsMenuOpen(false);
-      } else {
-        setIsMenuOpen(true);
-      }
-
+      setIsMenuOpen(!!search);
       setSearchQuery(search);
       debounceQuery(search);
     }, [debounceQuery],
