@@ -1,20 +1,27 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { useState, useMemo } from 'react';
 import './App.scss';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
-  const [currentValue, setCurrentValue] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(peopleFromServer[0]);
-  const [animationTime, setAnimationTime] = useState(1);
   let isEntered = false;
+  let currentPerson = '';
 
-  if (query.length > 0 && currentValue === false) {
+  if (query.length > 0) {
     isEntered = true;
   } else {
     isEntered = false;
+  }
+
+  const foundPerson
+   = peopleFromServer.find(people => people.name === selectedPerson.name);
+
+  if (foundPerson !== undefined) {
+    currentPerson = foundPerson?.name;
   }
 
   const visibleMovies: Person[] = useMemo(
@@ -24,10 +31,15 @@ export const App: React.FC = () => {
     [peopleFromServer, query],
   );
 
+  const updateQuery
+  = (e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value);
+
+  const debounceOnChange = debounce(updateQuery, 500);
+
   return (
     <main className="section">
       <h1 className="title">
-        {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
+        {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
       </h1>
 
       <div className="dropdown is-active">
@@ -36,17 +48,7 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-            }}
-          />
-          <input
-            className="Animation-Duration-setter"
-            type="number"
-            onChange={(event) => {
-              setAnimationTime(+event.target.value);
-            }}
+            onChange={debounceOnChange}
           />
         </div>
 
@@ -55,20 +57,22 @@ export const App: React.FC = () => {
             <div className="dropdown-content">
               <div className="dropdown-item transition__li-item">
                 {visibleMovies.map((people) => {
-                  return (
-                    <p
-                      className="has-text-link transition__image"
-                      style={{ animationDuration: `${animationTime}s` }}
-                      onClick={() => {
-                        setQuery(people.name);
-                        setCurrentValue(true);
-                        setSelectedPerson(people);
-                      }}
-                      onKeyDown={() => setQuery(people.name)}
-                    >
-                      {people.name}
-                    </p>
-                  );
+                  if (currentPerson !== people.name) {
+                    return (
+                      <p
+                        className="has-text-link transition__image"
+                        onClick={() => {
+                          setSelectedPerson(people);
+                          setQuery(people.name);
+                        }}
+                        onKeyDown={() => setQuery(people.name)}
+                      >
+                        {people.name}
+                      </p>
+                    );
+                  }
+
+                  return null;
                 })}
               </div>
             </div>
