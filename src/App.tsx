@@ -7,7 +7,10 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
+  const [selectedWord, setSelectedWord] = useState('');
   const [selectedPerson, setSelectedPerson] = useState(peopleFromServer[0]);
+  const [isDebouncing, setIsDebouncing] = useState(false);
+
   let isEntered = false;
   let currentPerson = '';
 
@@ -31,10 +34,16 @@ export const App: React.FC = () => {
     [peopleFromServer, query],
   );
 
-  const updateQuery
-  = (e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value);
+  const debounceOnChange
+  = debounce((e: string) => {
+    setQuery(e);
+    setIsDebouncing(false);
+  }, 500);
 
-  const debounceOnChange = debounce(updateQuery, 500);
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsDebouncing(true);
+    debounceOnChange(event.target.value);
+  };
 
   return (
     <main className="section">
@@ -43,16 +52,33 @@ export const App: React.FC = () => {
       </h1>
 
       <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-            onChange={debounceOnChange}
-          />
-        </div>
+        {selectedWord.length > 0 && selectedPerson.name === selectedWord
+          ? (
+            <div className="dropdown-trigger">
+              <input
+                type="text"
+                placeholder="Enter a part of the name"
+                className="input"
+                value={selectedWord}
+                onChange={() => setSelectedWord('')}
+              />
+            </div>
+          )
+          : (
+            <div className="dropdown-trigger">
+              <input
+                type="text"
+                placeholder="Enter a part of the name"
+                className="input"
+                onClick={() => setSelectedWord('')}
+                onChange={handleInputChange}
+              />
+            </div>
+          )}
 
-        { isEntered === true && (
+        { isEntered === true
+        && isDebouncing === false
+        && selectedWord.length === 0 && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               <div className="dropdown-item transition__li-item">
@@ -64,6 +90,7 @@ export const App: React.FC = () => {
                         onClick={() => {
                           setSelectedPerson(people);
                           setQuery(people.name);
+                          setSelectedWord(people.name);
                         }}
                         onKeyDown={() => setQuery(people.name)}
                       >
@@ -78,7 +105,7 @@ export const App: React.FC = () => {
             </div>
           </div>
         )}
-        {visibleMovies.length === 0 && (
+        {visibleMovies.length === 0 && isDebouncing === false && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               <div className="dropdown-item transition__li-item">
