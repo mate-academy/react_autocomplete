@@ -10,32 +10,18 @@ export const App: React.FC = () => {
   const [born, setBorn] = useState(peopleFromServer[0].born);
   const [died, setDied] = useState(peopleFromServer[0].died);
   const [selectedName, setSelectedName] = useState('');
-  const [selectedPerson, setSelectedPerson] = useState(peopleFromServer[0]);
+  const [selectedPerson, setSelectedPerson]
+   = useState(peopleFromServer[0].name);
   const [isDebouncing, setIsDebouncing] = useState(false);
-  let isEntered = false;
-  let currentPerson = peopleFromServer[0].name;
-
-  const foundPerson
-   = peopleFromServer.find(people => people.name === selectedPerson.name);
-
-  if (foundPerson !== undefined) {
-    currentPerson = foundPerson?.name;
-  }
-
-  if (query.length > 0) {
-    isEntered = true;
-  } else {
-    isEntered = false;
-  }
 
   const setEverything = (people: Person) => {
-    setSelectedPerson(people);
+    setSelectedPerson(people.name);
     setQuery(people.name);
     setSelectedName(people.name);
     setBorn(people.born);
     setDied(people.died);
     peopleFromServer.filter((man) => {
-      return man.name !== currentPerson;
+      return man.name !== selectedPerson;
     });
   };
 
@@ -60,11 +46,11 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {`${currentPerson} (${born} - ${died})`}
+        {`${selectedPerson} (${born} - ${died})`}
       </h1>
 
       <div className="dropdown is-active">
-        {selectedName.length > 0 && selectedPerson.name === selectedName
+        {selectedName.length && selectedPerson === selectedName
           ? (
             <div className="dropdown-trigger">
               <input
@@ -87,7 +73,7 @@ export const App: React.FC = () => {
             </div>
           )}
 
-        { isEntered && !isDebouncing && !selectedName.length && (
+        { !!query.length && !isDebouncing && !selectedName.length && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               <div className="dropdown-item transition__li-item">
