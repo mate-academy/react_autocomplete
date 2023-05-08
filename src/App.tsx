@@ -7,18 +7,13 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
-  const [selectedWord, setSelectedWord] = useState('');
+  const [born, setBorn] = useState(peopleFromServer[0].born);
+  const [died, setDied] = useState(peopleFromServer[0].died);
+  const [selectedName, setSelectedName] = useState('');
   const [selectedPerson, setSelectedPerson] = useState(peopleFromServer[0]);
   const [isDebouncing, setIsDebouncing] = useState(false);
-
   let isEntered = false;
-  let currentPerson = '';
-
-  if (query.length > 0) {
-    isEntered = true;
-  } else {
-    isEntered = false;
-  }
+  let currentPerson = peopleFromServer[0].name;
 
   const foundPerson
    = peopleFromServer.find(people => people.name === selectedPerson.name);
@@ -27,7 +22,24 @@ export const App: React.FC = () => {
     currentPerson = foundPerson?.name;
   }
 
-  const visibleMovies: Person[] = useMemo(
+  if (query.length > 0) {
+    isEntered = true;
+  } else {
+    isEntered = false;
+  }
+
+  const setEverything = (people: Person) => {
+    setSelectedPerson(people);
+    setQuery(people.name);
+    setSelectedName(people.name);
+    setBorn(people.born);
+    setDied(people.died);
+    peopleFromServer.filter((man) => {
+      return man.name !== currentPerson;
+    });
+  };
+
+  const visiblePeople: Person[] = useMemo(
     () => peopleFromServer.filter((people) => {
       return people.name.toLowerCase().includes(query.toLowerCase().trim());
     }),
@@ -48,64 +60,53 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
+        {`${currentPerson} (${born} - ${died})`}
       </h1>
 
       <div className="dropdown is-active">
-        {selectedWord.length > 0 && selectedPerson.name === selectedWord
+        {selectedName.length > 0 && selectedPerson.name === selectedName
           ? (
             <div className="dropdown-trigger">
               <input
                 type="text"
                 placeholder="Enter a part of the name"
                 className="input"
-                value={selectedWord}
-                onChange={() => setSelectedWord('')}
+                value={selectedName}
+                onChange={() => setSelectedName('')}
               />
             </div>
-          )
-          : (
+          ) : (
             <div className="dropdown-trigger">
               <input
                 type="text"
                 placeholder="Enter a part of the name"
                 className="input"
-                onClick={() => setSelectedWord('')}
+                onClick={() => setSelectedName('')}
                 onChange={handleInputChange}
               />
             </div>
           )}
 
-        { isEntered === true
-        && isDebouncing === false
-        && selectedWord.length === 0 && (
+        { isEntered && !isDebouncing && !selectedName.length && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               <div className="dropdown-item transition__li-item">
-                {visibleMovies.map((people) => {
-                  if (currentPerson !== people.name) {
-                    return (
-                      <p
-                        className="has-text-link transition__image"
-                        onClick={() => {
-                          setSelectedPerson(people);
-                          setQuery(people.name);
-                          setSelectedWord(people.name);
-                        }}
-                        onKeyDown={() => setQuery(people.name)}
-                      >
-                        {people.name}
-                      </p>
-                    );
-                  }
-
-                  return null;
+                {visiblePeople.map((people) => {
+                  return (
+                    <p
+                      className="has-text-link transition__image"
+                      onClick={() => setEverything(people)}
+                      onKeyDown={() => setEverything(people)}
+                    >
+                      {people.name}
+                    </p>
+                  );
                 })}
               </div>
             </div>
           </div>
         )}
-        {visibleMovies.length === 0 && isDebouncing === false && (
+        {!visiblePeople.length && !isDebouncing && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               <div className="dropdown-item transition__li-item">
