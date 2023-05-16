@@ -18,6 +18,8 @@ export const App: React.FC = () => {
   const [isQueryCleared, setIsQueryCleared] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isDropdownActive, setIsDropdownActive] = useState(false);
+  const [activePersonSlug, setActivePersonSlug] = useState<string | null>(null);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,6 +53,7 @@ export const App: React.FC = () => {
 
   const selectPerson = (person: Person) => {
     setSelectedPerson(person);
+    setActivePersonSlug(person.slug);
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -111,7 +114,7 @@ export const App: React.FC = () => {
           searchResults={searchResults}
           onSelect={selectPerson}
           setIsDropdownActive={setIsDropdownActive}
-
+          activePersonSlug={activePersonSlug}
         />
       </div>
     </main>

@@ -1,9 +1,12 @@
+import classnames from 'classnames';
 import { Person } from '../types/Person';
 
 type Props = {
   searchResults: Person[] | null;
   onSelect: (person: Person) => void;
   setIsDropdownActive: (isActive: boolean) => void;
+  activePersonSlug: string | null;
+
 };
 
 export const DropdownMenu: React.FC<Props> = (
@@ -11,6 +14,7 @@ export const DropdownMenu: React.FC<Props> = (
     searchResults,
     onSelect,
     setIsDropdownActive,
+    activePersonSlug,
   },
 ) => {
   if (!searchResults) {
@@ -40,7 +44,10 @@ export const DropdownMenu: React.FC<Props> = (
           searchResults.map((person) => (
             <button
               type="button"
-              className="dropdown-item button is-white"
+              className={classnames('dropdown-item', 'button is-white',
+                {
+                  'is-active': activePersonSlug === person.slug,
+                })}
               key={person.slug}
               onClick={() => {
                 onSelect(person);
