@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useCallback, useEffect, useState } from 'react';
 import debounce from 'lodash/debounce';
+import classNames from 'classnames';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -11,6 +12,7 @@ export const App: React.FC = () => {
   const [searchResults, setSearchResults] = useState<Person[]>([]);
   const [isQueryCleared, setIsQueryCleared] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [activePersonSlug, setActivePersonSlug] = useState<string | null>(null);
 
   useEffect(() => {
     if (isQueryCleared) {
@@ -45,6 +47,7 @@ export const App: React.FC = () => {
 
   const selectPerson = (person: Person) => {
     setSelectedPerson(person);
+    setActivePersonSlug(person.slug);
   };
 
   return (
@@ -87,7 +90,10 @@ export const App: React.FC = () => {
               searchResults.map((person) => (
                 <button
                   type="button"
-                  className="dropdown-item button is-white"
+                  className={classNames('dropdown-item', 'button is-white',
+                    {
+                      'is-active': activePersonSlug === person.slug,
+                    })}
                   key={person.slug}
                   onClick={() => selectPerson(person)}
                 >
