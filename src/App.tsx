@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useCallback, useEffect, useState } from 'react';
 import debounce from 'lodash/debounce';
-import classNames from 'classnames';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { DropdownMenu } from './components/DropdownMenu';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -81,29 +81,11 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {searchResults.length === 0 ? (
-              <div className="dropdown-item">
-                <p className="has-text-danger">No matching suggestions</p>
-              </div>
-            ) : (
-              searchResults.map((person) => (
-                <button
-                  type="button"
-                  className={classNames('dropdown-item', 'button is-white',
-                    {
-                      'is-active': activePersonSlug === person.slug,
-                    })}
-                  key={person.slug}
-                  onClick={() => selectPerson(person)}
-                >
-                  <p className="has-text-link">{person.name}</p>
-                </button>
-              ))
-            )}
-          </div>
-        </div>
+        <DropdownMenu
+          searchResults={searchResults}
+          activePersonSlug={activePersonSlug}
+          onSelect={selectPerson}
+        />
       </div>
     </main>
   );
