@@ -52,8 +52,9 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {selectedPerson ? (<h1 className="title">{`${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`}</h1>
-      ) : (<h1 className="title">No person is selected</h1>)}
+      {selectedPerson
+        ? (<h1 className="title">{`${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`}</h1>)
+        : (<h1 className="title">No person is selected</h1>)}
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
