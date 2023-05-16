@@ -1,17 +1,16 @@
-import classNames from 'classnames';
 import { Person } from '../types/Person';
 
 type Props = {
   searchResults: Person[] | null;
-  activePersonSlug: string | null;
   onSelect: (person: Person) => void;
+  setIsDropdownActive: (isActive: boolean) => void;
 };
 
 export const DropdownMenu: React.FC<Props> = (
   {
     searchResults,
-    activePersonSlug,
     onSelect,
+    setIsDropdownActive,
   },
 ) => {
   if (!searchResults) {
@@ -19,7 +18,11 @@ export const DropdownMenu: React.FC<Props> = (
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
           <div className="dropdown-item">
-            <p className="has-text-danger">No matching suggestions</p>
+            <p
+              className="has-text-danger"
+            >
+              No matching suggestions
+            </p>
           </div>
         </div>
       </div>
@@ -37,12 +40,12 @@ export const DropdownMenu: React.FC<Props> = (
           searchResults.map((person) => (
             <button
               type="button"
-              className={classNames('dropdown-item', 'button is-white',
-                {
-                  'is-active': activePersonSlug === person.slug,
-                })}
+              className="dropdown-item button is-white"
               key={person.slug}
-              onClick={() => onSelect(person)}
+              onClick={() => {
+                onSelect(person);
+                setIsDropdownActive(false);
+              }}
             >
               <p className="has-text-link">{person.name}</p>
             </button>
