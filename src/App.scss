@@ -1,3 +1,12 @@
 iframe {
   display: none;
 }
+
+.button-normalize {
+  display: inline-block;
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
