@@ -6,17 +6,24 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
   const [query, setQuery] = useState('');
   const [delayedQuery, setDelayedQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Person[]>([]);
+  const [isQueryCleared, setIsQueryCleared] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   useEffect(() => {
-    setSearchResults(peopleFromServer.filter(
-      (person) => person.name.toLowerCase()
-        .includes(delayedQuery.toLowerCase()),
-    ));
-  }, [peopleFromServer, delayedQuery]);
+    if (isQueryCleared) {
+      setDelayedQuery('');
+      setSearchResults([]);
+      setIsQueryCleared(false);
+    } else {
+      setSearchResults(peopleFromServer.filter(
+        (person) => person.name.toLowerCase()
+          .includes(delayedQuery.toLowerCase()),
+      ));
+    }
+  }, [peopleFromServer, delayedQuery, isQueryCleared]);
 
   const delayQuery = useCallback(
     debounce(setDelayedQuery, 500),
@@ -25,17 +32,25 @@ export const App: React.FC = () => {
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
+    setIsQueryCleared(false);
     delayQuery(event.target.value);
   };
 
   const clearQuery = () => {
     setQuery('');
+    setIsQueryCleared(true);
     setSearchResults([]);
+    setSelectedPerson(null);
+  };
+
+  const selectPerson = (person: Person) => {
+    setSelectedPerson(person);
   };
 
   return (
     <main className="section">
-      <h1 className="title">{`${name} (${born} = ${died})`}</h1>
+      {selectedPerson ? (<h1 className="title">{`${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`}</h1>
+      ) : (<h1 className="title">No person is selected</h1>)}
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
@@ -70,9 +85,14 @@ export const App: React.FC = () => {
               </div>
             ) : (
               searchResults.map((person) => (
-                <div className="dropdown-item" key={person.slug}>
+                <button
+                  type="button"
+                  className="dropdown-item button is-white"
+                  key={person.slug}
+                  onClick={() => selectPerson(person)}
+                >
                   <p className="has-text-link">{person.name}</p>
-                </div>
+                </button>
               ))
             )}
           </div>
