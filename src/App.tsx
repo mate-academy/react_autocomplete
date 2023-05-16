@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import debounce from 'lodash/debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -7,23 +8,29 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const { name, born, died } = peopleFromServer[0];
   const [query, setQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Person[] | null>(null);
+  const [delayedQuery, setDelayedQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Person[]>([]);
+
+  useEffect(() => {
+    setSearchResults(peopleFromServer.filter(
+      (person) => person.name.toLowerCase()
+        .includes(delayedQuery.toLowerCase()),
+    ));
+  }, [peopleFromServer, delayedQuery]);
+
+  const delayQuery = useCallback(
+    debounce(setDelayedQuery, 500),
+    [],
+  );
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const lowerQuery = event.target.value.toLowerCase();
-
-    setQuery(lowerQuery);
-
-    const results = peopleFromServer.filter(
-      (person) => person.name.toLowerCase().includes(lowerQuery),
-    );
-
-    setSearchResults(results);
+    setQuery(event.target.value);
+    delayQuery(event.target.value);
   };
 
   const clearQuery = () => {
     setQuery('');
-    setSearchResults(null);
+    setSearchResults([]);
   };
 
   return (
@@ -40,30 +47,33 @@ export const App: React.FC = () => {
               value={query}
               onChange={handleSearch}
             />
-            <span
-              className="icon is-right"
-            >
-              <button
-                type="button"
-                className="delete"
-                onClick={() => clearQuery()}
-              />
-            </span>
+            {query
+              && (
+                <span
+                  className="icon is-right"
+                >
+                  <button
+                    type="button"
+                    className="delete"
+                    onClick={() => clearQuery()}
+                  />
+                </span>
+              )}
           </div>
         </div>
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {searchResults ? (
+            {searchResults.length === 0 ? (
+              <div className="dropdown-item">
+                <p className="has-text-danger">No matching suggestions</p>
+              </div>
+            ) : (
               searchResults.map((person) => (
                 <div className="dropdown-item" key={person.slug}>
                   <p className="has-text-link">{person.name}</p>
                 </div>
               ))
-            ) : (
-              <div className="dropdown-item">
-                <p className="has-text-danger">No matching suggestions</p>
-              </div>
             )}
           </div>
         </div>
