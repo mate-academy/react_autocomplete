@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import cn from 'classnames';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 // eslint-disable-next-line max-len
 const debounce = (f: { (value: React.SetStateAction<string>): void; (...args: [string]): void; }, delay: number | undefined) => {
@@ -17,8 +18,7 @@ const debounce = (f: { (value: React.SetStateAction<string>): void; (...args: [s
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [selectedPerson, setSelectedPerson] = useState(peopleFromServer[0]);
-  const { name, born, died } = selectedPerson;
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [closeList, setCloseList] = useState(false);
 
   const visiblePeople = useMemo(() => {
@@ -58,7 +58,8 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        { `${name} ${born} = ${died}`}
+        {!selectedPerson && ('No selected person')}
+        {selectedPerson && (`${selectedPerson.name} ${selectedPerson.born} = ${selectedPerson.died}`)}
       </h1>
 
       <div className={
