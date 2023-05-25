@@ -1,14 +1,47 @@
-import React from 'react';
-import './App.scss';
+import React, { useMemo, useState } from 'react';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import './App.scss';
+
+function debounce(callback:(...args: string[])=> void, delay: number) {
+  let timerId = 0;
+
+  return (...args: string[]) => {
+    clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [input, setInput] = useState('');
+  const [titel, setTitle] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const applyQuery = debounce(setTitle, 1000);
+
+  const hendlerPerson = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+    applyQuery(e.target.value);
+  };
+
+  const findPersons = useMemo(() => (
+    peopleFromServer.filter(person => (
+      person.name.toLowerCase().includes(input.toLowerCase().trim())))
+  ), [titel]);
+
+  const getPerson = (person: Person) => {
+    setTitle(person.name);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? (`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`)
+          : ('No person is selected')}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,37 +50,30 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={input}
+            onChange={hendlerPerson}
           />
         </div>
-
+        {findPersons.length === 0 && (<p>No matching suggestions</p>)}
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
             <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
+              {input ? findPersons.map((person) => (
+                <button
+                  type="button"
+                  className="button"
+                  key={person.name}
+                  onClick={() => {
+                    setSelectedPerson(person);
+                    getPerson(person);
+                    setInput('');
+                    setTitle('');
+                  }}
+                >
+                  {person.name}
+                </button>
+              )) : ''}
 
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
             </div>
           </div>
         </div>
