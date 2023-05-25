@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
 import cn from 'classnames';
 import { peopleFromServer } from './data/people';
@@ -19,10 +19,7 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const applyQuery = useCallback(
-    debounce(setAppliedQuery, 1000),
-    [],
-  );
+  const applyQuery = debounce(setAppliedQuery, 1000);
 
   const clearHandler = () => {
     setQuery('');
@@ -67,12 +64,12 @@ export const App: React.FC = () => {
                 <button
                   className="button"
                   type="button"
+                  key={person.slug}
                   onClick={() => {
                     setSelectedPerson(person); clearHandler();
                   }}
                 >
                   <p
-                    key={person.slug}
                     className={cn({
                       'has-text-link': person.sex === 'm',
                       'has-text-success': person.sex === 'f',
