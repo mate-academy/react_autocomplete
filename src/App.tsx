@@ -4,10 +4,6 @@ import cn from 'classnames';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
-// type Persons = {
-//   peopleFromServer: Person[];
-// };
-
 const debounce = (f:(...args: string[]) => void,
   delay: number) => {
   let timerId: NodeJS.Timeout;
