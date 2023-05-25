@@ -30,10 +30,10 @@ export const App: React.FC = () => {
         return person.name.includes(appliedQuery);
       },
     );
-  }, [peopleFromServer, appliedQuery]);
+  }, [appliedQuery]);
 
   // eslint-disable-next-line max-len
-  function handleSaveSelected(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  function handleSaveSelected(event: React.MouseEvent<HTMLDivElement>) {
     const findPerson = peopleFromServer.find(
       person => person.name === (event.target as HTMLElement).textContent,
     ) || peopleFromServer[0];
@@ -88,7 +88,7 @@ export const App: React.FC = () => {
                 <div
                   className="dropdown-item"
                   key={person.name}
-                  onClick={(event) => handleSaveSelected(event)}
+                  onClick={handleSaveSelected}
                 >
                   <p className="has-text-link">{person.name}</p>
                 </div>
