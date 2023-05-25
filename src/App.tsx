@@ -4,9 +4,9 @@ import cn from 'classnames';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
-type Persons = {
-  peopleFromServer: Person[];
-};
+// type Persons = {
+//   peopleFromServer: Person[];
+// };
 
 const debounce = (f:(...args: string[]) => void,
   delay: number) => {
@@ -18,7 +18,7 @@ const debounce = (f:(...args: string[]) => void,
   };
 };
 
-export const App: React.FC<Persons> = () => {
+export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
