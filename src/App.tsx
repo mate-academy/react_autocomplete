@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import './App.scss';
 import debounce from 'lodash/debounce';
+import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Autocomplete } from './Components/Autocomplete';
 
