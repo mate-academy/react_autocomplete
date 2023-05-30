@@ -78,7 +78,10 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
           <div className="dropdown-content">
             {visibleUsers.length
               ? (visibleUsers.map(user => (
-                <div key={user.slug} className="dropdown-item">
+                <div
+                  key={user.slug}
+                  className="dropdown-item"
+                >
                   <p
                     className="has-text-link"
                     onClick={handleOnClick.bind(null, user)}
