@@ -6,10 +6,6 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const [user, setUser] = useState<Person | null>(null);
 
-  const handleOnSelected = (newUser: Person) => {
-    setUser(newUser);
-  };
-
   return (
     <main className="section">
       <h1 className="title">
@@ -20,7 +16,7 @@ export const App: React.FC = () => {
 
       <Autocomplete
         delay={1000}
-        onSelected={handleOnSelected}
+        onSelected={setUser}
       />
     </main>
   );
