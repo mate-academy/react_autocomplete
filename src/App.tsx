@@ -1,11 +1,12 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import './App.scss';
-import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { peopleFromServer } from './data/people';
+
+import './App.scss';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 const debounce = (f: Function, delay: number) => {
-  let timerId: any;
+  let timerId: ReturnType<typeof Number>;
 
   return (...args: string[]) => {
     clearTimeout(timerId);
