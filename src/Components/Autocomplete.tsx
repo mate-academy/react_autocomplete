@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { Person } from '../types/Person';
 
 type Props = {
-  list: Person[],
+  listOfPeople: Person[],
   onChange: (value: string) => void,
   value: string,
   onDelayApply: (value: string) => void,
@@ -13,13 +13,18 @@ type Props = {
 
 export const Autocomplete: React.FC<Props> = React.memo(
   ({
-    list,
+    listOfPeople,
     onChange,
     value,
     onDelayApply,
     onSelect,
     query,
   }) => {
+    const handleInput = (event: { target: { value: string; }; }) => {
+      onChange(event.target.value);
+      onDelayApply(event.target.value);
+    };
+
     return (
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
@@ -27,10 +32,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            onChange={(event) => {
-              onChange(event.target.value);
-              onDelayApply(event.target.value);
-            }}
+            onChange={handleInput}
             value={value}
           />
         </div>
@@ -38,13 +40,13 @@ export const Autocomplete: React.FC<Props> = React.memo(
         {query && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
-              {list.map(person => (
-                // eslint-disable-next-line jsx-a11y/anchor-is-valid
+              {listOfPeople.map(person => (
                 <a
                   onClick={() => onSelect(`${person.name} (${person.born} = ${person.died})`)}
                   onKeyDown={() => onSelect(`${person.name}`)}
                   role="button"
                   tabIndex={0}
+                  key={person.slug}
                 >
                   <div key={person.slug} className="dropdown-item">
                     <p
@@ -57,7 +59,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
                   </div>
                 </a>
               ))}
-              {!list.length && (
+              {!listOfPeople.length && (
                 <p>No matching suggestions</p>
               )}
             </div>

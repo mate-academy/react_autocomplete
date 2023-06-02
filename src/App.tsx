@@ -38,7 +38,7 @@ export const App: React.FC = () => {
       </h1>
 
       <Autocomplete
-        list={visiblePeople}
+        listOfPeople={visiblePeople}
         onChange={onChangeInput}
         value={query}
         onDelayApply={applyQuery}
