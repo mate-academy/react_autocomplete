@@ -41,23 +41,25 @@ export const Autocomplete: React.FC<Props> = React.memo(
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {listOfPeople.map(person => (
-                <a
-                  onClick={() => onSelect(`${person.name} (${person.born} = ${person.died})`)}
-                  onKeyDown={() => onSelect(`${person.name}`)}
-                  role="button"
-                  tabIndex={0}
-                  key={person.slug}
-                >
-                  <div key={person.slug} className="dropdown-item">
-                    <p
-                      className={classNames('has-text-link', {
-                        'has-text-danger': person.sex === 'f',
-                      })}
-                    >
-                      {person.name}
-                    </p>
-                  </div>
-                </a>
+                <div role="article">
+                  <button
+                    type="button"
+                    onClick={() => onSelect(`${person.name} (${person.born} = ${person.died})`)}
+                    onKeyDown={() => onSelect(`${person.name}`)}
+                    tabIndex={0}
+                    key={person.slug}
+                  >
+                    <div key={person.slug} className="dropdown-item">
+                      <p
+                        className={classNames('has-text-link', {
+                          'has-text-danger': person.sex === 'f',
+                        })}
+                      >
+                        {person.name}
+                      </p>
+                    </div>
+                  </button>
+                </div>
               ))}
               {!listOfPeople.length && (
                 <p>No matching suggestions</p>
