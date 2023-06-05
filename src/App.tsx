@@ -5,12 +5,12 @@ import { PeopleContext } from './contexts/PeopleContexts';
 import 'bulma';
 
 export const App: React.FC = () => {
-  const { selectedPerson } = useContext(PeopleContext);
+  const { message } = useContext(PeopleContext);
 
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson}
+        {message}
       </h1>
 
       <People />

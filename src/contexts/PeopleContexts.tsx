@@ -14,18 +14,18 @@ interface PeopleContextType {
   setInput: (query: string) => void,
   applyQueryWithDebounce: (query: string) => void,
   filteredPeople: Person[],
-  selectedPerson: string,
-  handleClick: (person: string) => void,
+  message: string,
+  handleClick: (person: Person) => void,
 }
 
 const PeopleContext = createContext<PeopleContextType>({} as PeopleContextType);
+const defaultMessage = 'No person is selected';
 
 export const PeopleProvider:
 React.FC<{ children: ReactNode }> = ({ children }) => {
   const [people, setPeople] = useState<Person[] | null>(peopleFromServer);
   const [input, setInput] = useState<string>('');
-  const [selectedPerson, setSelectedPerson]
-    = useState<string>('No person is selected');
+  const [message, setMessage] = useState<string>(defaultMessage);
 
   const [appliedQuery, setAppliedQuery] = useState<string>('');
   const applyQueryWithDebounce = useCallback(
@@ -38,8 +38,10 @@ React.FC<{ children: ReactNode }> = ({ children }) => {
     );
   }, [people, appliedQuery]);
 
-  const handleClick = useCallback((person: string) => {
-    setSelectedPerson(person);
+  const handleClick = useCallback((person: Person) => {
+    const resultMessage = `${person.name} (${person.born} = ${person.died})`;
+
+    setMessage(resultMessage);
     setPeople([]);
     setInput('');
   }, []);
@@ -50,7 +52,7 @@ React.FC<{ children: ReactNode }> = ({ children }) => {
         input,
         setInput,
         applyQueryWithDebounce,
-        selectedPerson,
+        message,
         filteredPeople,
         handleClick,
       }}

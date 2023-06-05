@@ -37,8 +37,7 @@ export const People = React.memo(() => {
         />
       </div>
 
-      {input
-      && (
+      {input && (
         <div className="dropdown-menu" id="dropdown-menu" role="menu">
           <div className="dropdown-content">
             {filteredPeople.length > 0
@@ -51,9 +50,7 @@ export const People = React.memo(() => {
                   role="presentation"
                   key={filteredPerson.slug}
                   onMouseDown={() => {
-                    handleClick(
-                      `${filteredPerson.name} (${filteredPerson.born} = ${filteredPerson.died})`,
-                    );
+                    handleClick(filteredPerson);
                   }}
                 >
                   {filteredPerson.name}
