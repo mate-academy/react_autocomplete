@@ -10,7 +10,7 @@ interface Props {
 export const DropdownItem: React.FC<Props> = memo(({ person, onSelected }) => {
   return (
     <a
-      href="/"
+      href="#dropdown"
       className={cn(
         'dropdown-item',
         {
