@@ -38,17 +38,9 @@ export const App: React.FC = () => {
     setIsSuggestionsVisible(false);
   };
 
-  const handlePersonOnClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-
-    const personName = event.currentTarget.textContent;
-
-    if (!personName) {
-      return;
-    }
-
-    setSelectedPerson(getPersonByName(personName));
-    setQuery(personName);
+  const onSelected = (name: string) => {
+    setSelectedPerson(getPersonByName(name));
+    setQuery(name);
     setIsSuggestionsVisible(false);
   };
 
@@ -93,7 +85,7 @@ export const App: React.FC = () => {
         {appliedQuery && isSuggestionsVisible && (
           <DropdownMenu
             people={visiblePeople}
-            onSelected={() => handlePersonOnClick}
+            onSelected={onSelected}
           />
         )}
       </div>

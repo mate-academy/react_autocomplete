@@ -4,13 +4,25 @@ import { Person } from '../../types/Person';
 
 interface Props {
   person: Person;
-  onSelected: () => void;
+  onSelected: (name: string) => void;
 }
 
 export const DropdownItem: React.FC<Props> = memo(({ person, onSelected }) => {
+  const handlePersonOnClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+
+    const personName = event.currentTarget.textContent;
+
+    if (!personName) {
+      return;
+    }
+
+    onSelected(personName);
+  };
+
   return (
     <a
-      href="#dropdown"
+      href="/"
       className={cn(
         'dropdown-item',
         {
@@ -18,7 +30,7 @@ export const DropdownItem: React.FC<Props> = memo(({ person, onSelected }) => {
           'has-text-danger': person.sex === 'f',
         },
       )}
-      onClick={onSelected}
+      onClick={handlePersonOnClick}
     >
       {person.name}
     </a>

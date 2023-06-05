@@ -4,7 +4,7 @@ import { Person } from '../../types/Person';
 
 interface Props {
   people: Person[];
-  onSelected: () => void;
+  onSelected: (name: string) => void;
 }
 
 export const DropdownMenu: React.FC<Props> = memo(({
