@@ -50,14 +50,14 @@ export const App: React.FC = () => {
     return peopleFromServer.filter((person) => {
       const normalizedPerson = person.name.toLowerCase();
       const normalizedQuery = query
-        .split(' ')
-        .filter(Boolean)
-        .join(' ')
+        .replace(/ /g, '')
         .toLowerCase();
 
       return normalizedPerson.includes(normalizedQuery);
     });
   }, [appliedQuery, peopleFromServer]);
+
+  const isDropdownVisible = appliedQuery && isSuggestionsVisible;
 
   return (
     <main className="section">
@@ -65,7 +65,8 @@ export const App: React.FC = () => {
         {selectedPerson
           ? (
             `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
-          ) : (
+          )
+          : (
             'No selected person'
           )}
       </h1>
@@ -82,7 +83,7 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {appliedQuery && isSuggestionsVisible && (
+        {isDropdownVisible && (
           <DropdownMenu
             people={visiblePeople}
             onSelected={onSelected}
