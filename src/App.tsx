@@ -1,55 +1,92 @@
-import React from 'react';
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.scss';
+import classNames from 'classnames';
+import debounce from 'lodash/debounce';
 import { peopleFromServer } from './data/people';
+import { DropdownList } from './components/DropdownList';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [visiblePersons, setVisiblePersons] = useState<Person[] | []>([]);
+  const delay = 500;
+
+  const appliedQuery = useCallback(debounce(setDebouncedQuery, delay), []);
+  const cleanQuery = useCallback(() => {
+    setQuery('');
+    setDebouncedQuery('');
+  }, [debouncedQuery]);
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    appliedQuery(event.target.value);
+  };
+
+  const selectPerson = useCallback((person: Person) => {
+    setSelectedPerson(person);
+    cleanQuery();
+  }, [selectedPerson, cleanQuery]);
+
+  useEffect(() => {
+    setVisiblePersons(
+      peopleFromServer.filter(person => person.name
+        .toLocaleUpperCase()
+        .includes(
+          debouncedQuery.toLocaleUpperCase(),
+        )),
+    );
+  }, [debouncedQuery, peopleFromServer]);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson ? (
+          `${selectedPerson.name} - (${selectedPerson.born} - ${selectedPerson.died})`
+        ) : (
+          <p>No selected person</p>
+        )}
       </h1>
 
-      <div className="dropdown is-active">
+      <div
+        className={
+          classNames(
+            'dropdown',
+            { 'is-active': debouncedQuery },
+          )
+        }
+      >
         <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
+          <div className="control has-icons-right">
+            <input
+              type="text"
+              placeholder="Enter a part of the name"
+              className="input"
+              value={query}
+              onChange={handleQueryChange}
+            />
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
+            {query && (
+              <span
+                className="icon is-right"
+                style={{ pointerEvents: 'all' }}
+              >
+                <button
+                  type="button"
+                  className="delete"
+                  onClick={() => cleanQuery()}
+                />
+              </span>
+            )}
           </div>
+
+          {debouncedQuery && (
+            <DropdownList
+              onSelected={selectPerson}
+              visiblePersons={visiblePersons}
+            />
+          )}
         </div>
       </div>
     </main>
