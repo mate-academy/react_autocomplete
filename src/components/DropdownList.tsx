@@ -17,7 +17,9 @@ export const DropdownList: React.FC<Props> = React.memo(({
         {
           !visiblePersons.length ? (
             <div className="dropdown-item">
-              <p className="notification is-info">No matching suggestions</p>
+              <p className="notification is-info">
+                No matching suggestions
+              </p>
             </div>
           )
             : (
