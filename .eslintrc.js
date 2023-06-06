@@ -8,7 +8,5 @@ module.exports = {
     'jsx-a11y/label-has-associated-control': ["error", {
       assert: "either",
     }],
-    'jsx-a11y/click-events-have-key-events': 'off',
-    'jsx-a11y/no-static-element-interactions': 'off'
   },
 };

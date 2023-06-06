@@ -1,4 +1,6 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, {
+  useState, useCallback, useMemo, useEffect,
+} from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -15,37 +17,37 @@ const debounce = (f: (args: string) => void, delay: number) => {
 export const App: React.FC = () => {
   const [query, setQuery] = useState<string>('');
   const [appliedQuery, setAppliedQuery] = useState<string>('');
-  const [filteredPeople, setFilteredPeople] = useState<Person[]>([]);
   const [selectedPerson, setSelctedPerson] = useState<null | Person>(null);
   const [message, setMessage] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const aplyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
 
-  const onSelected = useMemo(() => (person: Person) => {
+  const onSelected = useCallback((person: Person) => {
     setSelctedPerson(person);
     setIsOpen(false);
   }, []);
 
-  useMemo(() => {
-    let people: Person[] = [];
-
+  const people = useMemo(() => {
     if (appliedQuery) {
-      people = peopleFromServer
-        .filter(person => person.name.toLowerCase()
-          .includes(appliedQuery.toLowerCase()));
+      return peopleFromServer.filter(
+        person => person.name.toLowerCase()
+          .includes(appliedQuery.toLowerCase()),
+      );
     }
 
+    return [];
+  }, [appliedQuery, peopleFromServer]);
+
+  useEffect(() => {
     if (people.length > 0) {
       setMessage('');
-      setFilteredPeople(people);
       setIsOpen(true);
     } else {
       setMessage('No matching suggestions');
-      setFilteredPeople([]);
       setIsOpen(false);
     }
-  }, [appliedQuery, peopleFromServer]);
+  }, [people]);
 
   return (
     <main className="section">
@@ -72,17 +74,19 @@ export const App: React.FC = () => {
         {isOpen
           && (
             <div className="dropdown-menu" role="menu">
-              {filteredPeople?.map((person) => (
+              {people?.map((person) => (
                 <div className="dropdown-item" key={person.slug}>
-                  <div
-                    className={person.sex === 'm'
+                  <button
+                    type="button"
+                    className={`${person.sex === 'm'
                       ? 'has-text-link'
                       : 'has-text-danger'}
+                      dropdown-button
+                    `}
                     onClick={() => onSelected(person)}
-                    style={{ cursor: 'pointer' }}
                   >
                     {person.name}
-                  </div>
+                  </button>
                 </div>
               ))}
             </div>
