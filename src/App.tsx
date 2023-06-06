@@ -32,9 +32,9 @@ export const App: React.FC = () => {
   useEffect(() => {
     setVisiblePersons(
       peopleFromServer.filter(person => person.name
-        .toLocaleUpperCase()
+        .toUpperCase()
         .includes(
-          debouncedQuery.toLocaleUpperCase(),
+          debouncedQuery.toUpperCase(),
         )),
     );
   }, [debouncedQuery, peopleFromServer]);
