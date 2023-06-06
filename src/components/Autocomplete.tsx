@@ -33,6 +33,14 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, delay }) => {
     setShowSuggestions(false);
   };
 
+  const selectPerson = useCallback(
+    (person: Person) => {
+      onSelected(person);
+      cleanQuery();
+    },
+    [onSelected, cleanQuery],
+  );
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setVisiblePersons(
@@ -77,7 +85,7 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, delay }) => {
 
         {showSuggestions && (
           <DropdownList
-            onSelected={onSelected}
+            onSelected={selectPerson}
             visiblePersons={visiblePersons}
           />
         )}
