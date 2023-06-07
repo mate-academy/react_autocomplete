@@ -19,14 +19,10 @@ export const App: React.FC<Prop> = ({ delay = 1000 }) => {
     [],
   );
   const onSelected = (newPeople: Person) => {
-    const {
-      name, sex, born, died, fatherName, motherName, slug,
-    } = newPeople;
+    const { name } = newPeople;
 
     setQuery(name);
-    setPeople({
-      name, sex, born, died, fatherName, motherName, slug,
-    });
+    setPeople(newPeople);
     setIsActive(false);
   };
 
@@ -39,7 +35,7 @@ export const App: React.FC<Prop> = ({ delay = 1000 }) => {
   return (
     <main className="section">
       <h1 className="title">
-        {people === undefined
+        {!people
           ? 'No selected person'
           : `${people.name} (${people.born} = ${people.died})`}
       </h1>
