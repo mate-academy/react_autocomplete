@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useCallback, useEffect, useState, useRef,
 } from 'react';
@@ -38,10 +37,20 @@ export const App: React.FC = () => {
 
   const delayQuery = useCallback(debounce(setDelayedQuery, 500), []);
 
+  function trimWhitespace(str: string) {
+    const trimmedStart = str.replace(/^\s/, '');
+
+    const trimmedAll = trimmedStart.replace(/\s{2,}/g, ' ');
+
+    return trimmedAll;
+  }
+
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+    const trimmedQuery = trimWhitespace(event.target.value);
+
+    setQuery(trimmedQuery);
     setIsQueryCleared(false);
-    delayQuery(event.target.value);
+    delayQuery(trimmedQuery);
   };
 
   const clearQuery = () => {
@@ -103,6 +112,7 @@ export const App: React.FC = () => {
                 <button
                   type="button"
                   className="delete"
+                  aria-label="clear-input"
                   onClick={() => clearQuery()}
                 />
               </span>

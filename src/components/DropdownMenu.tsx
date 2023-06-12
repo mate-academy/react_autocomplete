@@ -17,7 +17,7 @@ export const DropdownMenu: React.FC<Props> = (
     activePersonSlug,
   },
 ) => {
-  if (!searchResults) {
+  if (searchResults && searchResults.length === 0) {
     return (
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
@@ -36,12 +36,8 @@ export const DropdownMenu: React.FC<Props> = (
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
-        {searchResults.length === 0 ? (
-          <div className="dropdown-item">
-            <p className="has-text-danger">No matching suggestions</p>
-          </div>
-        ) : (
-          searchResults.map((person) => (
+        {(
+          searchResults?.map((person) => (
             <button
               type="button"
               className={classnames('dropdown-item', 'button is-white',
