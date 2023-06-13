@@ -4,24 +4,19 @@ import React, {
   useMemo, useState,
 } from 'react';
 import './App.scss';
+import { debounce } from 'lodash';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { DropDownList } from './components/DropDownList';
-
-const debounce = (f: (value: string) => void, delay: number) => {
-  let timerId: NodeJS.Timeout;
-
-  return (args: string) => {
-    clearTimeout(timerId);
-    timerId = setTimeout(f, delay, args);
-  };
-};
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState<string>('');
   const [appliedQuery, setAppliedQuery] = useState<string>('');
   const [isListOpen, setIsListOpen] = useState<boolean>(false);
+  const titleText = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : null;
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, 1000),
@@ -63,9 +58,7 @@ export const App: React.FC = () => {
     <main className="section">
       <h1 className="title">
         {selectedPerson
-          ? `${selectedPerson.name}
-          (${selectedPerson.born} -
-          ${selectedPerson.died})`
+          ? titleText
           : 'No selected person'}
       </h1>
 

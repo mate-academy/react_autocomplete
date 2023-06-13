@@ -17,7 +17,7 @@ export const DropDownList: React.FC<Props> = React.memo(
             ? (
               suggestedPeople.map(suggestedPerson => (
                 <a
-                  key={suggestedPerson.name}
+                  key={suggestedPerson.slug}
                   href="/"
                   className={classNames('dropdown-item', {
                     'has-text-link': suggestedPerson.sex === Gender.Male,
