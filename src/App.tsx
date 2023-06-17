@@ -4,32 +4,28 @@ import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
-type Props = {
-  delay: number,
-};
-
 const debounce = (
-  f: (value: React.SetStateAction<string>) => void,
-  delay: number,
+  f: {
+    (value: React.SetStateAction<string>): void,
+    (...args: [string]): void,
+  }, delay: number | undefined,
 ) => {
-  let timerId: number;
+  let timerId: NodeJS.Timeout;
 
-  return (...args: string[]) => {
+  return (...args: [string]) => {
     clearTimeout(timerId);
     timerId = setTimeout(f, delay, ...args);
   };
 };
 
-export const App: React.FC<Props> = ({
-  delay = 1000,
-}) => {
+export const App = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [closeList, setCloseList] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay),
+    debounce(setAppliedQuery, 1000),
     [],
   );
 
@@ -55,6 +51,7 @@ export const App: React.FC<Props> = ({
   }
 
   const error = visiblePeople.length === 0;
+  const showDropdown = appliedQuery.length > 0;
 
   return (
     <main className="section">
@@ -78,28 +75,30 @@ export const App: React.FC<Props> = ({
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {visiblePeople.map(person => (
-              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-              <div
-                className="dropdown-item"
-                key={person.name}
-                onClick={handleSaveSelected}
-              >
-                <p className="has-text-link">{person.name}</p>
-              </div>
-            ))}
+        {showDropdown && (
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              {visiblePeople.map(person => (
+                // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+                <div
+                  className="dropdown-item"
+                  key={person.name}
+                  onClick={handleSaveSelected}
+                >
+                  <p className="has-text-link">{person.name}</p>
+                </div>
+              ))}
 
-            {error && (
-              <div className="dropdown-item">
-                <p className="has-text-danger">
-                  No matching suggestions
-                </p>
-              </div>
-            )}
+              {error && (
+                <div className="dropdown-item">
+                  <p className="has-text-danger">
+                    No matching suggestions
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );
