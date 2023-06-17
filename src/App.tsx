@@ -93,7 +93,9 @@ export const App: React.FC<Props> = ({
 
             {error && (
               <div className="dropdown-item">
-                <p className="has-text-danger">No matching suggestions</p>
+                <p className="has-text-danger">
+                  No matching suggestions
+                </p>
               </div>
             )}
           </div>
