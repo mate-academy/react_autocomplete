@@ -4,7 +4,7 @@ import { DropItem } from './DropItem';
 
 type Props = {
   people: Person[],
-  onSelect: (person: Person) => void
+  onSelect: (person: Person) => void,
 };
 
 export const DropMenu: React.FC<Props> = React.memo(({ people, onSelect }) => (

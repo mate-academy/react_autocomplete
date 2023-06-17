@@ -5,7 +5,6 @@ import { peopleFromServer } from './data/people';
 import { DropMenu } from './Components/DropMenu';
 import { Person } from './types/Person';
 
-
 const debounce = (f: (...args: string[]) => void, delay: number) => {
   let timerId: number;
 
@@ -19,6 +18,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selected, setSelected] = useState<Person | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, 1000),
@@ -29,11 +29,13 @@ export const App: React.FC = () => {
     setSelected(person);
     setQuery('');
     setAppliedQuery('');
-  }, [setSelected]);
+    setShowSuggestions(state => !state);
+  }, [setSelected, setQuery, setAppliedQuery]);
 
   const visiblePeope = useMemo(() => {
     return peopleFromServer.filter(
-      person => person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+      person => person.name
+        .toLowerCase().includes(appliedQuery.toLowerCase().trim()),
     );
   }, [peopleFromServer, appliedQuery]);
 
@@ -49,7 +51,7 @@ export const App: React.FC = () => {
 
       <div className={classNames(
         'dropdown',
-        { 'is-active': appliedQuery },
+        { 'is-active': !showSuggestions },
       )}
       >
         <div className="dropdown-trigger">
@@ -61,11 +63,17 @@ export const App: React.FC = () => {
             onChange={event => {
               setQuery(event.target.value);
               applyQuery(event.target.value);
+              setShowSuggestions(false);
             }}
           />
         </div>
 
-        <DropMenu people={visiblePeope} onSelect={selectPerson} />
+        {appliedQuery && (
+          <DropMenu
+            people={visiblePeope}
+            onSelect={selectPerson}
+          />
+        )}
       </div>
     </main>
   );
