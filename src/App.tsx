@@ -18,9 +18,10 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selected, setSelected] = useState<Person | null>(null);
+  const [suggestionsList, setSuggestionsList] = useState(false);
 
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, 1000),
+    debounce(setSuggestionsList(true), setAppliedQuery, 1000),
     [],
   );
 
@@ -49,7 +50,7 @@ export const App: React.FC = () => {
 
       <div className={classNames(
         'dropdown',
-        { 'is-active': !appliedQuery },
+        { 'is-active': !appliedQuery && !suggestionsList },
       )}
       >
         <div className="dropdown-trigger">
