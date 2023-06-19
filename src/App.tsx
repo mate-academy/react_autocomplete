@@ -1,4 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 import './App.scss';
 import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
@@ -18,14 +20,19 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selected, setSelected] = useState<Person | null>(null);
-  const [suggestionsList, setSuggestionsList] = useState(false);
+  const [suggestionsList, setSuggestionsList] = useState(true);
 
   const applyQuery = useCallback(
-    debounce(setSuggestionsList(true), setAppliedQuery, 1000),
+    debounce(setAppliedQuery, 1000),
     [],
   );
 
+  useEffect(() => {
+    setSuggestionsList(true);
+  }, [appliedQuery]);
+
   const selectPerson = useCallback((person: Person) => {
+    setSuggestionsList(false);
     setSelected(person);
     setQuery('');
     setAppliedQuery('');
@@ -50,7 +57,7 @@ export const App: React.FC = () => {
 
       <div className={classNames(
         'dropdown',
-        { 'is-active': !appliedQuery && !suggestionsList },
+        { 'is-active': suggestionsList },
       )}
       >
         <div className="dropdown-trigger">
@@ -60,6 +67,7 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={event => {
+              setSuggestionsList(false);
               setQuery(event.target.value);
               applyQuery(event.target.value);
             }}
