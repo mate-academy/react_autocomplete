@@ -12,11 +12,8 @@ export const App: React.FC = () => {
     <main className="section">
       <h1 className="title">
         {selectedPerson
-          ? (
-            `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
-          ) : (
-            'No selected person'
-          )}
+          ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
       <Dropdown
         onSelect={setSelectedPerson}

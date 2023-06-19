@@ -44,10 +44,10 @@ export const Dropdown: React.FC<Props> = ({ onSelect, people }) => {
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-
           {debouncedQuery.length > 0 && !isTyping && (
             visiblePeople.map(person => (
               <button
+                key={person.slug}
                 type="button"
                 className="dropdown-item"
                 onClick={() => {

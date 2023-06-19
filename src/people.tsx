@@ -57,7 +57,6 @@ export const People = React.memo(
             </div>
           </div>
         )}
-
       </div>
     );
   },
