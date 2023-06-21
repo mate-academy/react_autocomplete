@@ -3,7 +3,7 @@ import './App.scss';
 import { Person } from './types/Person';
 import { AutoComplited } from './Components/AutoComplited';
 
-export const App: React.FC<Person[]> = () => {
+export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const handlePersonSelection = (person: Person) => {

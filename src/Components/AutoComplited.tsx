@@ -7,12 +7,12 @@ interface Props {
   delay: number;
 }
 
-const debounce = (f: any, delay: any) => {
-  let timerId: any;
+const debounce = <T extends unknown[]>(f: (...args: T) =>
+void, delay: number) => {
+  let timerId: ReturnType<typeof setTimeout>;
 
-  return (...args: any) => {
+  return (...args: T): void => {
     clearTimeout(timerId);
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     timerId = setTimeout(f, delay, ...args);
   };
 };
@@ -39,7 +39,7 @@ export const AutoComplited: React.FC<Props> = ({
     setIsOpen(!isOpen);
   };
 
-  const handlePersonSelection = (person: any) => {
+  const handlePersonSelection = (person: Person) => {
     setQuery(person.name);
     onSelected(person);
   };
@@ -66,7 +66,10 @@ export const AutoComplited: React.FC<Props> = ({
           {isOpen && (
             filterPeople.length > 0 ? (
               filterPeople.map((person) => (
-                <div className="dropdown-item">
+                <div
+                  key={person.id}
+                  className="dropdown-item"
+                >
                   <button
                     type="button"
                     onClick={() => {
