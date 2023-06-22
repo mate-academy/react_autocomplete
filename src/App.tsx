@@ -55,14 +55,12 @@ export const App = () => {
   const visiblePeople = useMemo(() => {
     setShowSuggestions(true);
 
-    const normalizePersonName = (human: Person) => {
-      return human.name.toLowerCase().trim();
-    };
-
     return peopleFromServer.filter(
-      person => normalizePersonName(person)
-        .includes(appliedQuery.toLowerCase()),
-    );
+      person => {
+        const normalizedPersonName = person.name.toLowerCase().trim()
+      
+        return normalizedPersonName.includes(appliedQuery.toLowerCase())
+     });
   }, [peopleFromServer, appliedQuery]);
 
   return (
