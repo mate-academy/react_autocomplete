@@ -38,7 +38,7 @@ export const App = () => {
     [],
   );
 
-  const handleQueryOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
 
     setQuery(value);
