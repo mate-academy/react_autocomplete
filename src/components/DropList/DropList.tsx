@@ -35,13 +35,11 @@ export const DropList: React.FC<Props> = React.memo(
                 </li>
               ))
             ) : (
-              <div
-                className="dropdown-item"
-              >
+              <li className="dropdown-item">
                 <p>
                   No matching suggestions
                 </p>
-              </div>
+              </li>
             )}
         </ul>
       </div>

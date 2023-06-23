@@ -9,17 +9,21 @@ const debounce = (f: (...args: string[]) => void, delay: number) => {
 
   return (...args: string[]) => {
     clearTimeout(timerId);
-    timerId = setTimeout(f, delay, ...args);
+    timerId = setTimeout(() => {
+      f(...args);
+    }, delay);
   };
 };
+
+const DEBOUNCE_DELAY = 1000;
 
 export const App: React.FC = () => {
   const [findPerson, setFindPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
-  const [apllieQuery, setApllieQuery] = useState('');
+  const [applieQuery, setApplieQuery] = useState('');
 
   const apllyQuery = useCallback(
-    debounce(setApllieQuery, 1000),
+    debounce(setApplieQuery, DEBOUNCE_DELAY),
     [],
   );
 
@@ -31,14 +35,14 @@ export const App: React.FC = () => {
   const filterPeople = useMemo(() => {
     return peopleFromServer
       .filter(people => people.name.toLowerCase()
-        .includes(apllieQuery.toLowerCase()));
-  }, [apllieQuery]);
+        .includes(applieQuery.toLowerCase()));
+  }, [applieQuery]);
 
   const handlePerson = (people: Person,
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void => {
     event.preventDefault();
     setFindPerson(people);
-    setApllieQuery('');
+    setApplieQuery('');
     setQuery(people.name);
   };
 
@@ -61,7 +65,7 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {apllieQuery && (
+        {applieQuery && (
           <DropList
             onSelected={handlePerson}
             filterPeople={filterPeople}
