@@ -29,7 +29,7 @@ const debounce = (callback: Dispatch<string>, delay: number) => {
 export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [listIsShown, setListIsShown] = useState('false');
+  const [listIsShown, setListIsShown] = useState(false);
 
   const visibleUsers = useMemo(() => {
     return peopleFromServer.filter(user => {
@@ -39,7 +39,7 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
 
   const applyQueryAndShowList = (value: string) => {
     setAppliedQuery(value);
-    setListIsShown('true');
+    setListIsShown(true);
   };
 
   const applyQuery = useCallback(
@@ -50,15 +50,20 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
 
-    setListIsShown('false');
     setQuery(value);
-    applyQuery(value);
+
+    if (value.trim() === '') {
+      setListIsShown(false);
+    } else {
+      applyQuery(value);
+      setListIsShown(true);
+    }
   };
 
   const handleOnClick = (user: Person) => {
     onSelected(user);
     setQuery(user.name);
-    setListIsShown('false');
+    setListIsShown(false);
   };
 
   return (
@@ -83,6 +88,8 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
                   className="dropdown-item"
                 >
                   <p
+                    // role="button"
+                    // tabIndex={0}
                     className="has-text-link"
                     onClick={() => handleOnClick(user)}
                   >
