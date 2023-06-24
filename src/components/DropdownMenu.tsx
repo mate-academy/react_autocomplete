@@ -1,32 +1,26 @@
-import { FC } from 'react';
-import cn from 'classnames';
+import { FC, memo } from 'react';
 import { Person } from '../types/Person';
+import { PersonsSelect } from './PersonsSelect';
 
 interface Props {
   preparedPersons: Person[];
 }
 
-export const DropdownMenu:FC<Props> = ({ preparedPersons }) => {
+export const DropdownMenu:FC<Props> = memo(({ preparedPersons }) => {
+  const isAviablePersons = preparedPersons.length > 0;
+
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
-        {preparedPersons.map(person => {
-          const { name, sex } = person;
-          const isMale = sex === 'm';
-
-          return (
+        {isAviablePersons
+          ? (
+            <PersonsSelect persons={preparedPersons} />
+          ) : (
             <div className="dropdown-item">
-              <p className={cn({
-                'has-text-link': isMale,
-                'has-text-danger': !isMale,
-              })}
-              >
-                {name}
-              </p>
+              <p>No matching suggestions</p>
             </div>
-          );
-        })}
+          )}
       </div>
     </div>
   );
-};
+});
