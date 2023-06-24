@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-import { Dropdown } from './components/Dropdown';
+import { Dropdown } from './components/Dropdown/Dropdown';
 
 export const App: React.FC = () => {
   const [selectedPerson] = useState<Person | null>(null);
@@ -15,7 +15,10 @@ export const App: React.FC = () => {
           : 'No selected person'}
       </h1>
 
-      <Dropdown people={peopleFromServer} />
+      <Dropdown
+        people={peopleFromServer}
+        delay={1000}
+      />
     </main>
   );
 };

@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import { FC } from 'react';
-import { Person } from '../types/Person';
+import { Person } from '../../types/Person';
 
 interface Props {
   persons: Person[];

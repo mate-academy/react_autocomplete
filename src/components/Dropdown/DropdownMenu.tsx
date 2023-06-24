@@ -1,6 +1,6 @@
 import { FC, memo } from 'react';
-import { Person } from '../types/Person';
 import { PersonsSelect } from './PersonsSelect';
+import { Person } from '../../types/Person';
 
 interface Props {
   preparedPersons: Person[];
