@@ -5,7 +5,7 @@ import { Person } from './types/Person';
 import { Dropdown } from './components/Dropdown/Dropdown';
 
 export const App: React.FC = () => {
-  const [selectedPerson] = useState<Person | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   return (
     <main className="section">
@@ -17,6 +17,7 @@ export const App: React.FC = () => {
 
       <Dropdown
         people={peopleFromServer}
+        onSelectPerson={setSelectedPerson}
         delay={1000}
       />
     </main>

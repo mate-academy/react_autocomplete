@@ -12,9 +12,11 @@ import { debounce } from '../../helpers/debounce';
 interface Props {
   people: Person[];
   delay: number,
+  onSelectPerson: React.Dispatch<React.SetStateAction<Person | null>>,
 }
+// TODO: FIX THAT PROPS SHARING SHIT
 
-export const Dropdown:FC<Props> = ({ people, delay }) => {
+export const Dropdown:FC<Props> = ({ people, delay, onSelectPerson }) => {
   const [filterQuery, setFilterQuery] = useState<string>('');
   const [selectMenuVisible, setSelectMenuVisible] = useState<boolean>(false);
 
@@ -52,7 +54,13 @@ export const Dropdown:FC<Props> = ({ people, delay }) => {
       </div>
 
       {selectMenuVisible
-      && <DropdownMenu preparedPersons={preparedPeople} />}
+      && (
+        <DropdownMenu
+          preparedPersons={preparedPeople}
+          onSelectPerson={onSelectPerson}
+          setSelectMenuVisible={setSelectMenuVisible}
+        />
+      )}
     </div>
   );
 };
