@@ -1,39 +1,36 @@
 import cn from 'classnames';
-import { FC } from 'react';
-import { Person } from '../../types/Person';
+import { useContext } from 'react';
+import { DropdownDataContext } from './DropdownData';
 
-interface Props {
-  persons: Person[];
-  onSelectPerson: React.Dispatch<React.SetStateAction<Person | null>>;
-  setSelectMenuVisible: React.Dispatch<React.SetStateAction<boolean>>;
-}
+export const PersonsSelect = (
+) => {
+  const dropdownData = useContext(DropdownDataContext);
 
-export const PersonsSelect:FC<Props> = (
-  { persons, onSelectPerson, setSelectMenuVisible },
-) => (
-  <>
-    {persons.map(person => {
-      const { name, sex, slug } = person;
-      const isMale = sex === 'm';
+  return (
+    <>
+      {dropdownData?.preparedPeople.map(person => {
+        const { name, sex, slug } = person;
+        const isMale = sex === 'm';
 
-      return (
-        <div key={slug} className="dropdown-item">
-          <a
-            href={`#${slug}`}
-            className={cn('dropdown-item', {
-              'has-text-link': isMale,
-              'has-text-danger': !isMale,
-            })}
-            onClick={(e) => {
-              e.preventDefault();
-              setSelectMenuVisible(false);
-              onSelectPerson(person);
-            }}
-          >
-            {name}
-          </a>
-        </div>
-      );
-    })}
-  </>
-);
+        return (
+          <div key={slug} className="dropdown-item">
+            <a
+              href={`#${slug}`}
+              className={cn('dropdown-item', {
+                'has-text-link': isMale,
+                'has-text-danger': !isMale,
+              })}
+              onClick={(e) => {
+                e.preventDefault();
+                dropdownData.setSelectMenuVisible(false);
+                dropdownData.onSelectPerson(person);
+              }}
+            >
+              {name}
+            </a>
+          </div>
+        );
+      })}
+    </>
+  );
+};

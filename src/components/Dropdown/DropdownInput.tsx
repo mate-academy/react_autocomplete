@@ -1,21 +1,18 @@
-import { FC, useState } from 'react';
+import { useContext, useState } from 'react';
+import { DropdownDataContext } from './DropdownData';
 
-interface Props {
-  applyFilterQuery: (...args: string[]) => void,
-  setSelectMenuVisible: React.Dispatch<React.SetStateAction<boolean>>,
-}
-
-export const DropdownInput:FC<Props> = (
-  { applyFilterQuery, setSelectMenuVisible },
+export const DropdownInput = (
 ) => {
+  const dropdownData = useContext(DropdownDataContext);
   const [query, setQuery] = useState('');
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const text = event.target.value.trim();
 
     setQuery(text);
-    setSelectMenuVisible(!text.trim());
-    applyFilterQuery(text.trim());
+    dropdownData?.setSelectMenuVisible(!text.trim());
+    // applyFilterQuery(text.trim());
+    dropdownData?.applyFilterQuery(text.trim());
   };
 
   return (

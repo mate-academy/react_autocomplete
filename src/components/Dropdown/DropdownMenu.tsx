@@ -1,28 +1,20 @@
-import { FC, memo } from 'react';
+import { memo, useContext } from 'react';
 import { PersonsSelect } from './PersonsSelect';
-import { Person } from '../../types/Person';
+import { DropdownDataContext } from './DropdownData';
 
-interface Props {
-  preparedPersons: Person[];
-  onSelectPerson: React.Dispatch<React.SetStateAction<Person | null>>;
-  setSelectMenuVisible: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export const DropdownMenu:FC<Props> = memo((
-  { preparedPersons, onSelectPerson, setSelectMenuVisible },
+export const DropdownMenu = memo((
 ) => {
-  const isAviablePersons = preparedPersons.length > 0;
+  const dropDownData = useContext(DropdownDataContext);
+
+  const isAviablePersons = dropDownData?.preparedPeople
+  && dropDownData.preparedPeople.length > 0;
 
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
         {isAviablePersons
           ? (
-            <PersonsSelect
-              persons={preparedPersons}
-              onSelectPerson={onSelectPerson}
-              setSelectMenuVisible={setSelectMenuVisible}
-            />
+            <PersonsSelect />
           ) : (
             <div className="dropdown-item">
               <p>No matching suggestions</p>

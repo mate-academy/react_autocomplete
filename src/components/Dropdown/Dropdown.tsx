@@ -6,15 +6,16 @@ import {
 } from 'react';
 import { Person } from '../../types/Person';
 import { DropdownMenu } from './DropdownMenu';
-import { DropdownInput } from '../DropdownInput';
+import { DropdownInput } from './DropdownInput';
 import { debounce } from '../../helpers/debounce';
+import { ContextType, DropdownDataContext } from './DropdownData';
 
 interface Props {
   people: Person[];
   delay: number,
   onSelectPerson: React.Dispatch<React.SetStateAction<Person | null>>,
 }
-// TODO: FIX THAT PROPS SHARING SHIT
+// TODO: FIX THAT PROPS SHARING SHIT USING CONTEXT
 
 export const Dropdown:FC<Props> = ({ people, delay, onSelectPerson }) => {
   const [filterQuery, setFilterQuery] = useState<string>('');
@@ -44,23 +45,25 @@ export const Dropdown:FC<Props> = ({ people, delay, onSelectPerson }) => {
     [],
   );
 
-  return (
-    <div className="dropdown is-active">
-      <div className="dropdown-trigger">
-        <DropdownInput
-          applyFilterQuery={applyFilterQuery}
-          setSelectMenuVisible={setSelectMenuVisible}
-        />
-      </div>
+  const dropDownData = useMemo<ContextType>(() => ({
+    setSelectMenuVisible,
+    onSelectPerson,
+    preparedPeople,
+    applyFilterQuery,
+  }), [preparedPeople]);
 
-      {selectMenuVisible
-      && (
-        <DropdownMenu
-          preparedPersons={preparedPeople}
-          onSelectPerson={onSelectPerson}
-          setSelectMenuVisible={setSelectMenuVisible}
-        />
-      )}
-    </div>
+  return (
+    <DropdownDataContext.Provider value={dropDownData}>
+      <div className="dropdown is-active">
+        <div className="dropdown-trigger">
+          <DropdownInput />
+        </div>
+
+        {selectMenuVisible
+        && (
+          <DropdownMenu />
+        )}
+      </div>
+    </DropdownDataContext.Provider>
   );
 };
