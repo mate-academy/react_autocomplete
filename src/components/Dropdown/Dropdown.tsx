@@ -15,7 +15,6 @@ interface Props {
   delay: number,
   onSelectPerson: React.Dispatch<React.SetStateAction<Person | null>>,
 }
-// TODO: FIX THAT PROPS SHARING SHIT USING CONTEXT
 
 export const Dropdown:FC<Props> = ({ people, delay, onSelectPerson }) => {
   const [filterQuery, setFilterQuery] = useState<string>('');

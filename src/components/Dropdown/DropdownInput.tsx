@@ -11,7 +11,6 @@ export const DropdownInput = (
 
     setQuery(text);
     dropdownData?.setSelectMenuVisible(!text.trim());
-    // applyFilterQuery(text.trim());
     dropdownData?.applyFilterQuery(text.trim());
   };
 
