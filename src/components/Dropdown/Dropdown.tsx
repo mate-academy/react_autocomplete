@@ -34,7 +34,7 @@ export const Dropdown:FC<Props> = ({ people, delay, onSelectPerson }) => {
 
   const handleFilterQueryUpdate = useCallback(
     (text: string) => {
-      setSelectMenuVisible(!!text);
+      setSelectMenuVisible(!!text.trim());
       setFilterQuery(text);
     }, [],
   );

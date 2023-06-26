@@ -7,10 +7,9 @@ export const DropdownInput = (
   const [query, setQuery] = useState('');
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const text = event.target.value.trim();
+    const text = event.target.value;
 
     setQuery(text);
-    dropdownData?.setSelectMenuVisible(!text.trim());
     dropdownData?.applyFilterQuery(text.trim());
   };
 
