@@ -10,6 +10,7 @@ export const DropdownInput = (
     const text = event.target.value;
 
     setQuery(text);
+    dropdownData?.setSelectMenuVisible(false);
     dropdownData?.applyFilterQuery(text.trim());
   };
 
