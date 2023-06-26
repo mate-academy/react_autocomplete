@@ -1,57 +1,45 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
+// import { debounce } from 'lodash';
 import { peopleFromServer } from './data/people';
+import { Dropdown } from './components/Dropdown';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [searchName, setSearchName] = useState('');
+  const [selectedPersonSlug, setSelectedPersonSlug] = useState('');
+
+  const people = useMemo(() => (
+    peopleFromServer.filter(person => (
+      person.name.toLowerCase().includes(searchName.toLowerCase().trim())
+    ))
+  ), [searchName]);
+
+  const findSelectedPerson = useMemo(() => (
+    peopleFromServer.find(person => (
+      person.slug === selectedPersonSlug
+    )) || null
+  ), [selectedPersonSlug]);
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      {selectedPersonSlug
+        ? (
+          <h1 className="title">
+            {`${findSelectedPerson?.name} (${findSelectedPerson?.born} - ${findSelectedPerson?.died})`}
+          </h1>
+        ) : (
+          <h1 className="title">
+            No selected person
+          </h1>
+        )}
 
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Dropdown
+        people={people}
+        searchName={searchName}
+        setSearchName={(value: string) => setSearchName(value)}
+        setSelectedPersonSlug={setSelectedPersonSlug}
+        findSelectedPerson={findSelectedPerson}
+      />
     </main>
   );
 };
