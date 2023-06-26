@@ -1,14 +1,52 @@
-import React from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { debounce } from 'lodash';
 import './App.scss';
+import { Autocomplete } from './components/Autocomplete';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+type Props = {
+  delay: number;
+};
+
+export const App: React.FC<Props> = ({ delay = 1000 }) => {
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [showList, setShowList] = useState(true);
+  const [onSelected, setOnSelected] = useState('No selected person');
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, delay),
+    [],
+  );
+
+  const getVisiblePeople = () => {
+    return peopleFromServer
+      .filter(person => person.name.toLocaleLowerCase()
+        .includes(appliedQuery.toLocaleLowerCase()));
+  };
+
+  const visiplePeople = useMemo(
+    getVisiblePeople,
+    [peopleFromServer, appliedQuery],
+  );
+
+  const handlePersonSelect = (person: Person) => {
+    setOnSelected(`${person.name} (${person.born} = ${person.died})`);
+    setShowList(false);
+    setQuery(person.name);
+  };
+
+  const handleInputChange = (inputValue: string) => {
+    setQuery(inputValue);
+    applyQuery(inputValue);
+    setShowList(true);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {onSelected}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +55,17 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={e => handleInputChange(e.target.value)}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        {showList && (
+          <Autocomplete
+            people={visiplePeople}
+            onPersonSelect={handlePersonSelect}
+          />
+        )}
       </div>
     </main>
   );
