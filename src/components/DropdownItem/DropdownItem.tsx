@@ -4,16 +4,16 @@ import { Person } from '../../types/Person';
 
 type Props = {
   person: Person,
-  onSelected: (person: Person) => void
+  selectPerson: (person: Person) => void
 };
 
 export const DropdownItem: React.FC<Props> = React.memo(
-  ({ person, onSelected }) => {
+  ({ person, selectPerson }) => {
     const { sex, name } = person;
 
     const handleClick = (event: React.MouseEvent) => {
       event.preventDefault();
-      onSelected(person);
+      selectPerson(person);
     };
 
     return (

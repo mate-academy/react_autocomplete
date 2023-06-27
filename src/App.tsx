@@ -3,34 +3,22 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Dropdown } from './components/Dropdown/Dropdown';
 import { Person } from './types/Person';
+import { debounce } from './helpers/debounce';
 
-const debounce = (callback: (state: string) => void, delay: number) => {
-  let timeoutId: number;
-
-  return (...args: string[]) => {
-    clearTimeout(timeoutId);
-
-    timeoutId = setTimeout(callback, delay, ...args);
-  };
-};
-
-type Props = {
-  delay?: number,
-};
-
-export const App: React.FC<Props> = ({ delay = 1000 }) => {
+export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<null | Person>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [isApplied, setIsApplied] = useState(false);
+  const [isSuggestionsActive, setIsSuggestionsActive] = useState(false);
 
-  const isDropdownVisible = isApplied && appliedQuery;
+  const delay = 1000;
+  const isDropdownVisible = isSuggestionsActive && appliedQuery;
 
-  const onSelected = useCallback((person: Person) => {
+  const selectPerson = useCallback((person: Person) => {
     setSelectedPerson(person);
     setQuery('');
     setAppliedQuery('');
-    setIsApplied(false);
+    setIsSuggestionsActive(false);
   }, [selectedPerson]);
 
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
@@ -38,13 +26,13 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
-    setIsApplied(false);
+    setIsSuggestionsActive(false);
   };
 
   const visiblePersons = useMemo(() => {
     const preparedQuery = appliedQuery.toLowerCase();
 
-    setIsApplied(true);
+    setIsSuggestionsActive(true);
 
     return peopleFromServer.filter(person => {
       const preparedPersonName = person.name.toLowerCase();
@@ -75,7 +63,7 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
         {isDropdownVisible && (
           <Dropdown
             persons={visiblePersons}
-            onSelected={onSelected}
+            selectPerson={selectPerson}
           />
         )}
 

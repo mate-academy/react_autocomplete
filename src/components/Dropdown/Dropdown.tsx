@@ -4,11 +4,11 @@ import { DropdownItem } from '../DropdownItem/DropdownItem';
 
 type Props = {
   persons: Person[],
-  onSelected: (person: Person) => void
+  selectPerson: (person: Person) => void
 };
 
 export const Dropdown: React.FC<Props> = React.memo(
-  ({ persons, onSelected }) => {
+  ({ persons, selectPerson }) => {
     return (
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
@@ -17,7 +17,7 @@ export const Dropdown: React.FC<Props> = React.memo(
               persons.map(person => (
                 <DropdownItem
                   person={person}
-                  onSelected={onSelected}
+                  selectPerson={selectPerson}
                   key={person.slug}
                 />
               )))
