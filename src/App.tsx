@@ -1,56 +1,92 @@
-import React from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import './App.scss';
+import classNames from 'classnames';
+import debounce from 'lodash/debounce';
 import { peopleFromServer } from './data/people';
+import { List } from './components/List';
+import { Person } from './types/Person';
+
+const findPersonBySlug = (slug: string): Person | null => {
+  return peopleFromServer.find(person => person.slug === slug) || null;
+};
+
+const getPeopleByQuery = (people: Person[], query: string): Person[] => {
+  const normQuery = query.trim().toLowerCase();
+
+  return people.filter(person => person.name.toLowerCase().includes(normQuery));
+};
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [person, setPerson] = useState('');
+  const [filteredPeople, setFilteredPeople] = useState<Person[]>([]);
+  const [showNoSuggestions, setShowNoSuggestions] = useState(false);
+
+  const selectedPerson = useMemo(() => findPersonBySlug(person)
+    || null, [person]);
+
+  const debouncedFilterPeople = useCallback(
+    debounce((input: string) => {
+      const filtered = getPeopleByQuery(peopleFromServer, input);
+
+      setFilteredPeople(filtered);
+      setShowNoSuggestions(filtered.length === 0);
+    }, 300),
+    [],
+  );
+
+  const handleSearchChange = useCallback((value: string) => {
+    setQuery(value);
+
+    if (selectedPerson && selectedPerson.name
+      .toLowerCase() !== value.toLowerCase()) {
+      setPerson('');
+    }
+
+    debouncedFilterPeople(value);
+  }, [selectedPerson, debouncedFilterPeople]);
+
+  const handleSelectedPeople = (
+    event: React.MouseEvent,
+    personSlug: string,
+  ): void => {
+    event.preventDefault();
+    setPerson(personSlug);
+    const selected = findPersonBySlug(personSlug) || null;
+
+    if (selected) {
+      setQuery(selected.name);
+    }
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
 
-      <div className="dropdown is-active">
+      <div className={classNames('dropdown', {
+        'is-active': query && !person,
+      })}
+      >
         <div className="dropdown-trigger">
           <input
+            value={query}
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            onChange={(event) => handleSearchChange(event.target.value)}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        {query && !showNoSuggestions && (
+          <List
+            people={filteredPeople}
+            onSelected={handleSelectedPeople}
+          />
+        )}
       </div>
     </main>
   );
