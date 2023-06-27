@@ -9,6 +9,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [querySearch, setQuerysearch] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(false);
 
   const applyQuery = useCallback(
     debounce(setQuerysearch, 1000),
@@ -18,27 +19,30 @@ export const App: React.FC = () => {
   const handleQuery = (event: { target: { value: string } }) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setIsSuggestionsVisible(false);
   };
 
-  const visiblePeople = useMemo(
-    () => {
-      if (querySearch) {
-        const normalizedQuery = querySearch.toLowerCase();
-
-        return peopleFromServer.filter(
-          person => person.name.toLowerCase().includes(normalizedQuery),
-        );
-      }
-
+  const visiblePeople = useMemo(() => {
+    setIsSuggestionsVisible(true);
+    if (!querySearch) {
       return [];
-    }, [querySearch],
-  );
+    }
+
+    const normalizedQuery = querySearch.toLowerCase();
+
+    return peopleFromServer.filter(
+      person => person.name.toLowerCase().includes(normalizedQuery),
+    );
+  }, [querySearch]);
 
   const handlePerson = (person: Person): void => {
     setSelectedPerson(person);
     setQuerysearch('');
     setQuery(person.name);
+    setIsSuggestionsVisible(false);
   };
+
+  const isDropListVisible = querySearch && isSuggestionsVisible;
 
   return (
     <main className="section">
@@ -59,7 +63,7 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {querySearch && (
+        {isDropListVisible && (
           <DropList
             onSelected={handlePerson}
             visiblePeople={visiblePeople}
