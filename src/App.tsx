@@ -2,7 +2,6 @@ import {
   useMemo,
   useState,
   useCallback,
-  useEffect,
 } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
@@ -27,11 +26,7 @@ export const App = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  useEffect(() => {
-    if (!query.trim()) {
-      setShowSuggestions(false);
-    }
-  }, [query]);
+  const isSuggestionsVisible = !!query.trim() && showSuggestions;
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, 1000),
@@ -57,10 +52,11 @@ export const App = () => {
 
     return peopleFromServer.filter(
       person => {
-        const normalizedPersonName = person.name.toLowerCase().trim()
-      
-        return normalizedPersonName.includes(appliedQuery.toLowerCase())
-     });
+        const normalizedPersonName = person.name.toLowerCase().trim();
+
+        return normalizedPersonName.includes(appliedQuery.toLowerCase());
+      },
+    );
   }, [peopleFromServer, appliedQuery]);
 
   return (
@@ -78,11 +74,11 @@ export const App = () => {
             placeholder="Enter a part of the name"
             className="input"
             value={query}
-            onChange={handleQueryOnChange}
+            onChange={handleQueryChange}
           />
         </div>
 
-        {showSuggestions && (
+        {isSuggestionsVisible && (
           <DropdownMenu
             people={visiblePeople}
             onSelected={onSelected}

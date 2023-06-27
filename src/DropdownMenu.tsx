@@ -1,4 +1,5 @@
 import React from 'react';
+import cn from 'classnames';
 import { Person } from './types/Person';
 
 interface Props {
@@ -17,15 +18,19 @@ export const DropdownMenu: React.FC<Props> = ({
           ? (
             people.map((person) => (
               <div className="dropdown-item" key={person.slug}>
-                {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events */}
-                <p
-                  className={person.sex === 'm'
-                    ? 'has-text-link'
-                    : 'has-text-danger'}
-                  onClick={() => onSelected(person)}
+                <a
+                  href="/"
+                  className={cn('dropdown-item', {
+                    'has-text-link': person.sex === 'm',
+                    'has-text-danger': person.sex === 'f',
+                  })}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    onSelected(person);
+                  }}
                 >
                   {person.name}
-                </p>
+                </a>
               </div>
             ))
           ) : (
