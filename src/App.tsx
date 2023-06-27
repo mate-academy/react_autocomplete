@@ -1,14 +1,52 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Dropdown } from './components/Dropdown/Dropdown';
+import { Person } from './types/Person';
+import { debounce } from './helpers/debounce';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [selectedPerson, setSelectedPerson] = useState<null | Person>(null);
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isSuggestionsActive, setIsSuggestionsActive] = useState(false);
+
+  const delay = 1000;
+  const isDropdownVisible = isSuggestionsActive && appliedQuery;
+
+  const selectPerson = useCallback((person: Person) => {
+    setSelectedPerson(person);
+    setQuery('');
+    setAppliedQuery('');
+    setIsSuggestionsActive(false);
+  }, [selectedPerson]);
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+    setIsSuggestionsActive(false);
+  };
+
+  const visiblePersons = useMemo(() => {
+    const preparedQuery = appliedQuery.toLowerCase();
+
+    setIsSuggestionsActive(true);
+
+    return peopleFromServer.filter(person => {
+      const preparedPersonName = person.name.toLowerCase();
+
+      return preparedPersonName.includes(preparedQuery);
+    });
+  }, [peopleFromServer, appliedQuery]);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+          : 'No matching suggestions'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +55,18 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={handleChange}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
+        {isDropdownVisible && (
+          <Dropdown
+            persons={visiblePersons}
+            selectPerson={selectPerson}
+          />
+        )}
 
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
       </div>
     </main>
   );
