@@ -1,64 +1,29 @@
-import React, { useContext } from 'react';
-import classNames from 'classnames';
-import { AppContext } from '../AppContext';
+import React from 'react';
+import { ListItem } from './ListItem';
+import { Person } from '../types/Person';
 
-export const List = React.memo(
-  () => {
-    const {
-      personName,
-      setPersonName,
-      applyQuery,
-      filteredPeople,
-      handleClick,
-    } = useContext(AppContext);
+interface Props {
+  people: Person[],
+  onSelected: (event: React.MouseEvent, personSlug: string) => void;
+}
 
-    return (
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="search"
-            placeholder="Enter a part of the name"
-            className="input"
-            value={personName}
-            onChange={(event) => {
-              setPersonName(event.target.value);
-              applyQuery(event.target.value);
-            }}
-          />
-        </div>
-
-        {personName && (
-          <div className="dropdown-menu" role="menu">
-            <div className="dropdown-content">
-              {filteredPeople.length > 0 && (
-                filteredPeople.map(person => (
-                  <button
-                    key={person.slug}
-                    type="button"
-                    className="dropdown-item button-custom"
-                    onClick={() => {
-                      handleClick(`${person.name} (${person.born} - ${person.died})`);
-                    }}
-                  >
-                    <p
-                      className={classNames('has-text-link', {
-                        'has-text-danger': person.sex === 'f',
-                      })}
-                    >
-                      {person.name}
-                    </p>
-                  </button>
-                ))
-              )}
-
-              {!filteredPeople.length && (
-                <p>No matching suggestions</p>
-              )}
+export const List: React.FC<Props> = ({ people, onSelected }) => {
+  return (
+    <div className="dropdown-menu" role="menu">
+      <div className="dropdown-content">
+        { people.length > 0
+          ? people.map(person => (
+            <div
+              className="dropdown-item"
+              key={person.slug}
+            >
+              <ListItem
+                person={person}
+                onSelected={onSelected}
+              />
             </div>
-          </div>
-        )}
-
+          )) : 'No matching suggestions'}
       </div>
-    );
-  },
-);
+    </div>
+  );
+};
