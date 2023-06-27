@@ -5,13 +5,13 @@ import { peopleFromServer } from './data/people';
 import { DropdownMenu } from './components/DropdownMenu';
 import { Person } from './types/Person';
 
-const debounce = <T extends (...args: any[]) => void>(
-  f: T, delay: number) => {
-  let timerID: NodeJS.Timeout;
+const debounce = <T extends (...args: never[]) => void>
+(func: T, delay: number) => {
+  let timerID: number;
 
-  return (...args: Parameters<T>) => {
+  return (searchQuery: string) => {
     clearTimeout(timerID);
-    timerID = setTimeout(() => f(...args), delay);
+    timerID = setTimeout(func, delay, searchQuery);
   };
 };
 
@@ -19,7 +19,6 @@ export const App: React.FC = () => {
   const [search, setSearch] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [isVisibleDropdown, setIsVisibleDropdown] = useState(false);
   const [isVisibleSuggestions, setIsVisibleSuggestions] = useState(false);
 
   const applySearch = useCallback(
@@ -42,17 +41,16 @@ export const App: React.FC = () => {
   const handleSelect = (person: Person) => {
     setSelectedPerson(person);
     setSearch(person.name);
-    setIsVisibleDropdown(false);
+    setIsVisibleSuggestions(false);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsVisibleSuggestions(false);
-    setIsVisibleDropdown(event.target.value !== '');
     setSearch(event.target.value);
     applySearch(event.target.value);
   };
 
-  const isVisibleMenu = isVisibleDropdown && isVisibleSuggestions;
+  const isVisibleMenu = isVisibleSuggestions && appliedSearch;
 
   return (
     <main className="section">
@@ -64,7 +62,7 @@ export const App: React.FC = () => {
         ) : (<h1 className="title">No selected person</h1>)}
 
       <div className={cn('dropdown', {
-        'is-active': isVisibleDropdown,
+        'is-active': isVisibleSuggestions,
       })}
       >
         <div className="dropdown-trigger">
