@@ -12,14 +12,14 @@ export const DropdownList: React.FC<Props> = React.memo(
     return (
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {people.length !== 0
+          {people.length
             ? people.map(person => (
               <DropdownItem
                 key={person.slug}
                 handlePersonSelect={handlePersonSelect}
                 person={person}
               />
-            )) : 'No selected person'}
+            )) : 'No matching suggestions'}
         </div>
       </div>
     );

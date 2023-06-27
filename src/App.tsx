@@ -21,7 +21,6 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [isVisibleDropdown, setIsVisibleDropdown] = useState(false);
   const [isVisibleSuggestion, setIsVisibleSuggestion] = useState(false);
 
   const applyQuery = useCallback(
@@ -30,9 +29,13 @@ export const App: React.FC = () => {
   );
 
   const visiblePeople = useMemo(() => {
-    return peopleFromServer.filter(person => {
-      setIsVisibleSuggestion(true);
+    if (!appliedQuery) {
+      return [];
+    }
 
+    setIsVisibleSuggestion(true);
+
+    return peopleFromServer.filter(person => {
       const nameNormalize = person.name.toLowerCase();
       const searchQueryNormalize = appliedQuery.toLowerCase().trim();
 
@@ -42,7 +45,7 @@ export const App: React.FC = () => {
 
   const handlePersonSelect = (person: Person) => {
     setSelectedPerson(person);
-    setIsVisibleDropdown(false);
+    setIsVisibleSuggestion(false);
     setSearchQuery('');
     setAppliedQuery('');
   };
@@ -52,7 +55,6 @@ export const App: React.FC = () => {
   ) => {
     const inputValue = event.target.value;
 
-    setIsVisibleDropdown(inputValue !== '');
     setSearchQuery(inputValue);
     applyQuery(inputValue);
     setIsVisibleSuggestion(false);
@@ -63,12 +65,12 @@ export const App: React.FC = () => {
       <h1 className="title">
         {selectedPerson
           ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
-          : 'No matching suggestions'}
+          : 'No selected person'}
       </h1>
 
       <div
         className={cn('dropdown', {
-          'is-active': isVisibleDropdown,
+          'is-active': isVisibleSuggestion,
         })}
       >
         <div className="dropdown-trigger">
@@ -81,7 +83,7 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {isVisibleSuggestion && isVisibleDropdown && (
+        {isVisibleSuggestion && (
           <DropdownList
             handlePersonSelect={handlePersonSelect}
             people={visiblePeople}
