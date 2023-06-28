@@ -27,7 +27,19 @@ export const App: React.FC = () => {
     return peopleFromServer.filter(
       person => person.name.toLowerCase().includes(query.toLowerCase()),
     );
-  }, [peopleFromServer, appliedQuery]);
+  }, [query]);
+
+  const changeInInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
+
+  const selectPerson = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    person: Person) => {
+    event.preventDefault();
+    setSelected(person);
+    setAppliedQuery('');
+  };
 
   return (
     <main className="section">
@@ -47,8 +59,7 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={event => {
-              setQuery(event.target.value);
-              applyQuery(event.target.value);
+              changeInInput(event);
             }}
           />
         </div>
@@ -61,12 +72,10 @@ export const App: React.FC = () => {
                   key={person.name}
                   className="dropdown-item"
                 >
-                  <a
-                    href="/"
+                  <button
+                    type="submit"
                     onClick={(event) => {
-                      event.preventDefault();
-                      setSelected(person);
-                      setAppliedQuery('');
+                      selectPerson(event, person);
                     }}
                   >
                     <p
@@ -76,7 +85,7 @@ export const App: React.FC = () => {
                     >
                       {person.name}
                     </p>
-                  </a>
+                  </button>
                 </div>
               ))
               : (
