@@ -1,14 +1,51 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { DropDownMenu } from './components/DropDownMenu';
+import { debounce } from './helpers';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [selectedUserSlug, setSelectedUserSlug] = useState('');
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 1000),
+    [],
+  );
+
+  const visiblePeople = useMemo(() => {
+    return peopleFromServer.filter(person => {
+      return person.name
+        .toLowerCase()
+        .includes(appliedQuery
+          .toLowerCase().trim());
+    });
+  }, [peopleFromServer, appliedQuery]);
+
+  const selectedUser = useMemo(() => {
+    return peopleFromServer.find(user => (
+      user.slug === selectedUserSlug
+    )) || null;
+  }, [selectedUserSlug]);
+
+  const handleUserSelect = (userSlug: string, username: string) => {
+    setSelectedUserSlug(userSlug);
+    setQuery(username);
+    setAppliedQuery('');
+  };
+
+  const handleQueryChange = (value: string) => {
+    setAppliedQuery('');
+    setQuery(value);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedUser
+          ? `${selectedUser.name} (${selectedUser.born} = ${selectedUser.died})`
+          : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +54,20 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={(event) => {
+              applyQuery(event.target.value);
+              handleQueryChange(event.target.value);
+            }}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        {appliedQuery && (
+          <DropDownMenu
+            persons={visiblePeople}
+            onSelected={handleUserSelect}
+          />
+        )}
       </div>
     </main>
   );
