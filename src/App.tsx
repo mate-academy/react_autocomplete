@@ -74,7 +74,7 @@ export const App: React.FC = () => {
           searchQuery={searchQuery}
           onChange={onChange}
           onApplyChange={onApplyChange}
-          currentDelay={500}
+          currentDelay={700}
         />
 
         <PeopleList

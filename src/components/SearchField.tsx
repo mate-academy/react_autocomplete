@@ -26,6 +26,11 @@ export const SearchField: React.FC <Props> = ({
     debounce(onApplyChange, currentDelay), [],
   );
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(event.target.value);
+    applyQuery(event.target.value);
+  };
+
   return (
     <div className="dropdown-trigger">
       <input
@@ -33,10 +38,7 @@ export const SearchField: React.FC <Props> = ({
         placeholder="Enter a part of the name"
         className="input"
         value={searchQuery}
-        onChange={(event) => {
-          onChange(event.target.value);
-          applyQuery(event.target.value);
-        }}
+        onChange={handleChange}
       />
     </div>
   );
