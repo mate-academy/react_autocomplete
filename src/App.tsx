@@ -9,11 +9,11 @@ const debounce = <T extends (...args: never[]) => void>(
   func: T,
   delay: number,
 ): ((...args: Parameters<T>) => void) => {
-  let timerId: NodeJS.Timeout;
+  let timerId: number;
 
   return (...args: Parameters<T>) => {
     clearTimeout(timerId);
-    timerId = setTimeout(func, delay, ...args);
+    timerId = window.setTimeout(func, delay, ...args);
   };
 };
 
