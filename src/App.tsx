@@ -3,24 +3,13 @@ import './App.scss';
 import cn from 'classnames';
 import { peopleFromServer } from './data/people';
 import { DropdownMenu } from './components/DropdownMenu/DropdownMenu';
-
-const debounce = (
-  f: React.Dispatch<React.SetStateAction<string>>,
-  delay: number,
-) => {
-  let timerId: number;
-
-  return (...args: string[]) => {
-    clearTimeout(timerId);
-    timerId = setTimeout(f, delay, ...args);
-  };
-};
+import { debounce } from './helpers';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [personName, setPersonName] = useState<string | null>(null);
-  const [dropdownRegulator, setDropdownRegulator] = useState(false);
+  const [isDropdownActive, setIsDropdownActive] = useState(false);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, 1000),
@@ -31,7 +20,7 @@ export const App: React.FC = () => {
     .find(user => user.name === personName);
 
   const matchedPersons = useMemo(() => {
-    setDropdownRegulator(true);
+    setIsDropdownActive(true);
 
     return peopleFromServer.filter(person => {
       const queryNormalize = appliedQuery.toLowerCase();
@@ -47,13 +36,13 @@ export const App: React.FC = () => {
 
     setPersonName(currentName);
     setQuery(currentName);
-    setDropdownRegulator(false);
+    setIsDropdownActive(false);
   };
 
   const handleQueryChange = (event: React.FormEvent<HTMLInputElement>) => {
     setQuery(event.currentTarget.value);
     applyQuery(event.currentTarget.value);
-    setDropdownRegulator(false);
+    setIsDropdownActive(false);
   };
 
   return (
@@ -81,10 +70,12 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {
-          // eslint-disable-next-line max-len
-          dropdownRegulator && <DropdownMenu persons={matchedPersons} onClick={handlePersonClick} />
-        }
+        {isDropdownActive && (
+          <DropdownMenu
+            persons={matchedPersons}
+            onClick={handlePersonClick}
+          />
+        )}
       </div>
     </main>
   );
