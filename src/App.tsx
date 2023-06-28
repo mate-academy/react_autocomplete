@@ -38,6 +38,10 @@ export const App: React.FC = () => {
     applyQuery(event.target.value);
     setSearchQuery(event.target.value);
     setIsSuggestions(event.target.value !== '');
+
+    if (isSuggestions) {
+      setSelectedPerson(null);
+    }
   };
 
   const handlClearButton = () => {
