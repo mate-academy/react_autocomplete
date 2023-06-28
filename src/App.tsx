@@ -66,7 +66,7 @@ export const App: React.FC = () => {
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {visiblePeople.length >= 1
+            {visiblePeople.length
               ? visiblePeople.map(person => (
                 <div
                   key={person.name}
