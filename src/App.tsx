@@ -1,56 +1,85 @@
-import React from 'react';
 import './App.scss';
+import React, { useCallback, useMemo, useState } from 'react';
+import cn from 'classnames';
+import { Person } from './types/Person';
 import { peopleFromServer } from './data/people';
+import { Dropdown } from './components/DropdownList';
+import { debounce } from './debounce';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [people] = useState(peopleFromServer);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isSuggestions, setIsSuggestions] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>();
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 1000),
+    [],
+  );
+
+  const { name, born, died } = selectedPerson ?? {};
+
+  const preparedSearchQuery = searchQuery.toLowerCase().trim();
+
+  const visiblePeople = useMemo(() => {
+    return people.filter(
+      person => person.name.toLowerCase().includes(preparedSearchQuery),
+    );
+  }, [appliedQuery, people]);
+
+  const onSelectPerson = (person: Person) => {
+    setSelectedPerson(person);
+    setSearchQuery(person.name);
+    setIsSuggestions(false);
+  };
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    applyQuery(event.target.value);
+    setSearchQuery(event.target.value);
+    setIsSuggestions(event.target.value !== '');
+  };
+
+  const handlClearButton = () => {
+    setSearchQuery('');
+    setIsSuggestions(false);
+    setSelectedPerson(null);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${name} (${born} - ${died})`
+          : 'No selected person'}
+
       </h1>
 
-      <div className="dropdown is-active">
+      <div className={cn('dropdown',
+        { 'is-active': isSuggestions })}
+      >
         <div className="dropdown-trigger">
           <input
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={searchQuery}
+            onChange={handleSearch}
           />
+          <span className="icon">
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+            <button
+              type="button"
+              className="delete"
+              onClick={handlClearButton}
+            />
+          </span>
+
         </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        <Dropdown
+          selectPerson={onSelectPerson}
+          people={visiblePeople}
+        />
       </div>
     </main>
   );
