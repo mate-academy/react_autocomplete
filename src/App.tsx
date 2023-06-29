@@ -17,6 +17,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selected, setSelected] = useState<Person>();
+  const [showPeople, setshowPeople] = useState(false);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, 1000),
@@ -27,11 +28,12 @@ export const App: React.FC = () => {
     return peopleFromServer.filter(
       person => person.name.toLowerCase().includes(query.toLowerCase()),
     );
-  }, [query]);
+  }, [appliedQuery]);
 
   const changeInInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setshowPeople(true);
   };
 
   const selectPerson = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -39,18 +41,24 @@ export const App: React.FC = () => {
     event.preventDefault();
     setSelected(person);
     setAppliedQuery('');
+    setQuery(person.name);
+    setshowPeople(false);
+  };
+
+  const handleInputFocus = () => {
+    setshowPeople(true);
   };
 
   return (
     <main className="section">
       <h1 className="title">
         {selected
-          ? `${selected.name} (${selected.born} = ${selected.died})`
+          ? `${selected.name} (${selected.born} - ${selected.died})`
           : 'No selected person'}
       </h1>
 
       <div
-        className={appliedQuery ? 'dropdown is-active' : 'dropdown'}
+        className={showPeople ? 'dropdown is-active' : 'dropdown'}
       >
         <div className="dropdown-trigger">
           <input
@@ -61,6 +69,7 @@ export const App: React.FC = () => {
             onChange={event => {
               changeInInput(event);
             }}
+            onFocus={handleInputFocus}
           />
         </div>
 
