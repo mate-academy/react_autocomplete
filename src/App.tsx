@@ -30,13 +30,14 @@ export const App: React.FC = () => {
     );
   }, [appliedQuery]);
 
-  const changeInInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
     setshowPeople(true);
   };
 
-  const selectPerson = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  const handleSelectPerson
+  = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     person: Person) => {
     event.preventDefault();
     setSelected(person);
@@ -67,7 +68,7 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={event => {
-              changeInInput(event);
+              handleInputChange(event);
             }}
             onFocus={handleInputFocus}
           />
@@ -84,7 +85,7 @@ export const App: React.FC = () => {
                   <button
                     type="submit"
                     onClick={(event) => {
-                      selectPerson(event, person);
+                      handleSelectPerson(event, person);
                     }}
                   >
                     <p
