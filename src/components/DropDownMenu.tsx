@@ -3,17 +3,26 @@ import { Person } from '../types/Person';
 
 type Props = {
   persons: Person[]
-  onSelected: (slug: string, name: string) => void
+  onPersonSelect: (slug: string, name: string) => void
 };
 
 export const DropDownMenu: React.FC<Props> = ({
   persons,
-  onSelected,
+  onPersonSelect,
 }) => {
+  const handleClickOnPerson = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    slug: string,
+    name: string,
+  ) => {
+    event.preventDefault();
+    onPersonSelect(slug, name);
+  };
+
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
-        {persons.length === 0
+        {!persons.length
           ? (
             <div className="dropdown-item">
               <p>
@@ -33,10 +42,9 @@ export const DropDownMenu: React.FC<Props> = ({
                     'has-text-link': person.sex === 'm',
                     'has-text-danger': person.sex === 'f',
                   })}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    onSelected(person.slug, person.name);
-                  }}
+                  onClick={(event) => (
+                    handleClickOnPerson(event, person.slug, person.name)
+                  )}
                 >
                   {person.name}
                 </a>

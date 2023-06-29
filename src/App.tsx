@@ -16,10 +16,10 @@ export const App: React.FC = () => {
 
   const visiblePeople = useMemo(() => {
     return peopleFromServer.filter(person => {
-      return person.name
-        .toLowerCase()
-        .includes(appliedQuery
-          .toLowerCase().trim());
+      const name = person.name.toLowerCase();
+      const searchedName = appliedQuery.toLowerCase().trim();
+
+      return name.includes(searchedName);
     });
   }, [peopleFromServer, appliedQuery]);
 
@@ -35,15 +35,16 @@ export const App: React.FC = () => {
     setAppliedQuery('');
   };
 
-  const handleQueryChange = (value: string) => {
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    applyQuery(event.target.value);
     setAppliedQuery('');
-    setQuery(value);
+    setQuery(event.target.value);
   };
 
   return (
     <main className="section">
       <h1 className="title">
-        {selectedUser
+        {selectedUser?.name === query
           ? `${selectedUser.name} (${selectedUser.born} = ${selectedUser.died})`
           : 'No selected person'}
       </h1>
@@ -55,17 +56,14 @@ export const App: React.FC = () => {
             placeholder="Enter a part of the name"
             className="input"
             value={query}
-            onChange={(event) => {
-              applyQuery(event.target.value);
-              handleQueryChange(event.target.value);
-            }}
+            onChange={handleQueryChange}
           />
         </div>
 
         {appliedQuery && (
           <DropDownMenu
             persons={visiblePeople}
-            onSelected={handleUserSelect}
+            onPersonSelect={handleUserSelect}
           />
         )}
       </div>
