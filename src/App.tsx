@@ -16,13 +16,13 @@ const debounce = <T extends (...args: never[]) => void>
 };
 
 export const App: React.FC = () => {
-  const [search, setSearch] = useState('');
-  const [appliedSearch, setAppliedSearch] = useState('');
+  const [searchQuery, setsearchQuery] = useState('');
+  const [appliedSearchQuery, setAppliedSearchQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isVisibleSuggestions, setIsVisibleSuggestions] = useState(false);
 
   const applySearch = useCallback(
-    debounce(setAppliedSearch, 1000),
+    debounce(setAppliedSearchQuery, 1000),
     [],
   );
 
@@ -30,27 +30,27 @@ export const App: React.FC = () => {
     setIsVisibleSuggestions(true);
 
     return peopleFromServer.filter(person => (
-      person.name.toLowerCase().includes(appliedSearch.toLowerCase())));
+      person.name.toLowerCase().includes(appliedSearchQuery.toLowerCase())));
   };
 
   const filteredPeople = useMemo(
     getFilteredPeople,
-    [peopleFromServer, appliedSearch],
+    [peopleFromServer, appliedSearchQuery],
   );
 
   const handleSelect = (person: Person) => {
     setSelectedPerson(person);
-    setSearch(person.name);
+    setsearchQuery(person.name);
     setIsVisibleSuggestions(false);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsVisibleSuggestions(false);
-    setSearch(event.target.value);
+    setsearchQuery(event.target.value);
     applySearch(event.target.value);
   };
 
-  const isVisibleMenu = isVisibleSuggestions && appliedSearch;
+  const isVisibleMenu = isVisibleSuggestions && appliedSearchQuery;
 
   return (
     <main className="section">
@@ -70,7 +70,7 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            value={search}
+            value={searchQuery}
             onChange={handleInputChange}
           />
         </div>
