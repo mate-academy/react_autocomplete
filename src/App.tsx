@@ -14,8 +14,7 @@ import './App.scss';
 export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [query, setQuery] = useState('');
-  const [people] = useState('');
-  const [selected, setSelected] = useState<Person | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const applyQuery = useCallback(
     debounce(
@@ -26,26 +25,26 @@ export const App: React.FC = () => {
   );
 
   const selectPerson = useCallback((person) => {
-    setSelected(person);
-  }, [selected]);
+    setSelectedPerson(person);
+  }, [selectedPerson]);
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person => (
       person.name.toLowerCase().includes(appliedQuery.toLowerCase())
     ));
-  }, [people, appliedQuery]);
+  }, [appliedQuery]);
 
   const handleReset = () => {
     setAppliedQuery('');
     setQuery('');
-    setSelected(null);
+    setSelectedPerson(null);
   };
 
   return (
     <main className="section">
       <h1 className="title">
-        {selected && query
-          ? `${selected.name} (${selected.born} = ${selected.died})`
+        {selectedPerson && query
+          ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
           : 'No selected person'}
       </h1>
 

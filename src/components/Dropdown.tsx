@@ -8,7 +8,7 @@ type Props = {
   appliedQuery: string,
   applyQuery: (query: string) => void,
   filteredPeople: Person[],
-  onSelected: (person: Person) => void,
+  onSelected: (person: Person | null) => void,
   handleReset: () => void,
 };
 
@@ -21,6 +21,19 @@ export const Dropdown: React.FC<Props> = ({
   onSelected,
   handleReset,
 }) => {
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+    if (query === '') {
+      onSelected(null);
+    }
+  };
+
+  const handleSelectPerson = (person: Person) => {
+    onSelected(person);
+    setQuery(person.name);
+  };
+
   return (
     <div className="dropdown is-active">
       <div className="dropdown-trigger">
@@ -29,10 +42,7 @@ export const Dropdown: React.FC<Props> = ({
           placeholder="Enter a part of the name"
           className="input"
           value={query}
-          onChange={event => {
-            setQuery(event.target.value);
-            applyQuery(event.target.value);
-          }}
+          onChange={(event) => handleSearch(event)}
         />
         {query && (
           // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
@@ -55,10 +65,7 @@ export const Dropdown: React.FC<Props> = ({
                     <p
                       key={person.slug}
                       className="has-text-link"
-                      onClick={() => {
-                        onSelected(person);
-                        setQuery(person.name);
-                      }}
+                      onClick={() => handleSelectPerson(person)}
                     >
                       {person.name}
                     </p>
