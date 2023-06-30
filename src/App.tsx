@@ -2,22 +2,13 @@ import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-
-const debounce = (func:React.Dispatch<React.SetStateAction<string>>,
-  delay:number) => {
-  let timerId: number;
-
-  return (...args:string[]) => {
-    clearTimeout(timerId);
-    timerId = setTimeout(func, delay, ...args);
-  };
-};
+import { debounce } from './debounce';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [selected, setSelected] = useState<Person>();
-  const [showPeople, setshowPeople] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person>();
+  const [isDropDownActive, setIsDropDownActive] = useState(false);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, 1000),
@@ -33,33 +24,39 @@ export const App: React.FC = () => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
-    setshowPeople(true);
+    setIsDropDownActive(true);
   };
 
-  const handleSelectPerson
-  = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    person: Person) => {
+  const handleSelectPerson = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    person: Person,
+  ) => {
     event.preventDefault();
-    setSelected(person);
+    setSelectedPerson(person);
     setAppliedQuery('');
     setQuery(person.name);
-    setshowPeople(false);
+    setIsDropDownActive(false);
   };
 
   const handleInputFocus = () => {
-    setshowPeople(true);
+    setIsDropDownActive(true);
+  };
+
+  const handleDropdownBlur = () => {
+    setIsDropDownActive(false);
   };
 
   return (
     <main className="section">
       <h1 className="title">
-        {selected
-          ? `${selected.name} (${selected.born} - ${selected.died})`
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
           : 'No selected person'}
       </h1>
 
       <div
-        className={showPeople ? 'dropdown is-active' : 'dropdown'}
+        className={isDropDownActive ? 'dropdown is-active' : 'dropdown'}
+        onBlur={handleDropdownBlur}
       >
         <div className="dropdown-trigger">
           <input
@@ -74,7 +71,10 @@ export const App: React.FC = () => {
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
+        <div
+          className="dropdown-menu"
+          role="menu"
+        >
           <div className="dropdown-content">
             {visiblePeople.length
               ? visiblePeople.map(person => (
@@ -84,7 +84,7 @@ export const App: React.FC = () => {
                 >
                   <button
                     type="submit"
-                    onClick={(event) => {
+                    onMouseDown={(event) => {
                       handleSelectPerson(event, person);
                     }}
                   >
