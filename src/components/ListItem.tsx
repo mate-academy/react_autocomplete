@@ -3,17 +3,15 @@ import { Person } from '../types/Person';
 
 interface Props {
   person: Person;
-  onSelected: (event: React.MouseEvent, personSlug: string) => void;
+  onPersonNameClick: (event: React.MouseEvent, personSlug: string) => void;
 }
 
-export const ListItem: React.FC <Props> = ({ person, onSelected }) => {
-  return (
-    <a
-      href="#/"
-      className="has-text-link"
-      onClick={(event) => onSelected(event, person.slug)}
-    >
-      {person.name}
-    </a>
-  );
-};
+export const ListItem: React.FC <Props> = ({ person, onPersonNameClick }) => (
+  <a
+    href="#/"
+    className="has-text-link"
+    onClick={(event) => onPersonNameClick(event, person.slug)}
+  >
+    {person.name}
+  </a>
+);

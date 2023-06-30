@@ -10,46 +10,50 @@ const findPersonBySlug = (personSlug: string): Person | null => {
   return peopleFromServer.find(person => person.slug === personSlug) || null;
 };
 
-const getPeopleByQuery = (people: Person[], query: string): Person[] => people
-  .filter(person => {
-    const personName = person.name.toLowerCase();
-
-    return personName.includes(query.toLowerCase());
-  });
+const getPeopleByQuery = (
+  people: Person[],
+  query: string,
+): Person[] => (
+  people.filter(person => (
+    person.name.toLowerCase()
+      .includes(query.toLowerCase())
+  ))
+);
 
 export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPersonSlug, setselectedPersonSlug] = useState('');
+  const [selectedPersonSlug, setSelectedPersonSlug] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
   let selectedPerson = findPersonBySlug(selectedPersonSlug) || null;
 
   const onChange = (value: string) => {
     setSearchQuery(value);
-    if (selectedPerson
-        && selectedPerson.name.toLowerCase() !== value.toLowerCase()) {
-      setselectedPersonSlug('');
+    const isNewSearchQuery = selectedPerson
+      && selectedPerson.name.toLowerCase() !== value.toLowerCase();
+
+    if (isNewSearchQuery) {
+      setSelectedPersonSlug('');
       selectedPerson = null;
     }
   };
 
   const onApplyChange = (value: string) => {
-    if (value !== appliedQuery) {
-      setAppliedQuery(value);
-    }
+    setAppliedQuery(value);
   };
 
   const visiblePersons = useMemo(() => {
-    if (appliedQuery) {
-      return getPeopleByQuery(peopleFromServer, searchQuery);
-    }
-
-    return peopleFromServer;
+    return appliedQuery
+      ? getPeopleByQuery(peopleFromServer, searchQuery)
+      : peopleFromServer;
   }, [appliedQuery]);
 
-  const onSelected = (event: React.MouseEvent, personSlug: string): void => {
+  const onPersonNameClick = (
+    event: React.MouseEvent,
+    personSlug: string,
+  ): void => {
     event.preventDefault();
-    setselectedPersonSlug(personSlug);
+    setSelectedPersonSlug(personSlug);
     const selected = findPersonBySlug(personSlug) || null;
 
     if (selected) {
@@ -79,7 +83,7 @@ export const App: React.FC = () => {
 
         <PeopleList
           people={visiblePersons}
-          onSelected={onSelected}
+          onPersonNameClick={onPersonNameClick}
         />
 
       </div>
