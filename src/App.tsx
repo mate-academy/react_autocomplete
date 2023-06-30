@@ -1,24 +1,25 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import classNames from 'classnames';
 import { debounce } from 'lodash';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [applyQuery, setApplyQuery] = useState('');
-  const [debounceDelay, setDebounceDelay] = useState(1000);
   const [selectedPerson, setSelectedPerson] = useState({
     ...peopleFromServer[0],
     name: 'No selected person',
   });
   const { name, born, died } = selectedPerson;
+  const debounceDelay = 1000;
   const applyedQuery = useCallback(
     debounce(setApplyQuery, debounceDelay),
     [debounceDelay],
   );
 
-  const visiblePeople = useMemo(() => {
+  const visiblePeopleFn = () => {
     if (applyQuery === '') {
       return [];
     }
@@ -37,7 +38,14 @@ export const App: React.FC = () => {
     }
 
     return peoples;
-  }, [peopleFromServer, applyQuery]);
+  };
+
+  const visiblePeople = visiblePeopleFn();
+  const handlerClick = (persone: Person) => {
+    setSelectedPerson(persone);
+    setQuery(persone.name);
+    setApplyQuery('');
+  };
 
   return (
     <main className="section">
@@ -53,7 +61,6 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={e => {
-              setDebounceDelay(1000);
               setQuery(e.target.value);
               applyedQuery(e.target.value);
             }}
@@ -68,11 +75,7 @@ export const App: React.FC = () => {
                 <div
                   key={el.name}
                   className="dropdown-item"
-                  onClick={() => {
-                    setSelectedPerson(el);
-                    setQuery(el.name);
-                    setApplyQuery('');
-                  }}
+                  onClick={() => handlerClick(el)}
                 >
                   <p
                     className={classNames(
