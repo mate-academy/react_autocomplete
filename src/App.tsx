@@ -6,6 +6,7 @@ import { peopleFromServer } from './data/people';
 import { DropdownList } from './components/dropdownList';
 
 export const App: React.FC = React.memo(() => {
+  let timerId = 0;
   const delay = 1000;
   const [isActive, setIsActive] = useState(false);
   const [title, setTitle] = useState('No selected person');
@@ -14,8 +15,6 @@ export const App: React.FC = React.memo(() => {
     .toLowerCase().includes(inputData.toLowerCase()));
 
   const handler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let timerId = 0;
-
     (() => {
       clearTimeout(timerId);
 
