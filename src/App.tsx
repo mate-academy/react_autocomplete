@@ -1,9 +1,9 @@
-import React, { useState, useCallback } from 'react';
-import classNames from 'classnames';
-import { debounce } from 'lodash';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { List } from './components/List';
+import { castomDebounce } from './utils/CastomDebounce';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -14,10 +14,7 @@ export const App: React.FC = () => {
   });
   const { name, born, died } = selectedPerson;
   const debounceDelay = 1000;
-  const applyedQuery = useCallback(
-    debounce(setApplyQuery, debounceDelay),
-    [debounceDelay],
-  );
+  const applyedQuery = castomDebounce(setApplyQuery, debounceDelay);
 
   const visiblePeopleFn = () => {
     if (applyQuery === '') {
@@ -68,28 +65,10 @@ export const App: React.FC = () => {
         </div>
 
         <div className="dropdown-menu" role="menu">
-          {visiblePeople.length !== 0 && (
-            <div className="dropdown-content">
-              {visiblePeople.map(el => (
-                // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-                <div
-                  key={el.name}
-                  className="dropdown-item"
-                  onClick={() => handlerClick(el)}
-                >
-                  <p
-                    className={classNames(
-                      { 'has-text-link': el.sex === 'm' },
-                      { 'has-text-danger': el.sex === 'f' },
-                      { 'has-text-grey-light': el.sex === 'no' },
-                    )}
-                  >
-                    {el.name}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
+          <List
+            visiblePeople={visiblePeople}
+            onClickHandler={handlerClick}
+          />
         </div>
       </div>
     </main>
