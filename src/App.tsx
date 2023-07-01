@@ -11,9 +11,9 @@ const debounce = (
 ) => {
   let timer: number;
 
-  return (...args: any) => {
+  return (arg: string | boolean) => {
     clearTimeout(timer);
-    timer = setTimeout(func, delay, ...args);
+    timer = setTimeout(func, delay, arg);
   };
 };
 
@@ -21,7 +21,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person>();
   const [appliedQuery, setAppliedQuery] = useState('');
   const [query, setQuery] = useState('');
-  const [isActive, setIsActive] = useState(true);
+  const [isActive, setIsActive] = useState(false);
 
   const delay = 1000;
 
@@ -30,8 +30,13 @@ export const App: React.FC = () => {
     [],
   );
 
-  const showDropdown = useCallback(
+  const showDropdownAfterTyping = useCallback(
     debounce(setIsActive, delay),
+    [],
+  );
+
+  const getRidOfDropdown = useCallback(
+    debounce(setIsActive, delay / 4),
     [],
   );
 
@@ -39,7 +44,15 @@ export const App: React.FC = () => {
     setIsActive(true);
   };
 
-  const handleSelected = (person: Person) => {
+  const handleBlur = () => {
+    getRidOfDropdown(false);
+  };
+
+  const handleSelected = (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    person: Person,
+  ) => {
+    e.preventDefault();
     setSelectedPerson(person);
     setAppliedQuery('');
     setIsActive(false);
@@ -48,9 +61,9 @@ export const App: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
-    setIsActive(false);
     applyQuery(e.target.value);
-    showDropdown(true);
+    setIsActive(false);
+    showDropdownAfterTyping(true);
   };
 
   const visiblePeople = useMemo(() => {
@@ -80,6 +93,7 @@ export const App: React.FC = () => {
             value={query}
             onChange={handleChange}
             onFocus={handleFocus}
+            onBlur={handleBlur}
           />
         </div>
 
@@ -93,13 +107,11 @@ export const App: React.FC = () => {
                 >
                   <a
                     href="http//"
-                    className={person.sex === 'm'
-                      ? 'has-text-link'
-                      : 'has-text-danger'}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleSelected(person);
-                    }}
+                    className={classNames({
+                      'has-text-link': person.sex === 'm',
+                      'has-text-danger': person.sex === 'f',
+                    })}
+                    onClick={e => handleSelected(e, person)}
                   >
                     {person.name}
                   </a>
