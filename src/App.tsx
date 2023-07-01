@@ -8,28 +8,29 @@ import { peopleFromServer } from './data/people';
 import { DropdownList } from './components/dropdownList';
 
 export const App: React.FC = React.memo(() => {
+  const delay = 1000;
   const [isActive, setIsActive] = useState(false);
   const [title, setTitle] = useState('No selected person');
-  const [people, setPeople] = useState(peopleFromServer);
   const [inputData, setInputData] = useState('');
+  const people = peopleFromServer.filter(({ name }) => name
+    .toLowerCase().includes(inputData.toLowerCase()));
 
-  const filteredPeople = (string: string) => {
-    setPeople(
-      peopleFromServer.filter((human) => human.name
-        .toLowerCase()
-        .includes(string.toLowerCase())),
-    );
+  const handler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let timerId = 0;
+
+    (() => {
+      clearTimeout(timerId);
+
+      timerId = window.setTimeout(() => {
+        setInputData(e.target.value);
+      }, delay);
+    })();
   };
 
   useEffect(() => {
-    let timerId = 0;
-
-    return () => {
-      clearTimeout(timerId);
-
-      timerId = window.setTimeout(() => filteredPeople(inputData), 1000);
-    };
-  }, [inputData]);
+    setIsActive(false);
+    setInputData('');
+  }, [title]);
 
   return (
     <main className="section">
@@ -41,19 +42,15 @@ export const App: React.FC = React.memo(() => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            value={inputData}
+            defaultValue={inputData}
             onFocus={() => setIsActive(true)}
-            onChange={(e) => setInputData(e.target.value)}
+            onChange={handler}
           />
         </div>
 
         <DropdownList
           people={people}
-          set={{
-            title: setTitle,
-            showList: setIsActive,
-            inputClear: setInputData,
-          }}
+          title={setTitle}
         />
       </div>
     </main>

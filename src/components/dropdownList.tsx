@@ -5,14 +5,10 @@ import { Person } from '../types/Person';
 
 export interface Props {
   people: Person[],
-  set: {
-    title: (arg: string) => void,
-    showList: (arg: boolean) => void
-    inputClear: (arg: string) => void
-  }
+  title: (arg: string) => void,
 }
 
-export const DropdownList: React.FC<Props> = React.memo(({ people, set }) => {
+export const DropdownList: React.FC<Props> = React.memo(({ people, title }) => {
   console.log('render DropdownList');
 
   return (
@@ -35,9 +31,7 @@ export const DropdownList: React.FC<Props> = React.memo(({ people, set }) => {
                 { 'has-text-danger': sex === 'f' })}
               onClick={e => {
                 e.preventDefault();
-                set.title(`${name} (${born} - ${died})`);
-                set.showList(false);
-                set.inputClear('');
+                title(`${name} (${born} - ${died})`);
               }}
             >
               {name}
