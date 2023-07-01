@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import cn from 'classnames';
 import { Person } from '../types/Person';
@@ -9,8 +8,6 @@ export interface Props {
 }
 
 export const DropdownList: React.FC<Props> = React.memo(({ people, title }) => {
-  console.log('render DropdownList');
-
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
