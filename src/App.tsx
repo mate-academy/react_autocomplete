@@ -1,57 +1,61 @@
-import React from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-console */
+import React, { useEffect, useState } from 'react';
 import './App.scss';
-import { peopleFromServer } from './data/people';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+import cn from 'classnames';
+import { peopleFromServer } from './data/people';
+import { DropdownList } from './components/dropdownList';
+
+export const App: React.FC = React.memo(() => {
+  const [isActive, setIsActive] = useState(false);
+  const [title, setTitle] = useState('No selected person');
+  const [people, setPeople] = useState(peopleFromServer);
+  const [inputData, setInputData] = useState('');
+
+  const filteredPeople = (string: string) => {
+    setPeople(
+      peopleFromServer.filter((human) => human.name
+        .toLowerCase()
+        .includes(string.toLowerCase())),
+    );
+  };
+
+  useEffect(() => {
+    let timerId = 0;
+
+    return () => {
+      clearTimeout(timerId);
+
+      timerId = window.setTimeout(() => filteredPeople(inputData), 1000);
+    };
+  }, [inputData]);
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      <h1 className="title">{title}</h1>
 
-      <div className="dropdown is-active">
+      <div className={cn('dropdown', { 'is-active': isActive })}>
         <div className="dropdown-trigger">
           <input
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={inputData}
+            onFocus={() => setIsActive(true)}
+            onChange={(e) => setInputData(e.target.value)}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        <DropdownList
+          people={people}
+          set={{
+            title: setTitle,
+            showList: setIsActive,
+            inputClear: setInputData,
+          }}
+        />
       </div>
     </main>
   );
-};
+});
