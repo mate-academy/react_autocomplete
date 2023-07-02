@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './App.scss';
 
 import cn from 'classnames';
@@ -11,17 +11,16 @@ export const App: React.FC = React.memo(() => {
   const [isActive, setIsActive] = useState(false);
   const [title, setTitle] = useState('No selected person');
   const [inputData, setInputData] = useState('');
-  const people = peopleFromServer.filter(({ name }) => name
-    .toLowerCase().includes(inputData.toLowerCase()));
+  const people = useMemo(() => peopleFromServer.filter(({ name }) => name
+    .toLowerCase().includes(inputData.toLowerCase())),
+  [inputData]);
 
   const handler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    (() => {
-      clearTimeout(timerId);
+    clearTimeout(timerId);
 
-      timerId = window.setTimeout(() => {
-        setInputData(e.target.value);
-      }, delay);
-    })();
+    timerId = window.setTimeout(() => {
+      setInputData(e.target.value);
+    }, delay);
   };
 
   useEffect(() => {
