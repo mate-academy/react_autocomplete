@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import classNames from 'classnames';
-import debounce from 'lodash.debounce';
 
 import { Person } from '../../types/Person';
 
@@ -10,14 +9,25 @@ type Props = {
   delay: number,
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+function debounce(callback: Function, delay: number) {
+  let timerId = 0;
+
+  return (...args: any) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
+
 export const Dropdown: React.FC<Props> = ({
   options,
   onSelected,
   delay,
 }) => {
-  const [people] = useState(options);
   const [isListShowed, setIsListShowed] = useState(false);
-
   const [inputValue, setInputValue] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
@@ -40,10 +50,10 @@ export const Dropdown: React.FC<Props> = ({
   };
 
   const filteredPeople = useMemo(() => {
-    return people.filter(person => {
-      return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
+    return options.filter(option => {
+      return option.name.toLowerCase().includes(appliedQuery.toLowerCase());
     });
-  }, [appliedQuery, people]);
+  }, [appliedQuery, options]);
 
   return (
     <div className="dropdown is-active">
