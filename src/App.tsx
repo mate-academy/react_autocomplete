@@ -3,31 +3,29 @@ import './App.scss';
 import { Person } from './types/Person';
 import { peopleFromServer } from './data/people';
 import { Dropdown } from './components/Dropdown';
+import { PersonInfo } from './components/PersonInfo';
 
-type SetQuaryFunc = (value: string) => void;
+function debounce<T>(callback: (value: T) => void, deley: number) {
+  let timerId: NodeJS.Timeout;
 
-function debonce(func: SetQuaryFunc, deley: number) {
-  let timerId: number;
-
-  return (...args) => {
+  return (...args: [T]) => {
     clearTimeout(timerId);
-    timerId = setTimeout(func, deley, ...args);
+    timerId = setTimeout(callback, deley, ...args);
   };
 }
 
 export const App: React.FC = () => {
-  const [applyedQuery, setApplyedQuery] = useState<string>('');
+  const [appliedQuery, setAppliedQuery] = useState<string>('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(
     null,
   );
-
   const applyQuery = useCallback(
-    debonce(setApplyedQuery, 1000),
+    debounce<string>(setAppliedQuery, 1000),
     [],
   );
 
   const getVisiblePeople = () => {
-    const query = applyedQuery.trim().toLowerCase();
+    const query = appliedQuery.trim().toLowerCase();
 
     return query
       ? peopleFromServer.filter(
@@ -37,9 +35,9 @@ export const App: React.FC = () => {
       ) : null;
   };
 
-  const visiblePersones = useMemo(
+  const visiblePersons = useMemo(
     getVisiblePeople,
-    [applyedQuery],
+    [appliedQuery],
   );
 
   return (
@@ -48,14 +46,15 @@ export const App: React.FC = () => {
       <h1 className="title">
         {(
           selectedPerson
-          && `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`)
+          && <PersonInfo person={selectedPerson} />
+        )
           || 'No selected person'}
       </h1>
 
       <Dropdown
         applyQuery={applyQuery}
         setSelectedPerson={setSelectedPerson}
-        visiblePersones={visiblePersones}
+        visiblePersons={visiblePersons}
       />
     </main>
   );

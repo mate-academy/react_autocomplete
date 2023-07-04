@@ -1,8 +1,6 @@
-import React, {
+import {
   ChangeEvent,
-  Dispatch,
   FC,
-  SetStateAction,
   useState,
 } from 'react';
 
@@ -10,7 +8,7 @@ type SetQuaryFunc = (value: string) => void;
 
 type Props = {
   applyQuery: SetQuaryFunc;
-  setShowSuggestions: Dispatch<SetStateAction<boolean>>;
+  setShowSuggestions: (value: boolean) => void;
 };
 
 export const DropdownInput: FC<Props> = ({
@@ -19,10 +17,10 @@ export const DropdownInput: FC<Props> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
     applyQuery(event.target.value);
-    setShowSuggestions(true);
+    setShowSuggestions(false);
   };
 
   return (

@@ -1,23 +1,21 @@
-import React, { FC, memo, useState } from 'react';
+import { FC, memo, useState } from 'react';
 import classNames from 'classnames';
 import { Person } from '../types/Person';
 import { DropdownMenu } from './DropdownMenu';
 import { DropdownInput } from './DropdownInput';
 
-type SetQuaryFunc = (value: string) => void;
-
 type Props = {
-  applyQuery: SetQuaryFunc;
-  setSelectedPerson: (person: Person) => void
-  visiblePersones: Person[] | null;
+  applyQuery: (value: string) => void;
+  setSelectedPerson: (person: Person) => void;
+  visiblePersons: Person[] | null;
 };
 
 export const Dropdown: FC<Props> = memo(({
   applyQuery,
   setSelectedPerson,
-  visiblePersones,
+  visiblePersons,
 }) => {
-  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(true);
 
   return (
     <div
@@ -31,11 +29,14 @@ export const Dropdown: FC<Props> = memo(({
           setShowSuggestions={setShowSuggestions}
         />
 
-        <DropdownMenu
-          setSelectedPerson={setSelectedPerson}
-          setShowSuggestions={setShowSuggestions}
-          visiblePersones={visiblePersones}
-        />
+        {visiblePersons
+        && (
+          <DropdownMenu
+            setSelectedPerson={setSelectedPerson}
+            setShowSuggestions={setShowSuggestions}
+            visiblePersons={visiblePersons}
+          />
+        )}
       </div>
     </div>
   );
