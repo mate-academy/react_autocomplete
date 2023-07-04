@@ -18,17 +18,16 @@ export const App: React.FC = () => {
       person => person.name.trim().toLowerCase()
         .includes(appliedQuery.trim().toLowerCase()),
     );
-  }, [peopleFromServer, appliedQuery]);
+  }, [appliedQuery]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchInput = event.target.value;
+    const searchInput = event.target.value.trim();
 
     setQuery(searchInput);
     applyQuery(searchInput);
     setIsDropdownOpen(true);
 
     setTimeout(() => {
-      setAppliedQuery(searchInput);
       setIsDropdownOpen(false);
     }, 1000);
   };
