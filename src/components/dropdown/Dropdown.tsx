@@ -70,11 +70,20 @@ export const Dropdown: React.FC<Props> = ({
       {isListShowed && (
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
+            {filteredPeople.length === 0 && (
+              <div className="dropdown-item">
+                No matching suggestions
+              </div>
+            )}
+
             {filteredPeople.map((option: Person) => {
               const { name, sex } = option;
 
               return (
-                <div className="dropdown-item">
+                <div
+                  className="dropdown-item"
+                  key={name}
+                >
                   <a
                     href="#/"
                     className={classNames({
