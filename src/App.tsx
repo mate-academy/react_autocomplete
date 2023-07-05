@@ -17,7 +17,7 @@ export const App: React.FC = () => {
 
   const appliedQueryNorm = appliedQuery.trim().toLowerCase();
 
-  const visiblePeople = React.useMemo(() => {
+  const filteredPeople = React.useMemo(() => {
     return peopleFromServer.filter(
       person => person.name.toLowerCase().includes(appliedQueryNorm),
     );
@@ -49,7 +49,7 @@ export const App: React.FC = () => {
         </div>
       </div>
       <Dropdown
-        visiblePeople={visiblePeople}
+        visiblePeople={filteredPeople}
       />
     </main>
   );
