@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   }, [appliedQuery, peopleFromServer]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event?.target.value);
+    setQuery(event.target.value);
     applyQuery(event.target.value);
   };
 
