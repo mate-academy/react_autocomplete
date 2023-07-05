@@ -18,10 +18,12 @@ export const App: React.FC = () => {
   const appliedQueryNorm = appliedQuery.trim().toLowerCase();
 
   const filteredPeople = React.useMemo(() => {
+    // console.log(appliedQueryNorm);
+
     return peopleFromServer.filter(
       person => person.name.toLowerCase().includes(appliedQueryNorm),
     );
-  }, [appliedQuery, peopleFromServer]);
+  }, [appliedQueryNorm, peopleFromServer]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);

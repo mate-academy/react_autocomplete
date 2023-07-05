@@ -7,6 +7,7 @@ type Props = {
 };
 
 export const Dropdown: React.FC<Props> = ({ visiblePeople }) => {
+  // console.log(visiblePeople)
   return (
     <div className="dropdown-menu" role="menu">
       {visiblePeople.length === 0
