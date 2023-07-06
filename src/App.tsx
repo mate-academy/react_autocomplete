@@ -4,22 +4,23 @@ import './App.scss';
 import cn from 'classnames';
 import { peopleFromServer } from './data/people';
 import { DropDownMenu } from './components/DropDownMenu/DropDownMenu';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [selectedPersonSlug, setSelectedPersonSlug] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isSugActive, setIsSugActive] = useState(false);
 
   const visiblePeople = useMemo(() => {
     const normalizedQuery = appliedQuery.toLowerCase().trim();
 
-    if (appliedQuery) {
+    if (normalizedQuery) {
       setIsSugActive(true);
     }
 
-    if (!appliedQuery) {
-      setSelectedPersonSlug('');
+    if (!normalizedQuery) {
+      setSelectedPerson(null);
       setIsSugActive(false);
     }
 
@@ -34,19 +35,14 @@ export const App: React.FC = () => {
     [],
   );
 
-  const selectedPerson = visiblePeople.find(person => (
-    person.slug === selectedPersonSlug
-  ));
-
   const handleSelect = useCallback((
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-    personSlug: string,
-    personName: string,
+    person: Person,
     status: boolean,
   ) => {
     event.preventDefault();
-    setSelectedPersonSlug(personSlug);
-    setQuery(personName);
+    setSelectedPerson(person);
+    setQuery(person.name);
     setIsSugActive(status);
   }, []);
 
@@ -58,7 +54,7 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPersonSlug
+        {selectedPerson
           ? `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`
           : 'No selected person'}
       </h1>
