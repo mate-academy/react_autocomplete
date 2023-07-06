@@ -8,6 +8,7 @@ type Props = {
   people: Person[];
   onSelected: (person: Person) => void;
   selectedPerson: Person | null;
+  delay: number;
 };
 
 const debounce = (callback: (...args: any) => void, delay: number) => {
@@ -23,7 +24,12 @@ const debounce = (callback: (...args: any) => void, delay: number) => {
 };
 
 export const Dropdown: FC<Props> = memo((props) => {
-  const { people, onSelected, selectedPerson } = props;
+  const {
+    people,
+    onSelected,
+    selectedPerson,
+    delay,
+  } = props;
 
   const [query, setQuery] = useState<string>(selectedPerson?.name || '');
   const [appliedQuery, setAppliedQuery] = useState<string>('');
@@ -39,24 +45,30 @@ export const Dropdown: FC<Props> = memo((props) => {
     setAppliedQuery('');
   };
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
   const handleChangeQuery = (event: ChangeEvent<HTMLInputElement>) => {
     const currentQuery = event.target.value;
 
     setQuery(currentQuery);
-    applyQuery(currentQuery.toLowerCase());
+    applyQuery(currentQuery);
   };
 
   const filteredPeople = useMemo(() => {
     return people.filter(person => {
-      return person.name.toLowerCase().includes(appliedQuery);
+      return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
     });
   }, [appliedQuery]);
 
+  const dropDownIsVisible = appliedQuery
+    && filteredPeople.length > 0
+    && appliedQuery === query;
+
+  const errorIsVisible = filteredPeople.length === 0;
+
   return (
     <div className={classNames('dropdown', {
-      'is-active': appliedQuery,
+      'is-active': dropDownIsVisible,
     })}
     >
       <div className="dropdown-trigger">
@@ -71,7 +83,11 @@ export const Dropdown: FC<Props> = memo((props) => {
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {filteredPeople.length > 0 ? (
+          {errorIsVisible ? (
+            <p className="dropdown-item">
+              No matching suggestions
+            </p>
+          ) : (
             filteredPeople.map((person) => (
               // eslint-disable-next-line jsx-a11y/anchor-is-valid
               <a
@@ -90,10 +106,6 @@ export const Dropdown: FC<Props> = memo((props) => {
                 </p>
               </a>
             ))
-          ) : (
-            <p className="dropdown-item">
-              No matching suggestions
-            </p>
           )}
         </div>
       </div>

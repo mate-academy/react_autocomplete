@@ -25,6 +25,7 @@ export const App: FC = () => {
         people={peopleFromServer}
         onSelected={setSelectedPerson}
         selectedPerson={selectedPerson}
+        delay={1000}
       />
     </main>
   );
