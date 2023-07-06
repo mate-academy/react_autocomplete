@@ -36,6 +36,7 @@ export const Autocomplete: React.FC<Props> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
+  const [toCloseMenu, setToCloseMenu] = useState(false);
 
   const applySearchTerm = useCallback(
     debounce(setAppliedSearchTerm, delay),
@@ -53,7 +54,7 @@ export const Autocomplete: React.FC<Props> = ({
   const toShowMenu = appliedSearchTerm !== ''
     && filteredPeople.length > 0
     && appliedSearchTerm === searchTerm
-    && filteredPeople[0].name !== appliedSearchTerm.trim();
+    && !toCloseMenu;
 
   return (
     <div className="dropdown is-active">
@@ -66,6 +67,8 @@ export const Autocomplete: React.FC<Props> = ({
           onChange={(event) => {
             setSearchTerm(event.target.value);
             applySearchTerm(event.target.value);
+
+            setToCloseMenu(false);
           }}
         />
       </div>
@@ -89,6 +92,8 @@ export const Autocomplete: React.FC<Props> = ({
 
                   setSearchTerm(person.name);
                   setAppliedSearchTerm(person.name);
+
+                  setToCloseMenu(true);
 
                   onSelect(person);
                 }}
