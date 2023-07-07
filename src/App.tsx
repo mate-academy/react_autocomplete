@@ -4,6 +4,7 @@ import debounce from 'lodash.debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { Dropdown } from './components/Dropdown';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -67,32 +68,10 @@ export const App: React.FC = () => {
             onChange={handleQueryChange}
           />
         </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {visiblePeople.length > 0 ? (
-              visiblePeople.map(person => (
-                <div
-                  className="dropdown-item"
-                  key={person.slug}
-                >
-                  <tr
-                    className={cn('has-text-link', {
-                      'has-text-danger': person.sex === 'f',
-                    })}
-                    onClick={() => handleClick(person)}
-                  >
-                    <td>{person.name}</td>
-                  </tr>
-                </div>
-              ))
-            ) : (
-              <div className="dropdown-item">
-                <p className="has-text-danger">No matches</p>
-              </div>
-            )}
-          </div>
-        </div>
+        <Dropdown
+          people={visiblePeople}
+          onSelect={handleClick}
+        />
       </div>
     </main>
   );
