@@ -1,28 +1,66 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './Dropdown.scss';
 import cn from 'classnames';
+import { debounce } from 'lodash';
 import { Person } from '../../types/Person';
 import { DropdownItem } from '../DropdownItem';
 
 type Props = {
   people: Person[];
-  query: string;
-  debouncedQuery: string;
-  onQueryChange: (newQuery: string) => void;
-  onResetQuery: () => void;
-  onPersonClick: (person: Person) => void;
+  setSelectedPerson: (person: Person | null) => void;
+  delay: number;
+
 };
 
 export const Dropdown: React.FC<Props> = (
   {
     people,
-    query,
-    debouncedQuery,
-    onQueryChange,
-    onResetQuery,
-    onPersonClick,
+    setSelectedPerson,
+    delay,
+
   },
 ) => {
+  const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+
+  const applyDebouncedQuery = useCallback(
+    debounce(setDebouncedQuery, delay),
+    [],
+  );
+
+  const visiblePeople: Person[] = useMemo(() => (
+    people.filter(
+      ({ name }) => name.toLowerCase().includes(debouncedQuery.toLowerCase()),
+    )
+  ), [debouncedQuery]);
+
+  const handleQueryChange = useCallback(
+    (newQuery: string) => {
+      setSelectedPerson(null);
+      setQuery(newQuery);
+      applyDebouncedQuery(newQuery.trim());
+    },
+    [applyDebouncedQuery],
+  );
+
+  const handlePersonClick = useCallback(
+    (person: Person) => {
+      setSelectedPerson(person);
+      setQuery(person.name);
+      setDebouncedQuery('');
+    },
+    [],
+  );
+
+  const handleResetQuery = useCallback(
+    () => {
+      setSelectedPerson(null);
+      setQuery('');
+      setDebouncedQuery('');
+    },
+    [],
+  );
+
   return (
     <div className={
       cn(
@@ -38,7 +76,7 @@ export const Dropdown: React.FC<Props> = (
             className="input"
             placeholder="Enter a part of the name"
             value={query}
-            onChange={(event) => onQueryChange(event.target.value)}
+            onChange={(event) => handleQueryChange(event.target.value)}
           />
 
           {query && (
@@ -47,7 +85,7 @@ export const Dropdown: React.FC<Props> = (
                 type="button"
                 className="delete"
                 aria-label="close"
-                onClick={onResetQuery}
+                onClick={handleResetQuery}
               />
             </span>
           )}
@@ -60,12 +98,12 @@ export const Dropdown: React.FC<Props> = (
       >
         <ul className="dropdown-content">
           {
-            people.length > 0 ? (
-              people.map((person) => (
+            visiblePeople.length > 0 ? (
+              visiblePeople.map((person) => (
                 <DropdownItem
                   key={person.slug}
                   person={person}
-                  onPersonClick={onPersonClick}
+                  onPersonClick={handlePersonClick}
                 />
               ))
             ) : (
