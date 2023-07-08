@@ -15,12 +15,6 @@ export const DropDownMenu:React.FC<Props> = memo(({
   visiblePeople,
   onSelect,
 }) => {
-  const onSelected = (
-    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-    person: Person,
-  ) => {
-    onSelect(event, person, false);
-  };
 
   return (
     <div className="dropdown-menu" role="menu">
@@ -35,7 +29,9 @@ export const DropDownMenu:React.FC<Props> = memo(({
                 >
                   <a
                     href="/"
-                    onClick={(event) => onSelected(event, person)}
+                    onClick={(event) => onSelect(
+                      event, person, false,
+                    )}
                   >
                     <p
                       className={cn(

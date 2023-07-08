@@ -15,10 +15,13 @@ export const App: React.FC = () => {
   const visiblePeople = useMemo(() => {
     const normalizedQuery = appliedQuery.toLowerCase().trim();
 
-    setIsSugActive(!!normalizedQuery);
+    if (normalizedQuery) {
+      setIsSugActive(true);
+    }
 
     if (!normalizedQuery) {
       setSelectedPerson(null);
+      setIsSugActive(false);
     }
 
     return peopleFromServer.filter(person => (
@@ -58,7 +61,7 @@ export const App: React.FC = () => {
       </h1>
 
       <div className={cn('dropdown',
-        { 'is-active': isSugActive === true })}
+        { 'is-active': isSugActive })}
       >
         <div className="dropdown-trigger">
           <input
