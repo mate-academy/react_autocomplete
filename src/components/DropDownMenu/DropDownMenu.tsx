@@ -15,7 +15,6 @@ export const DropDownMenu:React.FC<Props> = memo(({
   visiblePeople,
   onSelect,
 }) => {
-
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
