@@ -1,6 +1,6 @@
-import classNames from 'classnames';
 import { ChangeEvent, MouseEvent } from 'react';
 import { Person } from '../../types/Person';
+import { UserInfo } from '../UserInfo';
 
 type Props = {
   users: Person[],
@@ -40,13 +40,7 @@ export const AutoComplete: React.FC<Props> = ({
                   className="has-text-link"
                   onClick={event => onUserClick(event, user)}
                 >
-                  <p className={classNames({
-                    'has-text-link': user.sex === 'm',
-                    'has-text-danger': user.sex === 'f',
-                  })}
-                  >
-                    {user.name}
-                  </p>
+                  <UserInfo user={user} />
                 </a>
               </div>
             ))}
