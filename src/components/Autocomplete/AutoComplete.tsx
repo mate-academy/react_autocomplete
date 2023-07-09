@@ -1,9 +1,10 @@
 import { ChangeEvent, MouseEvent } from 'react';
 import { Person } from '../../types/Person';
-import { UserInfo } from '../UserInfo';
+import { AutoCompleteUserInfo } from '../AutoCompleteUserInfo';
 
 type Props = {
   users: Person[],
+  query: string,
   isContentShown: boolean,
   onQueryChange: (event: ChangeEvent<HTMLInputElement>) => void,
   onUserClick: (event: MouseEvent<HTMLAnchorElement>, value: Person)
@@ -12,6 +13,7 @@ type Props = {
 
 export const AutoComplete: React.FC<Props> = ({
   users,
+  query,
   isContentShown,
   onQueryChange,
   onUserClick,
@@ -23,6 +25,7 @@ export const AutoComplete: React.FC<Props> = ({
           type="text"
           placeholder="Enter a part of the name"
           className="input"
+          value={query}
           onChange={onQueryChange}
         />
       </div>
@@ -30,20 +33,22 @@ export const AutoComplete: React.FC<Props> = ({
       <div className="dropdown-menu" role="menu">
         {isContentShown && (
           <div className="dropdown-content">
-            {users.map(user => (
-              <div
-                key={user.slug}
-                className="dropdown-item"
-              >
-                <a
-                  href="/"
-                  className="has-text-link"
-                  onClick={event => onUserClick(event, user)}
-                >
-                  <UserInfo user={user} />
-                </a>
-              </div>
-            ))}
+            {users.length
+              ? (
+                users.map(user => (
+                  <div
+                    key={user.slug}
+                    className="dropdown-item"
+                  >
+                    <a
+                      href="/"
+                      className="has-text-link"
+                      onClick={event => onUserClick(event, user)}
+                    >
+                      <AutoCompleteUserInfo user={user} />
+                    </a>
+                  </div>
+                ))) : (<p>No matching suggestions</p>)}
           </div>
         )}
       </div>
