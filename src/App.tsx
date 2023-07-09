@@ -6,6 +6,7 @@ import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { AutoComplete } from './components/Autocomplete';
+import { UserInfo } from './components/UserInfo';
 
 export const App: React.FC = () => {
   // #region state
@@ -51,18 +52,11 @@ export const App: React.FC = () => {
     getFilteredUsers, [appliedQuery, peopleFromServer],
   );
 
-  const isVisible = isContentShown && (appliedQuery.length > 0);
+  const isVisible = isContentShown && appliedQuery.length > 0;
 
   return (
     <main className="section">
-      <h1>{isVisible}</h1>
-      {selectedUser ? (
-        <h1 className="title">
-          {`${selectedUser?.name} (${selectedUser?.born} = ${selectedUser?.died})`}
-        </h1>
-      ) : (
-        <h1 className="title">No selected person</h1>
-      )}
+      <UserInfo user={selectedUser} />
 
       <AutoComplete
         users={filteredPeople}
