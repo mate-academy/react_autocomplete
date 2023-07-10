@@ -1,58 +1,55 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import debounce from 'lodash.debounce';
 
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-import { MemoizedDropdown as Dropdown } from './Components/Dropdown/Dropdown';
+import { MemoizedDropdown as Dropdown } from './components/Dropdown/Dropdown';
+import { debounce } from './services/debounce';
 
 enum PersonInfo {
   noSelected = 'No selected person',
 }
 
 export const App: React.FC = () => {
-  const [selectedPerson, setSelectedPerson] = useState<Person | string>(
-    PersonInfo.noSelected,
-  );
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [searchName, setSearchName] = useState('');
   const [searchQueryName, setSearchQueryName] = useState('');
 
-  const showDropdown = typeof selectedPerson !== 'object'
-    && searchQueryName.length > 0;
+  const showDropdown = !selectedPerson && searchQueryName.length > 0;
 
   const applyQueryName = useCallback(
     debounce(setSearchQueryName, 400),
     [],
   );
 
-  function handleSearchNameChange(event: React.ChangeEvent<HTMLInputElement>) {
+  const handleSearchNameChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setSearchName(event.target.value);
     applyQueryName(event.target.value);
-    setSelectedPerson('');
-  }
+    setSelectedPerson(null);
+  };
 
-  function handlePersonSelection(chosenPerson: Person) {
+  const handlePersonSelection = (chosenPerson: Person) => {
     return () => {
       setSelectedPerson(chosenPerson);
       setSearchName(chosenPerson.name);
     };
-  }
+  };
 
   const saveSearchName = useCallback(handleSearchNameChange, []);
   const selectPerson = useCallback(handlePersonSelection, []);
 
-  const selectedPersonInfo = typeof selectedPerson === 'object'
+  const selectedPersonInfo = selectedPerson
     ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
     : PersonInfo.noSelected;
 
-  const filteredPersons = useMemo(() => {
-    return peopleFromServer.filter(person => {
-      const personRegister = person.name.toLowerCase().trim();
-      const searchRegister = searchQueryName.toLowerCase().trim();
+  const filteredPersons = useMemo(() => peopleFromServer.filter(person => {
+    const personRegister = person.name.toLowerCase().trim();
+    const searchRegister = searchQueryName.toLowerCase().trim();
 
-      return personRegister.includes(searchRegister);
-    });
-  }, [searchQueryName]);
+    return personRegister.includes(searchRegister);
+  }), [searchQueryName]);
 
   return (
     <main className="section">
