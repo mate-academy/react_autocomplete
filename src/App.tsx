@@ -58,13 +58,17 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {query && !people.length ? (
-          <p>No matching suggestions</p>
+        {appliedQuery && !people.length ? (
+          <div className="dropdown-menu">
+            No matching suggestions
+          </div>
         ) : (
           <Autocomplete
             people={people}
-            query={query}
+            query={appliedQuery}
             onSelected={(person) => setSelectedPerson(person)}
+            setQuery={setQuery}
+            applyQuery={applyQuery}
           />
         )}
       </div>

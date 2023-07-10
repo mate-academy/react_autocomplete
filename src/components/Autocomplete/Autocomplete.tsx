@@ -7,14 +7,24 @@ import './Autocomplete.scss';
 type Props = {
   people: Person[],
   query: string,
-  onSelected: (person: Person) => void
+  onSelected: (person: Person) => void,
+  applyQuery: (query: string) => void,
+  setQuery: (query: string) => void
 };
 
 export const Autocomplete: React.FC<Props> = ({ 
   people, 
   query, 
-  onSelected 
+  onSelected,
+  applyQuery,
+  setQuery
 }) => {
+  const selectPersonHandler = (person: Person) => {
+    onSelected(person);  
+    setQuery(person.name);
+    applyQuery('');
+  }
+
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
@@ -25,7 +35,7 @@ export const Autocomplete: React.FC<Props> = ({
                 'has-text-link': person.sex === 'm',
                 'has-text-danger': person.sex === 'f',
               })}
-              onClick={() => onSelected(person)}
+              onClick={() => selectPersonHandler(person)}
             >
               {person.name}
             </p>
