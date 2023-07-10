@@ -23,6 +23,7 @@ export const Suggestions: React.FC<Props> = React.memo(({
           </div>
         )
           : people.map(person => (
+            /* eslint-disable-next-line */
             <a
               className="dropdown-item item"
               onClick={() => onSelected(person)}
