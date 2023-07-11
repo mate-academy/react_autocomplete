@@ -29,7 +29,7 @@ export const Autocomplete: React.FC<Props> = ({
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
         {query && people.map(person => (
-          <div className="dropdown-item person">
+          <div className="dropdown-item person" key={person.slug}>
             <p
               className={classNames({
                 'has-text-link': person.sex === 'm',

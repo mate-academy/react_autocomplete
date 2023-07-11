@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { useState, useMemo, useCallback } from 'react';
 import './App.scss';
 import { Autocomplete } from './components/Autocomplete/Autocomplete';
@@ -47,7 +48,9 @@ export const App: React.FC = () => {
         )}
       </h1>
 
-      <div className="dropdown is-active">
+      <div className={classNames('dropdown', {
+        'is-active': !!appliedQuery,
+      })}>
         <div className="dropdown-trigger">
           <input
             type="text"
