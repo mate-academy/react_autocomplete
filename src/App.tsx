@@ -6,10 +6,6 @@ import { Person } from './types/Person';
 import { MemoizedDropdown as Dropdown } from './components/Dropdown/Dropdown';
 import { debounce } from './services/debounce';
 
-enum PersonInfo {
-  noSelected = 'No selected person',
-}
-
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [searchName, setSearchName] = useState('');
@@ -42,7 +38,7 @@ export const App: React.FC = () => {
 
   const selectedPersonInfo = selectedPerson
     ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
-    : PersonInfo.noSelected;
+    : 'No selected person';
 
   const filteredPersons = useMemo(() => peopleFromServer.filter(person => {
     const personRegister = person.name.toLowerCase().trim();
