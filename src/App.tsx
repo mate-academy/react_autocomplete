@@ -50,7 +50,8 @@ export const App: React.FC = () => {
 
       <div className={classNames('dropdown', {
         'is-active': !!appliedQuery,
-      })}>
+      })}
+      >
         <div className="dropdown-trigger">
           <input
             type="text"
