@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
@@ -14,10 +14,7 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const applyQuery = useCallback(
-    debounce(setAppliedQuery, 1000),
-    [],
-  );
+  const applyQuery = debounce(setAppliedQuery, 1000);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
