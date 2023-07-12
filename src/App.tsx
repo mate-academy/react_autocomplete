@@ -1,14 +1,45 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { People } from './components/People';
+
+const initialPeople: Person[] = peopleFromServer.map(person => ({
+  ...person,
+}));
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const applyQuery = debounce(setAppliedQuery, 1000);
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
+
+  const handleSelectedPerson = (person: Person) => {
+    setSelectedPerson(person);
+    setAppliedQuery('');
+    setQuery('');
+  };
+
+  const filteredPeople = useMemo(() => {
+    return initialPeople.filter(
+      person => person.name.toLocaleLowerCase()
+        .includes(appliedQuery.toLocaleLowerCase()),
+    );
+  }, [appliedQuery, initialPeople]);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +48,17 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={handleQueryChange}
           />
         </div>
+        {appliedQuery && (
+          <People
+            people={filteredPeople}
+            onSelected={handleSelectedPerson}
+          />
+        )}
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
       </div>
     </main>
   );
