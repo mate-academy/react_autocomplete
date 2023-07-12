@@ -1,0 +1,9 @@
+.dropdown {
+  &-item {
+    cursor: pointer;
+
+    &:hover p {
+      color: red !important;
+    }
+  }
+}
