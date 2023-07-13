@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
 import './App.scss';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
@@ -42,6 +48,23 @@ export const App: React.FC = () => {
     setAppliedQuery('');
   };
 
+  const [isInputFocused, setIsInputFocused] = useState(false);
+
+  const handleInputFocus = () => {
+    setIsInputFocused(true);
+  };
+
+  const handleInputBlur = () => {
+    setIsInputFocused(false);
+  };
+
+
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+
   return (
     <main className="section">
       <h1 className="title">
@@ -50,7 +73,7 @@ export const App: React.FC = () => {
           : 'No selected person'}
       </h1>
 
-      <div className="dropdown is-active">
+      <div className={`dropdown ${isInputFocused ? 'is-active' : ''}`}>
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -58,6 +81,9 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={handleQueryChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+            ref={inputRef}
           />
         </div>
         {appliedQuery && (
