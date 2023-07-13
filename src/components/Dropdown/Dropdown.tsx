@@ -45,7 +45,7 @@ export const Dropdown: FC<Props> = memo((props) => {
     setAppliedQuery('');
   };
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), [delay]);
 
   const handleChangeQuery = (event: ChangeEvent<HTMLInputElement>) => {
     const currentQuery = event.target.value;
