@@ -24,6 +24,7 @@ export const App: React.FC = () => {
         people={peopleFromServer}
         onSelected={handleSelectedPerson}
         selectedPerson={selectedPerson}
+        delay={500}
       />
     </main>
   );

@@ -7,6 +7,7 @@ type Props = {
   people: Person[]
   onSelected: (arg: Person) => void,
   selectedPerson: Person | null,
+  delay: number,
 };
 
 const linkClass = (person: Person) => cn({
@@ -14,15 +15,28 @@ const linkClass = (person: Person) => cn({
   'has-text-danger': person.sex === 'f',
 });
 
-const Dropdown = React.memo(({ people, onSelected, selectedPerson }: Props) => {
+const Dropdown = React.memo(({
+  people,
+  onSelected,
+  selectedPerson,
+  delay,
+}: Props) => {
   const [searchTerms, setSearchTerms] = useState('');
-  const debounced = useDebounde(searchTerms);
+
+  const debounced = useDebounde(searchTerms, delay);
+
+  const showModal = debounced && debounced === searchTerms
+    && debounced !== selectedPerson?.name;
 
   const filteredPeople = useMemo(() => {
     return people.filter(({ name }) => name
       .toLowerCase()
       .includes(debounced.toLowerCase()));
   }, [debounced]);
+
+  const handleSearchTermsChange = (terms: string) => {
+    setSearchTerms(terms);
+  };
 
   const handleSelectPerson = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -41,11 +55,11 @@ const Dropdown = React.memo(({ people, onSelected, selectedPerson }: Props) => {
           placeholder="Enter a part of the name"
           className="input"
           value={searchTerms}
-          onChange={(e) => setSearchTerms(e.target.value)}
+          onChange={(e) => handleSearchTermsChange(e.target.value)}
         />
       </div>
 
-      {debounced && debounced !== selectedPerson?.name && (
+      {showModal && (
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
             {filteredPeople.length > 0
