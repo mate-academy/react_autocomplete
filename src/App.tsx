@@ -26,6 +26,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<null | Person>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [isDropdownActive, setIsDropdownActive] = useState(false);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay),
@@ -35,6 +36,7 @@ export const App: React.FC = () => {
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery((event.target.value).trim());
+    setIsDropdownActive(true);
   };
 
   const preparedPeople = useMemo(
@@ -45,6 +47,7 @@ export const App: React.FC = () => {
   const handlePersonClick = (person: Person) => {
     setQuery(person.name);
     setSelectedPerson(person);
+    setIsDropdownActive(false);
     setAppliedQuery('');
   };
 
@@ -56,6 +59,7 @@ export const App: React.FC = () => {
 
   const handleInputBlur = () => {
     setIsInputFocused(false);
+    // setAppliedQuery('');
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -74,7 +78,7 @@ export const App: React.FC = () => {
           : 'No selected person'}
       </h1>
 
-      <div className={`dropdown ${isInputFocused ? 'is-active' : ''}`}>
+      <div className={`dropdown ${isDropdownActive || isInputFocused ? 'is-active' : ''}`}>
         <div className="dropdown-trigger">
           <input
             type="text"
