@@ -5,16 +5,23 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
-export const App: React.FC = () => {
+interface AppProps {
+  debounceDelay: number;
+  noMatchesMessage: string;
+}
+
+export const App: React.FC<AppProps> = ({
+  debounceDelay,
+  noMatchesMessage,
+}) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isDropDownActive, setIsDropDownActive] = useState(false);
-  const delay = 1000;
 
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay),
-    [],
+    debounce((value: string) => setAppliedQuery(value), debounceDelay),
+    [debounceDelay],
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,9 +45,9 @@ export const App: React.FC = () => {
       setIsDropDownActive(true);
     }
 
-    return peopleFromServer.filter((
-      { name },
-    ) => name.toLowerCase().includes(appliedQuery.toLowerCase()));
+    return peopleFromServer.filter(({
+      name,
+    }) => name.toLowerCase().includes(appliedQuery.toLowerCase()));
   }, [peopleFromServer, appliedQuery]);
 
   return (
@@ -74,20 +81,27 @@ export const App: React.FC = () => {
                   className="dropdown-item"
                   key={person.slug}
                 >
-                  <tr
+                  <button
+                    type="button"
                     className={classNames({
                       'has-text-link': person.sex === 'm',
                       'has-text-danger': person.sex === 'f',
                     })}
                     onClick={() => handleClick(person)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        handleClick(person);
+                      }
+                    }}
+                    role="menuitem"
                   >
                     {person.name}
-                  </tr>
+                  </button>
                 </div>
               ))
             ) : (
               <div className="dropdown-item">
-                <p className="has-text-danger">No matches</p>
+                <p className="has-text-danger">{noMatchesMessage}</p>
               </div>
             )}
           </div>
