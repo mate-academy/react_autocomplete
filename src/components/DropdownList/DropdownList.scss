@@ -1,9 +1,11 @@
 .dropdown {
   &-item {
+    background-color: #fff;
+    border: none;
     cursor: pointer;
 
-    &:hover p {
-      color: red !important;
+    &--no-item {
+      cursor: default;
     }
   }
 }

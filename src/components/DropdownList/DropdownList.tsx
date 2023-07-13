@@ -2,31 +2,33 @@ import { Person } from '../../types/Person';
 import './DropdownList.scss';
 
 type Props = {
-  peoples: Person[] | null;
+  people: Person[];
   onSelect: (person: Person) => void;
 };
 
 export const DropdownList: React.FC<Props> = ({
-  peoples,
+  people,
   onSelect,
 }) => {
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
-        { peoples
-          ? peoples.map((man, index) => (
-            <div
+        { people.length > 0
+          ? people.map((man) => (
+            <button
               key={`${man.name}-${man.born}`}
               className="dropdown-item"
+              type="button"
               onClick={() => onSelect(man)}
-              onKeyDown={() => onSelect(man)}
-              role="button"
-              tabIndex={index}
             >
-              <p className="has-text-link">{man.name}</p>
-            </div>
+              {man.name}
+            </button>
           ))
-          : <div className="dropdown-item">No matching suggestions</div>}
+          : (
+            <div className="dropdown-item dropdown-item--no-item">
+              No matching suggestions
+            </div>
+          )}
       </div>
     </div>
   );

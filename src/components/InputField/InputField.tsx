@@ -17,7 +17,7 @@ export const InputField: React.FC<Props> = ({
 
   const applyQuery = useCallback(
     debounce(onQuery, delay),
-    [],
+    [onQuery, delay],
   );
 
   useEffect(() => {

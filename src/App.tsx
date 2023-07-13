@@ -20,10 +20,6 @@ export const App: React.FC = () => {
       return name.toLowerCase().includes(query.toLowerCase());
     });
 
-    if (filtered.length === 0) {
-      return null;
-    }
-
     return filtered;
   }, [query]);
 
@@ -54,7 +50,7 @@ export const App: React.FC = () => {
           />
         </div>
         <DropdownList
-          peoples={filteredPeoples}
+          people={filteredPeoples}
           onSelect={(person: Person) => selectPerson(person)}
         />
       </div>
