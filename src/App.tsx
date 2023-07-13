@@ -34,7 +34,7 @@ export const App: React.FC = () => {
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(
-      person => person.name.includes(appliedQuery),
+      person => person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
   }, [appliedQuery]);
 
@@ -57,10 +57,12 @@ export const App: React.FC = () => {
           />
         </div>
 
-        <Dropdown
-          people={filteredPeople}
-          onSelect={handleSelect}
-        />
+        {appliedQuery && (
+          <Dropdown
+            people={filteredPeople}
+            onSelect={handleSelect}
+          />
+        )}
       </div>
     </main>
   );
