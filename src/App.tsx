@@ -1,40 +1,27 @@
 import React, { useState } from 'react';
-import Autocomplete from './components/Autocomplete/Autocomplete';
-import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import './App.scss';
+import { AutoComplete } from './components/AutoComplete/AutoComplete';
 
-interface AppProps {
-  debounceDelay: number;
-  noMatchesMessage: string;
-}
-
-export const App: React.FC<AppProps> = ({
-  debounceDelay,
-  noMatchesMessage,
-}) => {
+export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-
-  const handleSelectPerson = (person: Person) => {
-    setSelectedPerson(person);
-  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson
-          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-          : 'No selected person'}
+        {selectedPerson ? (
+          `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+        ) : (
+          'No selected person'
+        )}
       </h1>
 
-      <Autocomplete
-        debounceDelay={debounceDelay}
-        noMatchesMessage={noMatchesMessage}
-        onSelectPerson={handleSelectPerson}
-        people={peopleFromServer}
+      <AutoComplete
+        options={peopleFromServer}
+        onSelected={(person: Person) => setSelectedPerson(person)}
+        delay={1000}
       />
     </main>
   );
 };
-
-export default App;

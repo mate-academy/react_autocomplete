@@ -1,105 +1,105 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import debounce from 'lodash.debounce';
+import React, { useState, useMemo, useCallback } from 'react';
 import classNames from 'classnames';
+
 import { Person } from '../../types/Person';
 
-interface AutocompleteProps {
-  debounceDelay: number;
-  noMatchesMessage: string;
-  onSelectPerson: (person: Person) => void;
-  people: Person[];
+type Props = {
+  options: Person[],
+  onSelected: (person: Person) => void,
+  delay: number,
+};
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+function debounce(callback: Function, delay: number) {
+  let timerId = 0;
+
+  return (...args: any[]) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({
-  debounceDelay,
-  noMatchesMessage,
-  onSelectPerson,
-  people,
+export const AutoComplete: React.FC<Props> = ({
+  options,
+  onSelected,
+  delay,
 }) => {
-  const [query, setQuery] = useState('');
+  const [isListShowed, setIsListShowed] = useState(false);
+  const [inputValue, setInputValue] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [isDropDownActive, setIsDropDownActive] = useState(false);
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
-  const applyQuery = useCallback(
-    debounce((value: string) => setAppliedQuery(value), debounceDelay),
-    [debounceDelay],
-  );
-
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-
-    setQuery(value);
-    applyQuery(value);
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsListShowed(true);
+    setInputValue(event.target.value);
+    applyQuery(event.target.value);
   };
 
-  const handleClick = (person: Person) => {
-    onSelectPerson(person);
-    setQuery(person.name);
-    setIsDropDownActive(false);
+  const hadnleItemClick = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    option: Person,
+  ) => {
+    event.preventDefault();
+
+    setInputValue(option.name);
+    onSelected(option);
+    setIsListShowed(false);
   };
 
   const filteredPeople = useMemo(() => {
-    if (!appliedQuery) {
-      setIsDropDownActive(false);
-
-      return [];
-    }
-
-    setIsDropDownActive(true);
-
-    return people.filter(({
-      name,
-    }) => name.toLowerCase().includes(appliedQuery.toLowerCase()));
-  }, [people, appliedQuery]);
+    return options.filter(option => {
+      return option.name.toLowerCase().includes(appliedQuery.toLowerCase());
+    });
+  }, [appliedQuery, options]);
 
   return (
-    <div
-      className={classNames('dropdown', {
-        'is-active': isDropDownActive,
-      })}
-    >
+    <div className="dropdown is-active">
       <div className="dropdown-trigger">
         <input
           type="text"
           placeholder="Enter a part of the name"
           className="input"
-          value={query}
-          onChange={handleQueryChange}
+          value={inputValue}
+          onChange={handleInputChange}
         />
       </div>
 
-      <div className="dropdown-menu" role="menu">
-        <div className="dropdown-content">
-          {filteredPeople.length > 0 ? (
-            filteredPeople.map((person) => (
-              <div className="dropdown-item" key={person.slug}>
-                <button
-                  type="button"
-                  className={classNames({
-                    'has-text-link': person.sex === 'm',
-                    'has-text-danger': person.sex === 'f',
-                  })}
-                  onClick={() => handleClick(person)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      handleClick(person);
-                    }
-                  }}
-                  role="menuitem"
-                >
-                  {person.name}
-                </button>
+      {isListShowed && (
+        <div className="dropdown-menu" role="menu">
+          <div className="dropdown-content">
+            {filteredPeople.length === 0 && (
+              <div className="dropdown-item">
+                No matching suggestions
               </div>
-            ))
-          ) : (
-            <div className="dropdown-item">
-              <p className="has-text-danger">{noMatchesMessage}</p>
-            </div>
-          )}
+            )}
+
+            {filteredPeople.map((option: Person) => {
+              const { name, sex } = option;
+
+              return (
+                <div
+                  className="dropdown-item"
+                  key={name}
+                >
+                  <a
+                    href="#/"
+                    className={classNames({
+                      'has-text-link': sex === 'm',
+                      'has-text-danger': sex === 'f',
+                    })}
+                    onClick={(event) => hadnleItemClick(event, option)}
+                  >
+                    {name}
+                  </a>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
-
-export default Autocomplete;
