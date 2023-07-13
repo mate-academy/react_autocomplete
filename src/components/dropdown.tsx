@@ -6,7 +6,7 @@ interface Props {
   onSelect?: (person: Person) => void;
 }
 
-export const Dropdown: React.FC<Props> = React.memo((
+export const Dropdown: React.FC<Props> = (
   {
     people,
     onSelect = () => { },
@@ -36,4 +36,4 @@ export const Dropdown: React.FC<Props> = React.memo((
       ))}
     </div>
   </div>
-));
+);
