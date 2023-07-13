@@ -61,7 +61,6 @@ export const Dropdown: FC<Props> = memo((props) => {
   }, [appliedQuery]);
 
   const dropDownIsVisible = appliedQuery
-    && filteredPeople.length > 0
     && appliedQuery === query;
 
   const errorIsVisible = filteredPeople.length === 0;
