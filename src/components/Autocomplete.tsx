@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Person } from '../types/Person';
 
 interface Props {
@@ -16,17 +16,20 @@ const filterPeople = (arr: Person[], searchTerm: string) => {
   return [];
 };
 
-export const debounce = (callback: CallableFunction, delay: number) => {
-  let timerId = 0;
+const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (...args: any[]) => {
-    window.clearTimeout(timerId);
-
-    timerId = window.setTimeout(() => {
-      callback(...args);
+  useEffect(() => {
+    const timerId = window.setTimeout(() => {
+      setDebouncedValue(value);
     }, delay);
-  };
+
+    return () => {
+      window.clearTimeout(timerId);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
 };
 
 export const Autocomplete: React.FC<Props> = ({
@@ -35,26 +38,36 @@ export const Autocomplete: React.FC<Props> = ({
   delay = 1000,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [toCloseMenu, setToCloseMenu] = useState(false);
 
-  const applySearchTerm = useCallback(
-    debounce(setAppliedSearchTerm, delay),
-    [],
-  );
+  const debouncedSearchTerm = useDebounce(searchTerm, delay);
 
   const filteredPeople = useMemo(() => (
-    filterPeople(people as Person[], appliedSearchTerm)),
-  [appliedSearchTerm]);
+    filterPeople(people as Person[], searchTerm)),
+  [debouncedSearchTerm]);
 
-  const toShowError = appliedSearchTerm !== ''
+  const toShowError = searchTerm !== ''
     && filteredPeople.length === 0
-    && appliedSearchTerm === searchTerm;
+    && debouncedSearchTerm === searchTerm;
 
-  const toShowMenu = appliedSearchTerm !== ''
+  const toShowMenu = searchTerm !== ''
     && filteredPeople.length > 0
-    && appliedSearchTerm === searchTerm
+    && debouncedSearchTerm === searchTerm
     && !toCloseMenu;
+
+  const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+    setToCloseMenu(false);
+  };
+
+  const onOptionSelect = (event: React.MouseEvent, person: Person) => {
+    event.preventDefault();
+
+    setSearchTerm(person.name);
+    setToCloseMenu(true);
+
+    onSelect(person);
+  };
 
   return (
     <div className="dropdown is-active">
@@ -64,12 +77,7 @@ export const Autocomplete: React.FC<Props> = ({
           placeholder="Enter a part of the name"
           className="input"
           value={searchTerm}
-          onChange={(event) => {
-            setSearchTerm(event.target.value);
-            applySearchTerm(event.target.value);
-
-            setToCloseMenu(false);
-          }}
+          onChange={onInputChange}
         />
       </div>
 
@@ -87,16 +95,7 @@ export const Autocomplete: React.FC<Props> = ({
                 href="/#"
                 className="dropdown-item"
                 key={person.name}
-                onClick={(event) => {
-                  event.preventDefault();
-
-                  setSearchTerm(person.name);
-                  setAppliedSearchTerm(person.name);
-
-                  setToCloseMenu(true);
-
-                  onSelect(person);
-                }}
+                onClick={(event) => onOptionSelect(event, person)}
               >
                 <p className={person.sex === 'm'
                   ? 'has-text-link'

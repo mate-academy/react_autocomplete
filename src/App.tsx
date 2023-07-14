@@ -22,7 +22,7 @@ export const App: React.FC = () => {
       <Autocomplete
         people={peopleFromServer as Person[]}
         delay={1000}
-        onSelect={(person) => setSelectedPerson(person)}
+        onSelect={setSelectedPerson}
       />
     </main>
   );
