@@ -18,13 +18,17 @@ function debonce(callback: Function, delay: number) {
   };
 }
 
-export const App: React.FC = () => {
+type Props = {
+  delay: number;
+};
+
+export const App: React.FC<Props> = ({ delay }) => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const { name, born, died } = selectedPerson || {};
 
-  const applyQuery = useCallback(debonce(setAppliedQuery, 1000), []);
+  const applyQuery = useCallback(debonce(setAppliedQuery, delay), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -73,6 +77,7 @@ export const App: React.FC = () => {
             onSelected={(person) => setSelectedPerson(person)}
             setQuery={setQuery}
             applyQuery={applyQuery}
+            setAppliedQuery={setAppliedQuery}
           />
         )}
       </div>

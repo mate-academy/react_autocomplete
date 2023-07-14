@@ -9,7 +9,8 @@ type Props = {
   query: string,
   onSelected: (person: Person) => void,
   applyQuery: (query: string) => void,
-  setQuery: (query: string) => void
+  setQuery: (query: string) => void,
+  setAppliedQuery: (query: string) => void,
 };
 
 export const Autocomplete: React.FC<Props> = ({ 
@@ -17,12 +18,14 @@ export const Autocomplete: React.FC<Props> = ({
   query, 
   onSelected,
   applyQuery,
-  setQuery
+  setQuery,
+  setAppliedQuery
 }) => {
   const selectPersonHandler = (person: Person) => {
-    onSelected(person);  
+    onSelected(person);
     setQuery(person.name);
     applyQuery('');
+    setAppliedQuery('')
   }
 
   return (
