@@ -1,31 +1,40 @@
 import React from 'react';
-import classNames from 'classnames';
+import cn from 'classnames';
 import { Person } from '../types/Person';
 
 type Props = {
   people: Person[],
   onSelect: (person: Person) => void,
-}
+
+};
 
 export const Dropdown: React.FC<Props> = ({ people, onSelect }) => {
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
-        {people.length > 0 ? (
+        {people.length !== 0 ? (
           people.map(person => (
-            <div
-              className="dropdown-item"
+            <a
               key={person.slug}
+              href="#/"
+              className={cn('dropdown-item', {
+                'has-text-link': person.sex === 'm',
+                'has-text-danger': person.sex === 'f',
+              })}
+              onClick={(event) => {
+                event.preventDefault();
+                onSelect(person);
+              }}
             >
               <p
-                className={classNames({'has-text-link': person.sex === 'm',
+                className={cn({
+                  'has-text-link': person.sex === 'm',
                   'has-text-danger': person.sex === 'f',
                 })}
-                onClick={() => onSelect(person)}
               >
                 {person.name}
               </p>
-            </div>
+            </a>
           ))
         ) : (
           <div className="dropdown-item">
@@ -35,4 +44,4 @@ export const Dropdown: React.FC<Props> = ({ people, onSelect }) => {
       </div>
     </div>
   );
-}
+};
