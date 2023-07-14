@@ -3,7 +3,8 @@ import './Dropdown.scss';
 import cn from 'classnames';
 import { debounce } from 'lodash';
 import { Person } from '../../types/Person';
-import { DropdownItem } from '../DropdownItem';
+import { DropdownTrigger } from './DropdownTrigger';
+import { DropdownMenu } from './DropdownMenu';
 
 type Props = {
   people: Person[];
@@ -12,108 +13,68 @@ type Props = {
 
 };
 
-export const Dropdown: React.FC<Props> = (
-  {
-    people,
-    setSelectedPerson,
-    delay,
+export const Dropdown: React.FC<Props> = React.memo(
+  (
+    {
+      people,
+      setSelectedPerson,
+      delay,
 
-  },
-) => {
-  const [query, setQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+    },
+  ) => {
+    const [query, setQuery] = useState('');
+    const [debouncedQuery, setDebouncedQuery] = useState('');
 
-  const applyDebouncedQuery = useCallback(
-    debounce(setDebouncedQuery, delay),
-    [],
-  );
+    const applyDebouncedQuery = useCallback(
+      debounce(setDebouncedQuery, delay),
+      [],
+    );
 
-  const visiblePeople: Person[] = useMemo(() => (
-    people.filter(
-      ({ name }) => name.toLowerCase().includes(debouncedQuery.toLowerCase()),
-    )
-  ), [debouncedQuery]);
+    const visiblePeople: Person[] = useMemo(() => (
+      people.filter(
+        ({ name }) => name.toLowerCase().includes(debouncedQuery.toLowerCase()),
+      )
+    ), [debouncedQuery]);
 
-  const handleQueryChange = useCallback(
-    (newQuery: string) => {
+    const handleQueryChange = useCallback((newQuery: string) => {
       setSelectedPerson(null);
       setQuery(newQuery);
       applyDebouncedQuery(newQuery.trim());
-    },
-    [applyDebouncedQuery],
-  );
+    }, [debouncedQuery]);
 
-  const handlePersonClick = useCallback(
-    (person: Person) => {
+    const handlePersonClick = useCallback((person: Person) => {
       setSelectedPerson(person);
       setQuery(person.name);
       setDebouncedQuery('');
-    },
-    [],
-  );
+    }, []);
 
-  const handleResetQuery = useCallback(
-    () => {
+    const handleResetQuery = useCallback(() => {
       setSelectedPerson(null);
       setQuery('');
       setDebouncedQuery('');
-    },
-    [],
-  );
+    }, []);
 
-  return (
-    <div className={
-      cn(
-        'dropdown',
-        { 'is-active': !!debouncedQuery },
-      )
-    }
-    >
-      <div className="dropdown-trigger ">
-        <div className="control has-icons-right ">
-          <input
-            type="text"
-            className="input"
-            placeholder="Enter a part of the name"
-            value={query}
-            onChange={(event) => handleQueryChange(event.target.value)}
-          />
-
-          {query && (
-            <span className="icon is-right">
-              <button
-                type="button"
-                className="delete"
-                aria-label="close"
-                onClick={handleResetQuery}
-              />
-            </span>
-          )}
-        </div>
-      </div>
-
-      <div
-        className="dropdown-menu"
-        role="menu"
+    return (
+      <div className={
+        cn(
+          'dropdown',
+          { 'is-active': !!debouncedQuery },
+        )
+      }
       >
-        <ul className="dropdown-content">
-          {
-            visiblePeople.length > 0 ? (
-              visiblePeople.map((person) => (
-                <DropdownItem
-                  key={person.slug}
-                  person={person}
-                  onPersonClick={handlePersonClick}
-                />
-              ))
-            ) : (
-              <li className="dropdown-item">
-                No match found
-              </li>
-            )
-          }
-        </ul>
+
+        <DropdownTrigger
+          query={query}
+          handleQueryChange={handleQueryChange}
+          handleResetQuery={handleResetQuery}
+        />
+
+        <DropdownMenu
+          visiblePeople={visiblePeople}
+          handlePersonClick={handlePersonClick}
+        />
+
       </div>
-    </div>
-  );
-};
+    );
+  },
+);

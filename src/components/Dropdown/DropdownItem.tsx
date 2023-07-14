@@ -1,5 +1,4 @@
 import React from 'react';
-import './DropdownItem.scss';
 import { Person } from '../../types/Person';
 
 type Props = {
