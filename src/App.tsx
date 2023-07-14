@@ -31,12 +31,16 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
     appleyQuery(event.target.value);
   };
 
+  const handleBlur = () => {
+    if (!query) {
+      setIsActive(false);
+    }
+  };
+
   const filterPeople = useMemo(() => {
     if (!appleyQuery) {
       setSelectPerson(null);
       setIsActive(false);
-    } else {
-      setIsActive(true);
     }
 
     return peopleFromServer.filter(people => {
@@ -63,6 +67,8 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
             className="input"
             value={query}
             onChange={handleQueryChange}
+            onClick={() => (setIsActive(true))}
+            onBlur={handleBlur}
           />
         </div>
 
