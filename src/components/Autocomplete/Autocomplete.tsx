@@ -86,7 +86,7 @@ export const AutoComplete: React.FC<Props> = ({
                 >
                   <a
                     href="#/"
-                    className={classNames({
+                    className={classNames('button is-light', {
                       'has-text-link': sex === 'm',
                       'has-text-danger': sex === 'f',
                     })}
