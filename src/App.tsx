@@ -22,11 +22,12 @@ const filterPeople = (query: string) => {
 };
 
 export const App: React.FC = () => {
-  const [delay] = useState(1000);
   const [selectedPerson, setSelectedPerson] = useState<null | Person>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isDropdownActive, setIsDropdownActive] = useState(false);
+
+  const delay = 1000;
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay),
@@ -59,7 +60,6 @@ export const App: React.FC = () => {
 
   const handleInputBlur = () => {
     setIsInputFocused(false);
-    // setAppliedQuery('');
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -77,7 +77,6 @@ export const App: React.FC = () => {
           ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
           : 'No selected person'}
       </h1>
-
       <div className={`dropdown ${isDropdownActive || isInputFocused ? 'is-active' : ''}`}>
         <div className="dropdown-trigger">
           <input
