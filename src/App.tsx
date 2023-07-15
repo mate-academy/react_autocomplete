@@ -64,6 +64,11 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={handleQueryChange}
+            onFocus={useCallback(() => {
+              if (!query) {
+                setIsPersonListActive(true);
+              }
+            }, [query])}
           />
         </div>
 

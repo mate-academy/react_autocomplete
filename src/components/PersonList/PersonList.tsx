@@ -11,7 +11,7 @@ export const PersonList: React.FC<Props> = React.memo(
   ({ persons, onSelect }) => {
     return (
       <>
-        {persons.length !== 0 ? (
+        {persons.length ? (
           persons.map(person => (
             <div
               className="dropdown-item"
