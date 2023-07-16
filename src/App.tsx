@@ -54,7 +54,7 @@ export const App: React.FC = () => {
       setSelectedPerson(null);
       setIsPersonListActive(false);
     }
-  }, [appliedQuery, filteredPersons]);
+  }, [filteredPersons]);
 
   return (
     <main className="section">
