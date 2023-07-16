@@ -1,4 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import './App.scss';
@@ -19,9 +21,16 @@ export const App: React.FC = () => {
     [],
   );
 
+  const firstFocusList = useCallback(() => {
+    if (!query) {
+      setIsPersonListActive(true);
+    }
+  }, [query]);
+
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setIsPersonListActive(false);
   };
 
   const handleClick = (person: Person) => {
@@ -31,20 +40,21 @@ export const App: React.FC = () => {
   };
 
   const filteredPersons = useMemo(() => {
-    setIsPersonListActive(!!appliedQuery);
+    return peopleFromServer.filter(
+      person => person.name.toLowerCase()
+        .includes(appliedQuery.trim().toLowerCase()),
+    );
+  }, [appliedQuery, peopleFromServer]);
 
+  useEffect(() => {
+    setIsPersonListActive(!!appliedQuery);
     if (appliedQuery) {
       setIsPersonListActive(true);
     } else {
       setSelectedPerson(null);
       setIsPersonListActive(false);
     }
-
-    return peopleFromServer.filter(
-      person => person.name.toLowerCase()
-        .includes(appliedQuery.trim().toLowerCase()),
-    );
-  }, [appliedQuery, peopleFromServer]);
+  }, [appliedQuery, filteredPersons]);
 
   return (
     <main className="section">
@@ -64,11 +74,7 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={handleQueryChange}
-            onFocus={useCallback(() => {
-              if (!query) {
-                setIsPersonListActive(true);
-              }
-            }, [query])}
+            onFocus={firstFocusList}
           />
         </div>
 
