@@ -7,11 +7,11 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const [text, setText] = useState('');
   const [person, setPerson] = useState<Person | null>();
-  const [search, setSearch] = useState(false);
+  const [isSearch, setIsSearch] = useState(false);
   const [same, setSame] = useState<Person[]>([]);
 
   const searchMethod = (value: string) => {
-    setSearch(false);
+    setIsSearch(false);
     setTimeout(() => {
       const filtered = peopleFromServer
         .filter((item) => {
@@ -23,18 +23,25 @@ export const App: React.FC = () => {
         });
 
       setSame(filtered);
-      setSearch(true);
+      if (filtered.length > 1) {
+        setIsSearch(true);
+      }
     }, 1000);
   };
 
   useEffect(() => {
-    if (text !== '') {
+    if (text) {
       searchMethod(text);
     } else {
       setSame([]);
       setPerson(null);
     }
   }, [text]);
+
+  const setValues = (value: Person) => {
+    setPerson(value);
+    setIsSearch(false);
+  };
 
   return (
     <main className="section">
@@ -55,37 +62,32 @@ export const App: React.FC = () => {
         </div>
 
         <div className="dropdown-menu" role="menu">
-          <div
-            className={classNames('dropdown-content',
-              { 'not-visible': search === false },
-              { 'is-visible': search === true })}
-          >
-            { search && (
-              same.map((pers) => {
-                return (
-                  <div
-                    className="dropdown-item"
-                    style={{ cursor: 'pointer' }}
-                    key={pers.name}
-                    aria-hidden="true"
-                    onClick={() => {
-                      setPerson(pers);
-                      setSearch(false);
-                    }}
-                  >
-                    <p
-                      className={classNames(
-                        { 'has-text-danger': pers === person },
-                        { 'has-text-link': pers !== person },
-                      )}
+          { isSearch && (
+            <div className="dropdown-content">
+              {
+                same.map((pers) => {
+                  return (
+                    <div
+                      className="dropdown-item"
+                      style={{ cursor: 'pointer' }}
+                      key={pers.name}
+                      aria-hidden="true"
+                      onClick={() => setValues(pers)}
                     >
-                      {pers.name}
-                    </p>
-                  </div>
-                );
-              })
-            )}
-          </div>
+                      <p
+                        className={classNames(
+                          { 'has-text-danger': pers === person },
+                          { 'has-text-link': pers !== person },
+                        )}
+                      >
+                        {pers.name}
+                      </p>
+                    </div>
+                  );
+                })
+              }
+            </div>
+          )}
         </div>
       </div>
     </main>
