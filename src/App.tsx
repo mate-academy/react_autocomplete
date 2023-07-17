@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.scss';
 import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
@@ -14,17 +14,20 @@ export const App: React.FC = () => {
     setSearch(false);
     setTimeout(() => {
       const filtered = peopleFromServer
-        .filter((item) => item.name.includes(value));
-      // const res = filtered
-      //   .find((item) => value.localeCompare(item.name));
+        .filter((item) => {
+          const itemName = item.name.toLowerCase();
+
+          return (
+            itemName.includes(value.toLowerCase())
+          );
+        });
 
       setSame(filtered);
-      // setPerson(res);
       setSearch(true);
     }, 1000);
   };
 
-  useMemo(() => {
+  useEffect(() => {
     if (text !== '') {
       searchMethod(text);
     } else {
@@ -52,7 +55,11 @@ export const App: React.FC = () => {
         </div>
 
         <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
+          <div
+            className={classNames('dropdown-content',
+              { 'not-visible': text === '' },
+              { 'is-visible': search === false })}
+          >
             { search && (
               same.map((pers) => {
                 return (
@@ -60,7 +67,10 @@ export const App: React.FC = () => {
                     className="dropdown-item"
                     style={{ cursor: 'pointer' }}
                     key={pers.name}
-                    onDoubleClick={() => setPerson(pers)}
+                    aria-hidden="true"
+                    onClick={() => {
+                      setPerson(pers);
+                    }}
                   >
                     <p
                       className={classNames(
