@@ -57,8 +57,8 @@ export const App: React.FC = () => {
         <div className="dropdown-menu" role="menu">
           <div
             className={classNames('dropdown-content',
-              { 'not-visible': text === '' },
-              { 'is-visible': search === false })}
+              { 'not-visible': search === false },
+              { 'is-visible': search === true })}
           >
             { search && (
               same.map((pers) => {
@@ -70,6 +70,7 @@ export const App: React.FC = () => {
                     aria-hidden="true"
                     onClick={() => {
                       setPerson(pers);
+                      setSearch(false);
                     }}
                   >
                     <p
