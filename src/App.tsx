@@ -1,56 +1,95 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import debounce from 'lodash.debounce';
 import './App.scss';
+import classNames from 'classnames';
+
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { PeopleList } from './components/PeopleList/PeopleList';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const delay = 1000;
+  const allPeople: Person[] = peopleFromServer;
+
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [query, setQuery] = useState<string>('');
+  const [showList, setShowList] = useState<boolean>(false);
+
+  const filteredPeople = useMemo(() => {
+    return allPeople.filter(
+      person => person.name.toLowerCase().includes(query.toLowerCase().trim()),
+    );
+  }, [query, allPeople]);
+
+  const applySearch = useCallback(
+    debounce(value => {
+      setQuery(value);
+    }, delay),
+    [delay],
+  );
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    setShowList(true);
+    applySearch(event.target.value);
+  };
+
+  const handleSelectPerson = (person: Person) => {
+    setQuery(person.name);
+    setSelectedPerson(person);
+    setShowList(false);
+  };
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      {selectedPerson ? (
+        <h1
+          className={classNames('title', {
+            'has-text-danger': selectedPerson?.sex === 'f',
+            'has-text-link': selectedPerson?.sex === 'm',
+          })}
+        >
+          {`${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`}
+        </h1>
+      ) : (
+        <h1 className="title">
+          No selected person
+        </h1>
+      )}
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
           <input
             type="text"
+            value={query}
             placeholder="Enter a part of the name"
             className="input"
+            onChange={handleInputChange}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
+        <button
+          type="button"
+          onClick={() => setQuery('')}
+        >
+          X
+        </button>
 
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
+        {showList && (
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              {filteredPeople.length === 0 ? (
+                <p>No matching suggestions</p>
+              ) : (
+                <PeopleList
+                  people={filteredPeople}
+                  onSelect={handleSelectPerson}
+                  onQuery={setQuery}
+                />
+              )}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );
