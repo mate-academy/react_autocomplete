@@ -1,10 +1,21 @@
 import React, { useCallback, useRef, useState } from 'react';
-import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+
+function debounce(callback: (...args: any) => void, delay: number) {
+  let timerId = 0;
+
+  return (...args: any) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -20,13 +31,13 @@ export const App: React.FC = () => {
 
   const handleQueryCahnge = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    apllyQuery(event.target.value);
 
     if (event.target.value === prevQuery.current) {
       return;
     }
 
     prevQuery.current = event.target.value;
+    apllyQuery(event.target.value);
   };
 
   const selectPerson = (person: Person) => {
@@ -34,11 +45,10 @@ export const App: React.FC = () => {
     setQuery(person.name);
   };
 
-  const handleOnBlurInput = () => {
-    setTimeout(() => {
-      setOpenMenu(false);
-    }, 100);
-  };
+  const handleOnBlurInput = useCallback(
+    debounce(setOpenMenu, 100),
+    [],
+  );
 
   const filteredPeople = peopleFromServer.filter(
     person => person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
@@ -61,7 +71,7 @@ export const App: React.FC = () => {
             value={query}
             onChange={handleQueryCahnge}
             onFocus={() => setOpenMenu(true)}
-            onBlur={handleOnBlurInput}
+            onBlur={() => handleOnBlurInput(false)}
           />
         </div>
 
