@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import debounce from 'lodash/debounce';
 import cn from 'classnames';
 
 import { DropdownMenu } from './Components/DropdownMenu';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { debounce } from './Utils/Debounce';
 
 import './App.scss';
 
