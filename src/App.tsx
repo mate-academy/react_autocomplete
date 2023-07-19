@@ -14,7 +14,6 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState<string>('');
   const [applyQuery, setApplyQuery] = useState<string>('');
-  const [showList, setShowList] = useState<boolean>(false);
 
   const filteredPeople = useMemo(() => {
     return allPeople.filter(
@@ -29,7 +28,6 @@ export const App: React.FC = () => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    setShowList(true);
     applySearch(event.target.value);
   };
 
@@ -37,7 +35,6 @@ export const App: React.FC = () => {
     setQuery(person.name);
     setApplyQuery(person.name);
     setSelectedPerson(person);
-    setShowList(false);
   };
 
   return (
@@ -75,7 +72,7 @@ export const App: React.FC = () => {
           X
         </button>
 
-        {showList && (
+        {(query && query === applyQuery) && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {filteredPeople.length === 0 ? (
