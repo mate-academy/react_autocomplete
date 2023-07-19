@@ -36,7 +36,7 @@ export const Autocomplete: React.FC<Props> = ({ delay }) => {
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay),
-    [],
+    [delay],
   );
 
   const setQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,8 +45,8 @@ export const Autocomplete: React.FC<Props> = ({ delay }) => {
   };
 
   const filteredPeople = useMemo(() => (
-    filterPeople(peopleFromServer, appliedQuery)
-  ), [appliedQuery]);
+    filterPeople(peopleFromServer, query)
+  ), [query]);
 
   return (
     <main className="section">
@@ -67,7 +67,7 @@ export const Autocomplete: React.FC<Props> = ({ delay }) => {
           />
         </div>
 
-        {query && appliedQuery === query && (
+        {query && query === appliedQuery && (
           <ListOfPeople
             people={filteredPeople}
             onSelected={handleSelect}
