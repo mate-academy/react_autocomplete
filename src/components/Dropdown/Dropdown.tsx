@@ -10,6 +10,7 @@ type Props = {
   setQuery: (value: string) => void;
   setAppliedQuery: (value: string) => void;
   setPerson: (value: Person | null) => void;
+  delay: number;
 };
 
 export const Dropdown: React.FC<Props> = ({
@@ -18,6 +19,7 @@ export const Dropdown: React.FC<Props> = ({
   setQuery,
   setPerson,
   setAppliedQuery,
+  delay,
 }) => {
   const [isDropdownShow, setIsDropdownShow] = useState(false);
 
@@ -31,7 +33,7 @@ export const Dropdown: React.FC<Props> = ({
     }
 
     setAppliedQuery(value);
-  }, 1000), []);
+  }, delay), []);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsDropdownShow(false);

@@ -4,6 +4,8 @@ import { Person } from './types/Person';
 import { peopleFromServer } from './data/people';
 import { Dropdown } from './components/Dropdown';
 
+const delay = 1000;
+
 export const App: React.FC = () => {
   const [person, setPerson] = useState<null | Person>(null);
   const [query, setQuery] = useState('');
@@ -29,6 +31,7 @@ export const App: React.FC = () => {
         setQuery={setQuery}
         setAppliedQuery={setAppliedQuery}
         setPerson={setPerson}
+        delay={delay}
       />
     </main>
   );
