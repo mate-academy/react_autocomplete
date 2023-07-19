@@ -13,18 +13,17 @@ export const App: React.FC = () => {
 
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState<string>('');
+  const [applyQuery, setApplyQuery] = useState<string>('');
   const [showList, setShowList] = useState<boolean>(false);
 
   const filteredPeople = useMemo(() => {
     return allPeople.filter(
       person => person.name.toLowerCase().includes(query.toLowerCase().trim()),
     );
-  }, [query, allPeople]);
+  }, [applyQuery, allPeople]);
 
   const applySearch = useCallback(
-    debounce(value => {
-      setQuery(value);
-    }, delay),
+    debounce(setApplyQuery, delay),
     [delay],
   );
 
@@ -36,6 +35,7 @@ export const App: React.FC = () => {
 
   const handleSelectPerson = (person: Person) => {
     setQuery(person.name);
+    setApplyQuery(person.name);
     setSelectedPerson(person);
     setShowList(false);
   };
