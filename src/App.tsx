@@ -38,6 +38,7 @@ export const App: React.FC = () => {
   const handleSelectPerson = (person: Person) => {
     setSelectedPerson(person);
     setAppliedQuery('');
+    setQuery('');
   };
 
   const visiblePeople = useMemo(() => {
