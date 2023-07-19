@@ -10,7 +10,7 @@ type Props = {
   delay: number,
 };
 
-export const Dropdown: React.FC<Props> = ({
+export const Dropdown: React.FC<Props> = React.memo(({
   people,
   setOnSelected,
   delay,
@@ -22,7 +22,7 @@ export const Dropdown: React.FC<Props> = ({
     return people.filter(person => (
       person.name.toLowerCase().includes(appliedValue)
     )) || null;
-  }, [appliedValue, people]);
+  }, [appliedValue]);
 
   const applyValue = useCallback(
     debounce(setAppliedValue, delay),
@@ -38,14 +38,16 @@ export const Dropdown: React.FC<Props> = ({
     applyValue(normalisedEvent);
   };
 
-  const handleClick = (
+  const handleClick = useCallback((
     person: Person,
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
   ) => {
     event.preventDefault();
+
     setValue(person.name);
     setOnSelected(person);
-  };
+    setAppliedValue('');
+  }, []);
 
   return (
     <div className="dropdown is-active">
@@ -86,4 +88,4 @@ export const Dropdown: React.FC<Props> = ({
       )}
     </div>
   );
-};
+});
