@@ -31,7 +31,8 @@ export const Dropdown: React.FC<Props> = ({
 
   return (
     <div className={classNames('dropdown', {
-      'is-active': selectedUser?.name !== appliedQuery,
+      'is-active': selectedUser?.name !== appliedQuery
+        && appliedQuery === query,
     })}
     >
       <div className="dropdown-trigger">
