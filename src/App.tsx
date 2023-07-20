@@ -66,13 +66,10 @@ export const App: React.FC<Props> = ({ delay }) => {
             className="input"
           />
         </div>
-
-        {appliedQuery && (
-          <PeopleList
-            people={filteredPeople}
-            onSelect={handleSelect}
-          />
-        )}
+        <PeopleList
+          people={filteredPeople}
+          onSelect={handleSelect}
+        />
       </div>
     </main>
   );
