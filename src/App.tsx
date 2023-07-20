@@ -5,25 +5,24 @@ import classNames from 'classnames';
 
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-import { PeopleList } from './components/PeopleList/PeopleList';
+import { Dropdown } from './components/Dropdown/Dropdown';
+
+const DELAY = 1000;
 
 export const App: React.FC = () => {
-  const delay = 1000;
   const allPeople: Person[] = peopleFromServer;
 
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState<string>('');
   const [applyQuery, setApplyQuery] = useState<string>('');
 
-  const filteredPeople = useMemo(() => {
-    return allPeople.filter(
-      person => person.name.toLowerCase().includes(query.toLowerCase().trim()),
-    );
-  }, [applyQuery, allPeople]);
+  const filteredPeople = useMemo(() => allPeople.filter(
+    person => person.name.toLowerCase().includes(query.toLowerCase().trim()),
+  ), [applyQuery, allPeople]);
 
   const applySearch = useCallback(
-    debounce(setApplyQuery, delay),
-    [delay],
+    debounce(setApplyQuery, DELAY),
+    [DELAY],
   );
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +32,6 @@ export const App: React.FC = () => {
 
   const handleSelectPerson = useCallback((person: Person) => {
     setQuery('');
-    setApplyQuery('');
     setSelectedPerson(person);
   }, []);
 
@@ -54,40 +52,14 @@ export const App: React.FC = () => {
         </h1>
       )}
 
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            value={query}
-            placeholder="Enter a part of the name"
-            className="input"
-            onChange={handleInputChange}
-          />
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setQuery('')}
-        >
-          X
-        </button>
-
-        {(query && query === applyQuery) && (
-          <div className="dropdown-menu" role="menu">
-            <div className="dropdown-content">
-              {filteredPeople.length === 0 ? (
-                <p>No matching suggestions</p>
-              ) : (
-                <PeopleList
-                  people={filteredPeople}
-                  onSelect={handleSelectPerson}
-                  onQuery={setQuery}
-                />
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+      <Dropdown
+        filteredPeople={filteredPeople}
+        query={query}
+        onQuery={setQuery}
+        applyQuery={applyQuery}
+        onInputChange={handleInputChange}
+        onSelectPerson={handleSelectPerson}
+      />
     </main>
   );
 };
