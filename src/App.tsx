@@ -44,7 +44,7 @@ export const App: React.FC<Props> = ({ delay }) => {
     return peopleFromServer
       .filter(person => person.name.toLowerCase()
         .includes(appliedQuery.trim().toLowerCase()));
-  }, [appliedQuery]);
+  }, [appliedQuery, peopleFromServer]);
 
   return (
     <main className="section">
