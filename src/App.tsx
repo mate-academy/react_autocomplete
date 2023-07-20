@@ -31,11 +31,11 @@ export const App: React.FC = () => {
     applySearch(event.target.value);
   };
 
-  const handleSelectPerson = (person: Person) => {
-    setQuery(person.name);
-    setApplyQuery(person.name);
+  const handleSelectPerson = useCallback((person: Person) => {
+    setQuery('');
+    setApplyQuery('');
     setSelectedPerson(person);
-  };
+  }, []);
 
   return (
     <main className="section">
