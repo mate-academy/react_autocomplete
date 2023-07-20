@@ -14,9 +14,9 @@ export const Dropdown: React.FC<Props> = React.memo(({
   return (
     <div className="dropdown-content">
       {people.map(person => (
-        <div className="dropdown-item" key={person.name}>
+        <div className="dropdown-item" key={person.slug}>
           <a
-            href='3/'
+            href="3/"
             className={classNames({
               'has-text-link': person.sex === 'm',
               'has-text-danger': person.sex === 'f',
