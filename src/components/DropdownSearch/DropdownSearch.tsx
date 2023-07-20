@@ -6,7 +6,7 @@ interface Props {
   onChange: (filterField: string) => void,
   setAppliedFilter: (filterField: string) => void,
   delay: number,
-  setIsOpened: (value:boolean) => void,
+  setIsOpened: (value: boolean) => void,
 }
 
 export const DropdownSearch: React.FC<Props> = React.memo((({

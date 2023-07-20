@@ -3,7 +3,7 @@ import { DropdownItem } from '../DropdownItem';
 
 interface Props {
   people: Person[],
-  onSelect: (personSlug:string) => void,
+  onSelect: (personSlug: string) => void,
 }
 
 const noPeopleMessage = (

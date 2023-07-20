@@ -15,7 +15,7 @@ export const App: React.FC = () => {
   const [filterField, setFilterField] = useState('');
   const [appliedFilter, setAppliedFilter] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [isOpened, setIsOpened] = useState(true);
+  const [isOpened, setIsOpened] = useState(false);
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person => {
@@ -27,7 +27,7 @@ export const App: React.FC = () => {
   }, [appliedFilter]);
 
   const selectedPersonBlock = selectedPerson
-    ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
     : 'No one is selected';
 
   const getSelectedPerson = useCallback((personSlug: string) => {
@@ -42,7 +42,9 @@ export const App: React.FC = () => {
   }, [selectedPerson]);
 
   useEffect(() => {
-    setIsOpened(true);
+    if (appliedFilter) {
+      setIsOpened(true);
+    }
   }, [appliedFilter]);
 
   return (

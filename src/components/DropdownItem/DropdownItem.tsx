@@ -22,13 +22,6 @@ export const DropdownItem: React.FC<Props> = ({ person, onSelect }) => {
       >
         {person.name}
       </p>
-      {/* <button
-        className="button is-info is-small"
-        type="button"
-        onClick={() => onSelect(person.slug)}
-      >
-        Select
-      </button> */}
     </div>
   );
 };
