@@ -16,18 +16,16 @@ export const PeopleList: React.FC<Props> = ({
         {!people.length ? (
           <p className="has-text-danger">No matching suggestions</p>
         ) : people.map(person => (
-          <div
+          <button
+            type="button"
             className="dropdown-item"
             key={person.slug}
             onClick={() => onSelect(person)}
-            onKeyDown={() => onSelect(person)}
-            role="button"
-            tabIndex={0}
           >
             <p className="has-text-link">
               {person.name}
             </p>
-          </div>
+          </button>
         ))}
       </div>
     </div>
