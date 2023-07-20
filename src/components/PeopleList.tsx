@@ -19,7 +19,7 @@ export const PeopleList: React.FC<Props> = React.memo(({
           ) : (
             people.map(person => (
               <div
-                className="dropdown-item"
+                className="dropdown-item button"
                 key={person.slug}
                 onClick={() => onSelected(person)}
                 onKeyDown={() => onSelected(person)}
