@@ -6,16 +6,19 @@ import { Person } from '../../types/Person';
 
 type Props = {
   people: Person[],
-  onClick: (person: Person) => void,
+  onSelected: (person: Person) => void,
 };
 
-export const PeopleList: React.FC<Props> = React.memo(({ people, onClick }) => (
+export const PeopleList: React.FC<Props> = React.memo(({
+  people,
+  onSelected,
+}) => (
   <div className="dropdown-content">
     {people.map((person: Person) => (
       <div
         className="dropdown-item"
         key={person.slug}
-        onClick={() => onClick(person)}
+        onClick={() => onSelected(person)}
       >
         <p
           className={cn({
@@ -28,4 +31,7 @@ export const PeopleList: React.FC<Props> = React.memo(({ people, onClick }) => (
       </div>
     ))}
   </div>
-));
+),
+(prevProps: Props, nextProps: Props): boolean => {
+  return prevProps.people === nextProps.people;
+});
