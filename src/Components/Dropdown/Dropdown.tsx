@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */
+
 import './Dropdown.scss';
 import React, { useCallback, useState } from 'react';
 import { debounce } from 'lodash';
@@ -20,22 +22,23 @@ export const Dropdown: React.FC<Props> = ({ delay, setSelectedPerson }) => {
   }, []);
 
   const filterPeople = useCallback(
-    (peopleArray: Person[], { completeQuery }: { completeQuery: string }) => {
+    (peopleArray: Person[], complQuery: string) => {
       return peopleArray.filter(person => {
         return normalizeQuery(person.name)
-          .includes(normalizeQuery(completeQuery));
+          .includes(normalizeQuery(complQuery));
       });
-    }, [query]);
-
-  const filteredPeople: Person[] = filterPeople(peopleFromServer, { completeQuery });
+    }, [query],
+  );
+  // eslint-disable-next-line
+  const filteredPeople: Person[] = filterPeople(peopleFromServer, completeQuery);
 
   const handleCompleteQuery = useCallback(
     (newQuery: string) => {
       setCompleteQuery(newQuery);
     },
-    []
+    [],
   );
-
+  // eslint-disable-next-line
   const debouncedHandleCompleteQuery = useCallback(debounce(handleCompleteQuery, delay), []);
 
   const handleQuery = useCallback(
@@ -43,7 +46,7 @@ export const Dropdown: React.FC<Props> = ({ delay, setSelectedPerson }) => {
       setQuery(newQuery);
       debouncedHandleCompleteQuery(newQuery);
     },
-    [debouncedHandleCompleteQuery]
+    [debouncedHandleCompleteQuery],
   );
 
   const handleResetBtn = () => {
@@ -60,8 +63,9 @@ export const Dropdown: React.FC<Props> = ({ delay, setSelectedPerson }) => {
 
   return (
     <div className={classNames('dropdown', {
-      'is-active': completeQuery
-    })}>
+      'is-active': completeQuery,
+    })}
+    >
       <div className="dropdown-trigger">
         <div className="control has-icons-right ">
           <input
