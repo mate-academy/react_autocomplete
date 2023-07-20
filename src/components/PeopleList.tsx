@@ -7,6 +7,15 @@ type Props = {
   onSelected: (person: Person) => void,
 };
 
+const onSelect = (
+  event: React.MouseEvent<HTMLAnchorElement>,
+  person: Person,
+  onSelected: (person: Person) => void,
+) => {
+  event.preventDefault();
+  onSelected(person);
+};
+
 export const PeopleList: React.FC<Props> = ({ people, onSelected }) => {
   return (
     <div className="dropdown-menu" role="menu">
@@ -16,10 +25,7 @@ export const PeopleList: React.FC<Props> = ({ people, onSelected }) => {
             <a
               href="/#"
               className="dropdown-item"
-              onClick={event => {
-                event.preventDefault();
-                onSelected(person);
-              }}
+              onClick={event => onSelect(event, person, onSelected)}
             >
               <p
                 className={cn({
