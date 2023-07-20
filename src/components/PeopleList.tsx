@@ -26,7 +26,12 @@ export const PeopleList: React.FC<Props> = React.memo(({
                 role="button"
                 tabIndex={0}
               >
-                <p className="has-text-link">
+                <p className={
+                  (person.sex === 'm')
+                    ? 'has-text-link'
+                    : 'has-text-danger'
+                }
+                >
                   {person.name}
                 </p>
               </div>

@@ -1,11 +1,22 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import debounce from 'lodash.debounce';
 import cn from 'classnames';
 
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { PeopleList } from './components/PeopleList';
 import { Person } from './types/Person';
+
+function debounce(callback: (...args: string[]) => void, delay: number) {
+  let timeId = 0;
+
+  return (...args: string[]) => {
+    window.clearTimeout(timeId);
+
+    timeId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -30,7 +41,7 @@ export const App: React.FC = () => {
       person.name.toLowerCase()
         .includes(appliedQuery.trim().toLocaleLowerCase())
     ));
-  }, [appliedQuery]);
+  }, [appliedQuery, peopleFromServer]);
 
   return (
     <main className="section">
