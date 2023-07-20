@@ -1,39 +1,48 @@
 import classNames from 'classnames';
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import debounce from 'lodash.debounce';
 
 import './App.scss';
+import { DropdownList } from './components/DropdownList';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
-const getPreparedPeople = (people: Person[], { query }) => {
-  let filteredPeople = [...people];
+const getPreparedPeople = (query: string) => {
+  const preparedQuery = query.trim().toLowerCase();
 
-  if (query && typeof query === 'string') {
-    filteredPeople = filteredPeople.filter(
-      person => person.name.toLowerCase().includes(query.trim().toLowerCase()),
-    );
-  }
-
-  return filteredPeople;
+  return peopleFromServer.filter(
+    person => person.name.toLowerCase().includes(preparedQuery),
+  );
 };
+
+const delay = 1000;
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-
-  const visiblePeople = getPreparedPeople(
-    peopleFromServer,
-    { query },
-  );
+  const [debouncedQuery, setDebouncedQuery] = useState('');
 
   const handleSelectPerson = (
     pers: Person,
-    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    event.preventDefault();
     setSelectedPerson(pers);
     setQuery(pers.name);
+    setDebouncedQuery('');
   };
+
+  const applyDebouncedQuery = useCallback(
+    debounce(setDebouncedQuery, delay),
+    [],
+  );
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyDebouncedQuery((event.target.value).trim());
+  };
+
+  const visiblePeople = useMemo(
+    () => getPreparedPeople(debouncedQuery), [debouncedQuery],
+  );
 
   return (
     <main className="section">
@@ -54,39 +63,16 @@ export const App: React.FC = () => {
             placeholder="Enter a part of the name"
             className="input"
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={handleQueryChange}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {visiblePeople.length > 0
-              ? (visiblePeople.map(vPerson => (
-                <a
-                  href="#/"
-                  className="dropdown-item"
-                  key={vPerson.slug}
-                  onClick={(event) => handleSelectPerson(vPerson, event)}
-                >
-                  <p
-                    className={classNames({
-                      'has-text-link': vPerson.sex === 'm',
-                      'has-text-danger': vPerson.sex === 'f',
-                    })}
-                  >
-                    {vPerson.name}
-                  </p>
-                </a>
-              )))
-              : (
-                <div className="dropdown-item">
-                  <p>
-                    No matching suggestions
-                  </p>
-                </div>
-              )}
-          </div>
-        </div>
+        {debouncedQuery && (
+          <DropdownList
+            people={visiblePeople}
+            onClick={handleSelectPerson}
+          />
+        )}
       </div>
     </main>
   );
