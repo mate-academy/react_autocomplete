@@ -19,16 +19,14 @@ export const DropdownList: React.FC<Props> = ({ people, onSelect }) => {
 
   return (
     <div className="dropdown-content">
-      <div className="dropdown-content">
-        {people.map(person => (
-          <DropdownItem
-            key={person.slug}
-            person={person}
-            onSelect={onSelect}
-          />
-        ))}
-        {!filteredPeopleCheck && noPeopleMessage}
-      </div>
+      {people.map(person => (
+        <DropdownItem
+          key={person.slug}
+          person={person}
+          onSelect={onSelect}
+        />
+      ))}
+      {!filteredPeopleCheck && noPeopleMessage}
     </div>
   );
 };
