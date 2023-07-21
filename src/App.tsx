@@ -23,11 +23,12 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [query, setQuery] = useState('');
 
-  const isEmptyField = !!query.trim();
+  const isEmptyField = !!appliedQuery.trim();
 
   const handleSelected = useCallback((currentPerson: Person) => {
     setSelectedPerson(currentPerson);
     setAppliedQuery('');
+    setQuery('');
   }, []);
 
   const applyQuery = useCallback(
@@ -41,11 +42,15 @@ export const App: React.FC = () => {
   };
 
   const filteredPeople = useMemo(() => {
-    return peopleFromServer.filter(person => (
-      person.name.toLowerCase()
-        .includes(appliedQuery.trim().toLocaleLowerCase())
-    ));
-  }, [appliedQuery, peopleFromServer]);
+    if (appliedQuery.trim()) {
+      return peopleFromServer.filter(person => (
+        person.name.toLowerCase()
+          .includes(appliedQuery.trim().toLocaleLowerCase())
+      ));
+    }
+
+    return peopleFromServer;
+  }, [appliedQuery]);
 
   return (
     <main className="section">
