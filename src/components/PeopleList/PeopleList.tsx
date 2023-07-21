@@ -3,13 +3,13 @@ import { Person } from '../../types/Person';
 
 type Prop = {
   people: Person[],
-  onSelect?: (person: Person) => void,
+  onSelectPerson?: (person: Person) => void,
   onQuery?: (query: string) => void,
 };
 
 export const PeopleList:React.FC<Prop> = React.memo(({
   people,
-  onSelect = () => {},
+  onSelectPerson = () => {},
   onQuery = () => {},
 }) => {
   const handlePersonClick = (
@@ -17,7 +17,7 @@ export const PeopleList:React.FC<Prop> = React.memo(({
     person: Person,
   ) => {
     event.preventDefault();
-    onSelect(person);
+    onSelectPerson(person);
     onQuery(person.name);
   };
 
