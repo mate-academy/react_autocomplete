@@ -1,0 +1,12 @@
+.dropdown {
+  display: inline-block;
+  width: 23rem;
+
+  &-menu {
+    width: 23rem;
+  }
+
+  &-item:hover {
+    background-color: lightblue;
+  }
+}
