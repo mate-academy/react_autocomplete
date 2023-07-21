@@ -1,4 +1,4 @@
-- make sure you can't add movie with empty data (with spaces only);
+- make sure that filter won't be called if user enred spaces only;
 - don't interact with DOM directly, use React as much as possible;
 - make sure you described objects in propTypes;
 - don't generate key on render ([here](https://medium.com/blackrock-engineering/5-common-mistakes-with-keys-in-react-b86e82020052) is why)
