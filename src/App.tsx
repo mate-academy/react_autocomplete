@@ -21,6 +21,9 @@ function debounce(callback: (...args: string[]) => void, delay: number) {
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [query, setQuery] = useState('');
+
+  const isEmptyField = !!query.trim();
 
   const handleSelected = useCallback((currentPerson: Person) => {
     setSelectedPerson(currentPerson);
@@ -33,6 +36,7 @@ export const App: React.FC = () => {
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
     applyQuery(event.target.value);
   };
 
@@ -62,10 +66,11 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
           />
         </div>
 
-        {appliedQuery && (
+        {appliedQuery && isEmptyField && (
           <PeopleList
             people={filteredPeople}
             onSelected={handleSelected}
