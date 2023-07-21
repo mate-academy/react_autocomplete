@@ -8,7 +8,7 @@ that will suggest people matching an entered text.
 
 - suggestions should appear after some `delay` in typing (`debounce`);
 - the `delay` should be customizable via props;
-- show the list of all people when input is focused but empty
+- show the list of all people when input is focused but empty ([Check this](https://mui.com/material-ui/react-autocomplete/#combo-box) to see how it can work)
 - show `No matching suggestions` message if there are no people containing the entered text;
 - don't run filtering again if the text has not changed (pause in typing happened when the text was the same as before)
 - hide suggestions on text change;
