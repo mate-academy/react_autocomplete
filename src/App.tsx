@@ -1,56 +1,78 @@
-import React from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import classNames from 'classnames';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { DropdownSearch } from './components/DropdownSearch';
+import { DropdownList } from './components/DropdownList';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [filterField, setFilterField] = useState('');
+  const [appliedFilter, setAppliedFilter] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [isOpened, setIsOpened] = useState(false);
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter(person => {
+      const normalizedfilterField = appliedFilter.toLowerCase().trim();
+      const normalizedName = person.name.toLowerCase();
+
+      return normalizedName.includes(normalizedfilterField);
+    });
+  }, [appliedFilter]);
+
+  const selectedPersonBlock = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : 'No one is selected';
+
+  const getSelectedPerson = useCallback((personSlug: string) => {
+    setIsOpened(false);
+    setSelectedPerson(peopleFromServer.find(person => {
+      return personSlug === person.slug;
+    }) || null);
+  }, []);
+
+  useEffect(() => {
+    setFilterField(selectedPerson?.name || '');
+  }, [selectedPerson]);
+
+  useEffect(() => {
+    if (appliedFilter) {
+      setIsOpened(true);
+    }
+  }, [appliedFilter]);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPersonBlock}
       </h1>
 
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
+      <div className={classNames('dropdown', {
+        'is-active': isOpened,
+      })}
+      >
+
+        <DropdownSearch
+          filterField={filterField}
+          onChange={(newFilterField) => setFilterField(newFilterField)}
+          setAppliedFilter={(newQuery) => setAppliedFilter(newQuery)}
+          delay={500}
+          setIsOpened={(value) => setIsOpened(value)}
+        />
+
+        <div className="dropdown-menu" role="menu">
+          <DropdownList
+            people={filteredPeople}
+            onSelect={getSelectedPerson}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
       </div>
     </main>
   );
