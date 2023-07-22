@@ -1,56 +1,92 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
+import cn from 'classnames';
 import { peopleFromServer } from './data/people';
+import { DropDownMenu } from './components/DropDownMenu/DropDownMenu';
+
+const debounce = (
+  f: React.Dispatch<React.SetStateAction<string>>,
+  delay: number,
+) => {
+  let timerId: number;
+
+  return (...args: string[]) => {
+    clearTimeout(timerId);
+    timerId = setTimeout(f, delay, ...args);
+  };
+};
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [selectedPersonSlug, setSelectedPersonSlug] = useState('');
+  const [isSugActive, setIsSugActive] = useState(false);
+
+  const visiblePeople = useMemo(() => {
+    const normalizedQuery = appliedQuery.toLowerCase().trim();
+
+    if (appliedQuery) {
+      setIsSugActive(true);
+    }
+
+    if (!appliedQuery) {
+      setSelectedPersonSlug('');
+      setIsSugActive(false);
+    }
+
+    return peopleFromServer.filter(person => (
+      person.name.toLowerCase().includes(normalizedQuery)
+    ));
+  }, [appliedQuery]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 1000),
+    [],
+  );
+
+  const selectedPerson = visiblePeople.find(person => (
+    person.slug === selectedPersonSlug
+  ));
+
+  const handleSelect = useCallback((
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    personSlug: string,
+    personName: string,
+    status: boolean,
+  ) => {
+    event.preventDefault();
+    setSelectedPersonSlug(personSlug);
+    setQuery(personName);
+    setIsSugActive(status);
+  }, []);
+
+  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPersonSlug
+          ? `${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`
+          : 'No selected person'}
       </h1>
 
-      <div className="dropdown is-active">
+      <div className={cn('dropdown',
+        { 'is-active': isSugActive === true })}
+      >
         <div className="dropdown-trigger">
           <input
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={handleInput}
           />
         </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        <DropDownMenu onSelect={handleSelect} visiblePeople={visiblePeople} />
       </div>
     </main>
   );
