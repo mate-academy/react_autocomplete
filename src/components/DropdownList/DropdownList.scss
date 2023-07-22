@@ -1,0 +1,11 @@
+.dropdown {
+  &-item {
+    background-color: #fff;
+    border: none;
+    cursor: pointer;
+
+    &--no-item {
+      cursor: default;
+    }
+  }
+}
