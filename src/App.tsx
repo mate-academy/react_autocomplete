@@ -1,4 +1,9 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import './App.scss';
 import { debounce } from 'lodash';
 import { peopleFromServer } from './data/people';
@@ -12,6 +17,8 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [isSelected, setIsSelected] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef(null);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, LIST_UPDATE_DELAY), [],
@@ -44,20 +51,28 @@ export const App: React.FC = () => {
             ? `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`
             : 'No selected person'
         }
-        {}
       </h1>
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
           <input
+            ref={inputRef}
             type="text"
             placeholder="Enter a part of the name"
             className="input"
             value={query}
             onChange={handleQueryChange}
+            onFocus={() => {
+              setIsFocused(true);
+            }}
+            onBlur={() => {
+              setTimeout(() => {
+                setIsFocused(false);
+              }, 150);
+            }}
           />
         </div>
 
-        {!isSelected
+        {(isFocused)
           && (
             <DropdownMenu
               people={filteredPeople}
