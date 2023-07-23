@@ -1,3 +1,16 @@
 iframe {
   display: none;
 }
+
+.dropdown-item {
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: lightgray;
+  }
+
+  &:active {
+    background-color: rgb(195, 195, 195);
+  }
+}
