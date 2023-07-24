@@ -23,8 +23,9 @@ export const App: React.FC = () => {
 
   const handleInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
+    setAppliedQuery('');
     applyQuery(e.target.value);
-  }, [query]);
+  }, []);
 
   const filteredPeople = peopleFromServer.filter(person => (
     person.name
