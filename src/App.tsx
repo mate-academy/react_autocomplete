@@ -1,57 +1,38 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
+import { Person } from './types/Person';
 import { peopleFromServer } from './data/people';
+import { Dropdown } from './components/Dropdown';
+
+const delay = 1000;
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [person, setPerson] = useState<null | Person>(null);
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter(currentPerson => {
+      const normalizedQuery = appliedQuery.toLowerCase();
+
+      return currentPerson.name.toLowerCase().includes(normalizedQuery);
+    });
+  }, [peopleFromServer, appliedQuery]);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {person ? `${person.name} (${person.born} = ${person.died})` : 'No selected person'}
       </h1>
 
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Dropdown
+        people={filteredPeople}
+        query={query}
+        setQuery={setQuery}
+        setAppliedQuery={setAppliedQuery}
+        setPerson={setPerson}
+        delay={delay}
+      />
     </main>
   );
 };
