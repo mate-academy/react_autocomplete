@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from 'react';
-import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../../data/people';
 import { Person } from '../../types/Person';
 
@@ -16,8 +15,20 @@ export const Dropdown: React.FC<Props> = ({
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectetPerson, setSelectedPerson] = useState<Person | null>(null);
 
+  function debounce(callback: React.Dispatch<React.SetStateAction<string>>) {
+    let timerId = 0;
+
+    return (args: string) => {
+      window.clearTimeout(timerId);
+
+      timerId = window.setTimeout(() => {
+        callback(args);
+      }, delay);
+    };
+  }
+
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay), [],
+    debounce(setAppliedQuery), [],
   );
 
   const handleQuryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
