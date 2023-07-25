@@ -1,0 +1,30 @@
+
+.dropdown-item {
+  cursor: pointer;
+
+  &:hover {
+    background-color: #eeeded;
+  }
+}
+
+.dropdown-trigger {
+  position: relative;
+}
+
+.input {
+  width: 270px;
+}
+
+.reset {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.dropdown-content {
+  min-height: max-content;
+  max-height: 300px;
+  overflow-y: scroll;
+}
