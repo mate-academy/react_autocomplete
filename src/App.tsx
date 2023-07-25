@@ -9,7 +9,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [isEntering, seIsEntering] = useState(false);
+  const [isEntering, setIsEntering] = useState(false);
 
   const selectPerson = (person: Person) => {
     setSelectedPerson(person);
@@ -20,13 +20,13 @@ export const App: React.FC = () => {
   const applyQuery = useCallback(
     debounce((value) => {
       setAppliedQuery(value);
-      seIsEntering(false);
+      setIsEntering(false);
     }, 1000),
     [],
   );
 
   const handleInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    seIsEntering(true);
+    setIsEntering(true);
     setQuery(e.target.value);
     applyQuery(e.target.value);
   }, []);
