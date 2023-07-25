@@ -4,23 +4,12 @@ import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
 import { PeopleList } from './components/PeopleList';
 import { Person } from './types/Person';
-
-function debounce(callback: (...args: string[]) => void, delay: number) {
-  let timerId = 0;
-
-  return (...args: string[]) => {
-    window.clearTimeout(timerId);
-
-    timerId = window.setTimeout(() => {
-      callback(...args);
-    }, delay);
-  };
-}
+import { debounce } from './services/debounce';
 
 export const App: React.FC = () => {
   const [person, setPerson] = useState<Person>();
   const [query, setQuery] = useState('');
-  const [focus, setFocus] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const applyQuery = useCallback(debounce(setQuery, 1000), []);
 
@@ -36,24 +25,21 @@ export const App: React.FC = () => {
 
   const handleBlur = () => {
     setTimeout(() => {
-      setFocus(false);
+      setIsFocused(false);
     }, 200);
   };
 
   return (
     <main className="section">
       <h1 className="title">
-        {!person && (
-          'No selected person'
-        )}
-        {person && (
-          `${person.name} (${person.born} - ${person.died})`
-        )}
+        {person
+          ? `${person.name} (${person.born} - ${person.died})`
+          : 'No selected person'}
       </h1>
 
       <div
         className={classNames('dropdown', {
-          'is-active': focus,
+          'is-active': isFocused,
         })}
       >
         <div className="dropdown-trigger">
@@ -63,7 +49,7 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={handleQueryChange}
-            onFocus={() => setFocus(true)}
+            onFocus={() => setIsFocused(true)}
             onBlur={handleBlur}
           />
         </div>
@@ -74,7 +60,7 @@ export const App: React.FC = () => {
         <PeopleList
           people={filteredPerson}
           onSelected={setPerson}
-          setFocus={setFocus}
+          setIsFocused={setIsFocused}
           setQuery={setQuery}
         />
       </div>
