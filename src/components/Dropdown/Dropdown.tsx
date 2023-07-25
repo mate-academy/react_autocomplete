@@ -31,7 +31,7 @@ export const Dropdown: React.FC<Props> = ({
     debounce(setAppliedQuery), [],
   );
 
-  const handleQuryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
   };
@@ -54,12 +54,12 @@ export const Dropdown: React.FC<Props> = ({
           value={query}
           placeholder="Enter a part of the name"
           className="input"
-          onChange={handleQuryChange}
+          onChange={handleQueryChange}
         />
       </div>
 
       <div className="dropdown-menu" role="menu">
-        {appliedQuery !== '' && selectetPerson?.name !== query ? (
+        {appliedQuery !== '' && selectetPerson?.name !== query && (
           <div className="dropdown-content">
             {filteredPeople.length !== 0 ? (
               filteredPeople.map(persone => (
@@ -78,8 +78,6 @@ export const Dropdown: React.FC<Props> = ({
               'No matching suggestions'
             )}
           </div>
-        ) : (
-          ''
         )}
       </div>
     </div>
