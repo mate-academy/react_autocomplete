@@ -14,6 +14,7 @@ export const App: React.FC<Props> = ({ delay }) => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [value, setValue] = useState('');
   const [appliedValue, setAppliedValue] = useState('');
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const preparedPeople = useMemo(() => {
     return peopleFromServer.filter(person => (
@@ -29,9 +30,16 @@ export const App: React.FC<Props> = ({ delay }) => {
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const normalisedEvent = event.target.value.toLowerCase();
+    const normalisedEvent = event.target.value.toLowerCase().trim();
+
+    if (!normalisedEvent.length) {
+      setIsInputFocused(true);
+    } else {
+      setIsInputFocused(false);
+    }
 
     setValue(event.target.value);
+    setAppliedValue('');
     applyValue(normalisedEvent);
   };
 
@@ -45,6 +53,16 @@ export const App: React.FC<Props> = ({ delay }) => {
     setSelectedPerson(person);
     setAppliedValue('');
   }, []);
+
+  const handleInputClick = () => {
+    if (!value.trim().length) {
+      setIsInputFocused(true);
+    }
+  };
+
+  const handleInputBlur = () => {
+    setTimeout(() => setIsInputFocused(false), 100);
+  };
 
   return (
     <main className="section">
@@ -61,14 +79,17 @@ export const App: React.FC<Props> = ({ delay }) => {
             placeholder="Enter a part of the name"
             className="input"
             value={value}
+            onClick={handleInputClick}
+            onBlur={handleInputBlur}
             onChange={handleChange}
           />
         </div>
 
-        {appliedValue && (
+        {(appliedValue || isInputFocused) && (
           <Dropdown
             people={preparedPeople}
             handleClick={handleClick}
+            setIsInputFocused={setIsInputFocused}
           />
         )}
       </div>
