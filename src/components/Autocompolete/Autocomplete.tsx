@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import debounce from 'lodash.debounce';
+import { debounce } from '../../utils';
 import { Person } from '../../types/Person';
 import { DropdownItem } from '../DropdownItem';
 

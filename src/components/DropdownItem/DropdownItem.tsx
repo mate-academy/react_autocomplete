@@ -2,7 +2,7 @@ import React from 'react';
 import { Person } from '../../types/Person';
 
 type Props = {
-  person: Person | null;
+  person: Person;
   setPerson: (pesron: Person | null) => void;
   setFocusedInput: (v: boolean) => void;
 };
@@ -25,7 +25,7 @@ export const DropdownItem: React.FC<Props> = ({
       className="dropdown-item has-text-link"
       onClick={onPersonChange}
     >
-      {person && person.name}
+      {person.name}
     </a>
   );
 };
