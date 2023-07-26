@@ -1,57 +1,70 @@
-import React from 'react';
+import React, {
+  useState, ChangeEvent, MouseEvent, useMemo, useCallback,
+} from 'react';
 import './App.scss';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { AutoComplete } from './components/Autocomplete';
+import { UserInfo } from './components/UserInfo';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  // #region state
+  const [isContentShown, setIsContentShown] = useState(false);
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState<Person | null>(null);
+  // #endregion
+  // #region handlers
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 1000),
+    [],
+  );
+
+  const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setIsContentShown(false);
+    setQuery(event.target.value.toLowerCase());
+    applyQuery(event.target.value.toLowerCase());
+  };
+
+  const handleUserClick = (
+    event: MouseEvent<HTMLAnchorElement>,
+    value: Person,
+  ) => {
+    event.preventDefault();
+    setIsContentShown(false);
+    setSelectedUser(value);
+  };
+  // #endregion
+  // #region functions
+
+  const getFilteredUsers = () => {
+    setIsContentShown(true);
+
+    return peopleFromServer.filter(user => (
+      user.name.toLowerCase().includes(appliedQuery)
+    ));
+  };
+  // #endregion
+
+  const filteredPeople = useMemo(
+    getFilteredUsers, [appliedQuery, peopleFromServer],
+  );
+
+  const isVisible = isContentShown && appliedQuery.length > 0;
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      <UserInfo user={selectedUser} />
 
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AutoComplete
+        users={filteredPeople}
+        query={query}
+        isContentShown={isVisible}
+        onQueryChange={handleQueryChange}
+        onUserClick={handleUserClick}
+      />
     </main>
   );
 };
