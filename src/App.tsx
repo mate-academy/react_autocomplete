@@ -2,7 +2,6 @@ import React, {
   useState,
   useCallback,
   useMemo,
-  useRef,
 } from 'react';
 import './App.scss';
 import { debounce } from 'lodash';
@@ -18,7 +17,6 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [isSelected, setIsSelected] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const inputRef = useRef(null);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, LIST_UPDATE_DELAY), [],
@@ -33,15 +31,14 @@ export const App: React.FC = () => {
   function handleQueryChange(event: React.ChangeEvent<HTMLInputElement>) {
     applyQuery(event.target.value);
     setQuery(event.target.value);
-    setIsSelected(false);
   }
 
-  const handleSelectedPerson = (person: Person) => {
+  const handleSelectedPerson = useCallback((person: Person) => {
     setAppliedQuery(person.name);
     setQuery(person.name);
     setSelectedPerson(person);
     setIsSelected(true);
-  };
+  }, []);
 
   return (
     <main className="section">
@@ -55,7 +52,6 @@ export const App: React.FC = () => {
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
           <input
-            ref={inputRef}
             type="text"
             placeholder="Enter a part of the name"
             className="input"
