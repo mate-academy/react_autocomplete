@@ -1,3 +1,14 @@
 iframe {
   display: none;
 }
+
+.button {
+  &_delete {
+    transform: translate(50%, 40%);
+  }
+
+  &_hidden {
+    margin-left: 15px;
+    transform: translateY(35%);
+  }
+}
