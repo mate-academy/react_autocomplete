@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import classNames from 'classnames';
 import React, { useCallback, useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
@@ -35,10 +36,10 @@ export const App: React.FC = () => {
     [],
   );
 
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQueryChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyDebouncedQuery((event.target.value).trim());
-  };
+  }, []);
 
   const visiblePeople = useMemo(
     () => getPreparedPeople(debouncedQuery), [debouncedQuery],

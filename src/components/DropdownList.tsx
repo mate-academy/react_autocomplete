@@ -7,7 +7,7 @@ type Props = {
   onClick?: (person: Person) => void;
 };
 
-export const DropdownList: React.FC<Props> = ({
+export const DropdownList: React.FC<Props> = React.memo(({
   people,
   onClick = () => { },
 }) => {
@@ -45,4 +45,4 @@ export const DropdownList: React.FC<Props> = ({
       </div>
     </div>
   );
-};
+});
