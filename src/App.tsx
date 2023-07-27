@@ -9,6 +9,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [inputOnFocus, setInputOnFocus] = useState(false);
   const delay = 1000;
 
   const filteredPeople = useMemo(() => {
@@ -48,10 +49,12 @@ export const App: React.FC = () => {
               setQuery(event.target.value);
               applyQuery(event.target.value);
             }}
+            onFocus={() => setInputOnFocus(true)}
+            onBlur={() => setInputOnFocus(false)}
           />
         </div>
 
-        {appliedQuery
+        {(inputOnFocus || appliedQuery)
           && (
             <div className="dropdown-menu" role="menu">
               <PersonList
