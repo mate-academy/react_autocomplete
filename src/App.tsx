@@ -6,6 +6,7 @@ import React, {
 } from 'react';
 import './App.scss';
 import debounce from 'lodash.debounce';
+import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
@@ -76,7 +77,14 @@ export const App: React.FC = () => {
                       }
                     }}
                   >
-                    <p className="has-text-link">{person.name}</p>
+                    <p
+                      className={classNames({
+                        'has-text-danger': person.sex === 'f',
+                        'has-text-link': person.sex === 'm',
+                      })}
+                    >
+                      {person.name}
+                    </p>
                   </div>
                 ))
               )
