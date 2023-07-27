@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */
 
 import './Dropdown.scss';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { debounce } from 'lodash';
 import classNames from 'classnames';
 
@@ -16,9 +16,11 @@ type Props = {
 export const Dropdown: React.FC<Props> = ({ delay, setSelectedPerson }) => {
   const [query, setQuery] = useState('');
   const [completeQuery, setCompleteQuery] = useState('');
+  const [focuse, setFocuse] = useState(false);
+  const [placeholder, setPlaceholder] = useState('Enter a part of the name');
 
-  const normalizeQuery = useCallback((someQuery: string) => {
-    return someQuery.toLowerCase().trim();
+  const normalizeQuery = useMemo(() => {
+    return (someQuery: string) => someQuery.toLowerCase().trim();
   }, []);
 
   const filterPeople = useCallback(
@@ -30,7 +32,9 @@ export const Dropdown: React.FC<Props> = ({ delay, setSelectedPerson }) => {
     }, [query],
   );
   // eslint-disable-next-line
-  const filteredPeople: Person[] = filterPeople(peopleFromServer, completeQuery);
+  const filteredPeople: Person[] = useMemo(()=>{
+    return filterPeople(peopleFromServer, completeQuery);
+  }, [completeQuery]);
 
   const handleCompleteQuery = useCallback(
     (newQuery: string) => {
@@ -39,7 +43,7 @@ export const Dropdown: React.FC<Props> = ({ delay, setSelectedPerson }) => {
     [],
   );
   // eslint-disable-next-line
-  const debouncedHandleCompleteQuery = useCallback(debounce(handleCompleteQuery, delay), []);
+  const debouncedHandleCompleteQuery = useCallback(debounce(handleCompleteQuery, delay), [delay]);
 
   const handleQuery = useCallback(
     (newQuery: string) => {
@@ -48,6 +52,16 @@ export const Dropdown: React.FC<Props> = ({ delay, setSelectedPerson }) => {
     },
     [debouncedHandleCompleteQuery],
   );
+
+  const handleInputFocus = () => {
+    setFocuse(true);
+    setPlaceholder('');
+  };
+
+  const handleBlur = () => {
+    setFocuse(false);
+    setPlaceholder('Enter a part of the name');
+  };
 
   const handleResetBtn = () => {
     setQuery('');
@@ -63,19 +77,23 @@ export const Dropdown: React.FC<Props> = ({ delay, setSelectedPerson }) => {
 
   return (
     <div className={classNames('dropdown', {
-      'is-active': completeQuery,
+      'is-active':
+        (completeQuery && (completeQuery === query))
+        || (focuse && !query),
     })}
     >
       <div className="dropdown-trigger">
         <div className="control has-icons-right ">
           <input
+            onFocus={handleInputFocus}
+            onBlur={handleBlur}
             type="text"
             value={query}
-            placeholder="Enter a part of the name"
+            placeholder={placeholder}
             className="input"
             onChange={(event) => handleQuery(event.target.value)}
           />
-          {query && (
+          {(query || focuse) && (
             <span className="icon is-right">
               <button
                 type="button"
@@ -90,6 +108,18 @@ export const Dropdown: React.FC<Props> = ({ delay, setSelectedPerson }) => {
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
+          {(focuse && !query) && (
+            peopleFromServer.map(person => (
+              <div
+                role="contentinfo"
+                className="dropdown-item button is-light"
+                key={person.slug}
+                onClick={() => handlePersonClick(person)}
+              >
+                <p className="has-text-link">{person.name}</p>
+              </div>
+            ))
+          )}
           {filteredPeople.length > 0 ? (
             filteredPeople.map(person => (
               <div
