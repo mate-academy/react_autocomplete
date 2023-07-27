@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from 'react';
-import debounce from 'lodash.debounce';
 import { Person } from '../types/Person';
 
 type Props = {
@@ -15,6 +14,20 @@ export const Autocomplete: React.FC<Props> = React.memo(
     const [query, setQuery] = useState('');
     const [appliedQuery, setAppliedQuery] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
+
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    function debounce(callback: Function, delay: number) {
+      let timerId = 0;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (...args: any) => {
+        window.clearTimeout(timerId);
+
+        timerId = window.setTimeout(() => {
+          callback(...args);
+        }, delay);
+      };
+    }
 
     const applyQuery
       = useCallback(debounce(setAppliedQuery, debounceDelay), []);
@@ -37,13 +50,14 @@ export const Autocomplete: React.FC<Props> = React.memo(
     );
 
     const onMouseDown
-    = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, person: Person) => {
-      event.preventDefault();
-      setQuery(person.name);
-      setAppliedQuery(person.name);
-      onSelected(person);
-      setShowDropdown(false);
-    };
+      = (event:
+      React.MouseEvent<HTMLAnchorElement, MouseEvent>, person: Person) => {
+        event.preventDefault();
+        setQuery(person.name);
+        setAppliedQuery(person.name);
+        onSelected(person);
+        setShowDropdown(false);
+      };
 
     return (
       <div className="dropdown is-active">
@@ -68,7 +82,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
                   href="#"
                   key={person.slug}
                   className="dropdown-item"
-                  onMouseDown={() => onMouseDown}
+                  onMouseDown={(event) => onMouseDown(event, person)}
                 >
                   {person.name}
                 </a>
