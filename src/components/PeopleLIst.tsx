@@ -6,7 +6,7 @@ interface Props {
   onSelect?: (person: Person) => void;
 }
 
-export const PeopleList: React.FC<Props> = ({
+export const PeopleList: React.FC<Props> = React.memo(({
   people,
   onSelect = () => {},
 }) => {
@@ -30,4 +30,4 @@ export const PeopleList: React.FC<Props> = ({
       </div>
     </div>
   );
-};
+});

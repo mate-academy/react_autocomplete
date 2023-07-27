@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import React, {
   useMemo,
   useState,
@@ -27,16 +26,19 @@ function debounce(callback: (...args: string[]) => void, delay: number) {
 
 export const App: React.FC<Props> = ({ delay }) => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
     applyQuery(event.target.value);
   };
 
   const handleSelect = useCallback((currentPerson: Person) => {
     setSelectedPerson(currentPerson);
+    setQuery('');
     setAppliedQuery('');
   }, []);
 
@@ -53,23 +55,22 @@ export const App: React.FC<Props> = ({ delay }) => {
           ? `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})` : 'No selected person'}
       </h1>
 
-      <div className={classNames('dropdown',
-        {
-          'is-active': appliedQuery,
-        })}
-      >
+      <div className="dropdown is-active">
         <div className="dropdown-trigger">
           <input
+            value={query}
             onChange={handleQueryChange}
             type="text"
             placeholder="Enter a part of the name"
             className="input"
           />
         </div>
-        <PeopleList
-          people={filteredPeople}
-          onSelect={handleSelect}
-        />
+        {appliedQuery && (
+          <PeopleList
+            people={filteredPeople}
+            onSelect={handleSelect}
+          />
+        )}
       </div>
     </main>
   );
