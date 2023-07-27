@@ -1,4 +1,6 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, {
+  useCallback, useEffect, useRef, useState,
+} from 'react';
 import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
 
@@ -17,15 +19,21 @@ export const DropdownForm: React.FC<Props> = ({
   selectedPerson,
   onDropdownFocus = () => { },
 }) => {
+  const [defoultImputFocus, setDefoultImputFocus] = useState(false);
   const ApplyQuerry = useCallback(debounce(onAppliedQuerry, 1000), []);
 
   const input = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (input.current && !selectedPerson) {
+    if (input.current && !selectedPerson && defoultImputFocus) {
       input.current.focus();
     }
   }, [selectedPerson]);
+
+  const handleImputFocus = useCallback(() => {
+    onDropdownFocus(true);
+    setDefoultImputFocus(true);
+  }, []);
 
   const handleQuerryValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     onQuerry(event.target.value);
@@ -35,7 +43,7 @@ export const DropdownForm: React.FC<Props> = ({
   return (
     <div className="dropdown-trigger">
       <input
-        onFocus={() => onDropdownFocus(true)}
+        onFocus={handleImputFocus}
         ref={input}
         onChange={handleQuerryValue}
         value={querry}
