@@ -2,6 +2,7 @@ import React, {
   useState,
   useCallback,
   useMemo,
+  // useEffect,
 } from 'react';
 import './App.scss';
 import { debounce } from 'lodash';
@@ -17,9 +18,16 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [isSelected, setIsSelected] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [isQueryEdited, setIsQueryEdited] = useState(false);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, LIST_UPDATE_DELAY), [],
+  );
+
+  const handleListVisibility = useCallback(
+    debounce(() => {
+      setIsQueryEdited(false);
+    }, LIST_UPDATE_DELAY), [],
   );
 
   const filteredPeople = useMemo(() => {
@@ -31,6 +39,8 @@ export const App: React.FC = () => {
   function handleQueryChange(event: React.ChangeEvent<HTMLInputElement>) {
     applyQuery(event.target.value);
     setQuery(event.target.value);
+    setIsQueryEdited(true);
+    handleListVisibility();
   }
 
   const handleSelectedPerson = useCallback((person: Person) => {
@@ -63,12 +73,12 @@ export const App: React.FC = () => {
             onBlur={() => {
               setTimeout(() => {
                 setIsFocused(false);
-              }, 150);
+              }, 200);
             }}
           />
         </div>
 
-        {(isFocused)
+        {(isFocused && !isQueryEdited)
           && (
             <DropdownMenu
               people={filteredPeople}
