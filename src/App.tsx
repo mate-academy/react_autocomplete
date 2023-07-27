@@ -6,7 +6,7 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [filteredPeople, setFilterdPeople] = useState(peopleFromServer);
+  const [filteredPeople, setFilteredPeople] = useState(peopleFromServer);
   const [hasInput, setHasInput] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -15,7 +15,7 @@ export const App: React.FC = () => {
       a => a.name.toLowerCase().includes(e.target.value.toLowerCase()),
     );
 
-    setFilterdPeople(people);
+    setFilteredPeople(people);
     setHasInput(true);
   };
 
@@ -24,6 +24,13 @@ export const App: React.FC = () => {
     setHasInput(false);
     if (inputRef.current) {
       inputRef.current.value = '';
+    }
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>,
+    person: Person) => {
+    if (event.key === 'Enter') {
+      handleSelect(person);
     }
   };
 
@@ -61,11 +68,7 @@ export const App: React.FC = () => {
                   className="dropdown-item"
                   key={person.name}
                   onClick={() => handleSelect(person)}
-                  onKeyPress={event => {
-                    if (event.key === 'Enter') {
-                      handleSelect(person);
-                    }
-                  }}
+                  onKeyPress={(event) => handleKeyPress(event, person)}
                   role="button"
                   tabIndex={0}
                 >
