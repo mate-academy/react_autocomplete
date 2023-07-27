@@ -1,57 +1,32 @@
-import React from 'react';
-import './App.scss';
+import { FC, useState, useMemo } from 'react';
 import { peopleFromServer } from './data/people';
+import { Dropdown } from './components/Dropdown';
+import { Person } from './types/Person';
+import './App.scss';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+export const App: FC = () => {
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const personInfo = useMemo(() => {
+    if (selectedPerson) {
+      const { name, born, died } = selectedPerson;
+
+      return `${name} (${born} - ${died})`;
+    }
+
+    return 'No selected person';
+  }, [selectedPerson]);
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      <h1 className="title">{personInfo}</h1>
 
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Dropdown
+        people={peopleFromServer}
+        onSelected={setSelectedPerson}
+        selectedPerson={selectedPerson}
+        delay={1000}
+      />
     </main>
   );
 };
