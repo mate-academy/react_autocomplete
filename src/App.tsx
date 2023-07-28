@@ -10,6 +10,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isEntering, setIsEntering] = useState(false);
+  const [onFocus, setOnFocus] = useState(false);
 
   const selectPerson = (person: Person) => {
     setSelectedPerson(person);
@@ -53,10 +54,12 @@ export const App: React.FC = () => {
             className="input"
             onChange={handleInput}
             value={query}
+            onFocus={() => setOnFocus(true)}
+            onBlur={() => setOnFocus(false)}
           />
         </div>
 
-        {!isEntering && (
+        {(onFocus && !isEntering) && (
           <DropdownMenu
             people={filteredPeople}
             onSelect={selectPerson}
