@@ -3,7 +3,7 @@ import cn from 'classnames';
 import { debounce } from 'lodash';
 import { peopleFromServer } from '../data/people';
 import { Person } from '../types/Person';
-import { DropdownList } from '../components/DropdownList';
+import { DropdownList } from './DropdownList';
 
 type Props = {
   delay: number,
@@ -13,6 +13,7 @@ export const Autocomplete: React.FC<Props> = ({ delay }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   const filteredPeople = useMemo(() => {
     const normalisedQuery = query.toLocaleLowerCase();
@@ -20,11 +21,11 @@ export const Autocomplete: React.FC<Props> = ({ delay }) => {
     return peopleFromServer.filter(person => (
       person.name.toLocaleLowerCase().includes(normalisedQuery)
     ));
-  }, [appliedQuery]);
+  }, [appliedQuery, peopleFromServer]);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay),
-    [],
+    [delay],
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,7 +48,7 @@ export const Autocomplete: React.FC<Props> = ({ delay }) => {
       </h1>
 
       <div className={cn('dropdown', {
-        'is-active': appliedQuery,
+        'is-active': appliedQuery || isFocused,
       })}
       >
         <div className="dropdown-trigger">
@@ -56,13 +57,17 @@ export const Autocomplete: React.FC<Props> = ({ delay }) => {
             placeholder="Enter a part of the name"
             className="input"
             value={query}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             onChange={handleQueryChange}
           />
         </div>
 
         <div className="dropdown-menu" role="menu">
+
           <DropdownList
             people={filteredPeople}
+            isFocused={isFocused}
             onSelect={selectPerson}
           />
         </div>

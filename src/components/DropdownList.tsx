@@ -5,22 +5,24 @@ import { Person } from '../types/Person';
 type Props = {
   people: Person[],
   onSelect: (person: Person) => void,
+  isFocused: boolean,
 };
 
 export const DropdownList: React.FC<Props> = React.memo(
   ({
     people,
     onSelect,
+    isFocused
   }) => {
     return (
       <div className="dropdown-content">
-        {people.length ? (
+        {people.length && isFocused ? (
           people.map(person => (
             <button
               type="button"
               className="dropdown-item button"
               key={person.slug}
-              onClick={() => onSelect(person)}
+              onMouseDown={() => onSelect(person)}
             >
               <p
                 className={cn({
