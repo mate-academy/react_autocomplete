@@ -1,7 +1,6 @@
 import React, {
   useCallback,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import './App.scss';
@@ -16,10 +15,8 @@ export const App: React.FC = () => {
   const [isInputOnFocus, setIsInputOnFocus] = useState(false);
   const [inputValue, setInputValue] = useState('');
 
-  const delay = useRef<number>(1000);
-
   const applyQuery = useCallback(
-    debounce(setQuery, delay.current),
+    debounce(setQuery, 1000),
     [],
   );
 
@@ -57,9 +54,9 @@ export const App: React.FC = () => {
         </div>
 
         <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {isInputOnFocus && (
-              !filteredPeople.length ? (
+          {isInputOnFocus && (
+            <div className="dropdown-content">
+              {!filteredPeople.length ? (
                 <div className="dropdown-item">
                   <p>No matching suggestions</p>
                 </div>
@@ -87,9 +84,10 @@ export const App: React.FC = () => {
                     </p>
                   </div>
                 ))
-              )
-            )}
-          </div>
+              )}
+            </div>
+          )}
+
         </div>
       </div>
     </main>
