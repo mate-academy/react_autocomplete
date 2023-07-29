@@ -1,3 +1,24 @@
 iframe {
   display: none;
 }
+
+.dropdown-content {
+  max-height: 346px;
+  overflow-y: scroll;
+}
+
+.dropdown-item {
+  cursor: pointer;
+
+  &:hover {
+    background-color: #ebedf0;
+  }
+}
+
+.active {
+  background-color: #ebedf0;
+}
+
+.massage {
+  pointer-events: none;
+}
