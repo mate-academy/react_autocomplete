@@ -26,15 +26,6 @@ export const App: React.FC = () => {
     setFocusInput(false);
   }, []);
 
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLButtonElement>, person: Person) => {
-      if (event.key === 'Enter') {
-        handlePersonClick(person);
-      }
-    },
-    [handlePersonClick],
-  );
-
   const filteredPerson = people.filter((person) => {
     return person.name.toLowerCase().includes(inputValue.toLowerCase());
   });
@@ -81,24 +72,22 @@ export const App: React.FC = () => {
                 <div className="dropdown-item">
                   {inputValue ? (
                     filteredPerson.map((person) => (
-                      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+                      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
                       <p
                         key={person.name}
                         className="has-text-link"
                         onClick={() => handlePersonClick(person)}
-                        onKeyDown={(e) => handleKeyDown(e, person)}
                       >
                         {person.name}
                       </p>
                     ))
                   ) : (
                     peopleFromServer.map((person) => (
-                      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+                      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
                       <p
                         key={person.name}
                         className="has-text-link"
                         onClick={() => handlePersonClick(person)}
-                        onKeyDown={(e) => handleKeyDown(e, person)}
                       >
                         {person.name}
                       </p>
