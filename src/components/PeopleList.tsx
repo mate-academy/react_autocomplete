@@ -2,10 +2,10 @@ import React from 'react';
 import { Person } from '../types/Person';
 
 type Props = {
-  people: Person[],
-  onSelected: (person: Person) => void,
-  setIsFocused: (boolean: boolean) => void
-  setQuery: (person: string) => void
+  people: Person[];
+  onSelected: (person: Person) => void;
+  setIsFocused: (boolean: boolean) => void;
+  setQuery: (person: string) => void;
 };
 
 export const PeopleList: React.FC<Props> = React.memo(({
@@ -14,6 +14,12 @@ export const PeopleList: React.FC<Props> = React.memo(({
   setIsFocused = () => {},
   setQuery = () => {},
 }) => {
+  const handlePersonSelection = (person: Person) => {
+    setIsFocused(false);
+    onSelected(person);
+    setQuery(person.name);
+  };
+
   return (
     <div className="dropdown-menu" role="menu" id="dropdown-menu">
       <div className="dropdown-content">
@@ -22,11 +28,7 @@ export const PeopleList: React.FC<Props> = React.memo(({
             type="button"
             className="dropdown-item"
             key={person.slug}
-            onClick={() => {
-              setIsFocused(false);
-              onSelected(person);
-              setQuery(person.name);
-            }}
+            onClick={() => handlePersonSelection(person)}
           >
             <p className="has-text-link">{person.name}</p>
           </button>

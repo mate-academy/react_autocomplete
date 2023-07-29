@@ -7,7 +7,7 @@ import { Person } from './types/Person';
 import { debounce } from './services/debounce';
 
 export const App: React.FC = () => {
-  const [person, setPerson] = useState<Person>();
+  const [person, setPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
