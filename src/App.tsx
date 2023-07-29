@@ -1,7 +1,5 @@
 import React, {
   useState,
-  useEffect,
-  useRef,
   useCallback,
   useMemo,
 } from 'react';
@@ -16,53 +14,47 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [focused, setFocused] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [delayedSearch, setDelayedSearch] = useState('');
+  const [delayedQuery, setQuerySearch] = useState('');
+  const [trigger, setTrigger] = useState('');
 
   const filteredPeople = useMemo(() => {
     return copyPeople.filter(
       person => person.name.toLowerCase().includes(
-        delayedSearch.toLowerCase(),
+        delayedQuery.toLowerCase(),
       ),
     );
-  }, [copyPeople]);
-  const aplyDelayedSearch = useCallback(
-    debounce(setDelayedSearch, 1000), [],
+  }, [copyPeople, query]);
+  const aplydelayedQuery = useCallback(
+    debounce(setQuerySearch, 1000), [],
   );
-  const aplySelectedPerson = useCallback(
-    setSelectedPerson, [],
+
+  const queryWatcher = useCallback(
+    debounce(setTrigger, 1000), [query],
   );
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    aplyDelayedSearch(event.target.value);
+    aplydelayedQuery(event.target.value);
+    queryWatcher(event.target.value);
   };
 
   const onClick = (person: Person) => {
-    setQuery(person.name);
-    aplySelectedPerson(person);
+    debounce(() => {
+      setQuery(person.name);
+    }, 1000)();
+    debounce(() => {
+      setSelectedPerson(person);
+    }, 1000)();
     setFocused(false);
   };
 
-  const inputRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    /* eslint-disable  @typescript-eslint/no-explicit-any */
-    const handleOutsideInputClick = (event: any) => {
-      if (inputRef.current && !inputRef.current.contains(event.target)) {
-        setFocused(false);
-      }
-    };
-
-    document.addEventListener('click', handleOutsideInputClick);
-
-    return () => {
-      document.removeEventListener('click', handleOutsideInputClick);
-    };
-  }, []);
+  const handleOnBlur = debounce(setFocused, 100);
+  const showSuggestions = focused && (query === trigger);
+  const showPersonData = query === selectedPerson?.name;
 
   return (
-    <main className="section" ref={inputRef}>
+    <main className="section">
       <h1 className="title">
-        {selectedPerson ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})` : 'No selected person'}
+        {showPersonData ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})` : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -72,14 +64,15 @@ export const App: React.FC = () => {
             placeholder="Enter a part of the name"
             className="input"
             value={query}
-            onChange={event => inputHandler(event)}
+            onChange={inputHandler}
             onFocus={() => setFocused(true)}
+            onBlur={() => handleOnBlur(false)}
           />
         </div>
-        {focused && (
+        {showSuggestions && (
           <List
             people={filteredPeople}
-            onClick={(person) => onClick(person)}
+            onClick={onClick}
           />
         )}
       </div>

@@ -1,10 +1,11 @@
+import React from 'react';
 import { Person } from '../types/Person';
 
 type Props = {
   people: Person[],
   onClick: (person: Person) => void,
 };
-export const List: React.FC<Props> = ({ people, onClick }) => {
+export const List: React.FC<Props> = React.memo(({ people, onClick }) => {
   return (
     <div
       className="dropdown-menu"
@@ -36,4 +37,4 @@ export const List: React.FC<Props> = ({ people, onClick }) => {
       )}
     </div>
   );
-};
+});
