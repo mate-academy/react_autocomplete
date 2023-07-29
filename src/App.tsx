@@ -40,6 +40,11 @@ export const App: React.FC = () => {
   });
   const title = selectPerson ? `${selectPerson.name} (${selectPerson.born} - ${selectPerson.died})` : 'No matching suggestions';
 
+  const handleDelete = () => {
+    setInputValue('');
+    setSelectPerson(null);
+  };
+
   return (
     <main className="section">
       <h1 className="title">
@@ -62,7 +67,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 className="delete"
-                onClick={() => setInputValue('')}
+                onClick={handleDelete}
                 aria-label="Clear input"
               />
             )
