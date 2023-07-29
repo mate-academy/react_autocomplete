@@ -35,7 +35,7 @@ export const Autocomplete: React.FC<Props> = ({ delay }) => {
 
   const selectPerson = useCallback((person: Person) => {
     setSelectedPerson(person);
-    setQuery('');
+    setQuery(person.name);
     setAppliedQuery('');
   }, []);
 
