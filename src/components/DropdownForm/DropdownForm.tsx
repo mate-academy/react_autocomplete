@@ -20,7 +20,7 @@ export const DropdownForm: React.FC<Props> = ({
   onDropdownFocus = () => { },
 }) => {
   const [defoultImputFocus, setDefoultImputFocus] = useState(false);
-  const ApplyQuerry = useCallback(debounce(onAppliedQuerry, 1000), []);
+  const applyQuerry = useCallback(debounce(onAppliedQuerry, 1000), []);
 
   const input = useRef<HTMLInputElement>(null);
 
@@ -30,14 +30,14 @@ export const DropdownForm: React.FC<Props> = ({
     }
   }, [selectedPerson]);
 
-  const handleImputFocus = useCallback(() => {
+  const handleImputFocus = () => {
     onDropdownFocus(true);
     setDefoultImputFocus(true);
-  }, []);
+  };
 
   const handleQuerryValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     onQuerry(event.target.value);
-    ApplyQuerry(event.target.value.trim());
+    applyQuerry(event.target.value.trim());
   };
 
   return (

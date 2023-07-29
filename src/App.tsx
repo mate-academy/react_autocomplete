@@ -42,15 +42,14 @@ export const App: React.FC = () => {
       <h1 className="title">
         {title}
         <button
+          aria-label="Reset information"
           onClick={handleReset}
           type="button"
           className={cn(
             'button_delete delete is-medium',
             { 'is-hidden': !selectedPerson },
           )}
-        >
-          {' '}
-        </button>
+        />
       </h1>
 
       <div
@@ -65,15 +64,14 @@ export const App: React.FC = () => {
         />
 
         <button
+          aria-label="Close dropdown"
           onClick={() => setIsDropdownFocus(false)}
           type="button"
           className={cn(
             'button_hidden delete is-medium',
             { 'is-hidden': selectedPerson || !isDropdownFocus },
           )}
-        >
-          {' '}
-        </button>
+        />
 
         <DropdownMenu
           people={visablePeople}
