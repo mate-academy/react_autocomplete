@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import debounce from 'lodash.debounce';
+// import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 import { Person } from '../types/Person';
 
@@ -8,6 +8,18 @@ type Props = {
   debounceDelay: number;
   onSelected: (person: Person) => void;
 };
+
+function debounce(callback: Function, delay: number) {
+  let timerId = 0;
+
+  return (...args: any) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
 
 export const Dropdown: React.FC<Props> = React.memo(({
   people,
