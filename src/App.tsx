@@ -1,4 +1,6 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, {
+  useMemo, useState, useEffect, useCallback,
+} from 'react';
 import './App.scss';
 import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
@@ -11,7 +13,12 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
-  const applyQuery = useCallback(debounce(setQuery, 1000), []);
+  const debouncedQuery
+  = useCallback(debounce(value => setQuery(value), 1000), []);
+
+  useEffect(() => {
+    debouncedQuery(query);
+  }, [query, debouncedQuery]);
 
   const filteredPerson = useMemo(() => {
     return peopleFromServer
@@ -22,7 +29,6 @@ export const App: React.FC = () => {
     const inputValue = event.target.value;
 
     setQuery(inputValue);
-    applyQuery(inputValue); // Debounce the query update
   };
 
   const handleBlur = () => {
