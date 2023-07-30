@@ -1,10 +1,12 @@
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 type Props = {
   onType: (str: string) => void;
   delay: number;
   setAppliedQuery: (str: string) => void;
   query: string;
+  onFocus: () => void;
+  onBlur: () => void;
 };
 
 type DebouncedFunction = (...args: string[]) => void;
@@ -26,6 +28,8 @@ export const PeopleSearchBar: React.FC<Props> = ({
   onType = () => {},
   delay = 1000,
   setAppliedQuery = () => {},
+  onFocus = () => {},
+  onBlur = () => {},
 }) => {
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
@@ -42,6 +46,8 @@ export const PeopleSearchBar: React.FC<Props> = ({
         placeholder="Enter a part of the name"
         className="input"
         onChange={handleChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
     </div>
   );

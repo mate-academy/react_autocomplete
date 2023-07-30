@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { PeopleList } from './components/PeopleList';
@@ -9,12 +9,25 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<Person | null>(null);
+  const [onFocus, setOnFocus] = useState(false);
 
   const filteredPeople = useMemo(() => {
-    return [...peopleFromServer]
-      .filter((person) => person.name.toLowerCase()
-        .includes(appliedQuery.toLowerCase()));
-  }, [peopleFromServer, appliedQuery]);
+    if (onFocus && !query.trim()) {
+      return peopleFromServer;
+    }
+
+    return peopleFromServer.filter(
+      person => person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+    );
+  }, [peopleFromServer, appliedQuery, onFocus, query]);
+
+  const onFocusHandler = useCallback(() => {
+    setOnFocus(true);
+  }, []);
+
+  const onBlurHandler = useCallback(() => {
+    setOnFocus(false);
+  }, []);
 
   return (
     <main className="section">
@@ -32,9 +45,14 @@ export const App: React.FC = () => {
           query={query}
           setAppliedQuery={setAppliedQuery}
           delay={1000}
+          onFocus={onFocusHandler}
+          onBlur={onBlurHandler}
         />
-        {appliedQuery && (
-          <PeopleList people={filteredPeople} onSelected={setSelectedUser} />
+        {onFocus && (
+          <PeopleList
+            people={filteredPeople}
+            onSelected={setSelectedUser}
+          />
         )}
       </div>
     </main>
