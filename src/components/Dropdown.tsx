@@ -31,8 +31,10 @@ export const Dropdown: React.FC<Props> = React.memo(({
     });
   }, [people, appliedQuery]);
 
-  const onMouseDown = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-    person: Person) => {
+  const onMouseDown = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    person: Person,
+  ) => {
     event.preventDefault();
     setQuery(person.name);
     setAppliedQuery(person.name);
