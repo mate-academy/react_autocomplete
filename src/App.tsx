@@ -29,7 +29,7 @@ export const App: React.FC = () => {
   const filteredPerson = people.filter((person) => {
     return person.name.toLowerCase().includes(inputValue.toLowerCase());
   });
-  const title = selectPerson ? `${selectPerson.name} (${selectPerson.born} - ${selectPerson.died})` : 'No matching suggestions';
+  const selectedPersonTitle = selectPerson ? `${selectPerson.name} (${selectPerson.born} - ${selectPerson.died})` : 'No matching suggestions';
 
   const handleDelete = () => {
     setInputValue('');
@@ -39,7 +39,7 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {!inputValue ? 'Сhoose a name' : title}
+        {!inputValue ? 'Сhoose a name' : selectedPersonTitle}
       </h1>
 
       <div className="dropdown is-active">
@@ -72,25 +72,37 @@ export const App: React.FC = () => {
                 <div className="dropdown-item">
                   {inputValue ? (
                     filteredPerson.map((person) => (
-                      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
-                      <p
+                      <div
                         key={person.name}
                         className="has-text-link"
                         onClick={() => handlePersonClick(person)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handlePersonClick(person);
+                          }
+                        }}
+                        role="button"
+                        tabIndex={0}
                       >
                         {person.name}
-                      </p>
+                      </div>
                     ))
                   ) : (
                     peopleFromServer.map((person) => (
-                      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
-                      <p
+                      <div
                         key={person.name}
                         className="has-text-link"
                         onClick={() => handlePersonClick(person)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handlePersonClick(person);
+                          }
+                        }}
+                        role="button"
+                        tabIndex={0}
                       >
                         {person.name}
-                      </p>
+                      </div>
                     ))
                   )}
                 </div>
