@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from 'react';
-// import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 import { Person } from '../types/Person';
 
@@ -9,7 +8,7 @@ type Props = {
   onSelected: (person: Person) => void;
 };
 
-function debounce(callback: Function, delay: number) {
+function debounce(callback: any, delay: number) {
   let timerId = 0;
 
   return (...args: any) => {
