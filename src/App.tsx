@@ -11,24 +11,21 @@ import { debounce } from './services/debounce';
 export const App: React.FC = () => {
   const [person, setPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
-  const debouncedQuery
-  = useCallback(debounce(value => setQuery(value), 1000), []);
-
-  useEffect(() => {
-    debouncedQuery(query);
-  }, [query, debouncedQuery]);
+  const debouncedQuery = useCallback(debounce(setAppliedQuery, 1000), []);
 
   const filteredPerson = useMemo(() => {
     return peopleFromServer
-      .filter(human => human.name.toLowerCase().includes(query.toLowerCase()));
-  }, [query]);
+      .filter(human => human.name.toLowerCase().includes(appliedQuery.toLowerCase()));
+  }, [appliedQuery]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
 
     setQuery(inputValue);
+    debouncedQuery(inputValue);
   };
 
   const handleBlur = () => {
