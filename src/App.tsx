@@ -19,8 +19,10 @@ export const App: React.FC = () => {
   }, [query]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
+    const inputValue = event.target.value;
+
+    setQuery(inputValue);
+    applyQuery(inputValue); // Debounce the query update
   };
 
   const handleBlur = () => {
