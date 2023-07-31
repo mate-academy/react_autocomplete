@@ -18,7 +18,7 @@ function filterName(people: Person[], query: string): Person[] {
   return people;
 }
 
-export const App: React.FC<Person> = () => {
+export const App: React.FC = () => {
   const [selectName, setSelectName] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [applyQuery, setApplyQuery] = useState('');
