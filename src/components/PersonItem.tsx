@@ -3,17 +3,16 @@ import { Person } from '../types/Person';
 
 type Props = {
   person: Person;
-  onSelect?: (person: Person) => void;
+  onSelect: (person: Person) => void;
 };
 
 export const PersonItem: React.FC<Props> = ({
   person,
-  onSelect = () => { },
+  onSelect,
 }) => (
 
   <button
     type="button"
-    key={person.slug}
     className="dropdown-item button"
     onClick={() => onSelect(person)}
   >

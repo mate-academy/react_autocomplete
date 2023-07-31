@@ -18,7 +18,7 @@ export const App: React.FC = () => {
     return peopleFromServer.filter(
       person => person.name.toLowerCase().includes(newQuery),
     );
-  }, [appliedQuery]);
+  }, [query]);
 
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 

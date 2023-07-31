@@ -4,7 +4,7 @@ import { PersonItem } from './PersonItem';
 
 type Props = {
   people: Person[];
-  onSelect?: (person: Person) => void;
+  onSelect: (person: Person) => void;
 };
 
 export const PersonList: React.FC<Props> = React.memo(
