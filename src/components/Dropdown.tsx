@@ -8,14 +8,17 @@ type Props = {
   onSelected: (person: Person) => void;
 };
 
-function debounce(callback: any, delay: number) {
+function debounce(
+  callback: React.Dispatch<React.SetStateAction<string>>,
+  delay: number,
+) {
   let timerId = 0;
 
   return (...args: any) => {
     window.clearTimeout(timerId);
 
     timerId = window.setTimeout(() => {
-      callback(...args);
+      callback(args);
     }, delay);
   };
 }
@@ -27,7 +30,7 @@ export const Dropdown: React.FC<Props> = React.memo(({
 }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [isShown, setIsShown] = useState(false);
 
   const applyQuery = useCallback(debounce(setAppliedQuery, debounceDelay), []);
 
@@ -42,7 +45,7 @@ export const Dropdown: React.FC<Props> = React.memo(({
     });
   }, [people, appliedQuery]);
 
-  const onMouseDown = (
+  const handleMouseDown = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
     person: Person,
   ) => {
@@ -50,12 +53,12 @@ export const Dropdown: React.FC<Props> = React.memo(({
     setQuery(person.name);
     setAppliedQuery(person.name);
     onSelected(person);
-    setShowDropdown(false);
+    setIsShown(false);
   };
 
   return (
     <div className={classNames('dropdown', {
-      'is-active': showDropdown,
+      'is-active': isShown,
     })}
     >
       <div className="dropdown-trigger">
@@ -65,8 +68,8 @@ export const Dropdown: React.FC<Props> = React.memo(({
           className="input"
           value={query}
           onChange={handleQueryChange}
-          onFocus={() => setShowDropdown(true)}
-          onBlur={() => setShowDropdown(false)}
+          onFocus={() => setIsShown(true)}
+          onBlur={() => setIsShown(false)}
         />
       </div>
 
@@ -77,7 +80,7 @@ export const Dropdown: React.FC<Props> = React.memo(({
               href="/"
               key={person.slug}
               className="dropdown-item"
-              onMouseDown={(event) => onMouseDown(event, person)}
+              onMouseDown={(event) => handleMouseDown(event, person)}
             >
               <p
                 className={person.sex === 'm'

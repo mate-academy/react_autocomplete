@@ -9,13 +9,11 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {selectedPerson ? (
-        <h1 className="title">
-          {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
-        </h1>
-      ) : (
-        <h1 className="title"> No selected person </h1>
-      )}
+      <h1 className="title">
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+          : 'No selected person'}
+      </h1>
 
       <Dropdown
         people={peopleFromServer}
