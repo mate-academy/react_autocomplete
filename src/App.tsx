@@ -1,14 +1,55 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import classNames from 'classnames';
+import debounce from 'lodash.debounce';
 import './App.scss';
+import 'bulma';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+function filterName(people: Person[], query: string): Person[] {
+  const searchQuery = query.trim().toLowerCase();
+
+  if (searchQuery.length) {
+    return people.filter(
+      person => person.name.trim().toLowerCase().includes(searchQuery),
+    );
+  }
+
+  return people;
+}
+
+export const App: React.FC<Person> = () => {
+  const [selectName, setSelectName] = useState<Person | null>(null);
+  const [query, setQuery] = useState('');
+  const [applyQuery, setApplyQuery] = useState('');
+
+  const selectPerson = useMemo(
+    () => filterName(peopleFromServer, applyQuery), [applyQuery],
+  );
+
+  const appliedQuery = useCallback(
+    debounce(setApplyQuery, 1000), [],
+  );
+
+  const handleQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    appliedQuery(event.target.value);
+  };
+
+  const setPersonName = (person: Person | null) => {
+    if (person !== null) {
+      setSelectName(person);
+      setQuery('');
+      setApplyQuery('');
+    }
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectName
+          ? `${selectName?.name} (${selectName?.born} = ${selectName?.died})`
+          : 'No selected name'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,38 +58,37 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={handleQuery}
           />
         </div>
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
+            {selectPerson.length === 0 ? (
+              <p className="has-text-danger">
+                No suggestions
+              </p>
+            ) : selectPerson.map((person, i) => (
+              <div
+                className="dropdown-item"
+                key={person.slug}
+                onClick={() => setPersonName(person)}
+                role="button"
+                onKeyDown={() => {}}
+                tabIndex={i}
+              >
+                <p
+                  style={{ cursor: 'pointer' }}
+                  className={classNames({
+                    'has-text-link': person.sex === 'm',
+                    'has-text-danger': person.sex === 'f',
+                  })}
+                >
+                  {person.name}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
