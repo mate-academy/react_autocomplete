@@ -18,7 +18,7 @@ export const App: React.FC = () => {
       <Dropdown
         people={peopleFromServer}
         debounceDelay={1000}
-        onSelected={(person) => setSelectedPerson(person)}
+        onSelected={setSelectedPerson}
       />
     </main>
   );

@@ -5,7 +5,7 @@ import { Person } from '../types/Person';
 type Props = {
   people: Person[];
   debounceDelay: number;
-  onSelected: (person: Person) => void;
+  onSelected: React.Dispatch<React.SetStateAction<Person | null>>;
 };
 
 function debounce(
@@ -14,11 +14,11 @@ function debounce(
 ) {
   let timerId = 0;
 
-  return (...args: any) => {
+  return (query: string) => {
     window.clearTimeout(timerId);
 
     timerId = window.setTimeout(() => {
-      callback(args);
+      callback(query);
     }, delay);
   };
 }
@@ -35,13 +35,17 @@ export const Dropdown: React.FC<Props> = React.memo(({
   const applyQuery = useCallback(debounce(setAppliedQuery, debounceDelay), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const modifiedQuery = event.target.value.trim().toLowerCase();
+
     setQuery(event.target.value);
-    applyQuery(event.target.value);
+    applyQuery(modifiedQuery);
   };
 
   const filteredPeople = useMemo(() => {
-    return people.filter(person => {
-      return person.name.includes(appliedQuery);
+    return people.filter((person) => {
+      return (
+        person.name.toLowerCase().includes(appliedQuery)
+      );
     });
   }, [people, appliedQuery]);
 
