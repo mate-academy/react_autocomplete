@@ -40,14 +40,12 @@ export const App: React.FC = () => {
   const onClick = (person: Person) => {
     debounce(() => {
       setQuery(person.name);
-    }, 1000)();
-    debounce(() => {
       setSelectedPerson(person);
     }, 1000)();
     setFocused(false);
   };
 
-  const handleOnBlur = debounce(setFocused, 100);
+  const handleOnBlur = useCallback(debounce(setFocused, 100), []);
   const showSuggestions = focused && (query === trigger);
   const showPersonData = query === selectedPerson?.name;
 
