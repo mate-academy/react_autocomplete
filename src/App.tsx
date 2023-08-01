@@ -1,14 +1,77 @@
-import React from 'react';
-import './App.scss';
+import React, { useCallback, useMemo, useState } from 'react';
+import { DropdownMenu } from './components/DropdownMenu';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import './App.scss';
+
+const getVisiblePeople = (people: Person[], query: string) => {
+  const formattedQuery = query
+    .toLowerCase()
+    .replace(/\s{2,}/g, ' '); // replaces 2 and more spaces in row to 1
+
+  return people
+    .filter(person => {
+      const formattedName = person.name.toLowerCase();
+
+      return formattedName.includes(formattedQuery);
+    });
+};
+
+const debounce = (
+  func: React.Dispatch<React.SetStateAction<string>>,
+  delay: number,
+) => {
+  let timerId: NodeJS.Timeout;
+
+  return (query: string) => {
+    clearTimeout(timerId);
+    timerId = setTimeout(func, delay, query);
+  };
+};
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(false);
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 1000),
+    [],
+  );
+
+  const visiblePeople = useMemo(() => {
+    setIsSuggestionsVisible(true);
+
+    return getVisiblePeople(peopleFromServer, appliedQuery);
+  },
+  [peopleFromServer, appliedQuery]);
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+
+    setQuery(value);
+    applyQuery(value);
+    setIsSuggestionsVisible(false);
+  };
+
+  const onSelected = (person: Person) => {
+    setQuery(person.name);
+    setSelectedPerson(person);
+    setIsSuggestionsVisible(false);
+  };
+
+  const isDropdownMenuVisible = isSuggestionsVisible && appliedQuery;
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? (
+            `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+          ) : (
+            'No selected person'
+          )}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +80,17 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={handleQueryChange}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        {isDropdownMenuVisible && (
+          <DropdownMenu
+            people={visiblePeople}
+            onSelected={onSelected}
+          />
+        )}
       </div>
     </main>
   );
