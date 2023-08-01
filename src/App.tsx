@@ -12,22 +12,15 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [applyQuery, setApplyQuery] = useState('');
   const [visibleName, setVisibleName] = useState(false);
+  const [counter, setCounter] = useState(0);
 
-  function filterName(people: Person[], item: string): Person[] {
-    const searchQuery = item.trimStart().toLowerCase();
+  const selectPerson = useMemo(() => {
+    const searchQuery = applyQuery.trim().toLowerCase();
 
-    if (!searchQuery) {
-      setVisibleName(false);
-    }
-
-    return people.filter(
+    return peopleFromServer.filter(
       person => person.name.toLowerCase().includes(searchQuery),
     );
-  }
-
-  const selectPerson = useMemo(
-    () => filterName(peopleFromServer, applyQuery), [applyQuery],
-  );
+  }, [applyQuery]);
 
   const appliedQuery = useCallback(
     debounce(setApplyQuery, 1000), [],
@@ -37,6 +30,7 @@ export const App: React.FC = () => {
     setVisibleName(false);
     setSelectName(null);
     setQuery('');
+    setCounter(0);
   };
 
   const handleQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,6 +49,18 @@ export const App: React.FC = () => {
     }
   };
 
+  const onFocus = () => {
+    if (counter === 0 && !selectName && applyQuery.length === 0) {
+      setVisibleName(true);
+      setCounter(count => count + 1);
+    }
+
+    if (counter === 1 && !selectName && applyQuery.length === 0) {
+      setVisibleName(false);
+      setCounter(count => count - 1);
+    }
+  };
+
   return (
     <main className="section">
       <h1 className="title">
@@ -64,14 +70,18 @@ export const App: React.FC = () => {
       </h1>
 
       <div className={classNames('dropdown', { 'is-active': visibleName })}>
-        <div className="dropdown-trigger control has-icons-right">
+        <div
+          className="dropdown-trigger control has-icons-right"
+          aria-controls="dropdown-menu"
+          aria-haspopup="true"
+        >
           <input
-            aria-controls="dropdown-menu"
-            aria-haspopup="true"
+            type="text"
             className="input"
             placeholder="Enter a part of the name"
             value={query}
             onChange={handleQuery}
+            onClick={onFocus}
           />
 
           <span
@@ -102,6 +112,7 @@ export const App: React.FC = () => {
                 role="button"
                 onKeyDown={() => {}}
                 tabIndex={i}
+                id="combo-box-demo"
               >
                 <p
                   style={{ cursor: 'pointer' }}
