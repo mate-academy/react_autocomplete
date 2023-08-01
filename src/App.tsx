@@ -50,12 +50,12 @@ export const App: React.FC = () => {
   };
 
   const onFocus = () => {
-    if (counter === 0 && !selectName && applyQuery.length === 0) {
+    if (counter % 2 === 0 && !selectName && applyQuery.length === 0) {
       setVisibleName(true);
       setCounter(count => count + 1);
     }
 
-    if (counter === 1 && !selectName && applyQuery.length === 0) {
+    if (counter % 2 !== 0 && !selectName && applyQuery.length === 0) {
       setVisibleName(false);
       setCounter(count => count - 1);
     }
