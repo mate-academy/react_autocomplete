@@ -41,7 +41,7 @@ export const App: React.FC = () => {
     setVisibleName(true);
   };
 
-  const setPersonName = (person: Person | null) => {
+  const setPersonName = (person: Person) => {
     if (person) {
       setSelectName(person);
       setQuery(person.name);
@@ -50,12 +50,12 @@ export const App: React.FC = () => {
   };
 
   const onFocus = () => {
-    if (counter % 2 === 0 && !selectName && applyQuery.length === 0) {
+    if (counter % 2 === 0 && !selectName && !applyQuery) {
       setVisibleName(true);
       setCounter(count => count + 1);
     }
 
-    if (counter % 2 !== 0 && !selectName && applyQuery.length === 0) {
+    if (counter % 2 !== 0 && !selectName && !applyQuery) {
       setVisibleName(false);
       setCounter(count => count - 1);
     }
@@ -104,15 +104,12 @@ export const App: React.FC = () => {
               <p className="has-text-danger">
                 No matches
               </p>
-            ) : selectPerson.map((person, i) => (
+            ) : selectPerson.map((person) => (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <div
                 className="dropdown-item"
                 key={person.slug}
                 onClick={() => setPersonName(person)}
-                role="button"
-                onKeyDown={() => {}}
-                tabIndex={i}
-                id="combo-box-demo"
               >
                 <p
                   style={{ cursor: 'pointer' }}
