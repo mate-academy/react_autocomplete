@@ -38,10 +38,8 @@ export const App: React.FC = () => {
   };
 
   const onClick = (person: Person) => {
-    debounce(() => {
-      setQuery(person.name);
-      setSelectedPerson(person);
-    }, 1000)();
+    setQuery(person.name);
+    setSelectedPerson(person);
     setFocused(false);
   };
 
