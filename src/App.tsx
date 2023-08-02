@@ -14,16 +14,16 @@ export const App: React.FC = () => {
   const [choosenPerson, setChoosenPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setApliedQuery] = useState('');
-  const [isImputFocus, setIsImputFocus] = useState(false);
+  const [isInputFocus, setIsInputFocus] = useState(false);
 
-  const applyQwery = useCallback(
+  const applyQuery = useCallback(
     debounce(setApliedQuery, 1000),
     [],
   );
 
-  const handleQweryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    applyQwery(event.target.value);
+    applyQuery(event.target.value);
   };
 
   const filteredPeople = useMemo(() => {
@@ -32,20 +32,20 @@ export const App: React.FC = () => {
     ));
   }, [appliedQuery, peopleFromServer]);
 
-  const handlKey = (
+  const handleKey = (
     event: React.KeyboardEvent<HTMLDivElement>,
     person: Person,
   ) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       setChoosenPerson(person);
-      setIsImputFocus(false);
+      setIsInputFocus(false);
     }
   };
 
-  const handlClikItem = (person: Person) => {
+  const handleClickItem = (person: Person) => {
     setChoosenPerson(person);
-    setIsImputFocus(false);
+    setIsInputFocus(false);
     setQuery(person.name);
   };
 
@@ -57,15 +57,15 @@ export const App: React.FC = () => {
           : 'No selected person'}
       </h1>
 
-      <div className={classNames('dropdown', { 'is-active': isImputFocus })}>
+      <div className={classNames('dropdown', { 'is-active': isInputFocus })}>
         <div className="dropdown-trigger">
           <input
             type="text"
             placeholder="Enter a part of the name"
             className="input"
             value={query}
-            onChange={handleQweryChange}
-            onFocus={() => setIsImputFocus(true)}
+            onChange={handleQueryChange}
+            onFocus={() => setIsInputFocus(true)}
           />
         </div>
 
@@ -78,8 +78,8 @@ export const App: React.FC = () => {
                   tabIndex={0}
                   className="dropdown-item"
                   key={person.slug}
-                  onClick={() => handlClikItem(person)}
-                  onKeyDown={(event) => handlKey(event, person)}
+                  onClick={() => handleClickItem(person)}
+                  onKeyDown={(event) => handleKey(event, person)}
                 >
                   <p className="has-text-link">{person.name}</p>
                 </div>
