@@ -4,14 +4,14 @@ import { DropdownItem } from '../DropdownItem/DropdownItem';
 type Props = {
   people: Person[];
   onSelectedPerson: (person: Person) => void;
-  onQuerry: (value: string) => void;
+  onQuery: (value: string) => void;
 };
 
 export const DropdownMenu: React.FC<Props> = (
   {
     people,
     onSelectedPerson,
-    onQuerry,
+    onQuery,
   },
 ) => {
   return (
@@ -26,7 +26,7 @@ export const DropdownMenu: React.FC<Props> = (
               key={person.slug}
               person={person}
               onSelectedPerson={onSelectedPerson}
-              onQuerry={onQuerry}
+              onQuery={onQuery}
             />
           ))
           : (

@@ -9,37 +9,43 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const [querry, setQuerry] = useState('');
-  const [appliedQuerry, setAppliedQuerry] = useState('');
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
   const [isDropdownFocus, setIsDropdownFocus] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [debounceTimer] = useState(1000);
+  // const { name, born, died } = selectedPerson;
+  const debounceTimer = 1000;
 
   const choosePerson = useCallback((newPerson: Person) => {
     setSelectedPerson(newPerson);
     setIsDropdownFocus(false);
-    setAppliedQuerry(newPerson.name.toString());
+    setAppliedQuery(newPerson.name.toString());
+  }, []);
+
+  const handleQueryReset = useCallback(() => {
+    setQuery('');
+    setAppliedQuery('');
   }, []);
 
   const handleReset = useCallback(() => {
     setSelectedPerson(null);
-    setQuerry('');
-    setAppliedQuerry('');
+    handleQueryReset();
   }, []);
 
-  const handleQueryReset = useCallback(() => {
-    setQuerry('');
-    setAppliedQuerry('');
+  const handleInputReset = useCallback(() => {
+    setIsDropdownFocus(false);
+    handleQueryReset();
   }, []);
 
   const visablePeople = useMemo(() => {
     return peopleFromServer
       .filter(person => person.name
-        .toLowerCase().includes(appliedQuerry.toLowerCase()));
-  }, [appliedQuerry, peopleFromServer]);
+        .toLowerCase().includes(appliedQuery.toLowerCase()));
+  }, [appliedQuery]);
 
   const title = selectedPerson
     ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    // ? `${name} (${born} - ${died})`
     : 'No matching suggestions';
 
   return (
@@ -61,9 +67,9 @@ export const App: React.FC = () => {
         className={cn('dropdown', { 'is-active': isDropdownFocus })}
       >
         <DropdownForm
-          querry={querry}
-          onQuerry={setQuerry}
-          onAppliedQuerry={setAppliedQuerry}
+          query={query}
+          onQuery={setQuery}
+          onAppliedQuery={setAppliedQuery}
           selectedPerson={selectedPerson}
           onDropdownFocus={setIsDropdownFocus}
           debounceTimer={debounceTimer}
@@ -71,21 +77,18 @@ export const App: React.FC = () => {
 
         <button
           aria-label="Close dropdown"
-          onClick={() => {
-            setIsDropdownFocus(false);
-            handleQueryReset();
-          }}
+          onClick={handleInputReset}
           type="button"
           className={cn(
             'button_hidden delete is-medium',
-            { 'is-hidden': !querry.length },
+            { 'is-hidden': !query.length },
           )}
         />
 
         <DropdownMenu
           people={visablePeople}
           onSelectedPerson={choosePerson}
-          onQuerry={setQuerry}
+          onQuery={setQuery}
         />
       </div>
     </main>

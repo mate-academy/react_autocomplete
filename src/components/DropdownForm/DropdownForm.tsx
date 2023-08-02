@@ -5,50 +5,50 @@ import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
 
 type Props = {
-  querry: string;
-  onQuerry: (value: string) => void;
-  onAppliedQuerry?: (value: string) => void;
+  query: string;
+  onQuery: (value: string) => void;
+  onAppliedQuery?: (value: string) => void;
   selectedPerson: Person | null,
   onDropdownFocus?: (value: boolean) => void;
   debounceTimer: number;
 };
 
 export const DropdownForm: React.FC<Props> = ({
-  querry,
-  onQuerry,
-  onAppliedQuerry = () => { },
+  query,
+  onQuery,
+  onAppliedQuery = () => { },
   selectedPerson,
   onDropdownFocus = () => { },
   debounceTimer,
 }) => {
-  const [defoultImputFocus, setDefoultImputFocus] = useState(false);
-  const applyQuerry = useCallback(debounce(onAppliedQuerry, debounceTimer), []);
+  const [isInputInFocus, setIsInputInFocus] = useState(false);
+  const applyQuery = useCallback(debounce(onAppliedQuery, debounceTimer), []);
 
   const input = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (input.current && !selectedPerson && defoultImputFocus) {
+    if (input.current && !selectedPerson && isInputInFocus) {
       input.current.focus();
     }
   }, [selectedPerson]);
 
-  const handleImputFocus = () => {
+  const handleInputFocus = () => {
     onDropdownFocus(true);
-    setDefoultImputFocus(true);
+    setIsInputInFocus(true);
   };
 
-  const handleQuerryValue = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onQuerry(event.target.value);
-    applyQuerry(event.target.value.trim());
+  const handleQueryValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onQuery(event.target.value);
+    applyQuery(event.target.value.trim());
   };
 
   return (
     <div className="dropdown-trigger">
       <input
-        onFocus={handleImputFocus}
+        onFocus={handleInputFocus}
         ref={input}
-        onChange={handleQuerryValue}
-        value={querry}
+        onChange={handleQueryValue}
+        value={query}
         type="text"
         placeholder="Search for a person"
         className="input"

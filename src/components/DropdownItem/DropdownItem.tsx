@@ -4,14 +4,14 @@ import { Person } from '../../types/Person';
 type Props = {
   person: Person;
   onSelectedPerson: (person: Person) => void;
-  onQuerry: (value: string) => void;
+  onQuery: (value: string) => void;
 };
 
 export const DropdownItem: React.FC<Props> = (
   {
     person,
     onSelectedPerson,
-    onQuerry,
+    onQuery,
   },
 ) => {
   const handleSelectedPersone = (
@@ -19,12 +19,11 @@ export const DropdownItem: React.FC<Props> = (
   ) => {
     event?.preventDefault();
     onSelectedPerson(person);
-    onQuerry(person.name);
+    onQuery(person.name);
   };
 
   return (
     <a
-      key={person.slug}
       className={cn(
         'dropdown-item',
         {
