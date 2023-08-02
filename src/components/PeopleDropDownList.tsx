@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { Person } from '../types/Person';
 
 type Props = {
@@ -29,7 +30,13 @@ export const List: React.FC<Props> = React.memo(({ people, onClick }) => {
                 onKeyDown={() => onClick(person)}
                 role="button"
               >
-                <p className="has-text-danger">{person.name}</p>
+                <p className={classNames({
+                  'has-text-info': person.sex === 'm',
+                  'has-text-danger': person.sex === 'f',
+                })}
+                >
+                  {person.name}
+                </p>
               </div>
             );
           })}
