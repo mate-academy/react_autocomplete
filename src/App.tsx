@@ -5,17 +5,17 @@ import React, {
 } from 'react';
 import './App.scss';
 import debounce from 'lodash.debounce';
+import _ from 'lodash';
 import { peopleFromServer } from './data/people';
 import { List } from './components/PeopleDropDownList';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const copyPeople = [...peopleFromServer];
+  const copyPeople = _.cloneDeep(peopleFromServer);
   const [query, setQuery] = useState('');
   const [focused, setFocused] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [delayedQuery, setQuerySearch] = useState('');
-  const [trigger, setTrigger] = useState('');
+  const [delayedQuery, setDelayedQuery] = useState('');
 
   const filteredPeople = useMemo(() => {
     return copyPeople.filter(
@@ -24,16 +24,16 @@ export const App: React.FC = () => {
       ),
     );
   }, [copyPeople, query]);
-  const aplydelayedQuery = useCallback(
-    debounce(setQuerySearch, 1000), [],
+  const aplyDelayedQuery = useCallback(
+    debounce(setDelayedQuery, 1000), [],
   );
 
   const queryWatcher = useCallback(
-    debounce(setTrigger, 1000), [query],
+    debounce(setDelayedQuery, 1000), [query],
   );
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    aplydelayedQuery(event.target.value);
+    aplyDelayedQuery(event.target.value);
     queryWatcher(event.target.value);
   };
 
@@ -44,7 +44,7 @@ export const App: React.FC = () => {
   };
 
   const handleOnBlur = useCallback(debounce(setFocused, 100), []);
-  const showSuggestions = focused && (query === trigger);
+  const showSuggestions = focused && (query === delayedQuery);
   const showPersonData = query === selectedPerson?.name;
 
   return (
@@ -54,7 +54,7 @@ export const App: React.FC = () => {
       </h1>
 
       <div className="dropdown is-active">
-        <div className="dropdown-trigger">
+        <div className="dropdown-delayedQuery">
           <input
             type="text"
             placeholder="Enter a part of the name"
