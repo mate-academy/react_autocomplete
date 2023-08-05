@@ -39,6 +39,7 @@ export const App: React.FC<Props> = ({ delay }) => {
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
+    setAppliedQuery('');
     applyQuery(event.target.value);
   };
 
