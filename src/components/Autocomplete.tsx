@@ -76,6 +76,7 @@ export const Autocopmlete: React.FC<AutocompleteProps> = ({
     setQuery(e.target.value);
     applyQuery(e.target.value);
     debouncedIsOpen(true);
+    setIsOpen(false);
   };
 
   const handleOptionChange = (person: Person) => {
@@ -131,7 +132,7 @@ export const Autocopmlete: React.FC<AutocompleteProps> = ({
       {isOpen && (
         <div className="dropdown-menu" id="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {visibleOptions.length === 0 && (
+            {!visibleOptions.length && (
               <div className="dropdown-item massage">
                 No matching suggestions
               </div>
