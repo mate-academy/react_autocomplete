@@ -1,14 +1,50 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
+import debounce from 'lodash.debounce';
+
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [peoples, setPeoples] = useState(peopleFromServer);
+  const [inputValue, setInputValue] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const { name, born, died } = selectedPerson || {};
+  const [trigger, setTrigger] = useState(false);
+
+  const debouncedHandleInputChange = useCallback(
+    debounce((newInputValue: string) => {
+      const filteredPeoples = peoples.filter(
+        person => person.name.toLowerCase().includes(
+          newInputValue.toLowerCase(),
+        ),
+      );
+
+      setPeoples(filteredPeoples);
+    }, 1000), [],
+  );
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+    debouncedHandleInputChange(event.target.value);
+  };
+
+  const selectPerson = (person: Person) => {
+    setSelectedPerson(person);
+    setInputValue(person.name);
+    setTrigger(false);
+  };
+
+  const inputOnClick = () => {
+    setInputValue('');
+    setSelectedPerson(null);
+    setPeoples(peopleFromServer);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson ? `${name} (${born} - ${died})` : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +53,46 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={inputValue}
+            onChange={handleInputChange}
+            onFocus={() => setTrigger(true)}
+            onClick={inputOnClick}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
+        {trigger && (
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              {peoples.length === 0 ? (
+                <div className="dropdown-item">
+                  <p>No matching suggestions</p>
+                </div>
+              ) : (
+                peoples.map(person => {
+                  const personClass = person.sex === 'm'
+                    ? 'has-text-link' : 'has-text-danger';
 
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
+                  return (
+                    <div
+                      className="dropdown-item"
+                      role="menuitem"
+                      key={person.slug}
+                      onClick={() => selectPerson(person)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          setSelectedPerson(person);
+                        }
+                      }}
+                      tabIndex={0}
+                    >
+                      <p className={personClass}>{person.name}</p>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );
