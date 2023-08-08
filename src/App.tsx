@@ -19,8 +19,8 @@ export const App: React.FC = () => {
   let copyPeople = [...peopleFromServer];
 
   if (aplliedQuery) {
-    copyPeople = copyPeople.filter(p => {
-      const name = p.name.toUpperCase();
+    copyPeople = copyPeople.filter(man => {
+      const name = man.name.toUpperCase();
 
       return name.includes(aplliedQuery.toUpperCase());
     });
@@ -34,12 +34,12 @@ export const App: React.FC = () => {
   };
 
   const handleClick = (
-    event: React.MouseEvent<HTMLAnchorElement>, p: Person,
+    event: React.MouseEvent<HTMLAnchorElement>, man: Person,
   ) => {
     event.preventDefault();
-    setQueryOrPerson(p.name);
+    setQueryOrPerson(man.name);
     setHasClick(!hasClick);
-    setPerson(p);
+    setPerson(man);
   };
 
   return (
@@ -64,17 +64,17 @@ export const App: React.FC = () => {
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {copyPeople.map(p => (
+            {copyPeople.map(man => (
               <a
-                onClick={(event) => handleClick(event, p)}
-                href={`#${p.slug}`}
-                key={p.slug}
+                onClick={(event) => handleClick(event, man)}
+                href={`#${man.slug}`}
+                key={man.slug}
                 className="dropdown-item"
               >
                 <p
-                  className={`has-text-${p.sex === 'f' ? 'danger' : 'link'}`}
+                  className={`has-text-${man.sex === 'f' ? 'danger' : 'link'}`}
                 >
-                  {p.name}
+                  {man.name}
                 </p>
               </a>
             ))}
