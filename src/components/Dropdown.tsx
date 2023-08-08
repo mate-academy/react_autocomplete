@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from 'react';
-import debounce from 'lodash/debounce';
 import cn from 'classnames';
 import { Person } from '../types/Person';
 
@@ -16,6 +15,19 @@ export const Dropdown: React.FC<Props> = React.memo(
     const [query, setQuery] = useState('');
     const [appliedQuery, setAppliedQuery] = useState('');
     const [showListOfPeople, setShowListOfPeople] = useState(false);
+
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    function debounce(callback: Function, delay: number) {
+      let timerId = 0;
+
+      return (...args: any) => {
+        window.clearTimeout(timerId);
+
+        timerId = window.setTimeout(() => {
+          callback(...args);
+        }, delay);
+      };
+    }
 
     const applyQuery = useCallback(
       debounce(setAppliedQuery, 1000),
