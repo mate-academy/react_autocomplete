@@ -25,10 +25,6 @@ export const App: React.FC = () => {
     setOnFocus(true);
   }, []);
 
-  const onBlurHandler = useCallback(() => {
-    setOnFocus(false);
-  }, []);
-
   return (
     <main className="section">
       {selectedUser ? (
@@ -46,7 +42,6 @@ export const App: React.FC = () => {
           setAppliedQuery={setAppliedQuery}
           delay={1000}
           onFocus={onFocusHandler}
-          onBlur={onBlurHandler}
         />
         {onFocus && (
           <PeopleList

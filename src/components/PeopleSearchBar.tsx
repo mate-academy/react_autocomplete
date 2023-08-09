@@ -6,7 +6,7 @@ type Props = {
   setAppliedQuery: (str: string) => void;
   query: string;
   onFocus: () => void;
-  onBlur: () => void;
+
 };
 
 type DebouncedFunction = (...args: string[]) => void;
@@ -29,7 +29,6 @@ export const PeopleSearchBar: React.FC<Props> = ({
   delay = 1000,
   setAppliedQuery = () => {},
   onFocus = () => {},
-  onBlur = () => {},
 }) => {
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
@@ -47,7 +46,6 @@ export const PeopleSearchBar: React.FC<Props> = ({
         className="input"
         onChange={handleChange}
         onFocus={onFocus}
-        onBlur={onBlur}
       />
     </div>
   );
