@@ -5,11 +5,11 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const [hasClick, setHasClick] = useState(false);
+  const [hasClick, setHasClick] = useState<boolean>(false);
   const [person, setPerson] = useState<Person | null>(null);
-  const [focus, setFocus] = useState(false);
-  const [queryOrPerson, setQueryOrPerson] = useState('');
-  const [aplliedQuery, setAplliedQuery] = useState('');
+  const [focus, setFocus] = useState<boolean>(false);
+  const [queryOrPerson, setQueryOrPerson] = useState<string>('');
+  const [aplliedQuery, setAplliedQuery] = useState<string>('');
 
   const serQuery = useCallback(
     debounce(setAplliedQuery, 1000),
@@ -44,7 +44,7 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {person && queryOrPerson ? (
+      {copyPeople.length && person && queryOrPerson ? (
         <h1 className="title">{`${person.name} (${person.born} - ${person.died})`}</h1>
       ) : (
         <h1 className="title">No matching suggestions</h1>
