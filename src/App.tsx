@@ -1,26 +1,27 @@
 import React, { useCallback, useState } from 'react';
 import debounce from 'lodash.debounce';
+import classNames from 'classnames';
 
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const [peoples, setPeoples] = useState(peopleFromServer);
+  const [people, setPeople] = useState(peopleFromServer);
   const [inputValue, setInputValue] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [isTriggered, setIsTriggered] = useState(false);
   const { name, born, died } = selectedPerson || {};
-  const [trigger, setTrigger] = useState(false);
 
   const debouncedHandleInputChange = useCallback(
     debounce((newInputValue: string) => {
-      const filteredPeoples = peoples.filter(
+      const filteredPeoples = people.filter(
         person => person.name.toLowerCase().includes(
           newInputValue.toLowerCase(),
         ),
       );
 
-      setPeoples(filteredPeoples);
+      setPeople(filteredPeoples);
     }, 1000), [],
   );
 
@@ -32,13 +33,17 @@ export const App: React.FC = () => {
   const selectPerson = (person: Person) => {
     setSelectedPerson(person);
     setInputValue(person.name);
-    setTrigger(false);
+    setIsTriggered(false);
   };
 
   const inputOnClick = () => {
     setInputValue('');
     setSelectedPerson(null);
-    setPeoples(peopleFromServer);
+    setPeople(peopleFromServer);
+  };
+
+  const handlePressEnter = (person: Person) => {
+    setSelectedPerson(person);
   };
 
   return (
@@ -55,22 +60,24 @@ export const App: React.FC = () => {
             className="input"
             value={inputValue}
             onChange={handleInputChange}
-            onFocus={() => setTrigger(true)}
+            onFocus={() => setIsTriggered(true)}
             onClick={inputOnClick}
           />
         </div>
 
-        {trigger && (
+        {isTriggered && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
-              {peoples.length === 0 ? (
+              {people.length === 0 ? (
                 <div className="dropdown-item">
                   <p>No matching suggestions</p>
                 </div>
               ) : (
-                peoples.map(person => {
-                  const personClass = person.sex === 'm'
-                    ? 'has-text-link' : 'has-text-danger';
+                people.map(person => {
+                  const personClass = classNames({
+                    'has-text-link': person.sex === 'm',
+                    'has-text-danger': person.sex === 'f',
+                  });
 
                   return (
                     <div
@@ -80,7 +87,7 @@ export const App: React.FC = () => {
                       onClick={() => selectPerson(person)}
                       onKeyDown={e => {
                         if (e.key === 'Enter') {
-                          setSelectedPerson(person);
+                          handlePressEnter(person);
                         }
                       }}
                       tabIndex={0}
