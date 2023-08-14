@@ -7,7 +7,7 @@ export const App: React.FC = () => {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [inputText, setInputText] = useState('');
   const [filteredPerson, setFilteredPerson] = useState<Person[]>([]);
-  const [selectedPerson, setSelectedPeople] = useState<Person | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newText = event.target.value;
@@ -21,14 +21,21 @@ export const App: React.FC = () => {
   };
 
   const handleSuggestionClick = (person: Person) => {
-    setSelectedPeople(person);
+    setSelectedSlug(person.slug);
+    setSelectedPerson(person);
     setInputText(person.name);
     setFilteredPerson([]); // Закриваємо випадаючий список після вибору
   };
 
   const handleKeyDown = (event: React.KeyboardEvent, person: Person) => {
-    if (event.key === 'Enter' || event.key === 'Space') {
+    if (event.key === 'Enter') {
       handleSuggestionClick(person);
+    }
+
+    if (event.key === 'Delete' || event.key === 'Backspace') {
+      setInputText(prevInputText => prevInputText.slice(0, -1));
+      setSelectedPerson(null); // Скидання вибраного користувача
+      setFilteredPerson([]); // Закриття випадаючого списку
     }
   };
 
@@ -50,7 +57,7 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            value={inputText}
+            value={selectedPerson ? selectedPerson.name : inputText}
             onChange={handleInputChange}
           />
         </div>
@@ -60,28 +67,34 @@ export const App: React.FC = () => {
           role="menu"
         >
           <div className="dropdown-content">
-            {filteredPerson.length > 0 ? (
-              filteredPerson.map((person: Person) => (
+            {filteredPerson.length > 0
+              ? filteredPerson.map((person: Person) => (
                 <div
                   role="button"
                   className="dropdown-item"
                   tabIndex={0}
                   key={person.slug}
-                  onClick={() => setSelectedSlug(person.slug)}
+                  onClick={() => {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-sequences
+                    setSelectedSlug(person.slug),
+                    handleSuggestionClick(person);
+                  }}
                   onKeyDown={event => handleKeyDown(event, person)}
                 >
                   <p
-                    className={selectedPerson === person ? 'has-text-link' : ''}
+                    className={
+                      selectedPerson === person ? 'has-text-link' : ''
+                    }
                   >
                     {person.name}
                   </p>
                 </div>
               ))
-            ) : (
-              <div className="dropdown-item">
-                <p className="has-text-link">No matching suggestions</p>
-              </div>
-            )}
+              : inputText && ( // Відображати тільки при введеному тексті
+                <div className="dropdown-item">
+                  <p className="has-text-link">No matching suggestions</p>
+                </div>
+              )}
           </div>
         </div>
       </div>
