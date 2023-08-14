@@ -23,7 +23,7 @@ export const Autocomplete: React.FC<Props> = ({
 }) => {
   const [isListVisible, setIsListVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const [debauncedInputValue, setDebauncedInputValue] = useState(inputValue);
+  const [debouncedInputValue, setDebouncedInputValue] = useState(inputValue);
   const [wasThereClick, setWasThereClick] = useState(true);
 
   const handleInputFocus = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -48,8 +48,8 @@ export const Autocomplete: React.FC<Props> = ({
 
   useEffect(() => {
     const timerId = setTimeout(() => {
-      if (inputValue !== debauncedInputValue) {
-        setDebauncedInputValue(inputValue);
+      if (inputValue !== debouncedInputValue) {
+        setDebouncedInputValue(inputValue);
       }
 
       setIsListVisible(true);
@@ -61,8 +61,8 @@ export const Autocomplete: React.FC<Props> = ({
   const filteredPeople = useMemo(() => people.filter(person => {
     return person.name
       .toLowerCase()
-      .includes(debauncedInputValue.toLowerCase());
-  }), [debauncedInputValue, people]);
+      .includes(debouncedInputValue.toLowerCase());
+  }), [debouncedInputValue, people]);
 
   return (
     <div
