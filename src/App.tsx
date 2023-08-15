@@ -1,19 +1,65 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import debounce from 'lodash.debounce';
+
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [hasClick, setHasClick] = useState(false);
+  const [person, setPerson] = useState<Person | null>(null);
+  const [focus, setFocus] = useState(false);
+  const [query, setQuery] = useState('');
+  const [aplliedQuery, setAplliedQuery] = useState('');
+
+  const queryDetention = useCallback(
+    debounce(setAplliedQuery, 1000),
+    [],
+  );
+
+  let preparedPeopleData = [...peopleFromServer];
+
+  if (aplliedQuery) {
+    preparedPeopleData = preparedPeopleData.filter(man => {
+      const name = man.name.toUpperCase();
+
+      return name.includes(aplliedQuery.toUpperCase());
+    });
+  }
+
+  useEffect(() => setFocus(false), [person, hasClick]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.currentTarget.value);
+    queryDetention(event.currentTarget.value);
+  };
+
+  const handleClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    currentPerson: Person,
+  ) => {
+    event.preventDefault();
+    setQuery(currentPerson.name);
+    setHasClick(!hasClick);
+    setPerson(currentPerson);
+  };
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      {preparedPeopleData.length && person && query ? (
+        <h1 className="title">
+          {`${person.name} (${person.born} - ${person.died})`}
+        </h1>
+      ) : (
+        <h1 className="title">No matching suggestions</h1>
+      )}
 
-      <div className="dropdown is-active">
+      <div className={`dropdown ${focus && 'is-active'}`}>
         <div className="dropdown-trigger">
           <input
+            value={query}
+            onChange={handleChange}
+            onFocus={() => setFocus(true)}
             type="text"
             placeholder="Enter a part of the name"
             className="input"
@@ -22,33 +68,20 @@ export const App: React.FC = () => {
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
+            {preparedPeopleData.map(currentPerson => (
+              <a
+                onClick={(event) => handleClick(event, currentPerson)}
+                href={`#${currentPerson.slug}`}
+                key={currentPerson.slug}
+                className="dropdown-item"
+              >
+                <p
+                  className={`has-text-${currentPerson.sex === 'f' ? 'danger' : 'link'}`}
+                >
+                  {currentPerson.name}
+                </p>
+              </a>
+            ))}
           </div>
         </div>
       </div>
