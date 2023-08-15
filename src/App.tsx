@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import debounce from 'lodash.debounce';
+import { debounce } from 'lodash';
 
 import './App.scss';
 import { peopleFromServer } from './data/people';
