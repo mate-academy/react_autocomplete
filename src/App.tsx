@@ -24,24 +24,21 @@ export const App: React.FC = () => {
     setSelectedSlug(person.slug);
     setSelectedPerson(person);
     setInputText(person.name);
-    setFilteredPerson([]); // Закриваємо випадаючий список після вибору
+    setFilteredPerson([]);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent, person: Person) => {
     if (event.key === 'Enter') {
       handleSuggestionClick(person);
     }
-
-    if (event.key === 'Delete' || event.key === 'Backspace') {
-      setInputText(prevInputText => prevInputText.slice(0, -1));
-      setSelectedPerson(null); // Скидання вибраного користувача
-      setFilteredPerson([]); // Закриття випадаючого списку
-    }
   };
 
   const selectedUser = peopleFromServer.find(
     person => person.slug === selectedSlug,
   );
+
+  const isInputSameAsSelected = selectedPerson
+    && selectedPerson.name.toLowerCase() === inputText.toLowerCase();
 
   return (
     <main className="section">
@@ -57,46 +54,49 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            value={selectedPerson ? selectedPerson.name : inputText}
+            value={inputText}
             onChange={handleInputChange}
           />
         </div>
 
-        <div
-          className="dropdown-menu"
-          role="menu"
-        >
-          <div className="dropdown-content">
-            {filteredPerson.length > 0
-              ? filteredPerson.map((person: Person) => (
-                <div
-                  role="button"
-                  className="dropdown-item"
-                  tabIndex={0}
-                  key={person.slug}
-                  onClick={() => {
-                    // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-sequences
-                    setSelectedSlug(person.slug),
-                    handleSuggestionClick(person);
-                  }}
-                  onKeyDown={event => handleKeyDown(event, person)}
-                >
-                  <p
-                    className={
-                      selectedPerson === person ? 'has-text-link' : ''
-                    }
+        {inputText && !isInputSameAsSelected && (
+          <div
+            className="dropdown-menu"
+            role="menu"
+          >
+            <div className="dropdown-content">
+              {filteredPerson.length > 0
+                ? filteredPerson.map((person: Person) => (
+                  <div
+                    role="button"
+                    className="dropdown-item"
+                    tabIndex={0}
+                    key={person.slug}
+                    onClick={() => {
+                      // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-sequences
+                      setSelectedSlug(person.slug),
+                      handleSuggestionClick(person);
+                    }}
+                    onKeyDown={event => handleKeyDown(event, person)}
                   >
-                    {person.name}
-                  </p>
-                </div>
-              ))
-              : inputText && ( // Відображати тільки при введеному тексті
-                <div className="dropdown-item">
-                  <p className="has-text-link">No matching suggestions</p>
-                </div>
-              )}
+                    <p
+                      className={
+                        selectedPerson === person ? 'has-text-link' : ''
+                      }
+                    >
+                      {person.name}
+                    </p>
+                  </div>
+                ))
+                : (
+                  // Відображати тільки при введеному тексті
+                  <div className="dropdown-item">
+                    <p className="has-text-link">No matching suggestions</p>
+                  </div>
+                )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );
