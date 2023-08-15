@@ -74,7 +74,6 @@ export const Autocomplete: React.FC<Props> = ({ setIndex, delay }) => {
                 </p>
               </div>
             ))}
-
           </div>
         </div>
       )}
