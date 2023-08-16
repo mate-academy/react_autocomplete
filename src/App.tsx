@@ -53,6 +53,7 @@ export const App: React.FC = () => {
     setQuery(currentPerson.name);
     setHasClick(!hasClick);
     setPerson(currentPerson);
+    setFocus(false);
   };
 
   return (
@@ -71,6 +72,7 @@ export const App: React.FC = () => {
             value={query}
             onChange={handleChange}
             onFocus={() => setFocus(true)}
+            onBlur={() => setFocus(false)}
             type="text"
             placeholder="Enter a part of the name"
             className="input"
@@ -82,7 +84,7 @@ export const App: React.FC = () => {
             {visiblePeople.length !== 0 ? (
               visiblePeople.map(currentPerson => (
                 <a
-                  onClick={(event) => handleClick(event, currentPerson)}
+                  onMouseDown={(event) => handleClick(event, currentPerson)}
                   href={`#${currentPerson.slug}`}
                   key={currentPerson.slug}
                   className="dropdown-item"
