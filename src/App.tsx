@@ -1,4 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+} from 'react';
 import { debounce } from 'lodash';
 
 import './App.scss';
@@ -13,25 +18,31 @@ export const App: React.FC = () => {
   const [aplliedQuery, setAplliedQuery] = useState('');
 
   const queryDetention = useCallback(
-    debounce(setAplliedQuery, 1000),
+    debounce((newQuery: string) => setAplliedQuery(newQuery), 1000),
     [],
   );
 
-  let preparedPeopleData = [...peopleFromServer];
+  const visiblePeople = useMemo(() => {
+    if (!aplliedQuery) {
+      return peopleFromServer;
+    }
 
-  if (aplliedQuery) {
-    preparedPeopleData = preparedPeopleData.filter(man => {
-      const name = man.name.toUpperCase();
+    const normalizedQuery = aplliedQuery.toUpperCase();
 
-      return name.includes(aplliedQuery.toUpperCase());
+    return peopleFromServer.filter(currentPerson => {
+      const name = currentPerson.name.toUpperCase();
+
+      return name.includes(normalizedQuery);
     });
-  }
+  }, [aplliedQuery]);
 
   useEffect(() => setFocus(false), [person, hasClick]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.currentTarget.value);
-    queryDetention(event.currentTarget.value);
+    const newQuery = event.currentTarget.value;
+
+    setQuery(newQuery);
+    queryDetention(newQuery);
   };
 
   const handleClick = (
@@ -46,7 +57,7 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {preparedPeopleData.length && person && query ? (
+      {visiblePeople.length !== 0 && person && query ? (
         <h1 className="title">
           {`${person.name} (${person.born} - ${person.died})`}
         </h1>
@@ -60,7 +71,6 @@ export const App: React.FC = () => {
             value={query}
             onChange={handleChange}
             onFocus={() => setFocus(true)}
-            onBlur={() => setFocus(false)}
             type="text"
             placeholder="Enter a part of the name"
             className="input"
@@ -69,8 +79,8 @@ export const App: React.FC = () => {
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {preparedPeopleData.length !== 0
-              ? (preparedPeopleData.map(currentPerson => (
+            {visiblePeople.length !== 0 ? (
+              visiblePeople.map(currentPerson => (
                 <a
                   onClick={(event) => handleClick(event, currentPerson)}
                   href={`#${currentPerson.slug}`}
@@ -78,19 +88,17 @@ export const App: React.FC = () => {
                   className="dropdown-item"
                 >
                   <p
-                    className={`has-text-${currentPerson.sex === 'f' ? 'danger' : 'link'}`}
+                    className={`has-text-${
+                      currentPerson.sex === 'f' ? 'danger' : 'link'
+                    }`}
                   >
                     {currentPerson.name}
                   </p>
                 </a>
-              )))
-              : (
-                <p
-                  className="subtitle is-6"
-                >
-                  No matching suggestions
-                </p>
-              )}
+              ))
+            ) : (
+              <p className="subtitle is-6">No matching suggestions</p>
+            )}
           </div>
         </div>
       </div>
