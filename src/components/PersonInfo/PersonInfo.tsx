@@ -10,18 +10,12 @@ type Props = {
   ) => void;
 };
 
-export const PeopleInfo: React.FC<Props> = ({ person, onSelect }) => {
+export const PersonInfo: React.FC<Props> = ({ person, onSelect }) => {
   const { sex, name, slug } = person;
 
   return (
-    <div
-      className="dropdown-item"
-      key={slug}
-    >
-      <a
-        href="/"
-        onClick={(event) => onSelect(event, person)}
-      >
+    <div className="dropdown-item" key={slug}>
+      <a href="/" onClick={(event) => onSelect(event, person)}>
         <p className={cn(sex === 'm' ? 'has-text-link' : 'has-text-danger')}>
           {name}
         </p>

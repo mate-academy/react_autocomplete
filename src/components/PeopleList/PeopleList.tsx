@@ -1,12 +1,12 @@
 import React from 'react';
 import { Person } from '../../types/Person';
-import { PeopleInfo } from '../PersonInfo';
+import { PersonInfo } from '../PersonInfo';
 
 type Props = {
   people: Person[];
   onSelect: (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-    person: Person,
+    person: Person
   ) => void;
 };
 
@@ -19,8 +19,8 @@ export const PeopleList: React.FC<Props> = ({ people, onSelect }) => {
             <p className="has-text-danger">No matching suggestions</p>
           </div>
         ) : (
-          people.map(person => (
-            <PeopleInfo person={person} onSelect={onSelect} />
+          people.map((person) => (
+            <PersonInfo person={person} onSelect={onSelect} />
           ))
         )}
       </div>
