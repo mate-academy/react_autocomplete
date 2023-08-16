@@ -57,6 +57,7 @@ export const Autocomplete: React.FC<Props> = ({
           onClick={() => setIsClicked(true)}
         />
       </div>
+
       {(!filteredPeople.length && isMatching)
       && 'No matching suggestions'}
       {(isClicked && isMatching) && (
