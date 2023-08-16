@@ -1,13 +1,17 @@
 import React, { useCallback, useState } from 'react';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../data/people';
+import { Person } from '../types/Person';
 
 type Props = {
-  setIndex: (index: number) => void,
+  setSelectedPerson: (person: Person) => void,
   delay: number,
 };
 
-export const Autocomplete: React.FC<Props> = ({ setIndex, delay }) => {
+export const Autocomplete: React.FC<Props> = ({
+  setSelectedPerson,
+  delay,
+}) => {
   const [query, setQuery] = useState('');
   const [isClicked, setIsClicked] = useState(false);
   const [isMatching, setIsMatching] = useState(true);
@@ -26,7 +30,9 @@ export const Autocomplete: React.FC<Props> = ({ setIndex, delay }) => {
 
   const handleSearch = (personName: string) => {
     setQuery(personName);
-    setIndex(peopleFromServer.findIndex(person => person.name === personName));
+    setSelectedPerson(peopleFromServer[
+      peopleFromServer.findIndex(person => person.name === personName)
+    ]);
     setIsMatching(false);
   };
 
@@ -51,7 +57,7 @@ export const Autocomplete: React.FC<Props> = ({ setIndex, delay }) => {
           onClick={() => setIsClicked(true)}
         />
       </div>
-      {(filteredPeople.length === 0 && isMatching)
+      {(!filteredPeople.length && isMatching)
       && 'No matching suggestions'}
       {(isClicked && isMatching) && (
         <div className="dropdown-menu" role="menu">

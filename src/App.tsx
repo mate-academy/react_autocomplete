@@ -1,38 +1,24 @@
 import React, { useState } from 'react';
 import './App.scss';
-import { peopleFromServer } from './data/people';
 import { Autocomplete } from './components/Autocomplete';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const [index, setIndex] = useState<null | number>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person>();
   const delay = 1000;
 
-  let name = '';
-  let born = '';
-  let died = '';
-
-  if (index !== null) {
-    const selectedPerson = peopleFromServer[index];
-
-    name = selectedPerson.name;
-    born = selectedPerson.born.toString();
-    died = selectedPerson.died.toString();
-  }
+  const title = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : 'No selected person';
 
   return (
     <main className="section">
-      {index !== null ? (
-        <h1 className="title">
-          {`${name} (${born} - ${died})`}
-        </h1>
-      ) : (
-        <h1 className="title">
-          No selected person
-        </h1>
-      )}
+      <h1 className="title">
+        {title}
+      </h1>
 
       <Autocomplete
-        setIndex={setIndex}
+        setSelectedPerson={setSelectedPerson}
         delay={delay}
       />
 
