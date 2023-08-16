@@ -60,6 +60,7 @@ export const App: React.FC = () => {
             value={query}
             onChange={handleChange}
             onFocus={() => setFocus(true)}
+            onBlur={() => setFocus(false)}
             type="text"
             placeholder="Enter a part of the name"
             className="input"
@@ -68,20 +69,28 @@ export const App: React.FC = () => {
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {preparedPeopleData.map(currentPerson => (
-              <a
-                onClick={(event) => handleClick(event, currentPerson)}
-                href={`#${currentPerson.slug}`}
-                key={currentPerson.slug}
-                className="dropdown-item"
-              >
-                <p
-                  className={`has-text-${currentPerson.sex === 'f' ? 'danger' : 'link'}`}
+            {preparedPeopleData.length !== 0
+              ? (preparedPeopleData.map(currentPerson => (
+                <a
+                  onClick={(event) => handleClick(event, currentPerson)}
+                  href={`#${currentPerson.slug}`}
+                  key={currentPerson.slug}
+                  className="dropdown-item"
                 >
-                  {currentPerson.name}
+                  <p
+                    className={`has-text-${currentPerson.sex === 'f' ? 'danger' : 'link'}`}
+                  >
+                    {currentPerson.name}
+                  </p>
+                </a>
+              )))
+              : (
+                <p
+                  className="subtitle is-6"
+                >
+                  No matching suggestions
                 </p>
-              </a>
-            ))}
+              )}
           </div>
         </div>
       </div>
