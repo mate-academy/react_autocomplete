@@ -20,7 +20,11 @@ export const PeopleList: React.FC<Props> = ({ people, onSelect }) => {
           </div>
         ) : (
           people.map((person) => (
-            <PersonInfo person={person} onSelect={onSelect} />
+            <PersonInfo
+              person={person}
+              onSelect={onSelect}
+              key={person.slug}
+            />
           ))
         )}
       </div>
