@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
+
 import { debounce } from 'lodash';
 import './App.scss';
 import { peopleFromServer } from './data/people';
