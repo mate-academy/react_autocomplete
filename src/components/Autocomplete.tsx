@@ -14,7 +14,6 @@ export const Autocomplete: React.FC<Props> = ({
 }) => {
   const [query, setQuery] = useState('');
   const [isClicked, setIsClicked] = useState(false);
-  const [isMatching, setIsMatching] = useState(true);
   const [appliedQuery, setAppliedQuery] = useState('');
 
   const applyQuery = useCallback(
@@ -23,27 +22,24 @@ export const Autocomplete: React.FC<Props> = ({
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsMatching(true);
     setQuery(event.target.value);
     applyQuery(event.target.value);
   };
 
   const handleSearch = (personName: string) => {
     setQuery(personName);
+    setAppliedQuery(personName);
     setSelectedPerson(peopleFromServer[
       peopleFromServer.findIndex(person => person.name === personName)
     ]);
-    setIsMatching(false);
   };
 
-  const filteredPeople = (
-    [...peopleFromServer].filter(person => {
-      const lowerQuery = appliedQuery.toLocaleLowerCase();
-      const fullName = person.name.toLowerCase();
+  const filteredPeople = peopleFromServer.filter(person => {
+    const lowerQuery = appliedQuery.toLocaleLowerCase();
+    const fullName = person.name.toLowerCase();
 
-      return fullName.includes(lowerQuery) && fullName !== lowerQuery;
-    })
-  );
+    return fullName.includes(lowerQuery);
+  });
 
   return (
     <div className="dropdown is-active">
@@ -57,27 +53,25 @@ export const Autocomplete: React.FC<Props> = ({
           onClick={() => setIsClicked(true)}
         />
       </div>
-
-      {(!filteredPeople.length && isMatching)
-      && 'No matching suggestions'}
-      {(isClicked && isMatching) && (
+      {!filteredPeople.length && 'No matching suggestions'}
+      {isClicked && (
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {filteredPeople.map(person => (
+            {filteredPeople.map(({ slug, name }) => (
               <div
                 className="dropdown-item"
-                key={person.slug}
-                onClick={() => handleSearch(person.name)}
+                key={slug}
+                onClick={() => handleSearch(name)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    handleSearch(person.name);
+                    handleSearch(name);
                   }
                 }}
               >
                 <p className="has-text-link">
-                  {person.name}
+                  {name}
                 </p>
               </div>
             ))}
