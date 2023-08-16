@@ -1,14 +1,55 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { debounce } from './utils';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { DropList } from './components/DropList';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [querySearch, setQuerysearch] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(false);
+
+  const applyQuery = useCallback(
+    debounce(setQuerysearch, 1000),
+    [],
+  );
+
+  const handleQuery = (event: { target: { value: string } }) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+    setIsSuggestionsVisible(false);
+  };
+
+  const visiblePeople = useMemo(() => {
+    setIsSuggestionsVisible(true);
+    if (!querySearch) {
+      return [];
+    }
+
+    const normalizedQuery = querySearch.toLowerCase();
+
+    return peopleFromServer.filter(
+      person => person.name.toLowerCase().includes(normalizedQuery),
+    );
+  }, [querySearch]);
+
+  const handlePerson = (person: Person): void => {
+    setSelectedPerson(person);
+    setQuerysearch('');
+    setQuery(person.name);
+    setIsSuggestionsVisible(false);
+  };
+
+  const isDropListVisible = querySearch && isSuggestionsVisible;
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? (`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`)
+          : ('No person selected')}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +58,17 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={handleQuery}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        {isDropListVisible && (
+          <DropList
+            onSelected={handlePerson}
+            visiblePeople={visiblePeople}
+          />
+        )}
       </div>
     </main>
   );
