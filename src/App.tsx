@@ -18,7 +18,7 @@ export const App: React.FC = () => {
 
   const selectPerson = useCallback((person: Person) => {
     setSelectedPerson(person);
-    setQuery('');
+    setQuery(person.name);
     setAppliedQuery('');
   }, []);
 
