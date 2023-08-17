@@ -6,3 +6,8 @@
   font-size: inherit;
   cursor: pointer;
 }
+
+.container {
+  max-height: 450px;
+  overflow-y: scroll;
+}

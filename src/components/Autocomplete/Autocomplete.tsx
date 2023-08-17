@@ -4,6 +4,7 @@ import './Autocomplete.scss';
 import { Person } from '../../types/Person';
 
 type Props = {
+  selectedPerson: Person | null;
   onSelected: (person: Person) => void;
   delay: number;
 };
@@ -22,7 +23,11 @@ function debounce(callback: Function, delay: number) {
   };
 }
 
-export const Autocomplete: React.FC<Props> = ({ onSelected, delay }) => {
+export const Autocomplete: React.FC<Props> = ({
+  selectedPerson,
+  onSelected,
+  delay,
+}) => {
   const [query, setQuery] = useState('');
   const [fullQuery, setFullQuery] = useState('');
   const [isSelectVisible, setIsSelectVisible] = useState(false);
@@ -38,10 +43,10 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, delay }) => {
       });
   }, [fullQuery]);
 
-  const handleSelect = (selectedPerson: Person) => {
-    onSelected(selectedPerson);
-    setQuery(selectedPerson.name);
-    setFullQuery(selectedPerson.name);
+  const handleSelect = (personSelected: Person) => {
+    onSelected(personSelected);
+    setQuery(personSelected.name);
+    setFullQuery(personSelected.name);
     setIsSelectVisible(false);
   };
 
@@ -49,7 +54,20 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, delay }) => {
     setQuery(e.target.value);
     applyQuery(e.target.value);
     setIsSelectVisible(false);
+
+    if (selectedPerson && e.target.value === selectedPerson.name) {
+      return;
+    }
+
     applySelectVisibility(true);
+  };
+
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (selectedPerson && e.target.value === selectedPerson.name) {
+      return;
+    }
+
+    setIsSelectVisible(true);
   };
 
   return (
@@ -61,13 +79,13 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, delay }) => {
           value={query}
           className="input"
           onChange={handleInputChange}
-          onFocus={() => setIsSelectVisible(true)}
+          onFocus={handleInputFocus}
         />
       </div>
 
       {isSelectVisible && (
         <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
+          <div className="container dropdown-content">
             {!!suggestedPeople.length
             && suggestedPeople.map(suggestedPerson => (
               <div

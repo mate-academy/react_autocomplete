@@ -16,6 +16,7 @@ export const App: React.FC = () => {
       </h1>
 
       <Autocomplete
+        selectedPerson={selectedPerson}
         onSelected={(person: Person) => setSelectedPerson(person)}
         delay={delay}
       />
