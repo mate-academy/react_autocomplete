@@ -5,6 +5,10 @@ import { peopleFromServer } from './data/people';
 import { PersonList } from './components/list/PersonList';
 import { Person } from './types/Person';
 
+const formatPersonName = (person: Person) => {
+  return `${person.name} (${person.born} - ${person.died})`;
+};
+
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -38,7 +42,9 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})` : 'No person selected'}
+        {selectedPerson
+          ? formatPersonName(selectedPerson)
+          : 'No person selected'}
       </h1>
 
       <div className="dropdown is-active">
