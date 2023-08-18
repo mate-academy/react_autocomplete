@@ -31,7 +31,7 @@ export const App: React.FC = () => {
   const selectHandler = (person: Person) => {
     setSelectedPerson(person);
     setAppliedQuery('');
-    setInputValue('');
+    setInputValue(person.name);
     setIsListVisible(false);
   };
 
