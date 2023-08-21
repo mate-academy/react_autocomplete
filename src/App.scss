@@ -1,3 +1,16 @@
 iframe {
   display: none;
 }
+
+.dropdown-content {
+  min-height: 50px;
+  max-height: 310px;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.has-text-link {
+  &:hover {
+    color: red;
+  }
+}
