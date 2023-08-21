@@ -7,14 +7,15 @@ import { PeopleList } from './components/peopleList';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
+const DELAY = 1000;
+
 export const App: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isListVisible, setIsListVisible] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
-  const delay = 1000;
 
-  const aplyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+  const aplyQuery = useCallback(debounce(setAppliedQuery, DELAY), []);
 
   const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -22,7 +23,7 @@ export const App: React.FC = () => {
   };
 
   const filteredPeople = useMemo(() => (
-    [...peopleFromServer]
+    peopleFromServer
       .filter((person) => (
         person.name.toLowerCase().includes(appliedQuery.toLowerCase())
       ))
