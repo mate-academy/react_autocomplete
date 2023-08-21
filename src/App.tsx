@@ -53,6 +53,7 @@ export const App: React.FC = () => {
             className="input"
             onFocus={() => setIsListVisible(true)}
             onChange={onChangeHandler}
+            onBlur={() => setIsListVisible(false)}
           />
         </div>
         <PeopleList people={filteredPeople} onSelect={selectHandler} />

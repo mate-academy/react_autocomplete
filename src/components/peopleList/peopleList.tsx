@@ -18,7 +18,7 @@ export const PeopleList: React.FC<Props> = ({
             type="button"
             className="dropdown-item"
             key={person.name}
-            onClick={() => {
+            onMouseDown={() => {
               onSelect(person);
             }}
           >
