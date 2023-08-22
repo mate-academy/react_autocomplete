@@ -2,6 +2,7 @@ import React, {
   useState, useMemo, useCallback, useRef,
 } from 'react';
 import { debounce } from 'lodash';
+import classNames from 'classnames';
 import { Person } from '../types/Person';
 
 type Props = {
@@ -49,7 +50,11 @@ export const Autocomplete: React.FC<Props> = React.memo(({
   };
 
   return (
-    <div className="dropdown is-active">
+    <div className={classNames(
+      'dropdown',
+      { 'is-active': focus === true },
+    )}
+    >
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -71,7 +76,7 @@ export const Autocomplete: React.FC<Props> = React.memo(({
                 ? filteredPeople.map(person => (
                   <div key={person.slug} className="dropdown-item">
                     <a
-                      href="http"
+                      href="#/"
                       className="has-text-link"
                       onMouseDown={
                         (event) => handleSelectedPerson(event, person)
