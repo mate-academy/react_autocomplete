@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import cn from 'classnames';
 import './App.scss';
 
@@ -7,19 +7,50 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
   const [people] = useState(peopleFromServer);
   const [isDropdownActive, setIsDropdownActive] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const timerId = useRef(0);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
 
     setQuery(value);
+
+    window.clearTimeout(timerId.current);
+
+    timerId.current = window.setTimeout(() => {
+      setAppliedQuery(value);
+    }, 1000);
   };
 
-  const filteredPeople = people.filter(person => (
-    person.name.toLowerCase().includes(query.toLowerCase())
-  ));
+  const handleOnPersonClick = (person: Person) => {
+    setSelectedPerson(person);
+    setIsDropdownActive(false);
+    setQuery(person.name);
+  };
+
+  const handlePersonKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    person: Person,
+  ) => {
+    if (event.key === 'Enter') {
+      setSelectedPerson(person);
+    }
+  };
+
+  const filteredPeople = useMemo(() => {
+    return (
+      people.filter(person => (
+        person.name.toLowerCase().includes(appliedQuery.toLowerCase())
+      ))
+    );
+  }, [appliedQuery, people]);
+
+  /* eslint-disable */
+  console.log('render');
 
   return (
     <main className="section">
@@ -36,6 +67,7 @@ export const App: React.FC = () => {
           <input
             type="text"
             placeholder="Enter a part of the name"
+            autoComplete="off"
             className="input"
             value={query}
             onChange={handleQueryChange}
@@ -53,37 +85,35 @@ export const App: React.FC = () => {
             <div
               className="dropdown-content"
             >
-              {filteredPeople.map(person => {
-                const isSelectedPerson = selectedPerson?.slug === person.slug;
+              {filteredPeople.length
+                ? (filteredPeople.map(person => {
+                  const isSelectedPerson = selectedPerson?.slug === person.slug;
 
-                return (
-                  <div
-                    className="dropdown-item"
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => {
-                      setSelectedPerson(person);
-                      setIsDropdownActive(false);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter') {
-                        setSelectedPerson(person);
-                      }
-                    }}
-                  >
-                    <p
-                      className={cn(
-                        'has-text-link',
-                        {
-                          'has-text-danger': isSelectedPerson,
-                        },
-                      )}
+                  return (
+                    <div
+                      key={person.slug}
+                      className="dropdown-item"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => handleOnPersonClick(person)}
+                      onKeyDown={(event) => handlePersonKeyDown(event, person)}
                     >
-                      {person.name}
-                    </p>
-                  </div>
-                );
-              })}
+                      <p
+                        className={cn(
+                          'has-text-link',
+                          {
+                            'has-text-danger': isSelectedPerson,
+                          },
+                        )}
+                      >
+                        {person.name}
+                      </p>
+                    </div>
+                  );
+                })
+                ) : (
+                  'No matching suggestions'
+                )}
             </div>
           )}
         </div>
