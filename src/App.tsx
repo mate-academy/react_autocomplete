@@ -33,6 +33,7 @@ export const App: React.FC = () => {
 
   const blurHandle = () => {
     setTimeout(() => setIsFocused(false), 300);
+    setQuery('');
   };
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
