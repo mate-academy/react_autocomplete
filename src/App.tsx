@@ -1,15 +1,66 @@
-import React from 'react';
+import debounce from 'lodash.debounce';
+import React, { useState, useCallback, useMemo } from 'react';
 import './App.scss';
+import { Person } from './types/Person';
 import { peopleFromServer } from './data/people';
+import { PeopleList } from './components/PeopleList/PeopleList';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [selectedPerson, setSelectedPerson]
+    = useState<Person | null>(null);
+
+  const people = peopleFromServer;
+
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 1000),
+    [],
+  );
+
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleSelected = (person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+    setIsFocused(false);
+  };
+
+  const blurHandle = () => {
+    setTimeout(() => setIsFocused(false), 300);
+  };
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
+
+  const filteredPeople = useMemo(() => {
+    return people.filter(person => {
+      return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
+    });
+  }, [appliedQuery, people]);
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      {
+        selectedPerson
+          ? (
+            <h1 className="title">
+              {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
+            </h1>
+          )
+          : (
+            <h1 className="title">
+              No selected person
+            </h1>
+          )
+      }
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
@@ -17,39 +68,21 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={handleQueryChange}
+            onFocus={handleFocus}
+            onBlur={blurHandle}
           />
         </div>
 
         <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
+          {isFocused && (
+            <PeopleList
+              people={filteredPeople}
+              onSelect={handleSelected}
+              appliedQuery={appliedQuery}
+            />
+          )}
         </div>
       </div>
     </main>
