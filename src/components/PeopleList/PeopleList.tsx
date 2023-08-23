@@ -7,7 +7,7 @@ type Props = {
   people: Person[],
   onSelect: (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-    person: Person
+    person: Person,
   ) => void;
 };
 
