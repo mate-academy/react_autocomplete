@@ -9,8 +9,6 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson]
     = useState<Person | null>(null);
 
-  const people = peopleFromServer;
-
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
@@ -42,10 +40,10 @@ export const App: React.FC = () => {
   };
 
   const filteredPeople = useMemo(() => {
-    return people.filter(person => {
+    return peopleFromServer.filter(person => {
       return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
     });
-  }, [appliedQuery, people]);
+  }, [appliedQuery, peopleFromServer]);
 
   return (
     <main className="section">
