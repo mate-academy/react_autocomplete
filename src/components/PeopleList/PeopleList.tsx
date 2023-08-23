@@ -8,7 +8,7 @@ type Props = {
   onSelect: (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
     person: Person,
-  ) => void;
+  ) => void,
 };
 
 export const PeopleList: React.FC<Props> = React.memo(({

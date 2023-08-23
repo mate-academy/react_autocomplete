@@ -8,13 +8,15 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { PeopleList } from './components/PeopleList';
 
+const DELAY = 500;
+
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [applyedQuery, setApplyedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isListVisible, setIsListVisible] = useState(false);
 
-  const applyQuery = useCallback(debounce(setApplyedQuery, 500), []);
+  const applyQuery = useCallback(debounce(setApplyedQuery, DELAY), []);
 
   const filteredPeople = useMemo(() => {
     setIsListVisible(true);
@@ -24,10 +26,12 @@ export const App: React.FC = () => {
     ));
   }, [applyedQuery, peopleFromServer]);
 
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQueryChange = useCallback((
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
-  };
+  }, []);
 
   const handleSelectPerson = useCallback((
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -60,6 +64,7 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={handleQueryChange}
+            onFocus={() => setIsListVisible(true)}
           />
         </div>
 
