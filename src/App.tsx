@@ -52,9 +52,7 @@ export const App: React.FC = () => {
             placeholder="Enter a part of the name"
             className="input"
             value={query}
-            onChange={event => {
-              handleQueryChange(event);
-            }}
+            onChange={handleQueryChange}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
           />
