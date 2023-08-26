@@ -6,7 +6,7 @@ interface Props {
   query: string;
   setFocused: React.Dispatch<React.SetStateAction<boolean>>;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
-  setAppliedQuery: React.Dispatch<React.SetStateAction<string>>;
+  setFilterQuery: React.Dispatch<React.SetStateAction<string>>;
   delay?: number;
 }
 
@@ -14,11 +14,11 @@ export const QueryInput: React.FC<Props> = ({
   query,
   setFocused,
   setQuery,
-  setAppliedQuery,
+  setFilterQuery,
   delay = 1000,
 }) => {
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay),
+    debounce(setFilterQuery, delay),
     [],
   );
 

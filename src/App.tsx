@@ -9,18 +9,18 @@ import { QueryInput } from './components/QueryInput';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState<string>('');
-  const [appliedQuery, setAppliedQuery] = useState<string>('');
+  const [filterQuery, setFilterQuery] = useState<string>('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [focused, setFocused] = useState<boolean>(false);
 
   const filteredPersons = useMemo(() => {
     return peopleFromServer.filter((person: Person) => {
       const personName = person.name.toLowerCase();
-      const text = appliedQuery.toLowerCase();
+      const text = filterQuery.toLowerCase();
 
       return personName.includes(text);
     });
-  }, [appliedQuery]);
+  }, [filterQuery]);
 
   const onSelect = useCallback((person: Person) => {
     setSelectedPerson(person);
@@ -43,7 +43,7 @@ export const App: React.FC = () => {
             query={query}
             setFocused={setFocused}
             setQuery={setQuery}
-            setAppliedQuery={setAppliedQuery}
+            setFilterQuery={setFilterQuery}
           />
         </div>
 

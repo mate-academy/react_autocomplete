@@ -6,6 +6,9 @@ interface Props {
   onSelect: (person: Person) => void;
 }
 
+const MALE = 'm';
+const FEMALE = 'f';
+
 export const DropDownItem: React.FC<Props> = ({ person, onSelect }) => {
   return (
     <button
@@ -15,8 +18,8 @@ export const DropDownItem: React.FC<Props> = ({ person, onSelect }) => {
     >
       <p className={
         classNames({
-          'has-text-link': person.sex === 'm',
-          'has-text-danger': person.sex === 'f',
+          'has-text-link': person.sex === MALE,
+          'has-text-danger': person.sex === FEMALE,
         })
       }
       >
