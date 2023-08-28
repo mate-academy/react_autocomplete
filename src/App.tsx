@@ -8,13 +8,12 @@ import { debounce } from './helpers/debounce';
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person>();
   const [query, setQuery] = useState('');
-  const [appliedQuery, setAppliedQuery] = useState('');
   const [isDropdownActive, setIsDropdownActive] = useState(false);
 
   const visablePeople = useMemo(() => {
     return peopleFromServer.filter(person => person.name
       .toLowerCase().includes(query.toLowerCase()));
-  }, [appliedQuery]);
+  }, [query]);
 
   const selectPerson = (personName: string) => {
     setSelectedPerson(
@@ -23,7 +22,7 @@ export const App: React.FC = () => {
     setQuery('');
   };
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+  const applyQuery = useCallback(debounce(setQuery, 1000), []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -45,9 +44,7 @@ export const App: React.FC = () => {
             placeholder="Enter a part of the name"
             className="input"
             value={query}
-            onChange={e => {
-              handleChange(e);
-            }}
+            onChange={handleChange}
             onFocus={() => setIsDropdownActive(true)}
             onBlur={() => setIsDropdownActive(false)}
           />
