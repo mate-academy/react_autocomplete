@@ -1,16 +1,17 @@
 import { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
+import debounce from 'lodash.debounce';
 import { Person } from './types/Person';
 
-function debounce(callback: (query: string) => void, delay: number) {
-  let timerId = 0;
+// function debounce(callback: (query: string) => void, delay: number) {
+//   let timerId = 0;
 
-  return (query: string) => {
-    window.clearTimeout(timerId);
+//   return (query: string) => {
+//     window.clearTimeout(timerId);
 
-    timerId = window.setTimeout(() => callback(query), delay);
-  };
-}
+//     timerId = window.setTimeout(() => callback(query), delay);
+//   };
+// }
 
 interface Props {
   people: Person[];
@@ -29,7 +30,6 @@ export const Dropdown: React.FC<Props> = ({
 
   const applyQuery = useCallback(debounce((newQuery: string) => {
     setAppliedQuery(newQuery);
-    setIsDropdownShown(true);
   }, delay), []);
 
   const filteredPeople = useMemo(() => {
@@ -48,6 +48,13 @@ export const Dropdown: React.FC<Props> = ({
     setQuery(person.name);
   };
 
+  const handleQueryChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
+
   return (
     <div
       className={classNames(
@@ -61,12 +68,9 @@ export const Dropdown: React.FC<Props> = ({
           placeholder="Enter a part of the name"
           className="input"
           value={query}
-          onChange={(event) => {
-            setQuery(event.target.value);
-            applyQuery(event.target.value);
-            setIsDropdownShown(false);
-          }}
-          onClick={() => setIsDropdownShown(true)}
+          onChange={(event) => handleQueryChange(event)}
+          onFocus={() => setIsDropdownShown(true)}
+          onBlur={() => setIsDropdownShown(false)}
         />
       </div>
 
