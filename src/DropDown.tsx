@@ -68,7 +68,7 @@ export const Dropdown: React.FC<Props> = ({
           placeholder="Enter a part of the name"
           className="input"
           value={query}
-          onChange={(event) => handleQueryChange(event)}
+          onChange={handleQueryChange}
           onFocus={() => setIsDropdownShown(true)}
           onBlur={() => setIsDropdownShown(false)}
         />
@@ -81,7 +81,11 @@ export const Dropdown: React.FC<Props> = ({
               <a
                 href="/"
                 key={person.name}
-                className={`dropdown-item ${person.sex === 'm' ? 'has-text-link' : 'has-text-danger'}`}
+                className={classNames(
+                  'dropdown-item',
+                  person.sex === 'm' && 'has-text-link',
+                  person.sex === 'f' && 'has-text-danger'
+                )}
                 onClick={(event) => handleItemChange(event, person)}
               >
                 {person.name}
