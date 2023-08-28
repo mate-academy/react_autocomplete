@@ -3,16 +3,6 @@ import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import { Person } from './types/Person';
 
-// function debounce(callback: (query: string) => void, delay: number) {
-//   let timerId = 0;
-
-//   return (query: string) => {
-//     window.clearTimeout(timerId);
-
-//     timerId = window.setTimeout(() => callback(query), delay);
-//   };
-// }
-
 interface Props {
   people: Person[];
   delay: number;
@@ -83,10 +73,17 @@ export const Dropdown: React.FC<Props> = ({
                 key={person.name}
                 className={classNames(
                   'dropdown-item',
-                  person.sex === 'm' && 'has-text-link',
-                  person.sex === 'f' && 'has-text-danger'
+                  {
+                    'has-text-link': person.sex === 'm',
+                    'has-text-danger': person.sex === 'f',
+                  },
                 )}
-                onClick={(event) => handleItemChange(event, person)}
+                onMouseDown={(event) => {
+                  event.stopPropagation();
+                  event.preventDefault();
+                  handleItemChange(event, person);
+                  setIsDropdownShown(false);
+                }}
               >
                 {person.name}
               </a>
