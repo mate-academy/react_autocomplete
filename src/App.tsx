@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
 import { Dropdown } from './components/Dropdown';
 import { Person } from './types/Person';
-import debounce from 'lodash.debounce';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState <Person | null>(null);
@@ -19,16 +19,15 @@ export const App: React.FC = () => {
     ));
   }, [applyedQuery, peopleFromServer]);
 
-  const handleBlur = () => {
+  const handleBlur = useCallback(() => {
     setTimeout(() => {
       setIsListOpened(false);
     }, 100);
-  };
+  }, []);
 
   const handleQueryChange = useCallback((
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    setIsListOpened(true);
     setQuery(event.target.value);
     applyQuery(event.target.value);
   }, []);
