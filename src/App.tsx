@@ -56,6 +56,7 @@ export const App: React.FC = () => {
             value={query}
             onChange={handleQueryChange}
             onFocus={() => setListIsVisible(true)}
+            onBlur={() => setListIsVisible(false)}
           />
         </div>
 
@@ -73,14 +74,8 @@ export const App: React.FC = () => {
                 <div
                   className="dropdown-item"
                   key={person.slug}
-                  onClick={() => handlSelectedPerson(person)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      setSelectedPerson(person);
-                    }
-                  }}
-                  role="menuitem"
-                  tabIndex={0}
+                  onMouseDown={() => handlSelectedPerson(person)}
+                  aria-hidden="true"
                   style={{ cursor: 'pointer' }}
                 >
                   <p className={cn({
