@@ -8,12 +8,8 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const [onSelected, setOnSelected] = useState<Person | null>(null);
 
-  const handleSelect = (person: Person) => {
+  const handleSelect = (person: Person | null) => {
     setOnSelected(person);
-  };
-
-  const onDelete = () => {
-    setOnSelected(null);
   };
 
   return (
@@ -24,14 +20,10 @@ export const App: React.FC = () => {
           : ('No matching suggestions')}
       </h1>
 
-      <Dropdown persons={peopleFromServer} handleSelect={handleSelect} />
-      {onSelected && (
-        <button
-          className="delete is-large"
-          type='reset'
-          onClick={onDelete}
-        />
-      )}
+      <Dropdown
+        persons={peopleFromServer}
+        handleSelect={handleSelect}
+      />
     </main>
   );
 };
