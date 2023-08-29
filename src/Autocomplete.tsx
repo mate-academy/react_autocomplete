@@ -47,6 +47,11 @@ export const Autocomplete: React.FC<Props> = ({
     ));
   }, [appliedQuery, peopleFromServer]);
 
+  const handleSelect = (person: Person) => {
+    onSelected(person);
+    setQuery(person.name);
+  };
+
   return (
     <div className="dropdown is-active">
       <div className="dropdown-trigger">
@@ -80,10 +85,7 @@ export const Autocomplete: React.FC<Props> = ({
                   href={person.slug}
                   className="dropdown-item"
                   key={person.slug}
-                  onMouseDown={() => {
-                    onSelected(person);
-                    setQuery(person.name);
-                  }}
+                  onMouseDown={() => handleSelect(person)}
                 >
                   {person.name}
                 </a>

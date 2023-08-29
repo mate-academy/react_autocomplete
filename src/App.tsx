@@ -11,18 +11,18 @@ export const App: React.FC = () => {
     setSelectedPerson([person]);
   };
 
+  const title = selectedPerson.length > 0 ? `${
+    selectedPerson[0].name
+  } (${
+    selectedPerson[0].born
+  } - ${
+    selectedPerson[0].died
+  })` : 'No person selected';
+
   return (
     <main className="section">
       <h1 className="title">
-        {
-          selectedPerson.length > 0 ? `${
-            selectedPerson[0].name
-          } (${
-            selectedPerson[0].born
-          } - ${
-            selectedPerson[0].died
-          })` : 'No person selected'
-        }
+        {title}
       </h1>
 
       <Autocomplete
