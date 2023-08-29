@@ -53,7 +53,7 @@ export const Dropdown: React.FC<Props> = ({ persons, handleSelect }) => {
         />
       </div>
 
-      {selectedPerson && (
+      {query && (
         <button
           type="button"
           className="delete is-large"
@@ -67,6 +67,7 @@ export const Dropdown: React.FC<Props> = ({ persons, handleSelect }) => {
         <div className="dropdown-content">
           {filteredPersons.map(person => (
             <button
+              key={filteredPersons.indexOf(person)}
               type="button"
               className="dropdown-item"
               onClick={() => handleSelectPerson(person)}
