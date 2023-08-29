@@ -1,57 +1,50 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import debounce from 'lodash/debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Autocomplete } from './Components/Autocomplete';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [selectedPerson, setSelectedPerson] = useState('');
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuerry] = useState('');
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuerry, 500),
+    [],
+  );
+
+  const onChangeInput = (value: React.SetStateAction<string>) => {
+    setQuery(value);
+  };
+
+  const visiblePeople = useMemo(() => {
+    return peopleFromServer.filter(
+      person => person.name.toLowerCase()
+        .includes(appliedQuery.toLocaleLowerCase()),
+    );
+  }, [peopleFromServer, appliedQuery]);
+
+  const handleClick = (person: string) => {
+    setSelectedPerson(person);
+    setQuery('');
+    setAppliedQuerry('');
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson || 'No person selected'}
       </h1>
 
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Autocomplete
+        listOfPeople={visiblePeople}
+        onChange={onChangeInput}
+        value={query}
+        onDelayApply={applyQuery}
+        onSelect={handleClick}
+        query={query}
+      />
     </main>
   );
 };
