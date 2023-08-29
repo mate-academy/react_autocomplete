@@ -14,7 +14,7 @@ export const Dropdown: React.FC<Props> = ({ people, onSelect }) => {
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
-        {people.length === 0 ? (
+        {!people.length ? (
           <div className="dropdown-item">
             <p className="has-text-danger">No matching suggestions</p>
           </div>

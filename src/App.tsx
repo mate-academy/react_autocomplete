@@ -1,12 +1,23 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
-import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
 import { Dropdown } from './components/Dropdown';
 import { Person } from './types/Person';
 
+function debounce(callback: (...args: any[]) => any, delay: number) {
+  let timerId = 0;
+
+  return (...args: any[]) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
+
 export const App: React.FC = () => {
-  const [selectedPerson, setSelectedPerson] = useState <Person | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [applyedQuery, setApplyedQuery] = useState('');
   const [isListOpened, setIsListOpened] = useState(false);
@@ -22,7 +33,7 @@ export const App: React.FC = () => {
   const handleBlur = useCallback(() => {
     setTimeout(() => {
       setIsListOpened(false);
-    }, 100);
+    }, 150);
   }, []);
 
   const handleQueryChange = useCallback((
@@ -64,8 +75,7 @@ export const App: React.FC = () => {
             />
           </div>
 
-          {isListOpened
-          && (
+          {isListOpened && (
             <Dropdown
               people={filteredPeople}
               onSelect={handleOnSelect}
