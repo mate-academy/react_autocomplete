@@ -8,9 +8,9 @@ type Props = {
 };
 
 export const Dropdown: React.FC<Props> = ({ persons, handleSelect }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState<string>('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [onToched, setOnToched] = useState(false);
+  const [onToched, setOnToched] = useState<boolean>(false);
 
   const onDelete = () => {
     handleSelect(null);
@@ -67,7 +67,7 @@ export const Dropdown: React.FC<Props> = ({ persons, handleSelect }) => {
         <div className="dropdown-content">
           {filteredPersons.map(person => (
             <button
-              key={filteredPersons.indexOf(person)}
+              key={person.name}
               type="button"
               className="dropdown-item"
               onClick={() => handleSelectPerson(person)}
