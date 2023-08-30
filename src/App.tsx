@@ -8,8 +8,8 @@ import { PeopleList } from './PeopleList';
 import { getCheckQuery } from './helper/getCheckQuery';
 
 export const App: React.FC = () => {
-  const [people] = useState<Person[]>(peopleFromServer);
   const [query, setQuery] = useState('');
+  const [people] = useState<Person[]>(peopleFromServer);
   const [hasOpen, setHasOpen] = useState(false);
   const [apliedQuery, setApliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
