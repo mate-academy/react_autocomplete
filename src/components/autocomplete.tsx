@@ -1,6 +1,7 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import debounce from 'lodash.debounce';
 
+import './autocomplete.scss';
 import { Person } from '../types/Person';
 
 type Props = {
@@ -14,6 +15,8 @@ export const Autocomplete: React.FC<Props> = ({
   onSelect = () => { },
   delay,
 }) => {
+  const queryField = useRef<HTMLInputElement | null>(null);
+
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [focusInput, setFocusInput] = useState(false);
@@ -38,10 +41,19 @@ export const Autocomplete: React.FC<Props> = ({
     setFocusInput(false);
   };
 
+  const handlerClearQuery = () => {
+    setQuery('');
+    setAppliedQuery('');
+    if (queryField.current) {
+      queryField.current.focus();
+    }
+  };
+
   return (
     <div className="dropdown is-active">
       <div className="dropdown-trigger">
         <input
+          ref={queryField}
           type="text"
           placeholder="Enter a part of the name"
           className="input"
@@ -49,6 +61,16 @@ export const Autocomplete: React.FC<Props> = ({
           onChange={handleQueryChange}
           onFocus={() => setFocusInput(true)}
         />
+        {query && (
+          <button
+            type="button"
+            className="delete is-medium dropdown-close"
+            onClick={handlerClearQuery}
+          >
+            x
+          </button>
+        )}
+
       </div>
 
       {focusInput && (
