@@ -29,12 +29,8 @@ export const Autocomplete: React.FC<Props> = ({
     applyQuery(event.target.value);
   };
 
-  const handleInputFocus = () => {
-    setIsFocused(true);
-  };
-
-  const handleInputBlur = () => {
-    setIsFocused(false);
+  const handleInput = (boolean: boolean) => {
+    setIsFocused(boolean);
   };
 
   const isInQuery = (personName: string) => {
@@ -58,8 +54,8 @@ export const Autocomplete: React.FC<Props> = ({
         <div className="field">
           <p className="control is-expanded has-icons-right">
             <input
-              onFocus={handleInputFocus}
-              onBlur={handleInputBlur}
+              onFocus={() => handleInput(true)}
+              onBlur={() => handleInput(false)}
               value={query}
               onChange={handleQueryChange}
               className="input"
