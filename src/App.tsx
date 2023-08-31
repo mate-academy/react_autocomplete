@@ -4,7 +4,7 @@ import React, {
 import './App.scss';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
-import { PeopleMatch } from './components/Autocomplete';
+import { PeopleMatch } from './components/PeopleMatch';
 import { Person } from './types/Person';
 
 const presentPeople = [...peopleFromServer];
