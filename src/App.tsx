@@ -10,7 +10,7 @@ import { getCheckQuery } from './helper/getCheckQuery';
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [people] = useState<Person[]>(peopleFromServer);
-  const [hasOpen, setHasOpen] = useState(false);
+  const [hasDropdownOpen, setHasDropdownOpen] = useState(false);
   const [apliedQuery, setApliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
@@ -29,7 +29,7 @@ export const App: React.FC = () => {
     <main className="section">
       {selectedPerson ? (
         <h1 className="title">
-          {`${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`}
+          {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
         </h1>
       ) : (
         <h1 className="title">
@@ -37,18 +37,18 @@ export const App: React.FC = () => {
         </h1>
       )}
 
-      <div className={classNames('dropdown', { 'is-active': hasOpen })}>
+      <div className={classNames('dropdown', { 'is-active': hasDropdownOpen })}>
         <div
           className="dropdown-trigger"
         >
           <input
-            type="text"
+            type="search"
             placeholder="Enter a part of the name"
             className="input"
             value={query}
             onChange={handleChangeQuery}
-            onFocus={() => setHasOpen(true)}
-            onBlur={() => setHasOpen(false)}
+            onFocus={() => setHasDropdownOpen(true)}
+            onBlur={() => setHasDropdownOpen(false)}
           />
         </div>
 

@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import { Person } from './types/Person';
 
 type Props = {
@@ -11,26 +13,33 @@ export const PeopleList: React.FC<Props> = ({
   onSelected,
   setQuery,
 }) => {
+  const handleMouseDown = (
+    person: Person,
+  ) => {
+    onSelected(person);
+    setQuery(person.name);
+  };
+
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
-        {people.length ? people.map((person) => (
-          <div
-            className="dropdown-item"
-            key={person.slug}
-          >
-            <a
-              href={person.slug}
-              className="has-text-link link"
-              onMouseDown={() => {
-                onSelected(person);
-                setQuery(person.name);
-              }}
+        {people.length ? people.map((person) => {
+          const { name, slug } = person;
+
+          return (
+            <div
+              className="dropdown-item"
+              key={slug}
             >
-              {person.name}
-            </a>
-          </div>
-        )) : (
+              <a
+                className="has-text-link link"
+                onMouseDown={() => handleMouseDown(person)}
+              >
+                {name}
+              </a>
+            </div>
+          );
+        }) : (
           <div className="dropdown-item">
             <p className="has-text-danger">No matching suggestions </p>
           </div>
