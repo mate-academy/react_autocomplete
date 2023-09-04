@@ -22,16 +22,25 @@ function debounce(callback: Function, delay: number) {
   };
 }
 
+enum Gender {
+  M = 'm',
+}
+
 export const Dropdown: React.FC<Props> = ({
   people,
   changePerson,
   debounceDelay,
 }) => {
-  const [isDropdownShown, setIsDropdownShown] = useState(false);
-  const [appliedQuery, setAppliedQuery] = useState('');
-  const [query, setQuery] = useState('');
+  const [isDropdownShown, setIsDropdownShown] = useState<boolean>(false);
+  const [appliedQuery, setAppliedQuery] = useState<string>('');
+  const [query, setQuery] = useState<string>('');
 
   const applyQuery = useCallback(debounce(setAppliedQuery, debounceDelay), []);
+
+  const helperSetter = (person: Person) => {
+    setQuery(person.name);
+    changePerson(person);
+  };
 
   const filteredPeople = useMemo(() => {
     return people.filter(person => person.name.toLowerCase()
@@ -67,11 +76,10 @@ export const Dropdown: React.FC<Props> = ({
               className="dropdown-item"
               key={person.name}
               onMouseDown={() => {
-                setQuery(person.name);
-                changePerson(person);
+                helperSetter(person);
               }}
             >
-              {person.sex === 'm' ? (
+              {person.sex === Gender.M ? (
                 <p className="has-text-link">{person.name}</p>
               ) : (
                 <p className="has-text-danger">{person.name}</p>
