@@ -19,7 +19,6 @@ export const App: React.FC = () => {
   const applyQuery = useCallback(debounce(setApplyedQuery, DELAY), []);
 
   const filteredPeople = useMemo(() => {
-    setIsListVisible(true);
 
     return peopleFromServer.filter(person => (
       person.name.toLowerCase().includes(applyedQuery.toLowerCase())

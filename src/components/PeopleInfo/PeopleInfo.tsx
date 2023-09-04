@@ -20,9 +20,7 @@ export const PeopleInfo: React.FC<Props> = ({
     <div className="dropdown-item">
       <a
         href="/"
-        onClick={(event) => {
-          onSelect(event, person);
-        }}
+        onClick={e => {onSelect(e, person);}}
       >
         <p
           className={classNames(
