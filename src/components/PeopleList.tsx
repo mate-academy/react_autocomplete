@@ -17,7 +17,7 @@ export const PeopleList: React.FC<Props> = ({
       <button
         className="has-text-link"
         type="submit"
-        onClick={() => onSelect(person)}
+        onMouseDown={() => onSelect(person)}
       >
         <p
           key={person.name}

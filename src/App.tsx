@@ -35,6 +35,11 @@ export const App: React.FC = () => {
     setAppliedQuery('');
   };
 
+  const handleChangeFocus = () => {
+    setIsVisibleList(false);
+    setQuery('');
+  };
+
   const filterPeople = useMemo(() => {
     return peopleFromServer.filter(
       person => person.name.toLocaleLowerCase()
@@ -64,6 +69,7 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onFocus={() => setIsVisibleList(true)}
+            onBlur={handleChangeFocus}
             onChange={handlInputChange}
           />
         </div>
