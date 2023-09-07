@@ -18,9 +18,16 @@ export const App: React.FC = () => {
     [],
   );
 
+  const applyFocused = useCallback(
+    debounce(setIsFocused, 1000),
+    [],
+  );
+
   const handleQuery = ((event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsFocused(false);
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    applyFocused(true);
   });
 
   const handleSelected = (newPersonName: string) => {
@@ -55,9 +62,7 @@ export const App: React.FC = () => {
             placeholder="Enter a part of the name"
             className="input"
             value={query}
-            onChange={event => {
-              handleQuery(event);
-            }}
+            onChange={handleQuery}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
           />

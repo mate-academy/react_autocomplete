@@ -1,3 +1,7 @@
+$color-white: #fff;
+
 .dropdown-item {
+  border: none;
+  background-color: $color-white;
   cursor: pointer;
 }
