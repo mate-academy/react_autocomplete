@@ -8,7 +8,7 @@ import { Autocomplete } from './components/Autocomplete';
 export const App: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<Person | null>(null);
 
-  const onSelectUser = useCallback((user: Person) => {
+  const onSelectUser = useCallback((user: Person | null) => {
     setSelectedUser(user);
   }, []);
 

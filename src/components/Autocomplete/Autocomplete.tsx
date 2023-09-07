@@ -5,7 +5,7 @@ import { Person } from '../../types/Person';
 
 type Props = {
   users: Person[];
-  onSelect?: (user: Person) => void;
+  onSelect?: (user: Person | null) => void;
   delay?: number;
 };
 
@@ -27,6 +27,7 @@ export const Autocomplete: React.FC<Props> = React.memo(({
     if (query !== event.target.value) {
       setQuery(event.target.value);
       applyQuery(event.target.value);
+      onSelect(null);
     }
   };
 
@@ -38,6 +39,10 @@ export const Autocomplete: React.FC<Props> = React.memo(({
 
   const onQueryInputFocus = useCallback(() => {
     setHasFocus(true);
+  }, []);
+
+  const onQueryInputBlur = useCallback(() => {
+    setHasFocus(false);
   }, []);
 
   const onSelectUser = useCallback((user: Person) => {
@@ -60,6 +65,7 @@ export const Autocomplete: React.FC<Props> = React.memo(({
           value={query}
           onChange={onChangeQuery}
           onFocus={onQueryInputFocus}
+          onBlur={onQueryInputBlur}
         />
       </div>
 
@@ -71,9 +77,16 @@ export const Autocomplete: React.FC<Props> = React.memo(({
                 type="button"
                 className="dropdown-item"
                 key={user.slug}
-                onClick={() => onSelectUser(user)}
+                onMouseDown={() => onSelectUser(user)}
               >
-                <span className="has-text-link">{user.name}</span>
+                <span
+                  className={classNames({
+                    'has-text-link': user.sex === 'm',
+                    'has-text-danger': user.sex === 'f',
+                  })}
+                >
+                  {user.name}
+                </span>
               </button>
             ))
             : (
