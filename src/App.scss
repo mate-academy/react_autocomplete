@@ -1,3 +1,14 @@
 iframe {
   display: none;
 }
+
+.input-icon-container {
+  position: relative;
+}
+
+.icon.is-right {
+  position: absolute;
+  top: 50%;
+  right: 10px; /* Adjust as needed */
+  transform: translateY(-50%);
+}
