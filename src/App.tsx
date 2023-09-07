@@ -7,7 +7,7 @@ import { peopleFromServer } from './data/people';
 import { PeopleList } from './components/peopleList';
 import { Person } from './types/Person';
 
-const DELAY = 1000;
+const DELAY = 300;
 
 export const App: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
