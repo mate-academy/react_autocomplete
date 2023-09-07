@@ -1,14 +1,48 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { debounce } from 'lodash';
+// import debounce from 'lodash.debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { DropdownMenu } from './components/DropdownMenu/DropdownMenu';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [isListVisible, setIsListVisible] = useState(false);
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState<Person | null>(null);
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter(
+      person => person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+    );
+  }, [appliedQuery]);
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 1000),
+    [],
+  );
+
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery(event.target.value);
+      applyQuery(event.target.value);
+    }, [],
+  );
+
+  const handleUserSelection = useCallback((person: Person) => {
+    setSelectedUser(person);
+    setQuery(person.name);
+    setAppliedQuery(person.name);
+    setIsListVisible(false);
+  }, []);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedUser
+          ? `${selectedUser?.name} (${selectedUser?.born} = ${selectedUser?.died})`
+          : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +51,21 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            aria-haspopup="true"
+            aria-controls="dropdown-menu"
+            value={query}
+            onChange={handleInputChange}
+            onFocus={() => setIsListVisible(true)}
+            onBlur={() => setIsListVisible(false)}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        {isListVisible && (
+          <DropdownMenu
+            people={filteredPeople}
+            onSelected={handleUserSelection}
+          />
+        )}
       </div>
     </main>
   );
