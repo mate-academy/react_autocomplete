@@ -35,16 +35,17 @@ export const App: React.FC = () => {
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsLoading(true);
     setQuery(event.target.value);
-
-    if (event.target.value.trim()) {
-      setIsLoading(true);
-      applyQuery(event.target.value);
-    }
+    applyQuery(event.target.value);
   };
 
   const filteredPeople = useMemo(() => {
     setIsLoading(false);
+
+    if (appliedQuery.length && !appliedQuery.trim()) {
+      return visiblePeople;
+    }
 
     return visiblePeople.filter(person => person.name.includes(appliedQuery));
   }, [appliedQuery, visiblePeople]);
