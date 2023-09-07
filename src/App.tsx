@@ -56,7 +56,7 @@ export const App: React.FC = () => {
             value={query}
             onChange={handleInputChange}
             onFocus={() => setIsListVisible(true)}
-            onBlur={() => setIsListVisible(false)}
+
           />
         </div>
 
