@@ -71,7 +71,7 @@ export const Autocomplete: React.FC<Props> = React.memo(({
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {!filteredUsers.length
+          {!!filteredUsers.length
             ? filteredUsers.map(user => (
               <button
                 type="button"
