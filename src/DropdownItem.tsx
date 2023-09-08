@@ -5,11 +5,17 @@ import { Person } from './types/Person';
 type Props = {
   person: Person,
   selectedPerson: Person | null,
+  handlePersonClick: (person: Person) => void,
   onSelect: (person: Person) => void,
 };
 
 export const DropdownItem: React.FC<Props> = React.memo(
-  ({ person, onSelect, selectedPerson }) => {
+  ({
+    person,
+    onSelect,
+    selectedPerson,
+    handlePersonClick,
+  }) => {
     return (
       <div
         className={cn('dropdown-item',
@@ -26,10 +32,12 @@ export const DropdownItem: React.FC<Props> = React.memo(
           })}
         >
           <button
-            style={{ all: 'unset', width: '100%' }}
             type="button"
             className="selector"
-            onClick={() => onSelect(person)}
+            onClick={() => {
+              onSelect(person);
+              handlePersonClick(person);
+            }}
           >
             {person.name}
           </button>

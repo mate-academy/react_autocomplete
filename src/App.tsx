@@ -46,6 +46,12 @@ export const App: React.FC = () => {
     setDebouncedQuery('');
   }, []);
 
+  const handlePersonClick = useCallback((person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+    setDebouncedQuery('');
+  }, []);
+
   return (
     <main className="section">
       <h1 className="title">
@@ -80,6 +86,7 @@ export const App: React.FC = () => {
           <DropdownMenu
             filteredPeople={filteredPeople}
             selectedPerson={selectedPerson}
+            handlePersonClick={handlePersonClick}
             onSelect={onSelect}
           />
         )}
