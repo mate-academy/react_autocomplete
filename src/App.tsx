@@ -51,7 +51,7 @@ export const App: React.FC = () => {
               handleQueryChange(event);
             }}
             onBlur={() => setIsFocus(false)}
-            onFocus={() => setIsFocus(false)}
+            onFocus={() => setIsFocus(true)}
           />
         </div>
         {isFocus && (
