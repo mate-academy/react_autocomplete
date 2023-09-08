@@ -7,7 +7,7 @@ import { useDebounce } from './service/debounce';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
-  const [applLiedQuery, setAppleLiedQuery] = useState('');
+  const [appLiedQuery, setAppleLiedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person>();
   const [isFocus, setIsFocus] = useState(false);
 
@@ -26,10 +26,9 @@ export const App: React.FC = () => {
   };
 
   const filterPeople = useMemo(() => {
-    return peopleFromServer.find(person => person.name.toLowerCase()
+    return peopleFromServer.filter(person => person.name.toLowerCase()
       .includes(query.toLowerCase()));
-  }, [applLiedQuery]);
-
+  }, [appLiedQuery]);
 
   return (
     <main className="section">
