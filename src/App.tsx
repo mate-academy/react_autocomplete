@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { debounce } from 'lodash';
+import cn from 'classnames';
 import './App.scss';
+
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { DropdownMenu } from './DropdownMenu';
@@ -74,7 +76,7 @@ export const App: React.FC = () => {
           : 'No selected person'}
       </h1>
 
-      <div className="dropdown is-active">
+      <div className={cn('dropdown', { 'is-active': debouncedQuery !== '' })}>
         <DropdownInput
           query={query}
           handleQueryChange={handleQueryChange}
