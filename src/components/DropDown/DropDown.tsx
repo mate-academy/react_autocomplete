@@ -26,8 +26,6 @@ export const DropDown: React.FC<Props> = ({
   onSelected = () => {},
   delay,
 }) => {
-  const [humans, setHumans] = useState(people);
-
   const [userQuery, setUserQuery] = useState('');
   const [serverQuery, setServerQuery] = useState('');
 
@@ -37,25 +35,17 @@ export const DropDown: React.FC<Props> = ({
   const hasDropDown = dropDownVisible
   && userQuery === serverQuery && isFocused;
 
-  const filtredPeople = useMemo(
-    () => {
-      const tempPeople = filterPeople(people, serverQuery);
-
-      return tempPeople;
-    },
-    [people, serverQuery],
-  );
-
   const delayedSetQuery = useCallback(debounce((
     str: string,
   ) => {
-    const result = filterPeople(people, str);
-
-    setHumans(result);
-
     setServerQuery(str);
     setDropDownVisible(true);
   }, delay), []);
+
+  const humansMemorised = useMemo(
+    () => filterPeople(people, serverQuery),
+    [serverQuery],
+  );
 
   const handleQuaryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserQuery(event.target.value);
@@ -92,10 +82,10 @@ export const DropDown: React.FC<Props> = ({
       <div className="dropdown-menu" role="menu">
         {hasDropDown && (
           <div className={cn({
-            'dropdown-content': humans.length,
+            'dropdown-content': humansMemorised.length,
           })}
           >
-            {humans.map((person) => {
+            {humansMemorised.map((person) => {
               const { name, slug, sex } = person;
 
               return (
@@ -119,7 +109,7 @@ export const DropDown: React.FC<Props> = ({
             })}
           </div>
         )}
-        {!filtredPeople.length && (<p>No matching suggestions</p>)}
+        {!humansMemorised.length && (<p>No matching suggestions</p>)}
       </div>
     </div>
   );
