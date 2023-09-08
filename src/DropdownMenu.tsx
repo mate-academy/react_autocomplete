@@ -19,7 +19,7 @@ export const DropdownMenu: React.FC<Props> = React.memo(
     return (
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {filteredPeople.length > 0 ? (
+          {filteredPeople.length ? (
             filteredPeople.map(person => (
               <DropdownItem
                 person={person}
