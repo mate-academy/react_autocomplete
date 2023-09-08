@@ -19,10 +19,11 @@ export const App: React.FC = () => {
   };
 
   const selectPerson = (personName : string) => {
-    setSelectedPerson(
-      peopleFromServer.find(person => person.name === personName),
-    );
-    setQuery('');
+    const isSelectedPerson = peopleFromServer
+      .find((person) => person.name === personName);
+
+    setSelectedPerson(isSelectedPerson);
+    setQuery(isSelectedPerson ? isSelectedPerson.name : '');
   };
 
   const filterPeople = useMemo(() => {
