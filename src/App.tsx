@@ -5,7 +5,7 @@ import { Person } from './types/Person';
 import { Dropdown } from './components/Dropdown/Dropdown';
 import { debounce } from './services/debounce';
 
-const CUSTOMDELAY = 1000;
+const CUSTOM_DELAY = 1000;
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
