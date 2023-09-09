@@ -32,8 +32,14 @@ export const DropDown: React.FC<Props> = ({
   const [dropDownVisible, setDropDownVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
+  const humansMemorised = useMemo(
+    () => filterPeople(people, serverQuery),
+    [serverQuery],
+  );
+
   const hasDropDown = dropDownVisible
   && userQuery === serverQuery && isFocused;
+  const hasNoMatchMess = !humansMemorised.length && hasDropDown;
 
   const delayedSetQuery = useCallback(debounce((
     str: string,
@@ -41,11 +47,6 @@ export const DropDown: React.FC<Props> = ({
     setServerQuery(str);
     setDropDownVisible(true);
   }, delay), []);
-
-  const humansMemorised = useMemo(
-    () => filterPeople(people, serverQuery),
-    [serverQuery],
-  );
 
   const handleQuaryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserQuery(event.target.value);
@@ -109,7 +110,7 @@ export const DropDown: React.FC<Props> = ({
             })}
           </div>
         )}
-        {!humansMemorised.length && (<p>No matching suggestions</p>)}
+        {hasNoMatchMess && (<p>No matching suggestions</p>)}
       </div>
     </div>
   );
