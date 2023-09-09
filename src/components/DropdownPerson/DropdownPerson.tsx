@@ -5,12 +5,12 @@ import { Person } from '../../types/Person';
 
 type Props = {
   person: Person,
-  setSelectedPerson: (person: Person) => void,
+  onSelect: (person: Person) => void,
 };
 
 export const DropdownPerson: React.FC<Props> = ({
   person,
-  setSelectedPerson,
+  onSelect,
 }) => {
   const isMale = (sex: string) => sex === 'm';
 
@@ -20,7 +20,7 @@ export const DropdownPerson: React.FC<Props> = ({
     >
       <button
         type="button"
-        onClick={() => setSelectedPerson(person)}
+        onClick={() => onSelect(person)}
         className={classNames(
           'button',
           'is-small',

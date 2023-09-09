@@ -17,40 +17,59 @@ function filterPeopleByQuery(peopleToFilter: Person[], query: string) {
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+
+  const applyQuery
+  = useCallback(debounce((value: string) => {
+    setIsDropdownVisible(true);
+
+    return setAppliedQuery(value);
+  }, 1000), [appliedQuery]);
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsDropdownVisible(false);
+    setQuery(event.target.value);
+    applyQuery(event.target.value.trim());
+  };
 
   const filteredPeople: Person[] = useMemo(() => {
     return filterPeopleByQuery(peopleFromServer, appliedQuery);
   }, [appliedQuery]);
 
-  const applyQuery
-  = useCallback(debounce(setAppliedQuery, 1000), [appliedQuery]);
+  const [selectedPerson, setSelectedPerson]
+    = useState<Person | null>(null);
 
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value.trim());
+  const onSelect = (person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+    setAppliedQuery(person.name);
+    setIsDropdownVisible(false);
   };
 
-  const [selectedPerson, setSelectedPerson]
-    = useState<Person>(filteredPeople[0]);
-
-  const { name, born, died } = selectedPerson;
+  const titleMessage = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : 'No selected person';
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} - ${died})`}
+        {titleMessage}
       </h1>
 
       <div className="dropdown is-active">
         <SearchBar
+          setIsDropdownVisible={setIsDropdownVisible}
           handleQueryChange={handleQueryChange}
           query={query}
         />
 
-        <DropdownList
-          filteredPeople={filteredPeople}
-          setSelectedPerson={setSelectedPerson}
-        />
+        {isDropdownVisible && (
+          <DropdownList
+            filteredPeople={filteredPeople}
+            onSelect={onSelect}
+          />
+        )}
+
       </div>
     </main>
   );

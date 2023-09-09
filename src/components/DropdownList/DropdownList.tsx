@@ -5,12 +5,12 @@ import { DropdownPerson } from '../DropdownPerson';
 
 type Props = {
   filteredPeople: Person[],
-  setSelectedPerson: (person: Person) => void,
+  onSelect: (person: Person) => void,
 };
 
 export const DropdownList: React.FC<Props> = ({
   filteredPeople,
-  setSelectedPerson,
+  onSelect,
 }) => {
   return (
     <div className="dropdown-menu" role="menu">
@@ -21,7 +21,7 @@ export const DropdownList: React.FC<Props> = ({
               <DropdownPerson
                 key={person.slug}
                 person={person}
-                setSelectedPerson={setSelectedPerson}
+                onSelect={onSelect}
               />
             )))
           : (
