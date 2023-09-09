@@ -11,7 +11,7 @@ export const Dropdown: React.FC<Props> = ({ people, onSelected }) => {
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
-        {people.length > 0
+        {!!people.length
           ? people.map((person: Person) => (
             <a
               href={person.slug}
