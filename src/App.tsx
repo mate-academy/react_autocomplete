@@ -31,13 +31,12 @@ export const App: React.FC = () => {
   const handleSelect = (person: Person) => {
     setSelectedPerson(person);
     setIsVisibleList(false);
-    setQuery('');
+    setQuery(person.name);
     setAppliedQuery('');
   };
 
   const handleChangeFocus = () => {
     setIsVisibleList(false);
-    setQuery('');
   };
 
   const filterPeople = useMemo(() => {
@@ -63,7 +62,6 @@ export const App: React.FC = () => {
       >
         <div className="dropdown-trigger">
           <input
-            hidden
             type="text"
             placeholder="Enter a part of the name"
             className="input"
