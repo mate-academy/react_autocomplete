@@ -5,12 +5,13 @@ import { Person } from './types/Person';
 import { Dropdown } from './components/Dropdown/Dropdown';
 import { debounce } from './services/debounce';
 
+const CUSTOMDELAY = 1000;
+
 export const App: React.FC = () => {
-  const [selectedPerson, setSelectedPerson] = useState<Person>();
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const customDelay = 1000;
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer
@@ -18,17 +19,18 @@ export const App: React.FC = () => {
         .includes(appliedQuery.toLowerCase()));
   }, [appliedQuery]);
 
-  const selectPerson = (personName: string) => {
-    setSelectedPerson(
-      peopleFromServer.find(person => {
-        return person.name === personName;
-      }),
-    );
+  const selectPerson = (personSlug: string) => {
+    const selected = peopleFromServer.find(person => {
+      return person.slug === personSlug;
+    });
 
-    setAppliedQuery(personName);
+    setSelectedPerson(selected || null);
+    setQuery(selected?.name ?? '');
+    setAppliedQuery(personSlug);
+    setIsDropdownVisible(false);
   };
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, customDelay), []);
+  const applyQuery = useCallback(debounce(setAppliedQuery, CUSTOMDELAY), []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);

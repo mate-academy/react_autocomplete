@@ -17,7 +17,7 @@ export const Dropdown: React.FC<Props> = ({ people, onSelected }) => {
               href={person.slug}
               className="dropdown-item"
               onMouseDown={() => {
-                onSelected(person.name);
+                onSelected(person.slug);
               }}
               key={person.slug}
             >
