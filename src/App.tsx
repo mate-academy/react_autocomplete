@@ -1,14 +1,52 @@
-import React from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { Dropdown } from './components/Dropdown/Dropdown';
+import { debounce } from './services/debounce';
+
+const CUSTOM_DELAY = 1000;
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer
+      .filter(person => person.name.toLowerCase()
+        .includes(appliedQuery.toLowerCase()));
+  }, [appliedQuery]);
+
+  const selectPerson = (personSlug: string) => {
+    const selected = peopleFromServer.find(person => {
+      return person.slug === personSlug;
+    });
+
+    setSelectedPerson(selected || null);
+    setQuery(selected?.name ?? '');
+    setAppliedQuery(personSlug);
+    setIsDropdownVisible(false);
+  };
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, CUSTOMDELAY), []);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
+
+  const handleDropdownToggle = (isVisible: boolean) => {
+    setIsDropdownVisible(isVisible);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +55,19 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={handleChange}
+            onFocus={() => handleDropdownToggle(true)}
+            onBlur={() => handleDropdownToggle(false)}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        {isDropdownVisible && (
+          <Dropdown
+            people={filteredPeople}
+            onSelected={selectPerson}
+          />
+        )}
       </div>
     </main>
   );
