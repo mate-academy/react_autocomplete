@@ -31,7 +31,7 @@ export const PeopleList: React.FC<Props> = ({
       </button>
     ))}
 
-    {people.length === 0 && (
+    {!people.length && (
       <span className="has-text-danger">
         No matching suggestions
       </span>
