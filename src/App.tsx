@@ -4,35 +4,29 @@ import React, {
 } from 'react';
 
 import './App.scss';
+import { useDebounce } from './useDebounce';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { DropDown } from './components/DropDown';
-import { useDebounce } from './useDebounce';
+import { showSelectedPersonInfo } from './helpers/showSelectedPersonInfo';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [query, setQuery] = useState('');
   const [people, setPeople] = useState<Person[]>(peopleFromServer);
+
+  const [query, setQuery] = useState('');
+
   const [isFocused, setIsFocused] = useState(false);
 
-  function showSelectedPersonInfo() {
-    if (selectedPerson) {
-      const { name, born, died } = selectedPerson;
-
-      return `${name} (${born} - ${died})`;
-    }
-
-    return 'No selected person';
-  }
-
-  const selectPersonHandler = (newPerson: Person) => {
-    setSelectedPerson(() => newPerson);
+  const handleSelectPerson = (newPerson: Person) => {
+    setSelectedPerson(newPerson);
     setQuery('');
     setIsFocused(false);
     setPeople(peopleFromServer);
   };
 
   const filterPeople = () => {
+    setIsFocused(true);
     if (!query) {
       return;
     }
@@ -51,23 +45,31 @@ export const App: React.FC = () => {
 
   const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-
+    setIsFocused(false);
     debouncedFilter();
   };
 
   return (
     <main className="section">
       <h1 className="title">
-        {showSelectedPersonInfo()}
+        {showSelectedPersonInfo(selectedPerson)}
       </h1>
-      <DropDown
-        people={people}
-        onSelected={selectPersonHandler}
-        isFocused={isFocused}
-        onSearch={handleSearch}
-        setIsFocused={setIsFocused}
-        query={query}
-      />
+      {peopleFromServer.length ? (
+        <DropDown
+          people={people}
+          onSelected={handleSelectPerson}
+          isFocused={isFocused}
+          onSearch={handleSearch}
+          setIsFocused={setIsFocused}
+          query={query}
+        />
+      ) : (
+        <div className="dropdown-content">
+          <p className="dropdown-item">
+            There are no people to select
+          </p>
+        </div>
+      )}
     </main>
   );
 };

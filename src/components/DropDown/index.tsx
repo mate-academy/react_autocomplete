@@ -1,13 +1,14 @@
 import cn from 'classnames';
 import React, { ChangeEvent } from 'react';
 import { Person } from '../../types/Person';
+import { DropDownItem } from '../DropDownItem';
 
 type Props = {
   onSelected: (person: Person) => void,
   query: string,
   isFocused: boolean,
   setIsFocused: (isFocused: boolean) => void,
-  people: Person[] | undefined,
+  people?: Person[],
   onSearch: (event: ChangeEvent<HTMLInputElement>) => void,
 };
 
@@ -35,28 +36,21 @@ export const DropDown: React.FC<Props> = ({
       </div>
 
       <div className="dropdown-menu" role="menu">
-        {people?.length
+        {people?.length && query
           ? (
             <div className="dropdown-content">
-              {people.map((person, index) => (
-                <React.Fragment key={person.slug}>
-                  <button
-                    type="button"
-                    onClick={() => onSelected(person)}
-                  >
-                    <p className={cn({
-                      'has-text-link': person.sex === 'm',
-                      'has-text-danger': person.sex === 'f',
-                    })}
-                    >
-                      {person.name}
-                    </p>
-                  </button>
-                  {index !== people.length - 1 && (
-                    <hr className="dropdown-divider" />
-                  )}
-                </React.Fragment>
-              ))}
+              {people.map((person, index) => {
+                const hasUnderline = index !== people.length - 1;
+
+                return (
+                  <DropDownItem
+                    key={person.slug}
+                    person={person}
+                    onSelected={onSelected}
+                    hasUnderline={hasUnderline}
+                  />
+                );
+              })}
             </div>
           ) : (
             <div className="dropdown-content">
