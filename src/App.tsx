@@ -76,7 +76,7 @@ export const App: React.FC = () => {
           : 'No selected person'}
       </h1>
 
-      <div className={cn('dropdown', { 'is-active': debouncedQuery !== '' })}>
+      <div className={cn('dropdown', { 'is-active': isListShown })}>
         <DropdownInput
           query={query}
           handleQueryChange={handleQueryChange}
