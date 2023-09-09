@@ -1,56 +1,66 @@
-import React from 'react';
 import './App.scss';
+import React, { useCallback, useMemo, useState } from 'react';
+import cn from 'classnames';
+import { debounce } from 'lodash';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { DropdownMenu } from './DropdownMenu';
+import { DropdownInput } from './DropdownInput';
+
+function filterPeopleByQuery(peopleToFilter: Person[], query: string) {
+  const transformedQuery = query.toLowerCase().trim();
+
+  return peopleToFilter
+    .filter(({ name }) => name.toLocaleLowerCase().includes(transformedQuery));
+}
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [hasFocus, setHasFocus] = useState(false);
+
+  const handleFocus = () => {
+    setHasFocus(true);
+  };
+
+  const filteredPeople: Person[] = useMemo(() => {
+    return filterPeopleByQuery(peopleFromServer, appliedQuery);
+  }, [appliedQuery]);
+
+  const applyQuery
+  = useCallback(debounce(setAppliedQuery, 1000), [appliedQuery]);
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
+
+  const handlePersonSelect = (person :Person) => {
+    setSelectedPerson(person);
+    setQuery(pervQuery => person.name || pervQuery);
+    setHasFocus(false);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`
+          : 'No selected person'}
       </h1>
 
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
+      <div className={cn('dropdown', { 'is-active': hasFocus })}>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        <DropdownInput
+          query={query}
+          handleQueryChange={handleQueryChange}
+          handleFocus={handleFocus}
+        />
+        <DropdownMenu
+          filteredPeople={filteredPeople}
+          onSelect={handlePersonSelect}
+        />
       </div>
     </main>
   );
