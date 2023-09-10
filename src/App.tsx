@@ -1,56 +1,86 @@
-import React from 'react';
+import React, {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import './App.scss';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
+import { SearchBar } from './component/SearchBar';
+
+const preparedPeople = [...peopleFromServer];
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [people] = useState(preparedPeople);
+  const [filteredPeople, setFilteredPeople] = useState(people);
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [focused, setFocused] = useState(false);
+
+  const inputField = useRef<HTMLInputElement>(null);
+
+  const { name, born, died } = filteredPeople?.length
+    ? filteredPeople[0] : { name: '', born: '', died: '' };
+
+  const filterPeople = useMemo(() => {
+    return people.filter(person => person.name
+      .toUpperCase().includes(appliedQuery.trim().toUpperCase()));
+  }, [appliedQuery, people]);
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 500),
+    [],
+  );
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+
+    setFilteredPeople(filterPeople);
+
+    applyQuery(event.target.value);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {query
+          ? `${name} (${born} = ${died})`
+          : 'No matching suggestions'}
+
       </h1>
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
+          <div className="field">
+            <p className="control is-expanded has-icons-right">
+              <input
+                onFocus={() => {
+                  setFocused(true);
+                }}
+                onBlur={() => {
+                  setFocused(false);
+                }}
+                ref={inputField}
+                type="text"
+                placeholder="Enter a part of the name"
+                className="input"
+                aria-haspopup="true"
+                aria-controls="dropdown-menu"
+                value={query}
+                onChange={handleQueryChange}
+              />
+              <span className="icon is-small is-right">
+                <i className="fas fa-search" />
+              </span>
+            </p>
           </div>
         </div>
+
+        {focused && (
+          <SearchBar filteredPeople={filteredPeople} />
+        )}
+
       </div>
     </main>
   );
