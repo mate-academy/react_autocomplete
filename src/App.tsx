@@ -1,57 +1,84 @@
-import React from 'react';
-import './App.scss';
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
+import debounce from 'lodash.debounce';
+
 import { peopleFromServer } from './data/people';
 
+import { Person } from './types/Person';
+import { DELAY_OF_FILTERING } from './helpers/vars';
+
+import { SearchTitle } from './components/SearchTitle';
+import { UserDropDown } from './components/UserDropDown';
+
+import './App.scss';
+
+const filterUsers = (
+  users: Person[],
+  query: string,
+) => {
+  let preparedUsers = [...users];
+
+  if (query) {
+    const queryToLower = query.toLowerCase().trim();
+
+    preparedUsers = preparedUsers.filter(({ name }) => (
+      name.toLowerCase().includes(queryToLower)
+    ));
+  }
+
+  return preparedUsers;
+};
+
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [searchField, setSearchField] = useState('');
+  const [hasFocusField, setHasFocusField] = useState(true);
+  const [appliedSearchField, setAppliedSearchField] = useState('');
+
+  const preparedUsers = useMemo(() => {
+    return filterUsers(peopleFromServer, appliedSearchField);
+  }, [peopleFromServer, appliedSearchField]);
+
+  const applieSearchField = useCallback(
+    debounce(setAppliedSearchField, DELAY_OF_FILTERING),
+    [],
+  );
+
+  const [selectedUser, setSelectedUser] = useState<Person | null>(null);
+
+  const handleInputField = useCallback((
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setSearchField(event.target.value);
+    applieSearchField(event.target.value);
+  }, []);
+
+  const handleUserSelect = useCallback((selectedPerson: Person) => {
+    const user = preparedUsers
+      .find(({ slug }) => slug === selectedPerson.slug) ?? null;
+
+    setSelectedUser(user);
+    setSearchField('');
+    applieSearchField('');
+  }, [preparedUsers]);
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      <SearchTitle
+        selectedUser={selectedUser}
+        setSelectedUser={setSelectedUser}
+      />
 
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <UserDropDown
+        searchField={searchField}
+        hasFocusField={hasFocusField}
+        setHasFocusField={setHasFocusField}
+        handleInputField={handleInputField}
+        handleUserSelect={handleUserSelect}
+        users={preparedUsers}
+      />
     </main>
   );
 };
