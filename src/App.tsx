@@ -36,6 +36,7 @@ export const App: React.FC = () => {
   const [searchField, setSearchField] = useState('');
   const [hasFocusField, setHasFocusField] = useState(true);
   const [appliedSearchField, setAppliedSearchField] = useState('');
+  const [selectedUser, setSelectedUser] = useState<Person | null>(null);
 
   const preparedUsers = useMemo(() => {
     return filterUsers(peopleFromServer, appliedSearchField);
@@ -45,8 +46,6 @@ export const App: React.FC = () => {
     debounce(setAppliedSearchField, DELAY_OF_FILTERING),
     [],
   );
-
-  const [selectedUser, setSelectedUser] = useState<Person | null>(null);
 
   const handleInputField = useCallback((
     event: React.ChangeEvent<HTMLInputElement>,
