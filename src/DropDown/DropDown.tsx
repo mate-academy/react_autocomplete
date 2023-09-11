@@ -19,7 +19,7 @@ export const DropDown: React.FC<Props> = React.memo(({
 }) => {
   const [query, setQuery] = useState('');
   const [apliedQuery, setApliedQuery] = useState('');
-  const [isFocused, setIsFocused] = useState(true);
+  const [isFocused, setIsFocused] = useState(false);
 
   const applyQuery = useCallback(debounce(setApliedQuery, delay), []);
 
