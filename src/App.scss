@@ -1,3 +1,13 @@
 iframe {
   display: none;
 }
+
+.is-woman {
+  color: indianred !important;
+}
+
+.dropdown-item {
+  &:hover {
+    background-color: lightgrey;
+  }
+}
