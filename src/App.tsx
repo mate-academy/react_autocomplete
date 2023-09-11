@@ -12,6 +12,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [focus, setFocus] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [count, setCount] = useState(1);
 
   const applyPerson = useCallback(
     debounce(setAppliedPerson, 1000),
@@ -55,6 +56,14 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleButton = () => {
+    setFocus(true);
+    setCount(count + 1);
+    if (count % 2 === 0) {
+      setFocus(false);
+    }
+  };
+
   return (
     <main className="section">
       <h1 className="title">
@@ -80,12 +89,18 @@ export const App: React.FC = () => {
                 onBlur={() => setTimeout(() => setFocus(false), 300)}
               />
 
-              <span className="icon is-small is-right">
+              <span
+                className="icon is-small is-right"
+                onClick={handleButton}
+                onKeyUp={() => {}}// лінтер без події на клаву не пустив чому?
+                aria-hidden="true"
+              >
                 <i
-                  className={classNames('fas fa-angle-down', {
-                    'fas fa-angle-up': focus,
-                  })}
-                  aria-hidden="true"
+                  className={
+                    classNames('fas fa-angle-down is-clickable', {
+                      'fas fa-angle-up is-clickable': focus,
+                    })
+                  }
                 />
               </span>
             </p>
