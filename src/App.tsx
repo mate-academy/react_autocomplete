@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const { name, born, died } = peopleFromServer[0];
+  const [visiblePeople, setVisiblePeople] = useState<Person[] | null>(null);
+
+  function findName(event: string) {
+    setVisiblePeople(peopleFromServer
+      .filter(person => person.name
+        .toLowerCase().includes(event.toLowerCase())));
+  }
 
   return (
     <main className="section">
@@ -17,39 +25,23 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            onClick={() => setVisiblePeople([...peopleFromServer])}
+            onChange={(event) => findName(event.target.value)}
           />
         </div>
 
         <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
+          {visiblePeople && (
+            <div className="dropdown-content">
+              {visiblePeople.map(person => (
+                <div className="dropdown-item" key={person.slug}>
+                  <p className="has-text-link">
+                    {person.name}
+                  </p>
+                </div>
+              ))}
             </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </main>
