@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
+import '@fortawesome/fontawesome-free/css/all.css';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
@@ -66,16 +67,29 @@ export const App: React.FC = () => {
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-            value={person}
-            onChange={handlePersonChange}
-            onFocus={() => setTimeout(() => setFocus(true), 300)}
-            onBlur={() => setTimeout(() => setFocus(false), 300)}
-            onKeyDown={handleKeyDown}
-          />
+          <div className="field">
+            <p className="control is-expanded has-icons-right">
+              <input
+                type="text"
+                placeholder="Enter a part of the name"
+                className="input"
+                value={person}
+                onKeyDown={handleKeyDown}
+                onChange={handlePersonChange}
+                onFocus={() => setTimeout(() => setFocus(true), 300)}
+                onBlur={() => setTimeout(() => setFocus(false), 300)}
+              />
+
+              <span className="icon is-small is-right">
+                <i
+                  className={classNames('fas fa-angle-down', {
+                    'fas fa-angle-up': focus,
+                  })}
+                  aria-hidden="true"
+                />
+              </span>
+            </p>
+          </div>
         </div>
 
         {focus && (
