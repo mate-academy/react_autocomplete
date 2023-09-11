@@ -4,28 +4,7 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { DropdownMenu } from './components/DropdownMenu/DropdownMenu';
 import { SearchInput } from './components/SearchInput/SearchInput';
-
-function filterPeopleByQuery(people: Person[], query: string) {
-  const normalizedQuery = query.toLowerCase();
-
-  return people.filter((person) => {
-    const normalizedName = person.name.toLowerCase();
-
-    return normalizedName.includes(normalizedQuery);
-  });
-}
-
-function queryDebounce(callBack: (a: string) => void, delay: number) {
-  let timerId = 0;
-
-  return (query: string) => {
-    window.clearTimeout(timerId);
-
-    timerId = window.setTimeout(() => {
-      callBack(query);
-    }, delay);
-  };
-}
+import { filterPeopleByQuery, queryDebounce } from './utils';
 
 export const App: React.FC = () => {
   const [queryValue, setQueryValue] = useState('');
@@ -52,24 +31,18 @@ export const App: React.FC = () => {
     [],
   );
 
-  const handleInputFocus = useCallback(
-    () => {
-      setIsDropdownVisible(true);
-    },
-    [],
-  );
+  const handleInputFocus = useCallback(() => {
+    setIsDropdownVisible(true);
+  }, []);
 
-  const handlePersonSelect = useCallback(
-    (person: Person) => {
-      setIsDropdownVisible(false);
-      setPersonSelected(person);
-      setQueryValue(person.name);
-      setQueryApplied(person.name);
-    },
-    [],
-  );
+  const handlePersonSelect = useCallback((person: Person) => {
+    setIsDropdownVisible(false);
+    setPersonSelected(person);
+    setQueryValue(person.name);
+    setQueryApplied(person.name);
+  }, []);
 
-  const people = useMemo(
+  const suggestions = useMemo(
     () => filterPeopleByQuery(peopleFromServer, queryApplied),
     [queryApplied],
   );
@@ -86,7 +59,10 @@ export const App: React.FC = () => {
         />
 
         {isDropdownVisible && (
-          <DropdownMenu people={people} onSelect={handlePersonSelect} />
+          <DropdownMenu
+            suggestions={suggestions}
+            onSelect={handlePersonSelect}
+          />
         )}
       </div>
     </main>

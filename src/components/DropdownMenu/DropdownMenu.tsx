@@ -4,16 +4,16 @@ import { DropdownItem } from '../DropdownItem/DropdownItem';
 import './DropdownMenu.scss';
 
 interface Props {
-  people: Person[];
+  suggestions: Person[];
   onSelect: (person: Person) => void;
 }
 
-const Menu: React.FC<Props> = ({ people, onSelect }) => {
+const Menu: React.FC<Props> = ({ suggestions, onSelect }) => {
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
-        {people.length ? (
-          people.map((person) => (
+        {suggestions.length ? (
+          suggestions.map((person) => (
             <DropdownItem
               person={person}
               onSelect={onSelect}
