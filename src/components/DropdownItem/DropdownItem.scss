@@ -1,0 +1,15 @@
+.dropdown-item {
+  &__button {
+    width: 100%;
+    line-height: 30px;
+
+    cursor: pointer;
+
+    border: none;
+    background-color: #fff;
+
+    &:hover {
+      background-color: #e2dddd;
+    }
+  }
+}
