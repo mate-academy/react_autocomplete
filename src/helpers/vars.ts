@@ -1,0 +1,3 @@
+const DELAY_OF_FILTERING = 1000;
+
+export { DELAY_OF_FILTERING };
