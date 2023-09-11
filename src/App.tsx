@@ -34,7 +34,7 @@ export const App: React.FC = () => {
       .filter((person) => person
         .name
         .toLowerCase()
-        .includes(appliedQuery.toLowerCase()));
+        .includes(appliedQuery.toLowerCase().trim()));
   }, [appliedQuery]);
 
   useEffect(() => {
