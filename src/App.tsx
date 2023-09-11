@@ -1,14 +1,52 @@
-import React from 'react';
+import React, {
+  useCallback, useEffect, useState, useMemo,
+} from 'react';
+import debounce from 'lodash.debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { DropDownMenu } from './components/DropDownMenu/DropDownMenu';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [hasFocus, setHasFocus] = useState(false);
+  const [selectedPerson, setSelectedPerson]
+   = useState<Person | null>(null);
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 1000),
+    [],
+  );
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    setQuery(event.target.value);
+    setIsLoading(true);
+    applyQuery(event.target.value);
+  };
+
+  const filtredPeople = useMemo(() => {
+    setIsLoading(false);
+
+    return peopleFromServer
+      .filter((person) => person
+        .name
+        .toLowerCase()
+        .includes(appliedQuery.toLowerCase().trim()));
+  }, [appliedQuery]);
+
+  useEffect(() => {
+    setHasFocus(false);
+  }, [selectedPerson]);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +55,18 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onFocus={() => setHasFocus(true)}
+            onChange={handleQueryChange}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        <DropDownMenu
+          people={filtredPeople}
+          hasFocus={hasFocus}
+          onSelectedPerson={setSelectedPerson}
+          isLoading={isLoading}
+        />
       </div>
     </main>
   );
