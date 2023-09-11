@@ -1,7 +1,6 @@
 import React, {
   useState,
   useMemo,
-  useEffect,
   useCallback,
   useRef,
 } from 'react';
@@ -44,23 +43,6 @@ export const Autocomplete: React.FC<Props> = ({
     setSuggestions(filteredSuggestions);
   }, [processedQuery]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current
-        && !dropdownRef.current.contains(event.target as Node)) {
-        setIsFocused(false);
-        setInputQuery('');
-        setProcessedQuery('');
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
-
   return (
     <div
       className={classNames(
@@ -77,6 +59,7 @@ export const Autocomplete: React.FC<Props> = ({
           value={inputQuery}
           onChange={handleQueryChange}
           onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
         />
       </div>
 
@@ -84,14 +67,13 @@ export const Autocomplete: React.FC<Props> = ({
         className="dropdown-menu"
         role="menu"
       >
-        {suggestions.length === 0
+        {!suggestions.length
           ? (
             <div className="dropdown-item">
               <p className="has-text-danger">No matching suggestions</p>
               {onSelected('')}
             </div>
-          )
-          : (
+          ) : (
             <div className="dropdown-content">
               {suggestions.map((suggestion) => {
                 const { name, slug, sex } = suggestion;
@@ -103,6 +85,7 @@ export const Autocomplete: React.FC<Props> = ({
                     href={`#${slug}`}
                     onMouseDown={() => {
                       onSelected(slug);
+                      setInputQuery(name);
                       setIsFocused(false);
                     }}
                   >
