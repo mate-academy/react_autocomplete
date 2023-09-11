@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 
 import { Person } from '../../types/Person';
 
@@ -9,7 +9,7 @@ type TSearchTitleProps = {
   setSelectedUser: (newPerson: Person | null) => void
 };
 
-export const SearchTitle: FC<TSearchTitleProps> = ({
+export const SearchTitle: FC<TSearchTitleProps> = memo(({
   selectedUser,
   setSelectedUser,
 }) => (
@@ -31,4 +31,4 @@ export const SearchTitle: FC<TSearchTitleProps> = ({
         <span>No selected user</span>
       )}
   </h1>
-);
+));

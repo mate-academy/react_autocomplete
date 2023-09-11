@@ -55,14 +55,14 @@ export const App: React.FC = () => {
     applieSearchField(event.target.value);
   }, []);
 
-  const handleUserSelect = useCallback((selectedPerson: Person) => {
+  const handleUserSelect = (selectedPerson: Person) => {
     const user = preparedUsers
       .find(({ slug }) => slug === selectedPerson.slug) ?? null;
 
     setSelectedUser(user);
     setSearchField('');
     applieSearchField('');
-  }, [preparedUsers]);
+  };
 
   return (
     <main className="section">
