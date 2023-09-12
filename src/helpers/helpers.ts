@@ -1,11 +1,14 @@
-export function debounce(callback: (...args: any[]) => void, delay: number) {
+// same to Misha's
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function debounce(callback: Function, delay: number) {
   let timerId = 0;
 
-  return (...args: any[]) => {
+  return (value: string | boolean) => {
     window.clearTimeout(timerId);
 
     timerId = window.setTimeout(() => {
-      callback(...args);
+      callback(value);
     }, delay);
   };
 }
