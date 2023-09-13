@@ -2,28 +2,26 @@ import React, {
   useState,
   useMemo,
   useCallback,
-  useRef,
+  useEffect,
 } from 'react';
 import debounce from 'lodash.debounce';
 import classNames from 'classnames';
-import { PeoplesNames } from '../types/Person';
+import { Person } from '../types/Person';
 
 type Props = {
-  peoplesNames: PeoplesNames[];
+  people: Person[];
   onSelected: (person: string) => void;
   delay: number;
 };
 
 export const Autocomplete: React.FC<Props> = ({
-  peoplesNames,
+  people,
   onSelected,
   delay,
 }) => {
   const [inputQuery, setInputQuery] = useState('');
   const [processedQuery, setProcessedQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<PeoplesNames[]>([]);
   const [isFocused, setIsFocused] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const handleDelayedChange = useCallback(
     debounce(setProcessedQuery, delay),
@@ -35,13 +33,24 @@ export const Autocomplete: React.FC<Props> = ({
     handleDelayedChange(event.target.value);
   };
 
-  useMemo(() => {
-    const filteredSuggestions = peoplesNames
-      .filter((person) => person.name.toLowerCase()
-        .includes(processedQuery.toLowerCase()));
+  const handleOnFocus = () => {
+    setInputQuery('');
+    setProcessedQuery('');
+    setIsFocused(true);
+  };
 
-    setSuggestions(filteredSuggestions);
-  }, [processedQuery]);
+  const filteredSuggestions = useMemo(
+    () => people
+      .filter((person) => person.name.toLowerCase()
+        .includes(processedQuery.toLowerCase())),
+    [processedQuery],
+  );
+
+  useEffect(() => {
+    if (!filteredSuggestions.length) {
+      onSelected('');
+    }
+  }, [filteredSuggestions.length]);
 
   return (
     <div
@@ -49,7 +58,6 @@ export const Autocomplete: React.FC<Props> = ({
         'dropdown',
         { 'is-active': isFocused },
       )}
-      ref={dropdownRef}
     >
       <div className="dropdown-trigger">
         <input
@@ -58,7 +66,7 @@ export const Autocomplete: React.FC<Props> = ({
           className="input"
           value={inputQuery}
           onChange={handleQueryChange}
-          onFocus={() => setIsFocused(true)}
+          onFocus={handleOnFocus}
           onBlur={() => setIsFocused(false)}
         />
       </div>
@@ -67,15 +75,14 @@ export const Autocomplete: React.FC<Props> = ({
         className="dropdown-menu"
         role="menu"
       >
-        {!suggestions.length
+        {!filteredSuggestions.length
           ? (
             <div className="dropdown-item">
               <p className="has-text-danger">No matching suggestions</p>
-              {onSelected('')}
             </div>
           ) : (
             <div className="dropdown-content">
-              {suggestions.map((suggestion) => {
+              {filteredSuggestions.map((suggestion) => {
                 const { name, slug, sex } = suggestion;
 
                 return (

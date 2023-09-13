@@ -1,10 +1,7 @@
-export interface PeoplesNames {
+export interface Person {
   name: string,
   slug: string,
   sex: 'm' | 'f',
-}
-
-export interface Person extends PeoplesNames {
   born: number,
   died: number,
   fatherName: string | null,

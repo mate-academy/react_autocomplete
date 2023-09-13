@@ -2,24 +2,13 @@ import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Autocomplete } from './components/Autocomplete';
-import { PeoplesNames } from './types/Person';
 
 const DELAY = 1000;
 
-const peoplesNames: PeoplesNames[] = peopleFromServer.map(({
-  name,
-  slug,
-  sex,
-}) => ({
-  name,
-  slug,
-  sex,
-}));
-
 export const App: React.FC = () => {
-  const [selectedPersonId, setSelectedPersonId] = useState<string>('');
+  const [selectedPersonSlug, setSelectedPersonSlug] = useState<string>('');
   const selectedPerson = peopleFromServer
-    .find(person => person.slug === selectedPersonId);
+    .find(person => person.slug === selectedPersonSlug);
 
   return (
     <main className="section">
@@ -29,8 +18,8 @@ export const App: React.FC = () => {
           : 'No selected person'}
       </h1>
       <Autocomplete
-        peoplesNames={peoplesNames}
-        onSelected={setSelectedPersonId}
+        people={peopleFromServer}
+        onSelected={setSelectedPersonSlug}
         delay={DELAY}
       />
     </main>
