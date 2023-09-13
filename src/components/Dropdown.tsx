@@ -15,7 +15,7 @@ interface Props {
   onSelected?: (user: Person) => void,
 }
 
-export const Dropdown: React.FC<Props> = React.memo(({
+export const Dropdown: React.FC<Props> = ({
   people,
   onSelected = () => {},
   delay,
@@ -23,7 +23,6 @@ export const Dropdown: React.FC<Props> = React.memo(({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [hasFocus, setHasFocus] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay),
@@ -33,9 +32,6 @@ export const Dropdown: React.FC<Props> = React.memo(({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value.trimStart());
     applyQuery(event.target.value);
-    if (query) {
-      setIsProcessing(true);
-    }
   };
 
   const searchField = useRef<HTMLInputElement>(null);
@@ -47,8 +43,6 @@ export const Dropdown: React.FC<Props> = React.memo(({
   }, []);
 
   const filteredPeople = useMemo(() => {
-    setIsProcessing(false);
-
     return people.filter(
       // eslint-disable-next-line max-len
       person => person.name.toLowerCase().includes(appliedQuery.trim().toLowerCase()),
@@ -85,33 +79,25 @@ export const Dropdown: React.FC<Props> = React.memo(({
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content has-text-link">
-          {!isProcessing
-            ? (
-              filteredPeople.map(person => (
-                <a
-                  className="dropdown-item"
-                  href="/"
-                  key={person.slug}
-                  onMouseDown={(event) => handleMouseDown(event, person)}
-                >
-                  <p
-                    className={classNames({
-                      'has-text-link': person.sex === 'm',
-                      'has-text-danger': person.sex === 'f',
-                    })}
-                  >
-                    {person.name}
-                  </p>
-                </a>
-              ))
-            )
-            : (
-              <div className="p-2 notification is-info has-text-ligth">
-                Processing
-              </div>
-            )}
+          {filteredPeople.map(person => (
+            <a
+              className="dropdown-item"
+              href="/"
+              key={person.slug}
+              onMouseDown={(event) => handleMouseDown(event, person)}
+            >
+              <p
+                className={classNames({
+                  'has-text-link': person.sex === 'm',
+                  'has-text-danger': person.sex === 'f',
+                })}
+              >
+                {person.name}
+              </p>
+            </a>
+          ))}
 
-          {(!filteredPeople.length && !isProcessing) && (
+          {(!filteredPeople.length) && (
             <div className="p-2 notification is-warning has-text-danger-dark">
               <p>No matching suggestions</p>
             </div>
@@ -120,4 +106,4 @@ export const Dropdown: React.FC<Props> = React.memo(({
       </div>
     </div>
   );
-});
+};
