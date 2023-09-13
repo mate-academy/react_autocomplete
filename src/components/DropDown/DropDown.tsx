@@ -1,6 +1,5 @@
 import React, {
   useState,
-  useCallback,
   useMemo,
 } from 'react';
 
@@ -34,21 +33,21 @@ export const DropDown: React.FC<Props> = ({
 
   const humansMemorised = useMemo(
     () => filterPeople(people, serverQuery),
-    [serverQuery],
+    [serverQuery, people],
   );
 
   const hasDropDown = dropDownVisible
   && userQuery === serverQuery && isFocused;
   const hasNoMatchMess = !humansMemorised.length && hasDropDown;
 
-  const delayedSetQuery = useCallback(debounce((
+  const delayedSetQuery = debounce((
     str: string,
   ) => {
     setServerQuery(str);
     setDropDownVisible(true);
-  }, delay), []);
+  }, delay);
 
-  const handleQuaryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserQuery(event.target.value);
     setDropDownVisible(false);
     delayedSetQuery(event.target.value);
@@ -74,7 +73,7 @@ export const DropDown: React.FC<Props> = ({
           placeholder="Enter a part of the name"
           className="input"
           value={userQuery}
-          onChange={handleQuaryChange}
+          onChange={handleQueryChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
         />
