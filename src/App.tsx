@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { Autocomplete } from './components';
 
 const DELAY_PROP = 1000;
 
@@ -31,7 +31,7 @@ export const App: React.FC = () => {
   };
 
   const preparedPeople = useMemo(() => {
-    return [...peopleFromServer].filter(person => {
+    return peopleFromServer.filter(person => {
       return person.name
         .toLowerCase().includes(appliedQuery.toLowerCase().trim());
     });
@@ -45,51 +45,14 @@ export const App: React.FC = () => {
           : 'No selected person'}
       </h1>
 
-      <div className={classNames('dropdown', {
-        'is-active': listIsVisible,
-      })}
-      >
-        <div className="dropdown-trigger">
-          <input
-            value={query}
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-            onChange={handleQueryChange}
-            onFocus={() => setListIsVisible(true)}
-            onBlur={() => setListIsVisible(false)}
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {preparedPeople.length === 0
-              ? (
-                <div className="dropdown-item">
-                  <p className="has-text-black">
-                    No matching suggestions
-                  </p>
-                </div>
-              ) : preparedPeople.map(person => (
-                <div
-                  className="dropdown-item"
-                  key={person.slug}
-                  onMouseDown={() => handlSelectedPerson(person)}
-                  aria-hidden="true"
-                  style={{ cursor: 'pointer' }}
-                >
-                  <p className={classNames({
-                    'has-text-link': person.sex === 'm',
-                    'has-text-danger': person.sex === 'f',
-                  })}
-                  >
-                    {person.name}
-                  </p>
-                </div>
-              ))}
-          </div>
-        </div>
-      </div>
+      <Autocomplete
+        preparedPeople={preparedPeople}
+        query={query}
+        listIsVisible={listIsVisible}
+        onQueryChange={handleQueryChange}
+        onSelectedPerson={handlSelectedPerson}
+        setListIsVisible={setListIsVisible}
+      />
     </main>
   );
 };
