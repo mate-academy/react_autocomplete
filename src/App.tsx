@@ -3,10 +3,12 @@ import './App.scss';
 import { Person } from './types/Person';
 import { Autocomplete } from './components/Autocomplete';
 
+const DEFAULT_DELAY = 700;
+
 export const App: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<Person | null>(null);
 
-  const getSelectedUser = useCallback((person: Person) => (
+  const onUserSelected = useCallback((person: Person) => (
     setSelectedUser(person)
   ), []);
 
@@ -14,10 +16,10 @@ export const App: React.FC = () => {
     <main className="section">
       <h1 className="title">
         {selectedUser
-          ? `${selectedUser.name} (${selectedUser.born} = ${selectedUser.died})`
+          ? `${selectedUser.name} (${selectedUser.born} - ${selectedUser.died})`
           : 'No selected person'}
       </h1>
-      <Autocomplete getSelectedUser={getSelectedUser} />
+      <Autocomplete onUserSelected={onUserSelected} delay={DEFAULT_DELAY} />
     </main>
   );
 };

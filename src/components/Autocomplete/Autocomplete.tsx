@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import cn from 'classnames';
 import './Autocomplete.scss';
 import debounce from 'lodash.debounce';
@@ -7,13 +7,13 @@ import { Person } from '../../types/Person';
 
 const MALE_SEX = 'm';
 const FEMALE_SEX = 'f';
-const DEFAULT_DELAY = 700;
 
 type Props = {
-  getSelectedUser: (person: Person) => void
+  onUserSelected: (person: Person) => void,
+  delay: number,
 };
 
-export const Autocomplete: React.FC<Props> = ({ getSelectedUser }) => {
+export const Autocomplete: React.FC<Props> = ({ onUserSelected, delay }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setApplyQuery] = useState('');
   const [isDropdownActive, setIsDropdownActive] = useState(false);
@@ -25,7 +25,7 @@ export const Autocomplete: React.FC<Props> = ({ getSelectedUser }) => {
     return preparedPersonName.includes(preparedQuery);
   });
 
-  const applyQuery = useCallback(debounce(setApplyQuery, DEFAULT_DELAY), []);
+  const applyQuery = debounce(setApplyQuery, delay);
 
   const handleInputQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -51,7 +51,7 @@ export const Autocomplete: React.FC<Props> = ({ getSelectedUser }) => {
           className="input"
           value={query}
           onChange={handleInputQuery}
-          onClick={() => setIsDropdownActive(true)}
+          onFocus={() => setIsDropdownActive(true)}
           onBlur={() => setIsDropdownActive(false)}
         />
         {query && (
@@ -77,7 +77,7 @@ export const Autocomplete: React.FC<Props> = ({ getSelectedUser }) => {
                     'has-text-danger': person.sex === FEMALE_SEX,
                   })}
                   onMouseDown={() => {
-                    getSelectedUser(person);
+                    onUserSelected(person);
                     setQuery(person.name);
                     setIsDropdownActive(false);
                   }}
