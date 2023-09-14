@@ -1,15 +1,54 @@
-import React from 'react';
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import React, { useMemo, useState } from 'react';
+import cn from 'classnames';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+type Props = {
+  delay: number,
+};
+
+export const App: React.FC<Props> = ({ delay }) => {
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [textField, setTextField] = useState<string>('');
+  const [fieldFocused, setFieldFocused] = useState<boolean>(false);
+  const [filteredPeople, setFilteredPeople]
+  = useState<Person[] | []>(peopleFromServer);
+
+  useMemo(() => {
+    if (peopleFromServer.filter(person => person.name.toLowerCase()
+      .includes(textField.toLowerCase())).length > 0) {
+      setTimeout(() => setFilteredPeople(peopleFromServer
+        .filter(person => person
+          .name.toLowerCase().includes(textField.toLowerCase()))), delay);
+    } else {
+      setFilteredPeople([]);
+    }
+  }, [textField]);
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      {selectedPerson && (
+        <div style={{
+          display: 'flex',
+          gap: '20px',
+        }}
+        >
+          <h1 className="title">
+            {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
+          </h1>
+          <button
+            type="button"
+            className="delete is-medium"
+            onClick={() => {
+              setSelectedPerson(null);
+              setTextField('');
+            }}
+          />
+        </div>
+
+      )}
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
@@ -17,39 +56,41 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            onChange={(e) => setTextField(e.target.value.trim())}
+            value={textField}
+            onFocus={() => setFieldFocused(true)}
+            onBlur={() => setTimeout(() => setFieldFocused(false), 150)}
+
           />
         </div>
 
         <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
+          {fieldFocused && (
+            <div className="dropdown-content">
 
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
+              {filteredPeople.length > 0
+                ? filteredPeople.map(person => {
+                  return (
+                  // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+                    <div
+                      key={person.slug}
+                      className="dropdown-item"
+                      onClick={() => setSelectedPerson(person)}
+                    >
+                      <p className={cn({
+                        'has-text-link': person.sex === 'm',
+                        'has-text-danger': person.sex === 'f',
+                      })}
+                      >
+                        {person.name}
 
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
+                      </p>
+                    </div>
+                  );
+                })
+                : <p className="dropdown-item">No matching suggestions</p>}
             </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </main>
