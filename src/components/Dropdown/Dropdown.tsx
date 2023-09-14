@@ -1,31 +1,28 @@
 import classnames from 'classnames';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import debounce from 'lodash.debounce';
 
 import { Person } from '../../types/Person';
 
 type Props = {
-  query: string;
   people: Person[];
-  onSelected: (person: Person) => void;
-  onChange: (value: string) => void;
+  onSelected: (person: Person | null) => void;
   delay: number;
 };
 
 export const Dropdown: React.FC<Props> = ({
-  query,
   people,
   onSelected,
-  onChange,
   delay,
 }) => {
   const [visiblePeople, setVisiblePeople] = useState(false);
   const [preparedQuery, setPreparedQuery] = useState('');
+  const [query, setQuery] = useState('');
 
-  const prepareQuery = useCallback(debounce(setPreparedQuery, delay), []);
+  const prepareQuery = debounce(setPreparedQuery, delay);
 
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(event.target.value);
+    setQuery(event.target.value);
 
     prepareQuery(event.target.value);
   };
@@ -36,18 +33,46 @@ export const Dropdown: React.FC<Props> = ({
     });
   }, [people, preparedQuery]);
 
+  const resetSelectedPerson = () => {
+    setQuery('');
+    onSelected(null);
+  };
+
+  const handleSelect = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    person: Person,
+  ) => {
+    event.preventDefault();
+
+    setQuery(person.name);
+    onSelected(person);
+    setVisiblePeople(false);
+  };
+
   return (
     <div className="dropdown is-active">
       <div className="dropdown-trigger">
-        <input
-          type="text"
-          placeholder="Enter a part of the name"
-          className="input"
-          value={query}
-          onChange={inputHandler}
-          onClick={() => setVisiblePeople(true)}
-          onBlur={() => setVisiblePeople(false)}
-        />
+        <div className="control has-icons-right">
+          <input
+            type="text"
+            placeholder="Enter a part of the name"
+            className="input"
+            value={query}
+            onChange={inputHandler}
+            onFocus={() => setVisiblePeople(true)}
+          />
+
+          {query && (
+            <span className="icon is-right">
+              <button
+                type="button"
+                className="delete"
+                aria-label="close"
+                onClick={resetSelectedPerson}
+              />
+            </span>
+          )}
+        </div>
       </div>
 
       {visiblePeople && (
@@ -65,7 +90,7 @@ export const Dropdown: React.FC<Props> = ({
                         'has-text-danger': person.sex === 'f',
                       },
                     )}
-                    onMouseDown={() => onSelected(person)}
+                    onClick={(event) => handleSelect(event, person)}
                   >
                     {person.name}
                   </a>

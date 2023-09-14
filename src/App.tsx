@@ -6,17 +6,11 @@ import { Dropdown } from './components/Dropdown/Dropdown';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [query, setQuery] = useState('');
-
-  const onSelectPerson = (person: Person) => {
-    setSelectedPerson(person);
-    setQuery(person.name);
-  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson && query ? (
+        {selectedPerson ? (
           `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`
         ) : (
           'No selected person'
@@ -24,10 +18,8 @@ export const App: React.FC = () => {
       </h1>
 
       <Dropdown
-        query={query}
         people={peopleFromServer}
-        onSelected={onSelectPerson}
-        onChange={(value) => setQuery(value)}
+        onSelected={(person) => setSelectedPerson(person)}
         delay={1000}
       />
     </main>
