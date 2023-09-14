@@ -10,15 +10,22 @@ export const SearchBar: React.FC<Props> = ({
   query,
   handleQueryChange,
   setIsDropdownVisible,
-}) => (
-  <div className="dropdown-trigger">
-    <input
-      onFocus={() => setIsDropdownVisible(true)}
-      type="text"
-      placeholder="Enter a part of the name"
-      className="input"
-      value={query}
-      onChange={handleQueryChange}
-    />
-  </div>
-);
+}) => {
+  const closeDropdownWithDelay = () => {
+    setTimeout(() => setIsDropdownVisible(false), 100);
+  };
+
+  return (
+    <div className="dropdown-trigger">
+      <input
+        onFocus={() => setIsDropdownVisible(true)}
+        type="text"
+        placeholder="Enter a part of the name"
+        className="input"
+        value={query}
+        onChange={handleQueryChange}
+        onBlur={closeDropdownWithDelay}
+      />
+    </div>
+  );
+};
