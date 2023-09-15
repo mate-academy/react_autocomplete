@@ -3,6 +3,9 @@ import classNames from 'classnames';
 
 import { Person } from '../../types/Person';
 
+const MALE_SEX = 'm';
+const isMale = (sex: string) => sex === MALE_SEX;
+
 type Props = {
   person: Person,
   onSelect: (person: Person) => void,
@@ -12,8 +15,6 @@ export const DropdownPerson: React.FC<Props> = ({
   person,
   onSelect,
 }) => {
-  const isMale = (sex: string) => sex === 'm';
-
   return (
     <div
       className="dropdown-item"
