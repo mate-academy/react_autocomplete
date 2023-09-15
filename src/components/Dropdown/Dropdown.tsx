@@ -17,7 +17,7 @@ export const Dropdown: React.FC<Props> = ({
   onSelected,
   searchDelay,
 }) => {
-  const [visiblePeople, setVisiblePeople] = useState(false);
+  const [isVisiblePeople, setIsVisiblePeople] = useState(false);
   const [preparedQuery, setPreparedQuery] = useState('');
   const [query, setQuery] = useState('');
 
@@ -44,7 +44,7 @@ export const Dropdown: React.FC<Props> = ({
 
     setQuery(person.name);
     onSelected(person);
-    setVisiblePeople(false);
+    setIsVisiblePeople(false);
   };
 
   return (
@@ -57,7 +57,7 @@ export const Dropdown: React.FC<Props> = ({
             className="input"
             value={query}
             onChange={inputHandler}
-            onFocus={() => setVisiblePeople(true)}
+            onFocus={() => setIsVisiblePeople(true)}
           />
 
           {query && (
@@ -73,7 +73,7 @@ export const Dropdown: React.FC<Props> = ({
         </div>
       </div>
 
-      {visiblePeople && (
+      {isVisiblePeople && (
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
             {filteredPeople.length
