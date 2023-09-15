@@ -1,14 +1,64 @@
-import React from 'react';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
+import debounce from 'lodash.debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { PeopleList } from './components/PeopleList/PeopleList';
+
+const DELAY = 1000;
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [inputText, setInputText] = useState<string>('');
+  const [applyedQuery, setApplyedQuery] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+
+  const applyQuery = useCallback(debounce(setApplyedQuery, DELAY), []);
+
+  const filteredPeople = useMemo(() => {
+    setShowSuggestions(true);
+
+    return peopleFromServer.filter(
+      (person) => person.name.toLowerCase()
+      .includes(applyedQuery.toLowerCase()),
+    );
+  }, [applyedQuery, peopleFromServer]);
+
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const text = event.target.value;
+
+      setInputText(text);
+      applyQuery(text);
+    }, [],
+  );
+
+  const handleSelectPerson = useCallback(
+    (
+      event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+      person: Person,
+    ) => {
+      event.preventDefault();
+      setSelectedPerson(person);
+      setInputText(person.name);
+      setApplyedQuery(person.name);
+      setShowSuggestions(false);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    setShowSuggestions(false);
+  }, [inputText]);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +67,19 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={inputText}
+            onChange={handleInputChange}
+            onFocus={() => setShowSuggestions(true)} // Показываем подсказки при фокусе
+            onBlur={() => setShowSuggestions(false)} // Скрываем подсказки при потере фокуса
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        {showSuggestions && (
+          <PeopleList
+            people={filteredPeople}
+            onSelectPerson={handleSelectPerson}
+          />
+        )}
       </div>
     </main>
   );
