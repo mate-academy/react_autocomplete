@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
