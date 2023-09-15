@@ -1,5 +1,8 @@
 import React, {
-  useCallback, useEffect, useMemo, useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
 } from 'react';
 import debounce from 'lodash.debounce';
 import './App.scss';
@@ -22,7 +25,7 @@ export const App: React.FC = () => {
 
     return peopleFromServer.filter(
       (person) => person.name.toLowerCase()
-      .includes(applyedQuery.toLowerCase()),
+        .includes(applyedQuery.toLowerCase()),
     );
   }, [applyedQuery, peopleFromServer]);
 
@@ -32,7 +35,8 @@ export const App: React.FC = () => {
 
       setInputText(text);
       applyQuery(text);
-    }, [],
+    },
+    [],
   );
 
   const handleSelectPerson = useCallback(
@@ -69,16 +73,12 @@ export const App: React.FC = () => {
             className="input"
             value={inputText}
             onChange={handleInputChange}
-            onFocus={() => setShowSuggestions(true)} // Показываем подсказки при фокусе
-            onBlur={() => setShowSuggestions(false)} // Скрываем подсказки при потере фокуса
+            onFocus={() => setShowSuggestions(true)}
           />
         </div>
 
         {showSuggestions && (
-          <PeopleList
-            people={filteredPeople}
-            onSelectPerson={handleSelectPerson}
-          />
+          <PeopleList people={filteredPeople} onSelect={handleSelectPerson} />
         )}
       </div>
     </main>
