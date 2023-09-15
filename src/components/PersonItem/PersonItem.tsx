@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import cn from 'classnames';
 import { Person } from '../../types/Person';
 
@@ -37,4 +37,4 @@ const PersonItem: React.FC<Props> = ({ person, handleUserSelect }) => {
   );
 };
 
-export default memo(PersonItem);
+export default PersonItem;

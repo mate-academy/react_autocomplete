@@ -1,12 +1,12 @@
 import React, {
   useCallback, useMemo, useState,
 } from 'react';
-import PersonsList from '../PersonsList/PersonsList';
 import { Person } from '../../types/Person';
 import Search from '../Search/Search';
 import { debounce } from '../../helpers/helpers';
 import { peopleFromServer } from '../../data/people';
 import { DEFAULT_DELAY } from '../../constants/default.constants';
+import PersonItem from '../PersonItem/PersonItem';
 
 const getUserByName = (
   users: Person[],
@@ -35,7 +35,7 @@ const PersonsDropDown: React.FC<Props> = ({
   delay,
 }) => {
   const [searchValue, setSearchValue] = useState('');
-  const [hasFocusField, setHasFocusField] = useState(true);
+  const [hasFocusField, setHasFocusField] = useState(false);
   const [appliedSearchValue, setAppliedSearchValue] = useState('');
 
   const preparedPersons = useMemo(() => {
@@ -60,7 +60,7 @@ const PersonsDropDown: React.FC<Props> = ({
 
     setSelectedPerson(preparedPerson);
     setSearchValue(preparedPerson?.name || '');
-    applySearchValue(preparedPerson?.name || '');
+    setAppliedSearchValue(preparedPerson?.name || '');
   };
 
   return (
@@ -72,15 +72,25 @@ const PersonsDropDown: React.FC<Props> = ({
       />
 
       {hasFocusField && (
-        preparedPersons.length ? (
-          <PersonsList
-            persons={preparedPersons}
-            handleUserSelect={handleUserSelect}
-          />
-        )
-          : (
-            <h1 className="title">No matching suggestions</h1>
-          ))}
+        <div
+          style={{ width: '100%' }}
+          className="dropdown-menu"
+          role="menu"
+        >
+          <div className="dropdown-content">
+            {Boolean(preparedPersons.length)
+              && preparedPersons.map((person: Person) => (
+                <PersonItem
+                  key={person.slug}
+                  person={person}
+                  handleUserSelect={handleUserSelect}
+                />
+              ))}
+
+            {!preparedPersons.length && <p>No matching results</p>}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

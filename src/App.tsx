@@ -15,7 +15,7 @@ export const App: React.FC = () => {
 
       <PersonsDropDown
         setSelectedPerson={setSelectedPerson}
-        delay={100}
+        delay={1000}
       />
     </main>
   );

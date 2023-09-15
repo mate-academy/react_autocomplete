@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { debounce } from '../../helpers/helpers';
 
 type Props = {
   value: string,
   handleInputField: (event: React.ChangeEvent<HTMLInputElement>) => void
-  setHasFocusField: (val: boolean) => void
+  setHasFocusField: (value: boolean) => void
 };
 
 const Search: React.FC<Props> = ({
@@ -14,28 +14,15 @@ const Search: React.FC<Props> = ({
 }) => {
   const fieldref = useRef<HTMLInputElement | null>(null);
 
-  const setFieldFocus = useCallback(() => {
-    if (fieldref.current) {
-      fieldref.current.focus();
-    }
-  }, [fieldref]);
+  const setHasFocusFieldWithDelay = debounce(setHasFocusField, 150);
 
-  useEffect(() => {
-    setFieldFocus();
-  }, []);
-
-  const setHasFocusFieldWithDelay = useCallback(
-    debounce(setHasFocusField, 150),
-    [],
-  );
-
-  const handleBlurField = useCallback(() => {
+  const handleBlurField = () => {
     setHasFocusFieldWithDelay(false);
-  }, []);
+  };
 
-  const handleFocusField = useCallback(() => {
+  const handleFocusField = () => {
     setHasFocusField(true);
-  }, []);
+  };
 
   return (
     <div className="dropdown-trigger">
