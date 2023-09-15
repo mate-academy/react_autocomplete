@@ -6,13 +6,9 @@ import { Person } from './types/Person';
 import { Autocomplate } from './components/Autocomplate/Autocomplate';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line max-len
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const [title, setTitle] = useState('');
-
-  // eslint-disable-next-line no-console
-  console.log(title, 'title');
 
   return (
     <main className="section">

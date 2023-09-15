@@ -43,6 +43,13 @@ export const Autocomplate: React.FC<Props> = ({
       .filter(({ name }) => name.toLowerCase().includes(inputValue));
   }, [people, appliedQuery]);
 
+  const handlePerson = (person:Person) => {
+    setTitle(person.name);
+    setInputValue(person.name);
+    setSelectedPerson(person);
+    closeList();
+  };
+
   return (
     <div
       className={classNames('dropdown', {
@@ -65,19 +72,15 @@ export const Autocomplate: React.FC<Props> = ({
         <div className="dropdown-content">
           {filterPeople.length ? (
             filterPeople.map(person => (
-              <button
+              <a
                 key={person.slug}
                 className="dropdown-item"
                 type="button"
-                onClick={() => {
-                  setTitle(person.name);
-                  setInputValue(person.name);
-                  setSelectedPerson(person);
-                  closeList();
-                }}
+                tabIndex={0}
+                onClick={() => handlePerson(person)}
               >
                 {person.name}
-              </button>
+              </a>
             ))
           ) : (
             <div className="dropdown-item">
