@@ -25,7 +25,6 @@ export const Dropdown: React.FC<Props> = ({
 
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-
     prepareQuery(event.target.value);
   };
 
