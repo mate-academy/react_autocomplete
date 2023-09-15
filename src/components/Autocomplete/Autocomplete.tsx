@@ -6,8 +6,7 @@ import './Autocomplete.scss';
 
 const SEX_MALE = 'm';
 const SEX_FEMALE = 'f';
-const MS_IN_SEC = 1000;
-const DEFAULT_DELAY = 1;
+const SEARCH_DELAY = 1000;
 
 type Props = {
   people: Person[];
@@ -17,7 +16,7 @@ type Props = {
 
 export const Autocomplete: React.FC<Props> = ({
   people,
-  delayInSeconds = DEFAULT_DELAY,
+  delayInSeconds = 1,
   onSelected = () => {},
 }) => {
   const [inputValue, setInputValue] = useState('');
@@ -33,7 +32,7 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   const showSuggestionsAfterDelay = useCallback(
-    debounce(showSuggestions, delayInSeconds * MS_IN_SEC),
+    debounce(showSuggestions, delayInSeconds * SEARCH_DELAY),
     [delayInSeconds],
   );
 
