@@ -39,8 +39,13 @@ export const Autocomplate: React.FC<Props> = ({
   };
 
   const filterPeople = useMemo(() => {
-    return people
-      .filter(({ name }) => name.toLowerCase().includes(inputValue));
+    const inputValueLower = inputValue.toLowerCase();
+
+    return people.filter(({ name }) => {
+      const nameLower = name.toLowerCase();
+
+      return nameLower.includes(inputValueLower);
+    });
   }, [people, appliedQuery]);
 
   const handlePerson = (person:Person) => {
@@ -72,7 +77,7 @@ export const Autocomplate: React.FC<Props> = ({
         <div className="dropdown-content">
           {filterPeople.length ? (
             filterPeople.map(person => (
-              <a
+              <button
                 key={person.slug}
                 className="dropdown-item"
                 type="button"
@@ -80,7 +85,7 @@ export const Autocomplate: React.FC<Props> = ({
                 onClick={() => handlePerson(person)}
               >
                 {person.name}
-              </a>
+              </button>
             ))
           ) : (
             <div className="dropdown-item">
