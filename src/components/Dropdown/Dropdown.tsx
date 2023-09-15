@@ -1,25 +1,27 @@
 import classnames from 'classnames';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import debounce from 'lodash.debounce';
 
 import { Person } from '../../types/Person';
+import { useFilteredPeople } from '../../utils/utils';
+import { FEMALE_SEX, MALE_SEX } from '../../variables/variables';
 
 type Props = {
   people: Person[];
   onSelected: (person: Person | null) => void;
-  delay: number;
+  searchDelay: number;
 };
 
 export const Dropdown: React.FC<Props> = ({
   people,
   onSelected,
-  delay,
+  searchDelay,
 }) => {
   const [visiblePeople, setVisiblePeople] = useState(false);
   const [preparedQuery, setPreparedQuery] = useState('');
   const [query, setQuery] = useState('');
 
-  const prepareQuery = debounce(setPreparedQuery, delay);
+  const prepareQuery = debounce(setPreparedQuery, searchDelay);
 
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -27,14 +29,11 @@ export const Dropdown: React.FC<Props> = ({
     prepareQuery(event.target.value);
   };
 
-  const filteredPeople = useMemo(() => {
-    return people.filter(human => {
-      return human.name.toLowerCase().includes(preparedQuery.toLowerCase());
-    });
-  }, [people, preparedQuery]);
+  const filteredPeople = useFilteredPeople(people, preparedQuery);
 
   const resetSelectedPerson = () => {
     setQuery('');
+    setPreparedQuery('');
     onSelected(null);
   };
 
@@ -78,7 +77,7 @@ export const Dropdown: React.FC<Props> = ({
       {visiblePeople && (
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {filteredPeople
+            {filteredPeople.length
               ? filteredPeople.map(person => (
                 <div className="dropdown-item" key={person.slug}>
                   <a
@@ -86,8 +85,8 @@ export const Dropdown: React.FC<Props> = ({
                     className={classnames(
                       'has-text-link',
                       {
-                        'has-text-link': person.sex === 'm',
-                        'has-text-danger': person.sex === 'f',
+                        'has-text-link': person.sex === MALE_SEX,
+                        'has-text-danger': person.sex === FEMALE_SEX,
                       },
                     )}
                     onClick={(event) => handleSelect(event, person)}

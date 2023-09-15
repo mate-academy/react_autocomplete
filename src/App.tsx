@@ -20,7 +20,7 @@ export const App: React.FC = () => {
       <Dropdown
         people={peopleFromServer}
         onSelected={(person) => setSelectedPerson(person)}
-        delay={1000}
+        searchDelay={1000}
       />
     </main>
   );
