@@ -5,7 +5,7 @@ import { Person } from '../types/Person';
 
 type Props = {
   people: Person[],
-  delay: number,
+  searchDelay: number,
   onSelected: (person: Person) => void,
 };
 
@@ -22,7 +22,14 @@ function getFilteredPeople(people: Person[], query: string) {
   });
 }
 
-export const Dropdown: React.FC<Props> = ({ people, delay, onSelected }) => {
+const FEMALE = 'f';
+const MALE = 'm';
+
+export const Dropdown: React.FC<Props> = ({
+  people,
+  searchDelay,
+  onSelected,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -36,7 +43,7 @@ export const Dropdown: React.FC<Props> = ({ people, delay, onSelected }) => {
   };
 
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay),
+    debounce(setAppliedQuery, searchDelay),
     [],
   );
 
@@ -75,8 +82,8 @@ export const Dropdown: React.FC<Props> = ({ people, delay, onSelected }) => {
                     tabIndex={0}
                   >
                     <p className={classNames(
-                      { 'has-text-link': person.sex === 'm' },
-                      { 'has-text-danger': person.sex === 'f' },
+                      { 'has-text-link': person.sex === MALE },
+                      { 'has-text-danger': person.sex === FEMALE },
                     )}
                     >
                       {person.name}
