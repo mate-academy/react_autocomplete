@@ -33,8 +33,8 @@ export const Dropdown: React.FC<Props> = React.memo(({
   const onSelected = (person: Person) => {
     setCurrentPerson(person);
     setFocusedField(false);
-    setQuery('');
-    setApplyQuery('');
+    setQuery(person.name);
+    setApplyQuery(person.name);
   };
 
   return (
