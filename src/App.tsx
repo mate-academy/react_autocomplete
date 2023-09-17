@@ -13,25 +13,13 @@ export const App: React.FC = () => {
     <main className="section">
       <h1 className="title">
         {selectedPerson
-          ? (
-            <>
-              {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
-              <button
-                type="button"
-                className="delete is-medium"
-                onClick={() => setSelectedPerson(null)}
-              >
-                .
-              </button>
-            </>
-          )
+          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
           : 'No selected person'}
       </h1>
 
       <DropDown
         people={peopleFromServer}
         onSelect={setSelectedPerson}
-        selectedPerson={selectedPerson}
         delay={DELAY}
       />
     </main>

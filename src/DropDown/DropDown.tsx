@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import debounce from 'lodash.debounce';
 import cn from 'classnames';
 
@@ -6,22 +6,20 @@ import { Person } from '../types/Person';
 
 type Props = {
   people: Person[];
-  selectedPerson: Person | null;
-  onSelect?: (person: Person) => void;
+  onSelect?: (person: Person | null) => void;
   delay: number
 };
 
 export const DropDown: React.FC<Props> = React.memo(({
   people,
-  selectedPerson,
-  onSelect = () => {},
+  onSelect = () => { },
   delay,
 }) => {
   const [query, setQuery] = useState('');
   const [apliedQuery, setApliedQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
-  const applyQuery = useCallback(debounce(setApliedQuery, delay), []);
+  const applyQuery = debounce(setApliedQuery, delay);
 
   const visiblePeople = useMemo(() => (people.filter(person => {
     const normalizedQuery = apliedQuery.trim().toLowerCase();
@@ -31,9 +29,7 @@ export const DropDown: React.FC<Props> = React.memo(({
 
   const resultToShow = (visiblePeople.length > 0);
 
-  const isPeopleListShown = !selectedPerson
-  && resultToShow
-  && isFocused;
+  const isPeopleListShown = resultToShow && isFocused;
 
   const queryHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -47,22 +43,39 @@ export const DropDown: React.FC<Props> = React.memo(({
     event.preventDefault();
     onSelect(person);
     setIsFocused(false);
+    setQuery(person.name);
+  };
+
+  const resetHandler = () => {
+    onSelect(null);
     setQuery('');
   };
 
   return (
     <div className="dropdown is-active">
       <div className="dropdown-trigger">
-        <input
-          type="text"
-          placeholder="Enter a part of the name"
-          className="input"
-          value={query}
-          onChange={queryHandler}
-          onClick={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          disabled={selectedPerson !== null}
-        />
+        <div className="control has-icons-right">
+          <input
+            type="text"
+            placeholder="Enter a part of the name"
+            className="input"
+            value={query}
+            onChange={queryHandler}
+            onClick={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+          />
+
+          {query && (
+            <span className="icon is-right">
+              <button
+                type="button"
+                aria-label="close"
+                className="delete is-medium"
+                onClick={resetHandler}
+              />
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="dropdown-menu" role="menu">
