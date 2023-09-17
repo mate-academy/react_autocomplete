@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import { Person } from '../../types/Person';
+import { Person, PersonSexEnum } from '../../types/Person';
 
 type Props = {
   person: Person
@@ -25,8 +25,8 @@ const PersonItem: React.FC<Props> = ({ person, handleUserSelect }) => {
           'is-fullwidth',
           'mb-1',
           {
-            'has-text-link': sex === 'm',
-            'has-text-danger': sex === 'f',
+            'has-text-link': sex === PersonSexEnum.man,
+            'has-text-danger': sex === PersonSexEnum.female,
           },
         )
       }

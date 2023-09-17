@@ -1,11 +1,11 @@
 import React, {
-  useCallback, useMemo, useState,
+  useMemo, useState,
 } from 'react';
 import { Person } from '../../types/Person';
 import Search from '../Search/Search';
 import { debounce } from '../../helpers/helpers';
 import { peopleFromServer } from '../../data/people';
-import { DEFAULT_DELAY } from '../../constants/default.constants';
+import { SEARCH_DELAY } from '../../constants/default.constants';
 import PersonItem from '../PersonItem/PersonItem';
 
 const getUserByName = (
@@ -42,17 +42,16 @@ const PersonsDropDown: React.FC<Props> = ({
     return getUserByName(peopleFromServer, appliedSearchValue);
   }, [peopleFromServer, appliedSearchValue]);
 
-  const applySearchValue = useCallback(
-    debounce(setAppliedSearchValue, delay || DEFAULT_DELAY),
-    [],
+  const applySearchValue = debounce(
+    setAppliedSearchValue, delay || SEARCH_DELAY,
   );
 
-  const handleInputField = useCallback((
+  const handleInputField = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setSearchValue(event.target.value);
     applySearchValue(event.target.value);
-  }, []);
+  };
 
   const handleUserSelect = (selected: Person) => {
     const preparedPerson = preparedPersons
@@ -78,16 +77,15 @@ const PersonsDropDown: React.FC<Props> = ({
           role="menu"
         >
           <div className="dropdown-content">
-            {Boolean(preparedPersons.length)
-              && preparedPersons.map((person: Person) => (
-                <PersonItem
-                  key={person.slug}
-                  person={person}
-                  handleUserSelect={handleUserSelect}
-                />
-              ))}
-
-            {!preparedPersons.length && <p>No matching results</p>}
+            {preparedPersons.length ? preparedPersons.map((person) => (
+              <PersonItem
+                key={person.slug}
+                person={person}
+                handleUserSelect={handleUserSelect}
+              />
+            )) : (
+              <p className="p-2">No matching results</p>
+            )}
           </div>
         </div>
       )}
