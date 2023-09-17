@@ -4,7 +4,10 @@ import { DropdownItem } from './DropdownItem';
 
 type Props = {
   filteredPeople: Person[];
-  onSelect: (person :Person) => void;
+  onSelect: (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    person :Person
+  ) => void;
 };
 
 export const DropdownMenu: React.FC<Props> = ({

@@ -4,23 +4,23 @@ import { Person } from './types/Person';
 
 type Props = {
   person: Person
-  onSelect: (person: Person) => void;
+  onSelect: (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    person: Person
+  ) => void;
 };
 
 export const DropdownItem: React.FC<Props> = ({ person, onSelect }) => (
-  // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-  <div
-    className="dropdown-item"
-    style={{ cursor: 'pointer' }}
-    onClick={() => onSelect(person)}
-  >
-    <p
+  <div className="dropdown-item">
+    <a
+      href="/"
       className={cn('has-text-link', {
         'has-text-danger': person.sex === 'f',
         'has-text-link': person.sex === 'm',
       })}
+      onClick={(e) => onSelect(e, person)}
     >
       {person.name}
-    </p>
+    </a>
   </div>
 );
