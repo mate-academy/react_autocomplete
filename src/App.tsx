@@ -1,54 +1,30 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import './App.scss';
-import debounce from 'lodash.debounce';
-import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-import { ListPeople } from './components/ListPeople/ListPeople';
+import { Autocomplete } from './components/Autocomplete/Autocomplete';
+
+const DEBOUNCE_DELAY = 1000;
 
 export const App: React.FC = () => {
-  const [query, setQuery] = useState('');
-  const [appliedQuery, setAppliedQuery] = useState('');
-  const [selectedPeson, setSelectedPeson] = useState<Person | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const serverQuery = useCallback(
-    debounce(setAppliedQuery, 1000),
-    [],
-  );
+  function formatPerson(person: Person | null) {
+    if (person) {
+      return `${person.name} (${person.born} - ${person.died})`;
+    }
 
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    serverQuery(event.target.value);
-  };
-
-  const handleSelectedPerson = (person: Person) => {
-    setSelectedPeson(person);
-    setQuery(person.name);
-    serverQuery(person.name);
-  };
-
-  const filteredPeople = useMemo(() => {
-    return peopleFromServer
-      .filter(person => person.name.includes(appliedQuery));
-  }, [peopleFromServer, appliedQuery]);
+    return 'No selected person';
+  }
 
   return (
     <main className="section">
-      {selectedPeson ? (
-        <h1 className="title">
-          {`${selectedPeson.name} (${selectedPeson.born} = ${selectedPeson.died})`}
-        </h1>
-      )
-        : (
-          <h1 className="title">
-            No selected person
-          </h1>
-        )}
+      <h1 className="title">
+        {formatPerson(selectedPerson)}
+      </h1>
 
-      <ListPeople
-        people={filteredPeople}
-        query={query}
-        onQuery={handleQueryChange}
-        onSelected={handleSelectedPerson}
+      <Autocomplete
+        delay={DEBOUNCE_DELAY}
+        onSelected={setSelectedPerson}
       />
     </main>
   );
