@@ -1,12 +1,13 @@
 import React from 'react';
 import { Person } from '../../types/Person';
+import { DropDownContent } from '../DropDownContent/DropDownContent';
 
 type Props = {
   people: Person[];
   onSelect: (person: Person) => void;
 };
 
-export const DropDownMenu: React.FC<Props> = React.memo(
+export const DropDownMenu: React.FC<Props> = (
   ({ people, onSelect }) => {
     return (
       <div
@@ -17,13 +18,12 @@ export const DropDownMenu: React.FC<Props> = React.memo(
           {people?.length
             ? (
               people.map((person) => (
-                <div
-                  className="dropdown-item"
+                /* eslint-disable*/
+                <DropDownContent
                   key={person.slug}
-                  onClick={() => onSelect(person)}
-                >
-                  <p className="has-text-link">{person.name}</p>
-                </div>
+                  onSelect={onSelect}
+                  person={person}
+                 />
               ))
             )
             : (
