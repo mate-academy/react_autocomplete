@@ -7,3 +7,8 @@ export interface Person {
   motherName: string | null,
   slug: string,
 }
+
+export enum PersonSexEnum {
+  man = 'm',
+  female = 'f',
+}
