@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 
 import './App.scss';
@@ -6,7 +6,7 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { Autocomplete } from './components';
 
-const DELAY_PROP = 1000;
+const SEARCH_DELAY = 1000;
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -14,10 +14,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [listIsVisible, setListIsVisible] = useState(false);
 
-  const applyQuery = useCallback(
-    debounce(setAppliedQuery, DELAY_PROP),
-    [],
-  );
+  const applyQuery = debounce(setAppliedQuery, SEARCH_DELAY);
 
   const handlSelectedPerson = (person: Person) => {
     setSelectedPerson(person);

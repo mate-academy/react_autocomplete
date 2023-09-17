@@ -42,7 +42,7 @@ export const Autocomplete: React.FC<Props> = ({
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {preparedPeople.length === 0
+          {!preparedPeople.length
             ? (
               <div className="dropdown-item">
                 <p className="has-text-black">
