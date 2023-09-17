@@ -4,6 +4,9 @@ import { debounce } from 'lodash';
 import { Person } from '../../types/Person';
 import { peopleFromServer } from '../../data/people';
 
+const MALE = 'm';
+const FEMALE = 'f';
+
 type Props = {
   onUserSelection: (person: Person) => void,
   delay: number,
@@ -70,7 +73,6 @@ export const DropdownMenu: React.FC<Props> = ({
                 </div>
               ) : (
                 filteredPeople.map(person => (
-
                   <div
                     className="dropdown-item"
                     key={person.slug}
@@ -80,8 +82,8 @@ export const DropdownMenu: React.FC<Props> = ({
                   >
                     <p
                       className={classNames({
-                        'has-text-link': person.sex === 'm',
-                        'has-text-danger': person.sex === 'f',
+                        'has-text-link': person.sex === MALE,
+                        'has-text-danger': person.sex === FEMALE,
                       })}
                     >
                       {person.name}
