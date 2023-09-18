@@ -2,12 +2,13 @@ import React, {
   useCallback,
   useMemo,
   useState,
-  useRef,
-  useEffect,
 } from 'react';
 import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 import { Person } from '../types/Person';
+
+const MALE = 'm';
+const FEMALE = 'f';
 
 interface Props {
   people: Person[];
@@ -15,7 +16,7 @@ interface Props {
   onSelected?: (user: Person) => void,
 }
 
-export const Dropdown: React.FC<Props> = ({
+export const Autocomplete: React.FC<Props> = ({
   people,
   onSelected = () => {},
   delay,
@@ -32,15 +33,11 @@ export const Dropdown: React.FC<Props> = ({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value.trimStart());
     applyQuery(event.target.value);
-  };
-
-  const searchField = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (searchField.current) {
-      searchField.current.focus();
+    setHasFocus(true);
+    if (!event.target.value) {
+      setHasFocus(false);
     }
-  }, []);
+  };
 
   const filteredPeople = useMemo(() => {
     return people.filter(
@@ -69,7 +66,6 @@ export const Dropdown: React.FC<Props> = ({
           type="text"
           placeholder="Enter a part of the name"
           className="input"
-          ref={searchField}
           value={query}
           onChange={handleQueryChange}
           onFocus={() => setHasFocus(true)}
@@ -79,29 +75,30 @@ export const Dropdown: React.FC<Props> = ({
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content has-text-link">
-          {filteredPeople.map(person => (
-            <a
-              className="dropdown-item"
-              href="/"
-              key={person.slug}
-              onMouseDown={(event) => handleMouseDown(event, person)}
-            >
-              <p
-                className={classNames({
-                  'has-text-link': person.sex === 'm',
-                  'has-text-danger': person.sex === 'f',
-                })}
-              >
-                {person.name}
-              </p>
-            </a>
-          ))}
-
-          {(!filteredPeople.length) && (
-            <div className="p-2 notification is-warning has-text-danger-dark">
-              <p>No matching suggestions</p>
-            </div>
-          )}
+          {filteredPeople.length !== 0
+            ? (
+              filteredPeople.map(person => (
+                <a
+                  className="dropdown-item"
+                  href="/"
+                  key={person.slug}
+                  onMouseDown={(event) => handleMouseDown(event, person)}
+                >
+                  <p
+                    className={classNames({
+                      'has-text-link': person.sex === MALE,
+                      'has-text-danger': person.sex === FEMALE,
+                    })}
+                  >
+                    {person.name}
+                  </p>
+                </a>
+              )))
+            : (
+              <div className="p-2 notification is-warning has-text-danger-dark">
+                <p>No matching suggestions</p>
+              </div>
+            )}
         </div>
       </div>
     </div>

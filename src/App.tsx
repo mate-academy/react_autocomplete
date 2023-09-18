@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
-import { Dropdown } from './components/Dropdown';
+import { Autocomplete } from './components/Autocomplete';
 import { Person } from './types/Person';
 
-const DELAY = 1000;
+const DELAY = 500;
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -17,11 +17,12 @@ export const App: React.FC = () => {
           : 'No selected person'}
       </h1>
 
-      <Dropdown
+      <Autocomplete
         people={peopleFromServer}
         delay={DELAY}
         onSelected={setSelectedPerson}
       />
+
     </main>
   );
 };
