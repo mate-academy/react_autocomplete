@@ -45,7 +45,7 @@ export const App: React.FC = () => {
   };
 
   const selectedPersonInfo = useMemo(() => {
-    return `${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`;
+    return `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`;
   }, [selectedPerson]);
 
   return (
