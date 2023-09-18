@@ -30,6 +30,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ people, onSelected }) => {
   const handleSelectedUser = (person: Person) => {
     onSelected(person);
     setIsFocused(false);
+    setQuery(person.name);
   };
 
   return (
@@ -61,6 +62,15 @@ export const Dropdown: React.FC<DropdownProps> = ({ people, onSelected }) => {
                         'has-text-link': person.sex === 'm',
                         'has-text-danger': person.sex === 'f',
                       })}
+                      style={{
+                        background: 'none',
+                        color: 'inherit',
+                        border: 'none',
+                        padding: '0',
+                        font: 'inherit',
+                        cursor: 'pointer',
+                        outline: 'inherit',
+                      }}
                     >
                       {person.name}
                     </button>
