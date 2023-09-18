@@ -13,7 +13,7 @@ export const App: React.FC = () => {
           ? `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`
           : 'No selected person'}
       </h1>
-      <Autocomplete deley={1000} setSelectedPerson={setSelectedPerson} />
+      <Autocomplete delay={1000} setSelectedPerson={setSelectedPerson} />
     </div>
   );
 };

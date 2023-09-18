@@ -10,13 +10,16 @@ type Props = {
   ) => void;
 };
 
+const MALE = 'm';
+const FEMALE = 'f';
+
 export const DropdownItem: React.FC<Props> = ({ person, onSelect }) => (
   <div className="dropdown-item">
     <a
       href="/"
       className={cn('has-text-link', {
-        'has-text-danger': person.sex === 'f',
-        'has-text-link': person.sex === 'm',
+        'has-text-danger': person.sex === FEMALE,
+        'has-text-link': person.sex === MALE,
       })}
       onClick={(e) => onSelect(e, person)}
     >

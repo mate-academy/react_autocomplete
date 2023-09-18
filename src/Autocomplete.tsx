@@ -5,10 +5,10 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { DropdownMenu } from './DropdownMenu';
 import { DropdownInput } from './DropdownInput';
-import { Deley } from './types/Deley';
+import { Delay } from './types/Delay';
 
 type Props = {
-  deley: Deley;
+  delay: Delay;
   setSelectedPerson: (person: Person) => void;
 };
 
@@ -19,7 +19,7 @@ function filterPeopleByQuery(peopleToFilter: Person[], query: string) {
     .filter(({ name }) => name.toLocaleLowerCase().includes(transformedQuery));
 }
 
-export const Autocomplete: React.FC<Props> = ({ deley, setSelectedPerson }) => {
+export const Autocomplete: React.FC<Props> = ({ delay, setSelectedPerson }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [hasFocus, setHasFocus] = useState(false);
@@ -38,7 +38,7 @@ export const Autocomplete: React.FC<Props> = ({ deley, setSelectedPerson }) => {
     return filterPeopleByQuery(peopleFromServer, appliedQuery);
   }, [appliedQuery]);
 
-  const applyQuery = debounce(setAppliedQuery, deley);
+  const applyQuery = debounce(setAppliedQuery, delay);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
