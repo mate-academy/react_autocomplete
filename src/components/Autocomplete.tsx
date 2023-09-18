@@ -7,8 +7,10 @@ import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 import { Person } from '../types/Person';
 
-const MALE = 'm';
-const FEMALE = 'f';
+enum Gender {
+  Male = 'm',
+  Female = 'f',
+}
 
 interface Props {
   people: Person[];
@@ -31,19 +33,23 @@ export const Autocomplete: React.FC<Props> = ({
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value.trimStart());
-    applyQuery(event.target.value);
+    const inputValue = event.target.value;
+
+    setQuery(inputValue.trimStart());
+    applyQuery(inputValue);
     setHasFocus(true);
-    if (!event.target.value) {
+    if (!inputValue) {
       setHasFocus(false);
     }
   };
 
   const filteredPeople = useMemo(() => {
-    return people.filter(
-      // eslint-disable-next-line max-len
-      person => person.name.toLowerCase().includes(appliedQuery.trim().toLowerCase()),
-    );
+    return people.filter(({ name }) => {
+      const preparedName = name.toLowerCase();
+      const preparedQuery = appliedQuery.trim().toLowerCase();
+
+      return preparedName.includes(preparedQuery);
+    });
   }, [people, appliedQuery]);
 
   const handleMouseDown = (
@@ -75,7 +81,7 @@ export const Autocomplete: React.FC<Props> = ({
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content has-text-link">
-          {filteredPeople.length !== 0
+          {filteredPeople.length
             ? (
               filteredPeople.map(person => (
                 <a
@@ -86,8 +92,8 @@ export const Autocomplete: React.FC<Props> = ({
                 >
                   <p
                     className={classNames({
-                      'has-text-link': person.sex === MALE,
-                      'has-text-danger': person.sex === FEMALE,
+                      'has-text-link': person.sex === Gender.Male,
+                      'has-text-danger': person.sex === Gender.Female,
                     })}
                   >
                     {person.name}

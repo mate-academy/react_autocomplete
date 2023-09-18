@@ -4,7 +4,7 @@ import { peopleFromServer } from './data/people';
 import { Autocomplete } from './components/Autocomplete';
 import { Person } from './types/Person';
 
-const DELAY = 500;
+const SEARCH_DELAY = 500;
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -19,7 +19,7 @@ export const App: React.FC = () => {
 
       <Autocomplete
         people={peopleFromServer}
-        delay={DELAY}
+        delay={SEARCH_DELAY}
         onSelected={setSelectedPerson}
       />
 
