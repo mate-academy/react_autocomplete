@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
-import { debounce } from 'lodash';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
 import { DropdownItem } from './components/DropdownItem';
 import { Person } from './types/Person';
