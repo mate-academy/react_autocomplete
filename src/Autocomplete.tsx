@@ -31,7 +31,7 @@ export const Autocomplete: React.FC<Props> = ({ deley, setSelectedPerson }) => {
   const handleBlur = () => {
     setTimeout(() => {
       setHasFocus(false);
-    }, 0);
+    }, 100);
   };
 
   const filteredPeople: Person[] = useMemo(() => {
