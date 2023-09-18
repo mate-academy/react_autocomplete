@@ -49,6 +49,7 @@ export const DropDown: React.FC<Props> = React.memo(({
   const resetHandler = () => {
     onSelect(null);
     setQuery('');
+    setApliedQuery('');
   };
 
   return (
