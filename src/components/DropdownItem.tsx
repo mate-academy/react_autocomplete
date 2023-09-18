@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { Person } from '../types/Person';
+import { Person, PersonSex } from '../types/Person';
 
 type Props = {
   person: Person
@@ -10,18 +10,18 @@ export const DropdownItem: React.FC<Props> = ({ person, onSelect }) => {
   const { slug, sex, name } = person;
 
   return (
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-    <div
-      className="dropdown-item"
+    <button
+      type="button"
+      className="button is-fullwidth is-justify-content-flex-start"
       onClick={() => onSelect(slug)}
     >
       <p className={classnames({
-        'has-text-link': sex === 'm',
-        'has-text-danger': sex === 'f',
+        'has-text-link': sex === PersonSex.Male,
+        'has-text-danger': sex === PersonSex.Female,
       })}
       >
         {name}
       </p>
-    </div>
+    </button>
   );
 };

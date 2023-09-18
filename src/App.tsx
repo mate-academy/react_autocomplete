@@ -11,7 +11,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const [isHideList, setIsHideList] = useState(true);
+  const [isListHided, setIsListHided] = useState(true);
 
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
@@ -41,8 +41,12 @@ export const App: React.FC = () => {
     setSelectedPerson(currentSelectedPerson);
     setQuery(pervState => currentSelectedPerson?.name || pervState);
     setAppliedQuery(pervState => currentSelectedPerson?.name || pervState);
-    setIsHideList(true);
+    setIsListHided(true);
   };
+
+  const selectedPersonInfo = useMemo(() => {
+    return `${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`;
+  }, [selectedPerson]);
 
   return (
     <main className="section">
@@ -50,7 +54,7 @@ export const App: React.FC = () => {
         {!selectedPerson ? (
           'No selected person'
         ) : (
-          `${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`
+          selectedPersonInfo
         )}
       </h1>
 
@@ -62,7 +66,7 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={handleQueryChange}
-            onFocus={() => setIsHideList(false)}
+            onFocus={() => setIsListHided(false)}
           />
 
         </div>
@@ -70,12 +74,12 @@ export const App: React.FC = () => {
         <button
           type="button"
           className="button"
-          onClick={() => setIsHideList(prevState => !prevState)}
+          onClick={() => setIsListHided(prevState => !prevState)}
         >
-          {isHideList ? '🔽' : '🔼'}
+          {isListHided ? '🔽' : '🔼'}
         </button>
 
-        {!isHideList && (
+        {!isListHided && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {!filteredPeople.length ? (
