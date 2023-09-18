@@ -17,7 +17,7 @@ export const App: React.FC = () => {
     <main className="section">
       <h1 className="title">
         {selectedPerson ? (
-          `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+          `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
         ) : (
           'No selected person'
         )}

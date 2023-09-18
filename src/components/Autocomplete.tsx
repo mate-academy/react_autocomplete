@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useCallback, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import debounce from 'lodash.debounce';
 
 import { Person } from '../types/Person';
@@ -28,13 +28,20 @@ export const Autocomplete: React.FC<Props> = ({
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
-  const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay), [],
-  );
+  const applyQuery = debounce(setAppliedQuery, delay);
+  const handlePersonSelect = (
+    event: React.MouseEvent,
+    person: Person,
+  ) => {
+    event.preventDefault();
+    onPersonSelected(person);
+    setQuery(person.name);
+    setIsDropdownVisible(false);
+  };
 
   const filteredPeople = useMemo(
     () => getFilteredfilteredPeople(people, appliedQuery),
-    [appliedQuery, query, people],
+    [appliedQuery, people],
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +58,9 @@ export const Autocomplete: React.FC<Props> = ({
           className="input"
           value={query}
           onFocus={() => setIsDropdownVisible(true)}
-          onBlur={() => setIsDropdownVisible(false)}
+          onBlur={() => {
+            setTimeout(() => setIsDropdownVisible(false), 1);
+          }}
           onChange={(e) => handleQueryChange(e)}
         />
       </div>
@@ -65,12 +74,7 @@ export const Autocomplete: React.FC<Props> = ({
                   href={`#${person.slug}`}
                   className="dropdown-item"
                   key={person.slug}
-                  style={{ cursor: 'pointer' }}
-                  onMouseDown={() => {
-                    onPersonSelected(person);
-                    setQuery(person.name);
-                    setIsDropdownVisible(false);
-                  }}
+                  onClick={(event) => handlePersonSelect(event, person)}
                 >
                   <p className={classNames({
                     'has-text-link': person.sex === 'm',
