@@ -33,7 +33,7 @@ export const Autocomplete: React.FC<Props> = ({
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = event.target.value;
+    const query = event.target.value;
 
     setQuery(inputValue.trimStart());
     applyQuery(inputValue);
