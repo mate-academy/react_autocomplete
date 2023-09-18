@@ -21,11 +21,14 @@ export const DropDown: React.FC<Props> = React.memo(({
 
   const applyQuery = debounce(setApliedQuery, delay);
 
-  const visiblePeople = useMemo(() => (people.filter(person => {
-    const normalizedQuery = apliedQuery.trim().toLowerCase();
+  const visiblePeople = useMemo(
+    () => (people.filter(person => {
+      const normalizedQuery = apliedQuery.trim().toLowerCase();
 
-    return person.name.trim().toLowerCase().includes(normalizedQuery);
-  })), [apliedQuery, people]);
+      return person.name.trim().toLowerCase().includes(normalizedQuery);
+    })),
+    [apliedQuery, people],
+  );
 
   const resultToShow = (visiblePeople.length > 0);
 
