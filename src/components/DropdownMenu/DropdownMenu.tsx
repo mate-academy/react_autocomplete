@@ -34,12 +34,10 @@ export const DropdownMenu: React.FC<Props> = ({
     setIsListVisible(false);
   }, []);
 
-  const handleInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(event.target.value);
-      applyQuery(event.target.value);
-    }, [],
-  );
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
 
   return (
 
