@@ -5,9 +5,11 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { DropdownMenu } from './DropdownMenu';
 import { DropdownInput } from './DropdownInput';
+import { Deley } from './types/Deley';
 
 type Props = {
-  deley: number;
+  deley: Deley;
+  setSelectedPerson: (person: Person) => void;
 };
 
 function filterPeopleByQuery(peopleToFilter: Person[], query: string) {
@@ -17,14 +19,19 @@ function filterPeopleByQuery(peopleToFilter: Person[], query: string) {
     .filter(({ name }) => name.toLocaleLowerCase().includes(transformedQuery));
 }
 
-export const Autocomplete: React.FC<Props> = ({ deley }) => {
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+export const Autocomplete: React.FC<Props> = ({ deley, setSelectedPerson }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [hasFocus, setHasFocus] = useState(false);
 
   const handleFocus = () => {
     setHasFocus(true);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      setHasFocus(false);
+    }, 0);
   };
 
   const filteredPeople: Person[] = useMemo(() => {
@@ -40,34 +47,25 @@ export const Autocomplete: React.FC<Props> = ({ deley }) => {
 
   const handlePersonSelect = (
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-    person :Person,
+    person: Person,
   ) => {
     e.preventDefault();
     setSelectedPerson(person);
     setQuery(pervQuery => person.name || pervQuery);
-    setHasFocus(false);
   };
 
   return (
-    <main className="section">
-      <h1 className="title">
-        {selectedPerson
-          ? `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`
-          : 'No selected person'}
-      </h1>
-
-      <div className={cn('dropdown', { 'is-active': hasFocus })}>
-
-        <DropdownInput
-          query={query}
-          handleQueryChange={handleQueryChange}
-          handleFocus={handleFocus}
-        />
-        <DropdownMenu
-          filteredPeople={filteredPeople}
-          onSelect={handlePersonSelect}
-        />
-      </div>
-    </main>
+    <div className={cn('dropdown', { 'is-active': hasFocus })}>
+      <DropdownInput
+        query={query}
+        handleQueryChange={handleQueryChange}
+        handleFocus={handleFocus}
+        handleBlur={handleBlur}
+      />
+      <DropdownMenu
+        filteredPeople={filteredPeople}
+        onSelect={handlePersonSelect}
+      />
+    </div>
   );
 };
