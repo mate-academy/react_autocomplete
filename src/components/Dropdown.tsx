@@ -1,0 +1,74 @@
+import { useState } from 'react';
+import classNames from 'classnames';
+import { useDebounce } from 'use-debounce';
+import { Person } from '../types/Person';
+
+type DropdownProps = {
+  people: Person[],
+  onSelected: (person: Person) => void,
+};
+
+export const Dropdown: React.FC<DropdownProps> = ({ people, onSelected }) => {
+  const [query, setQuery] = useState<string>('');
+  const [debouncedQuery] = useDebounce(query, 300);
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+
+  const handleInputChange: React.ChangeEventHandler<HTMLInputElement>
+    = (event) => {
+      setQuery(event.target.value);
+    };
+
+  let filteredPeople = people;
+
+  if (query !== '') {
+    filteredPeople = people.filter(person => {
+      return person.name.toLowerCase()
+        .includes(debouncedQuery.toLowerCase().trim());
+    });
+  }
+
+  const handleSelectedUser = (person: Person) => {
+    onSelected(person);
+    setIsFocused(false);
+  };
+
+  return (
+    <div className="dropdown is-active">
+      <div className="dropdown-trigger">
+        <input
+          type="text"
+          value={query}
+          placeholder="Enter a part of the name"
+          className="input"
+          onChange={handleInputChange}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+        />
+      </div>
+      {isFocused
+      && (
+        <div className="dropdown-menu" role="menu">
+          <div className="dropdown-content">
+            {filteredPeople.length === 0
+              ? 'No matching suggestions'
+              : (
+                filteredPeople.map(person => (
+                  <div className="dropdown-item" key={person.slug}>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectedUser(person)}
+                      className={classNames({
+                        'has-text-link': person.sex === 'm',
+                        'has-text-danger': person.sex === 'f',
+                      })}
+                    >
+                      {person.name}
+                    </button>
+                  </div>
+                )))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
