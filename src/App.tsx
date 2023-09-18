@@ -25,23 +25,6 @@ export const App: React.FC = () => {
     applyQuery(event.target.value);
   };
 
-  // useEffect(() => {
-  //   if (prevAppliedQuery.current !== appliedQuery) {
-  //     setVisiblePeople(() => {
-  //       if (appliedQuery.length && !appliedQuery.trim()) {
-  //         return peopleFromServer;
-  //       }
-
-  //       prevAppliedQuery.current = appliedQuery;
-
-  //       return peopleFromServer
-  //         .filter(person => person.name.includes(appliedQuery));
-  //     });
-
-  //     setIsLoading(false);
-  //   }
-  // }, [query]);
-
   const filteredPeople = useMemo(() => {
     if (appliedQuery.length && !appliedQuery.trim()) {
       return visiblePeople;
