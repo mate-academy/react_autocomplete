@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { useDebounce } from './customHooks/useDebounce';
 
 type Props = {
   delay: number,
@@ -16,16 +17,26 @@ export const App: React.FC<Props> = ({ delay }) => {
   const [filteredPeople, setFilteredPeople]
   = useState<Person[] | []>(peopleFromServer);
 
-  useMemo(() => {
+  const inputField = useDebounce(textField, delay);
+
+  useEffect(() => {
+    let filterTimeout: NodeJS.Timeout | null;
+
     if (peopleFromServer.filter(person => person.name.toLowerCase()
       .includes(textField.toLowerCase())).length > 0) {
-      setTimeout(() => setFilteredPeople(peopleFromServer
+      filterTimeout = setTimeout(() => setFilteredPeople(peopleFromServer
         .filter(person => person
           .name.toLowerCase().includes(textField.toLowerCase()))), delay);
     } else {
       setFilteredPeople([]);
     }
-  }, [textField]);
+
+    return () => {
+      if (filterTimeout) {
+        clearTimeout(filterTimeout);
+      }
+    };
+  }, [inputField, peopleFromServer, delay]);
 
   return (
     <main className="section">
