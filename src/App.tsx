@@ -1,22 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
+import { debounce } from 'lodash';
 import { peopleFromServer } from './data/people';
 import { DropdownItem } from './components/DropdownItem';
 import { Person } from './types/Person';
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-function debounce(callback: Function, delay: number) {
-  let timerId = 0;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (...args: any) => {
-    window.clearTimeout(timerId);
-
-    timerId = window.setTimeout(() => {
-      callback(...args);
-    }, delay);
-  };
-}
 
 export const App: React.FC = () => {
   const [visiblePeople] = useState(peopleFromServer);
@@ -25,7 +12,6 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
 
   const [isHideList, setIsHideList] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
 
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
@@ -35,20 +21,34 @@ export const App: React.FC = () => {
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsLoading(true);
     setQuery(event.target.value);
     applyQuery(event.target.value);
   };
 
-  const filteredPeople = useMemo(() => {
-    setIsLoading(false);
+  // useEffect(() => {
+  //   if (prevAppliedQuery.current !== appliedQuery) {
+  //     setVisiblePeople(() => {
+  //       if (appliedQuery.length && !appliedQuery.trim()) {
+  //         return peopleFromServer;
+  //       }
 
+  //       prevAppliedQuery.current = appliedQuery;
+
+  //       return peopleFromServer
+  //         .filter(person => person.name.includes(appliedQuery));
+  //     });
+
+  //     setIsLoading(false);
+  //   }
+  // }, [query]);
+
+  const filteredPeople = useMemo(() => {
     if (appliedQuery.length && !appliedQuery.trim()) {
       return visiblePeople;
     }
 
     return visiblePeople.filter(person => person.name.includes(appliedQuery));
-  }, [appliedQuery, visiblePeople]);
+  }, [appliedQuery]);
 
   const handleSelect = (userSlug :string) => {
     const currentSelectedPerson = visiblePeople
@@ -94,27 +94,19 @@ export const App: React.FC = () => {
 
         {!isHideList && (
           <div className="dropdown-menu" role="menu">
-            {isLoading ? (
-              <div className="dropdown-content">
+            <div className="dropdown-content">
+              {!filteredPeople.length ? (
                 <div className="dropdown-item">
-                  <p>Loading...</p>
+                  <p>No matching suggestions</p>
                 </div>
-              </div>
-            ) : (
-              <div className="dropdown-content">
-                {!filteredPeople.length ? (
-                  <div className="dropdown-item">
-                    <p>No matching suggestions</p>
-                  </div>
-                ) : filteredPeople.map(person => (
-                  <DropdownItem
-                    person={person}
-                    onSelect={handleSelect}
-                    key={person.slug}
-                  />
-                ))}
-              </div>
-            )}
+              ) : filteredPeople.map(person => (
+                <DropdownItem
+                  person={person}
+                  onSelect={handleSelect}
+                  key={person.slug}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>
