@@ -5,6 +5,9 @@ import cn from 'classnames';
 import { Person } from '../../types/Person';
 import { peopleFromServer } from '../../data/people';
 
+const MALE_SEX = 'm';
+const FEMALE_SEX = 'f';
+
 interface Props {
   onSelected?: (person: Person) => void,
   delay: number
@@ -12,7 +15,7 @@ interface Props {
 
 export const Autocomplete: React.FC<Props> = React.memo(
   ({
-    onSelected = () => { },
+    onSelected,
     delay,
   }) => {
     const [showPeople, setShowPeople] = useState(false);
@@ -27,7 +30,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
     };
 
     const handleSelectedPerson = (person: Person) => {
-      onSelected(person);
+      onSelected?.(person);
       setQuery(person.name);
       applyQuery(person.name);
     };
@@ -62,8 +65,8 @@ export const Autocomplete: React.FC<Props> = React.memo(
                     <a
                       key={person.slug}
                       className={cn('dropdown-item', {
-                        'has-text-link': person.sex === 'm',
-                        'has-text-danger': person.sex === 'f',
+                        'has-text-link': person.sex === MALE_SEX,
+                        'has-text-danger': person.sex === FEMALE_SEX,
                       })}
                       href={`/${person.slug}`}
                       onMouseDown={() => handleSelectedPerson(person)}
