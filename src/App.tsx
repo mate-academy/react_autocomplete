@@ -13,10 +13,10 @@ import { PeopleList } from './components/PeopleList/PeopleList';
 const DELAY = 1000;
 
 export const App: React.FC = () => {
-  const [inputText, setInputText] = useState<string>('');
+  const [inputText, setInputText] = useState('');
   const [applyedQuery, setApplyedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const applyQuery = useCallback(debounce(setApplyedQuery, DELAY), []);
 
