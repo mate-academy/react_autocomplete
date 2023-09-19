@@ -15,8 +15,8 @@ interface Props {
 
 export const Autocomplete: React.FC<Props> = React.memo(
   ({
-    onSelected,
     delay,
+    onSelected,
   }) => {
     const [showPeople, setShowPeople] = useState(false);
     const [query, setQuery] = useState('');
