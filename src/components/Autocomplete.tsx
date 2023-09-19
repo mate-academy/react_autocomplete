@@ -2,6 +2,7 @@ import React, {
   useState,
   useCallback,
   useMemo,
+  memo,
 } from 'react';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
@@ -13,7 +14,7 @@ interface Props {
   delay: number;
 }
 
-export const Autocomplete: React.FC<Props> = ({
+export const Autocomplete: React.FC<Props> = memo(({
   people,
   delay,
   onSelected = () => {},
@@ -80,18 +81,22 @@ export const Autocomplete: React.FC<Props> = ({
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
           {
-            sortedListOfPeople.length > 0
+            sortedListOfPeople.length
               ? (
-                sortedListOfPeople.map((person) => (
-                  <a
-                    key={person.slug}
-                    href="###"
-                    onClick={(event) => handleClick(event, person)}
-                    className="dropdown-item"
-                  >
-                    <p className="has-text-link">{person.name}</p>
-                  </a>
-                )))
+                sortedListOfPeople.map((person) => {
+                  const { slug, name } = person;
+
+                  return (
+                    <a
+                      key={slug}
+                      href="###"
+                      onClick={(event) => handleClick(event, person)}
+                      className="dropdown-item"
+                    >
+                      <p className="has-text-link">{name}</p>
+                    </a>
+                  );
+                }))
               : (
                 <div className="dropdown-item">
                   <p>No matching suggestions</p>
@@ -102,4 +107,4 @@ export const Autocomplete: React.FC<Props> = ({
       </div>
     </div>
   );
-};
+});

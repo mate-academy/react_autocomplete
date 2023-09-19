@@ -13,7 +13,7 @@ export const App: React.FC = () => {
     return `${name} (${born} - ${died})`;
   }, [selectedPerson]);
 
-  const title = selectedPerson !== null
+  const title = selectedPerson
     ? getYear(selectedPerson)
     : 'No selected person';
 
