@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import classNames from 'classnames';
-import { useDebounce } from 'use-debounce';
 import { Person } from '../types/Person';
+import { useDebounce } from '../customHooks/useDebounce';
 
 type DropdownProps = {
   people: Person[],
@@ -10,8 +10,9 @@ type DropdownProps = {
 
 export const Dropdown: React.FC<DropdownProps> = ({ people, onSelected }) => {
   const [query, setQuery] = useState<string>('');
-  const [debouncedQuery] = useDebounce(query, 300);
   const [isFocused, setIsFocused] = useState<boolean>(false);
+
+  const debouncedQuery = useDebounce(query, 300);
 
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement>
     = (event) => {
