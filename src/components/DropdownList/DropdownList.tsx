@@ -5,9 +5,12 @@ import { Person } from '../../types/Person';
 type Props = {
   visiblePeople: Person[] | [],
   setSelectPerson: (man: Person | null) => void,
-  setVisiblePeople: (people:Person[] | []) => void,
+  setVisiblePeople: (people:Person[] | Person | [] | null) => void,
   setInputValue: (value: string) => void,
 };
+
+const WOMEN = 'f';
+
 export const DropdownList: React.FC<Props> = (
   {
     visiblePeople,
@@ -17,41 +20,46 @@ export const DropdownList: React.FC<Props> = (
   },
 ) => {
   const isDataAvailable = visiblePeople !== null;
+  const visiblePeopleCount = !!visiblePeople?.length;
+
+  const handlePersonSelection = (person: Person) => {
+    return () => {
+      if (visiblePeople && person) {
+        const selectedPerson = visiblePeople
+          ?.find(user => user.slug === person.slug);
+
+        setSelectPerson(selectedPerson || null);
+        setVisiblePeople(selectedPerson || []);
+        setInputValue(selectedPerson?.name || '');
+      }
+    };
+  };
 
   return (
     <div className="dropdown-menu" role="menu">
-      {isDataAvailable && (
-        visiblePeople?.length > 0 ? (
-          <div className="dropdown-content">
-            {visiblePeople.map(person => (
-              <a
-                href={`#${person.slug}`}
-                onMouseDown={() => {
-                  if (visiblePeople && person) {
-                    const selectedPerson = visiblePeople
-                      ?.find(user => user.slug === person.slug);
-
-                    setSelectPerson(selectedPerson || null);
-                    setVisiblePeople([]);
-                    setInputValue(selectedPerson?.name || '');
-                  }
-                }}
-                className="dropdown-item"
-                key={person.slug}
-                type="button"
+      {isDataAvailable && visiblePeopleCount && (
+        <div className="dropdown-content">
+          {visiblePeople.map(person => (
+            <a
+              href={`#${person.slug}`}
+              onMouseDown={handlePersonSelection(person)}
+              className="dropdown-item"
+              key={person.slug}
+              type="button"
+            >
+              <p
+                className={cn('has-text-link',
+                  { 'is-woman': person.sex === WOMEN })}
               >
-                <p
-                  className={cn('has-text-link',
-                    { 'is-woman': person.sex === 'f' })}
-                >
-                  {person.name}
-                </p>
-              </a>
-            ))}
-          </div>
-        ) : (
-          <p>Can not find name</p>
-        )
+                {person.name}
+              </p>
+            </a>
+          ))}
+        </div>
+      )}
+
+      {!visiblePeopleCount && (
+        <p>Can not find name</p>
       )}
     </div>
   );

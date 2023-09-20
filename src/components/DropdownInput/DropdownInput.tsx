@@ -1,6 +1,7 @@
 import React from 'react';
 import { peopleFromServer } from '../../data/people';
 import { Person } from '../../types/Person';
+import { findName } from '../../utils/findName';
 
 type Props = {
   inputValue: string,
@@ -14,15 +15,10 @@ export const DropdownInput: React.FC<Props> = (
     setInputValue,
   },
 ) => {
-  function findName(event: string) {
-    const filteredPeople = peopleFromServer
-      .filter(person => person.name
-        .toLowerCase().includes(event.toLowerCase()));
-
-    setTimeout(() => {
-      setVisiblePeople(filteredPeople);
-    }, 1000);
-  }
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    findName(event.target.value.trim(), peopleFromServer, setVisiblePeople);
+    setInputValue(event.target.value);
+  };
 
   return (
     <div className="dropdown-trigger">
@@ -31,11 +27,8 @@ export const DropdownInput: React.FC<Props> = (
         type="text"
         placeholder="Enter a part of the name"
         className="input"
-        onClick={() => setVisiblePeople([...peopleFromServer])}
-        onChange={(event) => {
-          findName(event.target.value.trim());
-          setInputValue(event.target.value);
-        }}
+        onClick={() => setVisiblePeople(peopleFromServer)}
+        onChange={handleInputChange}
       />
     </div>
   );
