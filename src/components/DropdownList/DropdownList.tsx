@@ -20,7 +20,7 @@ export const DropdownList: React.FC<Props> = (
   },
 ) => {
   const isDataAvailable = visiblePeople !== null;
-  const visiblePeopleCount = !!visiblePeople?.length;
+  const isVisiblePeopleCount = !!visiblePeople?.length;
 
   const handlePersonSelection = (person: Person) => {
     return () => {
@@ -37,7 +37,7 @@ export const DropdownList: React.FC<Props> = (
 
   return (
     <div className="dropdown-menu" role="menu">
-      {isDataAvailable && visiblePeopleCount && (
+      {isDataAvailable && isVisiblePeopleCount && (
         <div className="dropdown-content">
           {visiblePeople.map(person => (
             <a
@@ -58,7 +58,7 @@ export const DropdownList: React.FC<Props> = (
         </div>
       )}
 
-      {!visiblePeopleCount && (
+      {!isVisiblePeopleCount && (
         <p>Can not find name</p>
       )}
     </div>

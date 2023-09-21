@@ -8,17 +8,12 @@ import { DropdownTitle } from './components/DropdownTitle';
 export const App: React.FC = () => {
   const [visiblePeople, setVisiblePeople]
     = useState<Person[] | null | [] | Person>(null);
-  const [selectPerson, setSelectPerson] = useState<Person | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [inputValue, setInputValue] = useState('');
-
-  // eslint-disable-next-line no-console
-  console.log(visiblePeople);
 
   return (
     <main className="section">
-      <DropdownTitle
-        selectPerson={selectPerson}
-      />
+      <DropdownTitle selectPerson={selectedPerson} />
 
       <div className="dropdown is-active">
         <DropdownInput
@@ -30,7 +25,7 @@ export const App: React.FC = () => {
         <DropdownList
           visiblePeople={visiblePeople as Person[]}
           setVisiblePeople={setVisiblePeople}
-          setSelectPerson={setSelectPerson}
+          setSelectPerson={setSelectedPerson}
           setInputValue={setInputValue}
         />
       </div>
