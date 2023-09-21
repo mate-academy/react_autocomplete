@@ -22,23 +22,28 @@ export const App: React.FC<AppProps> = ({ delay }) => {
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay), [delay],
   );
+  const [isVisible, setIsVisible] = useState(true);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+
+    if (event.target.value === '') {
+      setIsVisible(true);
+    }
   };
 
   const handleSuggestionSelect = (person: Person) => {
     setSelectedPerson(person);
     setQuery(person.name);
+    setIsVisible(false);
   };
 
-  const filteredPeople
-    = useMemo(() => {
-      return peopleFromServer.filter(
-        person => person.name.includes(appliedQuery),
-      );
-    }, [appliedQuery]);
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter(person => person.name.toLowerCase().includes(
+      appliedQuery.toLowerCase(),
+    ));
+  }, [appliedQuery]);
 
   const personField = useRef<HTMLInputElement>(null);
 
@@ -70,6 +75,7 @@ export const App: React.FC<AppProps> = ({ delay }) => {
           people={filteredPeople}
           selectedPersonId={selectedPerson?.name}
           onSelect={handleSuggestionSelect}
+          isVisible={isVisible}
         />
       </div>
     </main>
