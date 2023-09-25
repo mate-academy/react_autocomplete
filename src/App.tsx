@@ -16,7 +16,7 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
@@ -65,6 +65,8 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
             className="input"
             value={query}
             onChange={handleQueryChange}
+            onBlur={() => setIsVisible(false)}
+            onFocus={() => setIsVisible(true)}
           />
         </div>
 
