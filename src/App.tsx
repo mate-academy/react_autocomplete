@@ -18,7 +18,7 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), [delay]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -45,7 +45,9 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
 
   useEffect(() => {
     if (personField.current) {
-      personField.current.focus();
+      if (!selectedPerson) {
+        personField.current.focus();
+      }
     }
   }, [selectedPerson]);
 
@@ -59,7 +61,6 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
           <input
-            ref={personField}
             type="text"
             placeholder="Enter a part of the name"
             className="input"

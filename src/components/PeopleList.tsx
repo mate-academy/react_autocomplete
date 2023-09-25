@@ -13,6 +13,13 @@ export const PeopleList: React.FC<Props> = React.memo(({
   isVisible,
   onSelect = () => { },
 }) => {
+  const handlePersonKeyDown = (event: React.KeyboardEvent, person: Person) => {
+    if (event.key === 'Enter' || event.key === 'Space') {
+      event.preventDefault();
+      onSelect(person);
+    }
+  };
+
   return (
     <div
       className={`dropdown-menu ${isVisible ? 'is-active' : 'is-hidden'}`}
@@ -30,12 +37,8 @@ export const PeopleList: React.FC<Props> = React.memo(({
               tabIndex={0}
               key={person.name}
               className="dropdown-item"
-              onClick={() => onSelect(person)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === 'Space') {
-                  onSelect(person);
-                }
-              }}
+              onMouseDown={() => onSelect(person)}
+              onKeyDown={(event) => handlePersonKeyDown(event, person)}
             >
               <p
                 className={classNames(
