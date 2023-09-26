@@ -16,11 +16,14 @@ function debounce(callback: (...args: string[]) => void, delay: number) {
   };
 }
 
+function filterPeople(people: Person[], appliedQuery: string) {
+  return people.filter((person) => person.name
+    .toLowerCase()
+    .includes(appliedQuery.toLowerCase()));
+}
+
 export const App: React.FC = () => {
-  const [
-    selectedPerson,
-    setSelectedPerson,
-  ] = useState<Person | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
@@ -32,9 +35,7 @@ export const App: React.FC = () => {
   };
 
   const filteredPeople = useMemo(() => {
-    return peopleFromServer
-      .filter(person => person.name.toLowerCase()
-        .includes(appliedQuery.toLowerCase()));
+    return filterPeople(peopleFromServer, appliedQuery);
   }, [appliedQuery]);
 
   const onSelected = useCallback((newSelectPerson: Person) => {
@@ -63,15 +64,12 @@ export const App: React.FC = () => {
           />
         </div>
 
-        <div
-          className="dropdown-menu"
-          role="menu"
-        >
-          {(filteredPeople.length === 0) && (
+        <div className="dropdown-menu" role="menu">
+          {filteredPeople.length === 0 && (
             <p className="has-text-danger">No matching suggestions</p>
           )}
 
-          {(appliedQuery !== '' && query !== selectedPerson?.name) && (
+          {appliedQuery !== '' && query !== selectedPerson?.name && (
             <PeopleList people={filteredPeople} onSelected={onSelected} />
           )}
         </div>
