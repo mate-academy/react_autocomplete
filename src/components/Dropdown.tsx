@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import debounce from 'lodash.debounce';
+// import debounce from 'lodash.debounce';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Person } from '../types/Person';
 
@@ -7,6 +7,18 @@ interface Props {
   people: Person[]
   delay: number,
   onSelect?: (person: Person) => void,
+}
+
+function debounce(callback: Function, delay: number) {
+  let timerId = 0;
+
+  return (...args: any) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
 }
 
 export const Dropdown: React.FC<Props> = ({
@@ -25,11 +37,19 @@ export const Dropdown: React.FC<Props> = ({
     applyQuery(event.target.value);
   };
 
-  const filteredPeople = useMemo(() => {
-    return people.filter(person => (
-      person.name.toLowerCase().trim().includes(appliedQuery.toLowerCase())
-    ));
-  }, [appliedQuery]);
+  const handleMouseChange = (person: Person) => {
+    onSelect(person);
+    setQuery(person.name);
+    setAppliedQuery(person.name);
+  };
+
+  const filteredPeople = useMemo(() => (
+    appliedQuery
+      ? people.filter(person => (
+        person.name.toLowerCase().trim().includes(appliedQuery.toLowerCase())
+      ))
+      : people
+  ), [appliedQuery]);
 
   return (
     <div className="dropdown is-active">
@@ -55,10 +75,7 @@ export const Dropdown: React.FC<Props> = ({
                   key={person.slug}
                   href="/"
                   className="dropdown-item"
-                  onMouseDown={() => {
-                    onSelect(person);
-                    setQuery(person.name);
-                  }}
+                  onMouseDown={() => handleMouseChange(person)}
                 >
                   <p
                     className={cn({
