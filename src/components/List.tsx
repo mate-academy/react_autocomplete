@@ -20,8 +20,9 @@ export const List: React.FC<Props> = ({ people, delay, onSelect }) => {
   );
 
   const filteredPeople = React.useMemo(() => {
-    return people.filter(el => el.name.toLowerCase()
-      .includes(appliedQuery.toLowerCase()));
+    return people.filter(person => (
+      person.name.toLowerCase().includes(appliedQuery.toLowerCase())
+    ));
   }, [people, appliedQuery]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,17 +51,17 @@ export const List: React.FC<Props> = ({ people, delay, onSelect }) => {
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
           {filteredPeople.length ? (
-            filteredPeople.map(el => (
-              <div className="dropdown-item" key={el.slug}>
+            filteredPeople.map(person => (
+              <div className="dropdown-item" key={person.slug}>
                 <a
                   href="/"
-                  onMouseDown={() => onSelect(el)}
+                  onMouseDown={() => onSelect(person)}
                   className={cn('dropdown-item', {
-                    'has-text-link': el.sex === 'm',
-                    'has-text-danger': el.sex === 'f',
+                    'has-text-link': person.sex === 'm',
+                    'has-text-danger': person.sex === 'f',
                   })}
                 >
-                  {el.name}
+                  {person.name}
                 </a>
               </div>
             ))
