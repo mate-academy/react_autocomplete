@@ -55,7 +55,10 @@ export const List: React.FC<Props> = ({ people, delay, onSelect }) => {
               <div className="dropdown-item" key={person.slug}>
                 <a
                   href="/"
-                  onMouseDown={() => onSelect(person)}
+                  onMouseDown={() => {
+                    onSelect(person);
+                    setQuery(person.name);
+                  }}
                   className={cn('dropdown-item', {
                     'has-text-link': person.sex === 'm',
                     'has-text-danger': person.sex === 'f',
