@@ -1,3 +1,11 @@
 iframe {
   display: none;
 }
+
+.dropdown-item {
+  cursor: pointer;
+
+  &__active {
+    background-color: #eee;
+  }
+}

@@ -1,6 +1,6 @@
-import { Person } from '../types/Person';
+import { PersonType } from '../types/PersonType';
 
-export const peopleFromServer: Person[] = [
+export const peopleFromServer: PersonType[] = [
   {
     name: 'Carolus Haverbeke',
     sex: 'm',
