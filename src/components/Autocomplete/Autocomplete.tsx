@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import debounce from 'lodash.debounce';
+import classNames from 'classnames';
 
+import './Autocomplete.scss';
 import { Person } from '../../types/Person';
 import { peopleFromServer } from '../../data/people';
 
@@ -14,6 +16,7 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [elementsVisible, setElementsVisible] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [isAutocompleted, setIsAutocompleted] = useState(false);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay),
@@ -36,12 +39,14 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
     setElementsVisible(false);
+    setIsAutocompleted(false);
   };
 
   const handleClick = (person: Person) => {
     onSelected(person);
     setQuery(person.name);
     setElementsVisible(false);
+    setIsAutocompleted(true);
   };
 
   return (
@@ -50,7 +55,9 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
         <input
           type="text"
           placeholder="Enter a part of the name"
-          className="input"
+          className={classNames('input', {
+            autocomplete: isAutocompleted,
+          })}
           value={query}
           onChange={handleQueryChange}
           onFocus={() => setFocused(true)}
@@ -60,7 +67,7 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
       <div className="dropdown-menu" role="menu">
         {(elementsVisible && focused) && (
           <div className="dropdown-content">
-            {(peopleFilteredByName.length === 0) ? (
+            {!peopleFilteredByName.length ? (
               <button type="button" className="dropdown-item">
                 No matching suggestions
               </button>
