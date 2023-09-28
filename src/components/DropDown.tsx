@@ -24,32 +24,37 @@ export const DropDown: React.FC<Props> = React.memo(({
 
   return (
     <div
-      className={`dropdown-menu ${isVisible
-        ? 'is-active'
-        : 'is-hidden'
-      }`}
+      className={classNames(
+        'dropdown-menu',
+        { 'is-active': isVisible },
+        { 'is-hidden': !isVisible },
+      )}
       role="menu"
     >
       <div className="dropdown-content">
         {people.length > 0 ? (
-          people.map((person) => (
-            <div
-              className="dropdown-item"
-              role="button"
-              key={person.name}
-              tabIndex={0}
-              onKeyDown={(evt) => handlePersonKeyDown(evt, person)}
-              onMouseDown={() => onSelect(person)}
-            >
-              <p
-                className={classNames(
-                  person.sex === 'm' ? 'has-text-link' : 'has-text-danger',
-                )}
+          people.map((person) => {
+            const { name, sex } = person;
+
+            return (
+              <div
+                className="dropdown-item"
+                role="button"
+                key={name}
+                tabIndex={0}
+                onKeyDown={(evt) => handlePersonKeyDown(evt, person)}
+                onMouseDown={() => onSelect(person)}
               >
-                {person.name}
-              </p>
-            </div>
-          ))
+                <p
+                  className={classNames(
+                    sex === 'm' ? 'has-text-link' : 'has-text-danger',
+                  )}
+                >
+                  {name}
+                </p>
+              </div>
+            );
+          })
         ) : (
           <div className="dropdown-item">
             No matching suggestions

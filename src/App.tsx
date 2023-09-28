@@ -14,7 +14,7 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [visibleList, setVisibleList] = useState(false);
+  const [isVisibleList, setIsVisibleList] = useState(false);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay),
@@ -28,13 +28,15 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
 
   const handleSelectedPerson = (person: Person) => {
     setSelectedPerson(person);
-    setVisibleList(false);
+    setIsVisibleList(false);
     setQuery(person.name);
   };
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter((person) => {
-      return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
+      const searchQuery = appliedQuery.toLowerCase().trim();
+
+      return person.name.toLowerCase().includes(searchQuery);
     });
   }, [appliedQuery]);
 
@@ -48,7 +50,7 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
         )}
       </h1>
 
-      <div className={cn('dropdown', { 'is-active': visibleList })}>
+      <div className={cn('dropdown', { 'is-active': isVisibleList })}>
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -56,15 +58,15 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
             className="input"
             value={query}
             onChange={handleQueryChange}
-            onFocus={() => setVisibleList(true)}
-            onBlur={() => setVisibleList(false)}
+            onFocus={() => setIsVisibleList(true)}
+            onBlur={() => setIsVisibleList(false)}
           />
         </div>
 
         <DropDown
           people={filteredPeople}
           onSelect={(person) => handleSelectedPerson(person)}
-          isVisible={visibleList}
+          isVisible={isVisibleList}
         />
       </div>
     </main>
