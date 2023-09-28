@@ -38,6 +38,7 @@ export const People = React.memo(
                     className="dropdown-item button-custom"
                     onClick={() => {
                       handleClick(`${person.name} (${person.born} - ${person.died})`);
+                      setPersonName(person.name);
                     }}
                   >
                     <p
