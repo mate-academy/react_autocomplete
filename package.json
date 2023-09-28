@@ -11,6 +11,7 @@
     "classnames": "^2.3.1",
     "postcss": "^8.4.12",
     "react": "^17.0.2",
+    "react-autocomplete": "^1.8.1",
     "react-dom": "^17.0.2",
     "react-scripts": "^4.0.3"
   },
@@ -24,6 +25,7 @@
     "@mate-academy/stylelint-config": "*",
     "@types/node": "^17.0.23",
     "@types/react": "^17.0.43",
+    "@types/react-autocomplete": "^1.8.7",
     "@types/react-dom": "^17.0.14",
     "cypress": "^9.5.3",
     "eslint": "^7.32.0",

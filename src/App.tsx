@@ -1,9 +1,47 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 
+function debounce(callback: (...args: unknown[]) => void, delay: number) {
+  let timerId = 0;
+
+  return (...args: unknown[]) => {
+    window.clearTimeout(timerId);
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
+
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [selectedUser, setSelectedUser] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const [appliedInputValue, setAppliedInputValue] = useState('');
+  const applyValue = useCallback(debounce(setAppliedInputValue, 1000), []);
+  let foundPeopleFromServer;
+
+  if (selectedUser === '') {
+    foundPeopleFromServer = 0;
+  } else {
+    foundPeopleFromServer = peopleFromServer.findIndex((
+      person,
+    ) => person.name.toLowerCase() === selectedUser.toLowerCase());
+  }
+
+  const { name, born, died } = peopleFromServer[foundPeopleFromServer];
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+    applyValue(event.target.value);
+  };
+
+  const foundName = useMemo(() => {
+    return peopleFromServer.filter((person) => {
+      const personName = person.name.toLowerCase();
+      const value = appliedInputValue.toLowerCase();
+
+      return personName.includes(value);
+    });
+  }, [appliedInputValue, foundPeopleFromServer]);
 
   return (
     <main className="section">
@@ -17,40 +55,42 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={inputValue}
+            onChange={handleInputChange}
           />
         </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
+        {inputValue && foundName.length > 0 && (
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              {foundName.map((person) => (
+                <div className="dropdown-item" key={person.name}>
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    className={`${
+                      selectedUser === person.name
+                        ? 'has-background-info has-text-white'
+                        : 'has-text-link'
+                    }`}
+                    key={person.name}
+                    onClick={() => {
+                      setSelectedUser(person.name);
+                      setInputValue(person.name);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        setSelectedUser(person.name);
+                        setInputValue(person.name);
+                      }
+                    }}
+                  >
+                    {person.name}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );
