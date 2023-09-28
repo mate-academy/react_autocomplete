@@ -1,5 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import debounce from 'lodash/debounce';
+import React, { useRef, useMemo, useState } from 'react';
 
 import classNames from 'classnames';
 import { Person } from '../types/Person';
@@ -9,6 +8,18 @@ type Props = {
   onSelected: (person: Person | null) => void;
 };
 
+// function debounce(callback: Function, delay: number) {
+//   let timerId = 0;
+
+//   return (...args: any) => {
+//     window.clearTimeout(timerId);
+
+//     timerId = window.setTimeout(() => {
+//       callback(...args);
+//     }, delay);
+//   };
+// }
+
 export const People: React.FC<Props> = ({
   people,
   onSelected,
@@ -17,18 +28,22 @@ export const People: React.FC<Props> = ({
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isBoolean, setIsBoolean] = useState(false);
 
-  const applyQuery = useCallback(
-    debounce(
-      setAppliedQuery,
-      700,
-    ),
-    [],
-  );
+  // const applyQuery = useCallback(
+  //   debounce(setAppliedQuery, 700),
+  //   [],
+  //   );
+
+  const timerId = useRef(0);
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    applyQuery(event.target.value);
-    onSelected(null);
+    // applyQuery(event.target.value);
+
+    window.clearTimeout(timerId.current);
+
+    timerId.current = window.setTimeout(() => {
+      setAppliedQuery(event.target.value);
+    }, 700);
   };
 
   const handleSelected = (person: Person) => {
@@ -39,7 +54,9 @@ export const People: React.FC<Props> = ({
 
   const filteredPeople = useMemo(() => {
     return people.filter(
-      person => person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+      person => person.name
+        .toLowerCase()
+        .includes(appliedQuery.toLowerCase()),
     );
   }, [people, appliedQuery]);
 
