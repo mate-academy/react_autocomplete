@@ -1,65 +1,85 @@
-import React, { useContext } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import debounce from 'lodash/debounce';
+
 import classNames from 'classnames';
-import { PeopleContext } from './PeopleContext';
+import { Person } from '../types/Person';
 
-export const People = React.memo(
-  () => {
-    const {
-      personName,
-      setPersonName,
-      applyQuery,
-      filteredPeople,
-      handleClick,
-    } = useContext(PeopleContext);
+type Props = {
+  people: Person[];
+  onSelected: (person: Person | null) => void;
+};
 
-    return (
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="search"
-            placeholder="Enter a part of the name"
-            className="input"
-            value={personName}
-            onChange={(event) => {
-              setPersonName(event.target.value);
-              applyQuery(event.target.value);
-            }}
-          />
-        </div>
+export const People: React.FC<Props> = ({
+  people,
+  onSelected,
+}) => {
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isBoolean, setIsBoolean] = useState(false);
 
-        {personName && (
-          <div className="dropdown-menu" role="menu">
-            <div className="dropdown-content">
-              {filteredPeople.length > 0 && (
-                filteredPeople.map(person => (
-                  <button
-                    key={person.slug}
-                    type="button"
-                    className="dropdown-item button-custom"
-                    onClick={() => {
-                      handleClick(`${person.name} (${person.born} - ${person.died})`);
-                      setPersonName(person.name);
-                    }}
-                  >
-                    <p
-                      className={classNames('has-text-link', {
-                        'has-text-danger': person.sex === 'f',
-                      })}
-                    >
-                      {person.name}
-                    </p>
-                  </button>
-                ))
-              )}
+  const applyQuery = useCallback(
+    debounce(
+      setAppliedQuery,
+      700,
+    ),
+    [],
+  );
 
-              {!filteredPeople.length && (
-                <p>No matching suggestions</p>
-              )}
-            </div>
-          </div>
-        )}
+  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+    onSelected(null);
+  };
 
-      </div>
+  const handleSelected = (person: Person) => {
+    setQuery(person.name);
+    setIsBoolean(false);
+    onSelected(person);
+  };
+
+  const filteredPeople = useMemo(() => {
+    return people.filter(
+      person => person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
-  },
-);
+  }, [people, appliedQuery]);
+
+  return (
+    <div className={classNames('dropdown', {
+      'is-active': isBoolean,
+    })}
+    >
+      <div className="dropdown-trigger">
+        <input
+          type="text"
+          placeholder="Enter a part of the name"
+          className="input"
+          value={query}
+          onChange={handleInput}
+          onFocus={() => setIsBoolean(true)}
+          onBlur={() => setIsBoolean(false)}
+        />
+      </div>
+
+      <div className="dropdown-menu" role="menu">
+        <div className="dropdown-content">
+          {filteredPeople.length > 0
+            ? (filteredPeople.map((person) => (
+              <button
+                key={person.slug}
+                className={classNames('dropdown-item', {
+                  'has-text-danger': person.sex === 'f',
+                })}
+                type="button"
+                onMouseDown={() => handleSelected(person)}
+              >
+                {person.name}
+              </button>
+            ))
+            ) : (
+              <p>No matching suggestion</p>
+            )}
+        </div>
+      </div>
+    </div>
+  );
+};
