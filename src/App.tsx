@@ -2,10 +2,14 @@ import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 
-function debounce(callback: (...args: unknown[]) => void, delay: number) {
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+type Callback = (...args: any[]) => void;
+
+function debounce(callback: Callback, delay: number) {
   let timerId = 0;
 
-  return (...args: unknown[]) => {
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  return (...args: any[]) => {
     window.clearTimeout(timerId);
     timerId = window.setTimeout(() => {
       callback(...args);
@@ -17,7 +21,26 @@ export const App: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [appliedInputValue, setAppliedInputValue] = useState('');
+  const [touched, setTouched] = useState(false);
+
+  const handleInputFocus = () => {
+    setTouched(true);
+  };
+
+  const handleInputBlur = () => {
+    setTouched(false);
+  };
+
   const applyValue = useCallback(debounce(setAppliedInputValue, 1000), []);
+
+  // const titleField = useRef<HTMLInputElement>(null);
+
+  // useEffect(() => {
+  //   if(titleField.current) {
+  //     titleField.current.focus()
+  //   }
+  // }, [])
+
   let foundPeopleFromServer;
 
   if (selectedUser === '') {
@@ -45,9 +68,11 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      {inputValue !== '' && selectedUser ? (
+        <h1 className="title">
+          {`${name} (${born} = ${died})`}
+        </h1>
+      ) : (<h1 className="title">No selected person</h1>)}
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
@@ -57,12 +82,66 @@ export const App: React.FC = () => {
             className="input"
             value={inputValue}
             onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            // ref={titleField}
           />
         </div>
+        {foundName.length === 0 && (
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              <div className="dropdown-item">
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="has-text-link"
+                >
+                  No matching suggestions
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {inputValue && foundName.length > 0 && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {foundName.map((person) => (
+                <div className="dropdown-item" key={person.name}>
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    className={`${
+                      selectedUser === person.name
+                        ? 'has-background-info has-text-white'
+                        : 'has-text-link'
+                    }`}
+                    key={person.name}
+                    onClick={() => {
+                      setSelectedUser(person.name);
+                      setInputValue(person.name);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        setSelectedUser(person.name);
+                        setInputValue(person.name);
+                      }
+                    }}
+                  >
+                    {person.name}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {inputValue === '' && touched && (
+          <div
+            className="dropdown-menu"
+            role="menu"
+            onBlur={handleInputBlur}
+          >
+            <div className="dropdown-content">
+              {peopleFromServer.map((person) => (
                 <div className="dropdown-item" key={person.name}>
                   <div
                     role="button"
