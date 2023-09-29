@@ -25,6 +25,7 @@ export const App: React.FC = () => {
 
   const handleInputFocus = () => {
     setTouched(true);
+    
   };
 
   const handleInputBlur = () => {
@@ -68,7 +69,7 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {inputValue !== '' && selectedUser ? (
+      {inputValue !== '' && selectedUser && name === inputValue ? (
         <h1 className="title">
           {`${name} (${born} = ${died})`}
         </h1>
@@ -83,6 +84,7 @@ export const App: React.FC = () => {
             value={inputValue}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
             // ref={titleField}
           />
         </div>
@@ -115,7 +117,7 @@ export const App: React.FC = () => {
                         : 'has-text-link'
                     }`}
                     key={person.name}
-                    onClick={() => {
+                    onMouseDown={() => {
                       setSelectedUser(person.name);
                       setInputValue(person.name);
                     }}
@@ -138,7 +140,7 @@ export const App: React.FC = () => {
           <div
             className="dropdown-menu"
             role="menu"
-            onBlur={handleInputBlur}
+            
           >
             <div className="dropdown-content">
               {peopleFromServer.map((person) => (
@@ -152,7 +154,7 @@ export const App: React.FC = () => {
                         : 'has-text-link'
                     }`}
                     key={person.name}
-                    onClick={() => {
+                    onMouseDown={() => {
                       setSelectedUser(person.name);
                       setInputValue(person.name);
                     }}
