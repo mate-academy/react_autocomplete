@@ -5,14 +5,14 @@ import './App.scss';
 import { DropList } from './components/DropList';
 
 export const App: React.FC = () => {
-  const [selectedPeople, setSelectedPeople] = useState<Person | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   return (
     <main className="section">
       <h1 className="title">
         {
-          selectedPeople ? (
-            `${selectedPeople.name} (${selectedPeople.born} = ${selectedPeople.died})`
+          selectedPerson ? (
+            `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
           ) : (
             'No selected person'
           )
@@ -22,7 +22,7 @@ export const App: React.FC = () => {
       <DropList
         people={peopleFromServer}
         delay={1000}
-        onSelected={setSelectedPeople}
+        onSelected={setSelectedPerson}
       />
     </main>
   );

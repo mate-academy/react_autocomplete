@@ -2,6 +2,10 @@ iframe {
   display: none;
 }
 
+.dropdown-trigger {
+  display: flex;
+}
+
 .dropdown-item {
   cursor: pointer;
 

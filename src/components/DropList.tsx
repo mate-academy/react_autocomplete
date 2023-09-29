@@ -5,7 +5,7 @@ import { Person } from '../types/Person';
 type Props = {
   people: Person[],
   delay: number,
-  onSelected: (people: Person) => void,
+  onSelected: (people: Person | null) => void,
 };
 
 export const DropList: React.FC<Props> = ({
@@ -50,12 +50,23 @@ export const DropList: React.FC<Props> = ({
           onFocus={() => setFocus(true)}
           onBlur={() => setFocus(false)}
         />
+
+        <button
+          type="button"
+          onClick={() => {
+            setQueryPeople('');
+            applyQueryPeople('');
+            onSelected(null);
+          }}
+        >
+          Reset
+        </button>
       </div>
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
           {
-            filteredPeople.length ? (
+            !!filteredPeople.length ? (
               filteredPeople.map((peop) => (
                 <a
                   href="/"
