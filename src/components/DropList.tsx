@@ -66,7 +66,7 @@ export const DropList: React.FC<Props> = ({
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
           {
-            !!filteredPeople.length ? (
+            filteredPeople.length ? (
               filteredPeople.map((peop) => (
                 <a
                   href="/"
