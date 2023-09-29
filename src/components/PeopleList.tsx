@@ -24,13 +24,13 @@ export const PeopleList: React.FC<Props> = ({
   const handlePersonSelect = (person: Person) => {
     onSelect(person);
     setQuery(person.name);
+    setAppliedQuery(person.name);
     setIsShown(false);
   };
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
-    onSelect(null);
   };
 
   const filteredPeople = useMemo(() => {
@@ -61,7 +61,14 @@ export const PeopleList: React.FC<Props> = ({
         <div className="dropdown-content">
           {!filteredPeople.length
             ? (
-              'No matching suggestion'
+              <div
+                style={{
+                  padding: '15px',
+                  backgroundColor: '#e9fafa',
+                }}
+              >
+                No matching suggestion
+              </div>
             ) : (
               filteredPeople.map(person => (
                 <a
