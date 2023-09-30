@@ -1,4 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  useCallback, useMemo, useState,
+} from 'react';
 import './App.scss';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
@@ -9,6 +11,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   const delay = 1000;
 
@@ -16,27 +19,48 @@ export const App: React.FC = () => {
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    applyQuery(event.target.value);
+    applyQuery(event.target.value.trim());
   };
 
   const handlePersonSelect = (person: Person) => {
     setSelectedPerson(person);
-    setQuery('');
+    setQuery(person.name);
+    setIsFocused(false);
   };
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(
-      (person) => person.name
-        .toLowerCase().includes(appliedQuery.toLowerCase()),
+      (person) => person.name.toLowerCase()
+        .includes(appliedQuery.toLowerCase()),
     );
   }, [appliedQuery]);
+
+  let content = null;
+
+  if (filteredPeople.length && isFocused) {
+    content = filteredPeople.map((person) => (
+      <DropDownItem
+        onSelect={handlePersonSelect}
+        key={person.slug}
+        person={person}
+      />
+    ));
+  } else if (!filteredPeople.length) {
+    content = <p>No matching suggestions</p>;
+  }
+
+  const { name, born, died } = selectedPerson || {};
 
   return (
     <main className="section">
       <h1 className="title">
         {selectedPerson
-          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-          : 'No person selected'}
+          ? (
+            `${name} (${born} - ${died})`
+          )
+          : (
+            'No person selected'
+          )}
       </h1>
 
       <div className="dropdown is-active">
@@ -47,22 +71,13 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={handleQueryChange}
+            onFocus={() => setIsFocused(true)}
           />
         </div>
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {filteredPeople.length ? (
-              filteredPeople.map((person) => (
-                <DropDownItem
-                  onSelect={handlePersonSelect}
-                  key={person.slug}
-                  person={person}
-                />
-              ))
-            ) : (
-              <p>No matching suggestions</p>
-            )}
+            {content}
           </div>
         </div>
       </div>
