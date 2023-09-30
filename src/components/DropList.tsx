@@ -17,14 +17,15 @@ export const DropList: React.FC<Props> = ({
   const [queryPeople, setQueryPeople] = useState('');
   const [appliedQueryPeople, setAppliedQueryPeople] = useState('');
 
-  const handleSelectPerson = (person: Person) => {
-    setQueryPeople(person.name);
-    onSelected(person);
-  };
-
   const applyQueryPeople = useCallback(debounce(
     setAppliedQueryPeople, delay,
   ), []);
+
+  const handleSelectPerson = (person: Person) => {
+    onSelected(person);
+    setQueryPeople(person.name);
+    applyQueryPeople(person.name);
+  };
 
   const handleQueryPeople = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQueryPeople(e.target.value);
