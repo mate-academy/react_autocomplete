@@ -25,10 +25,14 @@ export const App: React.FC = () => {
 
   const handleInputFocus = () => {
     setTouched(true);
-    
   };
 
   const handleInputBlur = () => {
+    setTouched(false);
+  };
+
+  const handleReset = () => {
+    setInputValue('');
     setTouched(false);
   };
 
@@ -88,7 +92,14 @@ export const App: React.FC = () => {
             // ref={titleField}
           />
         </div>
-        {foundName.length === 0 && (
+        <button
+          type="button"
+          className="button is-info is-outlined"
+          onClick={handleReset}
+        >
+          Reset
+        </button>
+        {foundName.length === 0 && touched && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               <div className="dropdown-item">
@@ -103,7 +114,7 @@ export const App: React.FC = () => {
             </div>
           </div>
         )}
-        {inputValue && foundName.length > 0 && (
+        {inputValue && foundName.length > 0 && foundName && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {foundName.map((person) => (
@@ -140,7 +151,6 @@ export const App: React.FC = () => {
           <div
             className="dropdown-menu"
             role="menu"
-            
           >
             <div className="dropdown-content">
               {peopleFromServer.map((person) => (
