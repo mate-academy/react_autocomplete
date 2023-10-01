@@ -1,5 +1,5 @@
 import React, {
-  useCallback, useMemo, useState,
+  useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
 import './App.scss';
 import debounce from 'lodash.debounce';
@@ -51,6 +51,21 @@ export const App: React.FC = () => {
 
   const { name, born, died } = selectedPerson || {};
 
+  const dropDownRef = useRef<HTMLDivElement>(null);
+
+  const handleClick = (event: MouseEvent) => {
+    if (dropDownRef.current && !dropDownRef.current
+      .contains(event.target as Node)) {
+      setIsFocused(false);
+    } else {
+      setIsFocused(true);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClick);
+  }, []);
+
   return (
     <main className="section">
       <h1 className="title">
@@ -63,7 +78,7 @@ export const App: React.FC = () => {
           )}
       </h1>
 
-      <div className="dropdown is-active">
+      <div className="dropdown is-active" ref={dropDownRef}>
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -71,7 +86,6 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={handleQueryChange}
-            onFocus={() => setIsFocused(true)}
           />
         </div>
 
