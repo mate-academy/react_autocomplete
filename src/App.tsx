@@ -1,55 +1,91 @@
-import React from 'react';
+import React, {
+  useState, useMemo, useCallback,
+} from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { PeopleList } from './PeopleList';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+type Props = {
+  delay: number;
+};
+
+function debounce(callback: (...args: any[]) => void, delay: number) {
+  let timerId = 0;
+
+  return (...args: any[]) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
+
+export const App: React.FC<Props> = ({ delay }) => {
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [dropdownFocused, setDropdownFocused] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, delay),
+    [delay],
+  );
+
+  const handleSelectedPerson = (person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+    setAppliedQuery('');
+    setDropdownFocused(false);
+  };
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+
+    if (event.target.value !== appliedQuery) {
+      applyQuery(event.target.value);
+      setAppliedQuery(event.target.value);
+    }
+  };
+
+  const getDropdownClass = (isFocused: boolean): string => {
+    return isFocused ? 'dropdown is-active' : 'dropdown';
+  };
+
+  const handleFocus = () => {
+    if (selectedPerson) {
+      setQuery('');
+    }
+
+    setDropdownFocused(true);
+  };
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer
+      .filter(person => person.name.toLowerCase()
+        .includes(appliedQuery.toLowerCase()));
+  }, [appliedQuery, dropdownFocused]);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        { selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
 
-      <div className="dropdown is-active">
+      <div className={getDropdownClass(dropdownFocused)}>
         <div className="dropdown-trigger">
           <input
             type="text"
-            placeholder="Enter a part of the name"
             className="input"
+            aria-haspopup="true"
+            value={query}
+            onChange={handleQueryChange}
+            onFocus={handleFocus}
           />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
+          <PeopleList people={filteredPeople} onSelect={handleSelectedPerson} />
         </div>
       </div>
     </main>
