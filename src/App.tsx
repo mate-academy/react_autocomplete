@@ -61,6 +61,12 @@ export const App: React.FC<Props> = ({ delay }) => {
     setDropdownFocused(true);
   };
 
+  const handleBlur = () => {
+    setTimeout(() => {
+      setDropdownFocused(false);
+    }, 200);
+  };
+
   const filteredPeople = useMemo(() => {
     return peopleFromServer
       .filter(person => person.name.toLowerCase()
@@ -84,6 +90,8 @@ export const App: React.FC<Props> = ({ delay }) => {
             value={query}
             onChange={handleQueryChange}
             onFocus={handleFocus}
+            onBlur={handleBlur}
+            placeholder="Search..."
           />
           <PeopleList people={filteredPeople} onSelect={handleSelectedPerson} />
         </div>
