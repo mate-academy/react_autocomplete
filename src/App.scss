@@ -14,3 +14,17 @@ iframe {
   display: flex;
   align-items: center;
 }
+
+.message {
+  padding: 5px 9px;
+  font-size: 15px;
+}
+
+.item {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.item:hover {
+  transform: scale(1.1);
+}

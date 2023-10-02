@@ -1,5 +1,5 @@
 import React, {
-  useCallback, useEffect, useMemo, useRef, useState,
+  useCallback, useMemo, useRef, useState,
 } from 'react';
 import './App.scss';
 import debounce from 'lodash.debounce';
@@ -22,10 +22,10 @@ export const App: React.FC = () => {
     applyQuery(event.target.value.trim());
   };
 
-  const handlePersonSelect = (person: Person) => {
+  const handlePersonSelect = (person: Person | null) => {
     setSelectedPerson(person);
-    setQuery(person.name);
-    setIsFocused(false);
+    setQuery(person ? person.name : '');
+    setAppliedQuery(person ? person.name : '');
   };
 
   const filteredPeople = useMemo(() => {
@@ -43,17 +43,19 @@ export const App: React.FC = () => {
         onSelect={handlePersonSelect}
         key={person.slug}
         person={person}
+        setQuery={setQuery}
+        setAppliedQuery={setAppliedQuery}
       />
     ));
-  } else if (!filteredPeople.length) {
-    content = <p>No matching suggestions</p>;
+  } else if (!filteredPeople.length && isFocused) {
+    content = <p className="message">No matching suggestions</p>;
   }
 
   const { name, born, died } = selectedPerson || {};
 
   const dropDownRef = useRef<HTMLDivElement>(null);
 
-  const handleClick = (event: MouseEvent) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     if (dropDownRef.current && !dropDownRef.current
       .contains(event.target as Node)) {
       setIsFocused(false);
@@ -62,12 +64,12 @@ export const App: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClick);
-  }, []);
-
   return (
-    <main className="section">
+    <main
+      className="section"
+      role="presentation"
+      onClick={handleClick}
+    >
       <h1 className="title">
         {selectedPerson
           ? (
