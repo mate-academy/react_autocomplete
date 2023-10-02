@@ -2,13 +2,10 @@ import React, {
   useState, useMemo, useCallback,
 } from 'react';
 import './App.scss';
+import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { PeopleList } from './PeopleList';
-
-type Props = {
-  delay: number;
-};
 
 function debounce(callback: (...args: any[]) => void, delay: number) {
   let timerId = 0;
@@ -22,7 +19,8 @@ function debounce(callback: (...args: any[]) => void, delay: number) {
   };
 }
 
-export const App: React.FC<Props> = ({ delay }) => {
+export const App: React.FC = () => {
+  const delay = 1000;
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [dropdownFocused, setDropdownFocused] = useState(false);
@@ -47,10 +45,6 @@ export const App: React.FC<Props> = ({ delay }) => {
       applyQuery(event.target.value);
       setAppliedQuery(event.target.value);
     }
-  };
-
-  const getDropdownClass = (isFocused: boolean): string => {
-    return isFocused ? 'dropdown is-active' : 'dropdown';
   };
 
   const handleFocus = () => {
@@ -81,7 +75,7 @@ export const App: React.FC<Props> = ({ delay }) => {
           : 'No selected person'}
       </h1>
 
-      <div className={getDropdownClass(dropdownFocused)}>
+      <div className={classNames('dropdown', { 'is-active': dropdownFocused })}>
         <div className="dropdown-trigger">
           <input
             type="text"
