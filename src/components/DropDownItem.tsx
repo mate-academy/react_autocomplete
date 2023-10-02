@@ -5,8 +5,9 @@ import { Person } from '../types/Person';
 type Props = {
   person: Person;
   onSelect: (person: Person | null) => void;
-  setQuery: (query: string) => void,
-  setAppliedQuery: (query: string) => void,
+  setQuery: (query: string) => void;
+  setAppliedQuery: (query: string) => void;
+  selectedPerson: Person | null;
 };
 
 export const DropDownItem: React.FC<Props> = React.memo(
@@ -15,6 +16,7 @@ export const DropDownItem: React.FC<Props> = React.memo(
     onSelect,
     setQuery,
     setAppliedQuery,
+    selectedPerson,
   }) => {
     const resetQuery = () => {
       setQuery('');
@@ -34,13 +36,15 @@ export const DropDownItem: React.FC<Props> = React.memo(
         >
           {person.name}
         </p>
-        <button
-          className="button button--uniq"
-          type="button"
-          onClick={resetQuery}
-        >
-          X
-        </button>
+        {selectedPerson && (
+          <button
+            className="button button--uniq"
+            type="button"
+            onClick={resetQuery}
+          >
+            X
+          </button>
+        )}
       </div>
     );
   },

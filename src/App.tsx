@@ -45,6 +45,7 @@ export const App: React.FC = () => {
         person={person}
         setQuery={setQuery}
         setAppliedQuery={setAppliedQuery}
+        selectedPerson={selectedPerson}
       />
     ));
   } else if (!filteredPeople.length && isFocused) {
