@@ -1,5 +1,5 @@
 import './App.scss';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import cn from 'classnames';
 import { debounce } from 'lodash';
 import { peopleFromServer } from './data/people';
@@ -12,7 +12,7 @@ function filterPeople(peopleToFilter: Person[], query: string) {
   const transformedQuery = query.toLowerCase().trim();
 
   return peopleToFilter
-    .filter(({ name }) => name.toLocaleLowerCase().includes(transformedQuery));
+    .filter(({ name }) => name.toLowerCase().includes(transformedQuery));
 }
 
 export const App: React.FC = () => {
@@ -31,10 +31,7 @@ export const App: React.FC = () => {
       : [];
   }, [appliedQuery]);
 
-  const applyQuery = useCallback(
-    debounce(setAppliedQuery, TIME_DELAY),
-    [appliedQuery],
-  );
+  const applyQuery = debounce(setAppliedQuery, TIME_DELAY);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
