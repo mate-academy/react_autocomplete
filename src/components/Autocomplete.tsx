@@ -1,73 +1,74 @@
-import classNames from 'classnames';
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import debounce from 'lodash.debounce';
 
 import { Person } from '../types/Person';
-
-const SEX_MALE = 'm';
-const SEX_FEMALE = 'f';
+import { DropDownMenu } from './DropDownMenu';
+import { peopleFromServer } from '../data/people';
 
 type Props = {
-  listIsVisible: boolean;
-  query: string;
-  onQueryChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  setListIsVisible: (v: boolean) => void;
-  preparedPeople: Person[],
-  onSelectedPerson: (person: Person) => void;
+  setSelectedPerson: (person: Person | null) => void;
+  DEBOUNCE_TIME: number;
 };
 
 export const Autocomplete: React.FC<Props> = ({
-  listIsVisible,
-  query,
-  onQueryChange,
-  setListIsVisible,
-  preparedPeople,
-  onSelectedPerson,
+  setSelectedPerson,
+  DEBOUNCE_TIME,
 }) => {
+  const [query, setQuery] = useState('');
+  const [isInputFocused, setInputFocused] = useState(false);
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  const handleInputFocus = () => {
+    setInputFocused(true);
+  };
+
+  const applyQuery = useCallback(
+    debounce((newQuery: string) => {
+      setAppliedQuery(newQuery);
+    }, DEBOUNCE_TIME),
+    [],
+  );
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+
+    if (event.target.value === '') {
+      setInputFocused(false);
+    }
+  };
+
+  const handlePersonSelect = useCallback((person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+    setAppliedQuery(person.name);
+    setInputFocused(false);
+  }, []);
+
+  const filteredPersons = useMemo(() => {
+    return peopleFromServer.filter(person => person.name.toLowerCase().trim()
+      .includes(appliedQuery.toLowerCase()));
+  }, [query, peopleFromServer]);
+
   return (
-    <div className={classNames('dropdown', {
-      'is-active': listIsVisible,
-    })}
-    >
+    <div className="dropdown is-active">
       <div className="dropdown-trigger">
         <input
-          value={query}
           type="text"
           placeholder="Enter a part of the name"
           className="input"
-          onChange={onQueryChange}
-          onFocus={() => setListIsVisible(true)}
-          onBlur={() => setListIsVisible(false)}
+          value={query}
+          onChange={handleQueryChange}
+          onFocus={handleInputFocus}
         />
       </div>
 
-      <div className="dropdown-menu" role="menu">
-        <div className="dropdown-content">
-          {!preparedPeople.length
-            ? (
-              <div className="dropdown-item">
-                <p className="has-text-black">
-                  No matching suggestions
-                </p>
-              </div>
-            ) : preparedPeople.map(person => (
-              <div
-                className="dropdown-item"
-                key={person.slug}
-                onMouseDown={() => onSelectedPerson(person)}
-                aria-hidden="true"
-                style={{ cursor: 'pointer' }}
-              >
-                <p className={classNames({
-                  'has-text-link': person.sex === SEX_MALE,
-                  'has-text-danger': person.sex === SEX_FEMALE,
-                })}
-                >
-                  {person.name}
-                </p>
-              </div>
-            ))}
-        </div>
-      </div>
+      {isInputFocused && (
+        <DropDownMenu
+          people={filteredPersons}
+          onSelect={handlePersonSelect}
+        />
+      )}
     </div>
   );
 };
