@@ -11,7 +11,7 @@ export const PeopleInfo: React.FC<PeopleInfoProps> = ({ person, onSelect }) => (
     className="dropdown-item"
     role="button"
     tabIndex={0}
-    onClick={() => onSelect(person)}
+    onMouseDown={() => onSelect(person)}
     onKeyDown={(e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         onSelect(person);

@@ -56,9 +56,7 @@ export const App: React.FC = () => {
   };
 
   const handleBlur = () => {
-    setTimeout(() => {
-      setDropdownFocused(false);
-    }, 200);
+    setDropdownFocused(false);
   };
 
   const filteredPeople = useMemo(() => {
