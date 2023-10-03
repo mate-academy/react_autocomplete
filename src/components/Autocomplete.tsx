@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 
 import { Person } from '../types/Person';
@@ -22,12 +22,9 @@ export const Autocomplete: React.FC<Props> = ({
     setInputFocused(true);
   };
 
-  const applyQuery = useCallback(
-    debounce((newQuery: string) => {
-      setAppliedQuery(newQuery);
-    }, DEBOUNCE_TIME),
-    [],
-  );
+  const applyQuery = debounce((newQuery: string) => {
+    setAppliedQuery(newQuery);
+  }, DEBOUNCE_TIME);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -38,12 +35,12 @@ export const Autocomplete: React.FC<Props> = ({
     }
   };
 
-  const handlePersonSelect = useCallback((person: Person) => {
+  const handlePersonSelect = (person: Person) => {
     setSelectedPerson(person);
     setQuery(person.name);
     setAppliedQuery(person.name);
     setInputFocused(false);
-  }, []);
+  };
 
   const filteredPersons = useMemo(() => {
     return peopleFromServer.filter(person => person.name.toLowerCase().trim()
