@@ -22,6 +22,7 @@ export const PeopleList: React.FC<Props> = React.memo(({
               key={person.id}
             >
               <button
+                type="button"
                 className={cn({
                   'has-text-link': person.sex === 'm',
                   'has-text-danger': person.sex === 'f',
