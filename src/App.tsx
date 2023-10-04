@@ -9,7 +9,7 @@ import { PeopleList } from './components/PeopleList/PeopleList';
 import { Person } from './types/Person';
 
 interface Props {
-  delay: number;
+  delay?: number;
 }
 
 const people = peopleFromServer.map((post, index) => ({
@@ -17,14 +17,14 @@ const people = peopleFromServer.map((post, index) => ({
   id: index + 1,
 }));
 
-export const App: React.FC<Props> = ({ delay = 1000 }) => {
+export const App: React.FC<Props> = ({ delay }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [showPeopleList, setShowPeopleList] = useState(false);
 
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay),
+    debounce(setAppliedQuery, 1000),
     [delay],
   );
 
