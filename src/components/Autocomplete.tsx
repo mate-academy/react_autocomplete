@@ -61,7 +61,7 @@ export const AutoComplete: React.FC<Props> = ({
             </a>
           ))}
         </div>
-        {filteredPeopleList.length === 0
+        {filteredPeopleList.length
           && (
             <article className="message is-danger">
               <div className="message-body">
