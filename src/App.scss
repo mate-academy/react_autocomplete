@@ -6,3 +6,12 @@ iframe {
   cursor: pointer;
   background-color: wheat;
 }
+
+button {
+  box-sizing: border-box;
+  width: 100%;
+  text-align: start;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
