@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import './App.scss';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
@@ -7,36 +7,38 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [people] = useState(peopleFromServer);
-  const [hasClick, setHasClick] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState(peopleFromServer[0]);
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 1000),
+    [],
+  );
 
   const filteredPeople = useMemo(() => {
-    return people.filter(
-      person => person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
-    );
-  }, [people, appliedQuery]);
-
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+    return peopleFromServer.filter(person => person.name.toLowerCase().includes(
+      appliedQuery.toLowerCase(),
+    ));
+  }, [peopleFromServer, appliedQuery]);
 
   const handleQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
+    const newEvent = event.target.value;
 
-    setQuery(value);
-    applyQuery(value);
-    setHasClick(value.length > 0);
+    setQuery(newEvent);
+    applyQuery(newEvent);
+    setIsDropdownVisible(newEvent.length > 0);
   };
 
   const handleNameSelect = (person: Person) => {
     setSelectedPerson(person);
-    setHasClick(false);
-    setQuery('');
+    setQuery(person.name);
+    setIsDropdownVisible(false);
   };
 
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})` : 'No selected person'}
+        {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
       </h1>
 
       <div className="dropdown is-active">
@@ -47,21 +49,27 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={handleQuery}
-            onClick={() => setHasClick(query.length > 0)}
+            onClick={() => setIsDropdownVisible(query.length > 0)}
           />
+
         </div>
 
-        {hasClick && (
+        {isDropdownVisible && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {filteredPeople.length > 0 ? (
                 filteredPeople.map(person => (
                   <div
-                    onClick={() => handleNameSelect(person)}
                     className="dropdown-item"
                     key={person.slug}
                   >
-                    <p className="has-text-link">{person.name}</p>
+                    <button
+                      type="button"
+                      className="has-text-link"
+                      onClick={() => handleNameSelect(person)}
+                    >
+                      {person.name}
+                    </button>
                   </div>
                 ))
               ) : (
