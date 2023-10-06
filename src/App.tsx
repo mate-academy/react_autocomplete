@@ -8,7 +8,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState(peopleFromServer[0]);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, 1000),
@@ -38,9 +38,12 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
+        {selectedPerson ? (
+          `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+        ) : (
+          "No selected person"
+        )}
       </h1>
-
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
           <input
