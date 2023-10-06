@@ -1,7 +1,7 @@
-export function debounce(callback: (...args: any) => void, delay: number) {
+export function debounce<T>(callback: (...args: T[]) => void, delay: number) {
   let timerId = 0;
 
-  return (...args: any) => {
+  return (...args: T[]) => {
     window.clearTimeout(timerId);
 
     timerId = window.setTimeout(() => {
