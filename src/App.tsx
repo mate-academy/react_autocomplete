@@ -1,18 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { DropdownInput } from './components/DropDownInput';
+import { Person } from './types/Person';
+
+const FILTERDELAY = 1000;
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [person, setPerson] = useState<Person | null>(null);
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      {person ? (
+        <h1 className="title">
+          {`${person.name} (${person.born} - ${person.died})`}
+        </h1>
+      ) : (
+        <h1 className="title">
+          No selected person
+        </h1>
+      )}
 
-      <DropdownInput />
+      <DropdownInput
+        people={peopleFromServer}
+        debounceDelay={FILTERDELAY}
+        onSelect={setPerson}
+      />
     </main>
   );
 };
