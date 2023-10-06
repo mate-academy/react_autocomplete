@@ -27,6 +27,7 @@ export const App: React.FC = () => {
     setQuery(newEvent);
     applyQuery(newEvent);
     setIsDropdownVisible(newEvent.length > 0);
+    setSelectedPerson(null);
   };
 
   const handleNameSelect = (person: Person) => {
@@ -41,7 +42,7 @@ export const App: React.FC = () => {
         {selectedPerson ? (
           `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
         ) : (
-          "No selected person"
+          'No selected person'
         )}
       </h1>
       <div className="dropdown is-active">
@@ -57,7 +58,7 @@ export const App: React.FC = () => {
 
         </div>
 
-        {isDropdownVisible && (
+        {!selectedPerson && isDropdownVisible && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {filteredPeople.length > 0 ? (
