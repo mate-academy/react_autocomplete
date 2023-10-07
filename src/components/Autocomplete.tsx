@@ -28,7 +28,7 @@ export const AutoComplete: React.FC<Props> = ({
     applyQuery(event.target.value);
   };
 
-  const filteredPeopleList = useMemo(() => {
+  const filteredPeople = useMemo(() => {
     return people
       .filter(p => p.name.toLowerCase().includes(applieQuery.toLowerCase()));
   }, [applieQuery, people]);
@@ -49,7 +49,7 @@ export const AutoComplete: React.FC<Props> = ({
 
       <div className="dropdown-menu" id="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {filteredPeopleList.map(person => (
+          {filteredPeople.map(person => (
             <a
               key={person.slug}
               href="/"
@@ -61,7 +61,7 @@ export const AutoComplete: React.FC<Props> = ({
             </a>
           ))}
         </div>
-        {!filteredPeopleList.length
+        {!filteredPeople.length
           && (
             <article className="message is-danger">
               <div className="message-body">
