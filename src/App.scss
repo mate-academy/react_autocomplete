@@ -1,3 +1,30 @@
 iframe {
   display: none;
 }
+
+.dropdown-item--container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button--uniq {
+  font-size: 17px;
+  padding-inline: 2px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.message {
+  padding: 5px 9px;
+  font-size: 15px;
+}
+
+.item {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.item:hover {
+  transform: scale(1.1);
+}
