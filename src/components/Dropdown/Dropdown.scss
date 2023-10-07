@@ -1,0 +1,17 @@
+.dropdown-item {
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &--disabled {
+    pointer-events: none;
+  }
+
+  &:hover {
+    background-color: #e4e4e4;
+  }
+}
+
+.has-text-link {
+  padding: 10px 20px;
+}
