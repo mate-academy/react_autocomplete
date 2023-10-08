@@ -6,7 +6,7 @@ import { Person } from '../types/Person';
 type Props = {
   people: Person[];
   selectedPerson?: Person | null;
-  onSelect?: (person: Person) => void;
+  onSelect: (person: Person) => void;
 };
 
 export const AutoComplete: React.FC<Props> = ({
@@ -16,11 +16,11 @@ export const AutoComplete: React.FC<Props> = ({
 }) => {
   const [visibleList, setVisibleList] = useState(false);
   const [query, setQuery] = useState(selectedPerson?.name || '');
-  const [applieQuery, setApplieQuery] = useState('');
+  const [applieQuery, setAppliedQuery] = useState('');
 
   const applyQuery = useCallback(
-    debounce(setApplieQuery, 1000),
-    [],
+    debounce(setAppliedQuery, 1000),
+    [setAppliedQuery],
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,8 +53,7 @@ export const AutoComplete: React.FC<Props> = ({
             <a
               key={person.slug}
               href="/"
-              className={classNames('dropdown-item',
-                { 'is-active': person.slug === selectedPerson?.slug })}
+              className="dropdown-item"
               onMouseDown={() => onSelect(person)}
             >
               {person.name}
