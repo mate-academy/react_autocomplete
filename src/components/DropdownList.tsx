@@ -5,6 +5,7 @@ import { Person } from '../types/Person';
 type Props = {
   people: Person[];
   onSelected: (newSelectPerson: Person) => void;
+  isShown: boolean;
 };
 
 export const PeopleList: React.FC<Props> = React.memo(({

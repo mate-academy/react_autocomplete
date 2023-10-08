@@ -26,12 +26,14 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [isShown, setIsShown] = useState(false);
 
   const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setIsShown(false);
   };
 
   const filteredPeople = useMemo(() => {
@@ -41,7 +43,15 @@ export const App: React.FC = () => {
   const onSelected = useCallback((newSelectPerson: Person) => {
     setSelectedPerson(newSelectPerson);
     setQuery(newSelectPerson.name);
+    setAppliedQuery(newSelectPerson.name);
+    setIsShown(false);
   }, []);
+
+  const peopleListProps = {
+    people: filteredPeople,
+    onSelected,
+    isShown,
+  };
 
   return (
     <main className="section">
@@ -70,7 +80,7 @@ export const App: React.FC = () => {
           )}
 
           {appliedQuery !== '' && query !== selectedPerson?.name && (
-            <PeopleList people={filteredPeople} onSelected={onSelected} />
+            <PeopleList {...peopleListProps} />
           )}
         </div>
       </div>
