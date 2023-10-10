@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { createContext, useReducer } from 'react';
-import { peopleFromServer } from './data/people';
-import { Person } from './types/Person';
+import { peopleFromServer } from '../../data/people';
+import { Person } from '../../types/Person';
 
 interface AutocompleteState {
   inputText: string;
