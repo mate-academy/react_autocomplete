@@ -2,6 +2,15 @@ import { Person } from '../types/Person';
 
 export const peopleFromServer: Person[] = [
   {
+    name: 'Polina Vafik',
+    sex: 'f',
+    born: 2016,
+    died: 2129,
+    fatherName: 'father vafik',
+    motherName: 'mother vafik',
+    slug: 'polina-vafik-2016',
+  },
+  {
     name: 'Carolus Haverbeke',
     sex: 'm',
     born: 1832,
