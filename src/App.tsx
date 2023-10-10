@@ -1,56 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
-import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { DropdownInput } from './components/DropdownInput/DropdownInput';
+import { DropdownList } from './components/DropdownList/DropdownList';
+import { DropdownTitle } from './components/DropdownTitle';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [visiblePeople, setVisiblePeople]
+    = useState<Person[] | null | [] | Person>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [inputValue, setInputValue] = useState('');
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      <DropdownTitle selectPerson={selectedPerson} />
 
       <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
+        <DropdownInput
+          inputValue={inputValue}
+          setVisiblePeople={setVisiblePeople}
+          setInputValue={setInputValue}
+        />
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        <DropdownList
+          visiblePeople={visiblePeople as Person[]}
+          setVisiblePeople={setVisiblePeople}
+          setSelectPerson={setSelectedPerson}
+          setInputValue={setInputValue}
+        />
       </div>
     </main>
   );
