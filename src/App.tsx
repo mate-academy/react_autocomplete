@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import cn from 'classnames';
-import debounce from 'lodash.debounce';
+// import debounce from 'lodash.debounce';
 import './App.scss';
 
 import { peopleFromServer } from './data/people';
@@ -9,12 +9,27 @@ import { Person } from './types/Person';
 
 const DELAY = 300;
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+function debounce(callback: Function, delay: number) {
+  let timerId = 0;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (...args: any) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
+
 export const App: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isListVisible, setIsListVisible] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(setAppliedQuery, DELAY), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
