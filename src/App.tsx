@@ -1,14 +1,59 @@
-import React from 'react';
+import React, {
+  useCallback, useMemo, useRef, useState,
+} from 'react';
+
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { People } from './components/People';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+type Props = {
+  delay: number
+};
+
+export const App: React.FC<Props> = ({ delay }) => {
+  const [user, setUser] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [selectedUser, setSelectedUser] = useState('');
+
+  const timerId = useRef(0);
+
+  const findUser = (username: string) => {
+    return peopleFromServer.find(person => person.name === username);
+  };
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUser(event.target.value);
+    window.clearTimeout(timerId.current);
+
+    timerId.current = window.setTimeout(() => {
+      setAppliedQuery(event.target.value);
+    }, delay);
+  };
+
+  const filteredUsers = useMemo(() => {
+    if (!appliedQuery) {
+      return peopleFromServer;
+    }
+
+    const users = peopleFromServer
+      .filter(person => person.name.toLowerCase()
+        .includes(appliedQuery.toLowerCase()));
+
+    return users;
+  }, [appliedQuery]);
+
+  const handleSelectUser = useCallback((username: string) => {
+    setUser(username);
+    setSelectedUser(username);
+  }, []);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedUser
+          ? `${findUser(selectedUser)?.name} (${findUser(selectedUser)?.born} = ${findUser(selectedUser)?.died})`
+          : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +62,18 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={user}
+            onChange={event => handleQueryChange(event)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setTimeout(() => setIsFocused(false), 500)}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        <People
+          people={filteredUsers}
+          onSelected={handleSelectUser}
+          isFocused={isFocused}
+        />
       </div>
     </main>
   );
