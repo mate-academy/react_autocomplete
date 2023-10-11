@@ -7,6 +7,11 @@ interface AutocompleteState {
   inputText: string;
   debouncedText: string;
   suggestions: Person[];
+
+  // new
+  displayedSuggestions: Person[];
+  isFocused: boolean;
+
   selectedPerson: Person | null;
 }
 
@@ -15,13 +20,17 @@ export enum AutocompleteActions {
   UpdateDebouncedText = 'updateDebouncedText',
   UpdateSuggestions = 'updateSuggestions',
   SelectPerson = 'selectPerson',
+  UpdateDisplayedSuggestions = 'updateDisplayedSuggestions',
+  UpdateIsFocused = 'updateIsFocused',
 }
 
 type AutocompleteAction =
   | { type: AutocompleteActions.UpdateText; payload: string }
   | { type: AutocompleteActions.UpdateDebouncedText; payload: string }
   | { type: AutocompleteActions.UpdateSuggestions; payload: Person[] }
-  | { type: AutocompleteActions.SelectPerson; payload: Person };
+  | { type: AutocompleteActions.SelectPerson; payload: Person }
+  | { type: AutocompleteActions.UpdateDisplayedSuggestions; payload: Person[] }
+  | { type: AutocompleteActions.UpdateIsFocused; payload: boolean };
 
 const autocompleteReducer = (
   state: AutocompleteState,
@@ -55,6 +64,17 @@ const autocompleteReducer = (
         selectedPerson: action.payload,
       };
 
+    case AutocompleteActions.UpdateDisplayedSuggestions:
+      return {
+        ...state,
+        displayedSuggestions: action.payload,
+      };
+    case AutocompleteActions.UpdateIsFocused:
+      return {
+        ...state,
+        isFocused: action.payload,
+      };
+
     default:
       return state;
   }
@@ -63,6 +83,10 @@ const autocompleteReducer = (
 const initialAutocompleteState: AutocompleteState = {
   inputText: '',
   debouncedText: '',
+
+  displayedSuggestions: peopleFromServer,
+  isFocused: false,
+
   suggestions: peopleFromServer,
   selectedPerson: null,
 };
@@ -72,7 +96,7 @@ interface StateProviderProps {
 }
 
 export const AutocompleteDispatchContext
-= createContext<(action: AutocompleteAction) => void>(() => {});
+  = createContext<(action: AutocompleteAction) => void>(() => { });
 
 export const AutocompleteStateContext = createContext(initialAutocompleteState);
 

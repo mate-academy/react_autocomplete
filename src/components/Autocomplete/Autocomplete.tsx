@@ -1,9 +1,13 @@
 /* eslint-disable no-console */
 import React, {
-  useContext, useState, useCallback,
+  useContext, useCallback,
 } from 'react';
 import debounce from 'lodash/debounce';
+import classNames from 'classnames';
+
 import {
+  AutocompleteActions,
+  AutocompleteDispatchContext,
   AutocompleteStateContext,
 } from './AutocompleteContext';
 
@@ -11,56 +15,69 @@ import { Person } from '../../types/Person';
 
 interface AutocompleteProps {
   debounceDelay: number;
-  onSelected: (person: Person) => void;
+  // onSelected: (person: Person) => void;
 }
 
 export const Autocomplete: React.FC<AutocompleteProps>
-  = React.memo(({ debounceDelay, onSelected }) => {
-    const { suggestions } = useContext(AutocompleteStateContext);
-
-    const [
+  = React.memo(({ debounceDelay }) => {
+    const dispatch = useContext(AutocompleteDispatchContext);
+    const {
+      suggestions,
       displayedSuggestions,
-      setDisplayedSuggestions,
-    ] = useState(suggestions);
-    const [inputText, setInputText] = useState('');
+      inputText,
+      isFocused,
+    } = useContext(AutocompleteStateContext);
 
     const filterSuggestions = useCallback((text: string) => {
       const filteredSuggestions = suggestions.filter(
         person => person.name.toLowerCase().includes(text.toLowerCase()),
       );
 
-      setDisplayedSuggestions(filteredSuggestions);
-    }, [suggestions]);
+      dispatch({
+        type: AutocompleteActions.UpdateDisplayedSuggestions,
+        payload: filteredSuggestions,
+      });
+    }, [suggestions, dispatch]);
 
     const debouncedFilterSuggestions = useCallback(debounce(
       filterSuggestions, debounceDelay,
     ),
     [filterSuggestions, debounceDelay]);
 
+    const handleInputFocus = () => {
+      dispatch({
+        type: AutocompleteActions.UpdateIsFocused,
+        payload: true,
+      });
+    };
+
+    const handleInputBlur = () => {
+      setTimeout(() => {
+        dispatch({
+          type: AutocompleteActions.UpdateIsFocused,
+          payload: false,
+        });
+      }, 150);
+    };
+
     const handleInputChange = (value: string) => {
-      setInputText(value);
+      dispatch({
+        type: AutocompleteActions.UpdateText,
+        payload: value,
+      });
       debouncedFilterSuggestions(value);
     };
 
-    // #region State tracking
-
-    // useEffect(() => {
-    //   console.log('suggestions from context changed', suggestions);
-    // }, [suggestions]);
-
-    // useEffect(() => {
-    //   console.log('originalSuggestions state changed', originalSuggestions);
-    // }, [originalSuggestions]);
-
-    // useEffect(() => {
-    //   console.log('displayedSuggestions state changed', displayedSuggestions);
-    // }, [displayedSuggestions]);
-
-    // useEffect(() => {
-    //   console.log('inputText state changed', inputText);
-    // }, [inputText]);
-
-    // #endregion
+    const handlePersonSelected = (person: Person) => {
+      dispatch({
+        type: AutocompleteActions.UpdateText,
+        payload: person.name,
+      });
+      dispatch({
+        type: AutocompleteActions.SelectPerson,
+        payload: person,
+      });
+    };
 
     console.log('Rendering AutoComplete');
 
@@ -73,34 +90,40 @@ export const Autocomplete: React.FC<AutocompleteProps>
             className="input"
             value={inputText}
             onChange={(e) => handleInputChange(e.target.value)}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {displayedSuggestions.length > 0 ? (
-              displayedSuggestions.map((person) => (
-                <button
-                  className="dropdown-item"
-                  type="button"
-                  key={person.slug}
-                  onClick={() => onSelected(person)}
-                >
-                  <p className={person.sex === 'm'
-                    ? 'has-text-link'
-                    : 'has-text-danger'}
+        {isFocused && (
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              {displayedSuggestions.length > 0 ? (
+                displayedSuggestions.map((person) => (
+                  <button
+                    className="dropdown-item"
+                    type="button"
+                    key={person.slug}
+                    onClick={() => handlePersonSelected(person)}
                   >
-                    {person.name}
-                  </p>
-                </button>
-              ))
-            ) : (
-              <div className="dropdown-item">
-                <p>No matching suggestions</p>
-              </div>
-            )}
+                    <p className={classNames({
+                      'has-text-link': person.sex === 'm',
+                      'has-text-danger': person.sex !== 'm',
+                    })}
+                    >
+                      {person.name}
+                    </p>
+                  </button>
+                ))
+              ) : (
+                <div className="dropdown-item">
+                  <p>No matching suggestions</p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
+
       </div>
     );
   });
