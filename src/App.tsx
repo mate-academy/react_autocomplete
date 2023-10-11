@@ -7,9 +7,9 @@ export const App: React.FC = () => {
   const [isInput, setIsInput] = useState('');
   const [isInputFocused, setInputFocused] = useState(false);
   const [isAppliedInput, setIsAppliedInput] = useState('');
-  const [selectedPerson, setSelectedPerson] = useState(peopleFromServer[0]);
-  const [selected, setSelected] = useState(false);
-  const { name, born, died } = selectedPerson;
+  const [isSelectedPerson, setIsSelectedPerson] = useState(peopleFromServer[0]);
+  const [isSelected, setIsSelected] = useState(false);
+  const { name, born, died } = isSelectedPerson;
 
   const timerId = useRef(0);
 
@@ -30,15 +30,22 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleSelected = (person: Person) => {
-    setSelectedPerson(person);
-    setSelected(true);
+  const handleisSelected = (person: Person) => {
+    setIsSelectedPerson(person);
+    setIsSelected(true);
   };
+
+  function handleEnterKey(e: React.KeyboardEvent<HTMLDivElement>,
+    person: Person) {
+    if (e.key === 'Enter') {
+      handleisSelected(person);
+    }
+  }
 
   return (
     <main className="section">
       <h1 className="title">
-        {selected ? `${name} (${born} = ${died})` : 'No selected person'}
+        {isSelected ? `${name} (${born} = ${died})` : 'No isSelected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -61,12 +68,8 @@ export const App: React.FC = () => {
                 <div
                   className="dropdown-item"
                   key={person.name}
-                  onMouseDown={() => handleSelected(person)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSelected(person);
-                    }
-                  }}
+                  onMouseDown={() => handleisSelected(person)}
+                  onKeyDown={(e) => handleEnterKey(e, person)}
                   role="button"
                   tabIndex={0}
                 >
