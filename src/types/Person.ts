@@ -3,7 +3,7 @@ export interface Person {
   sex: 'm' | 'f',
   born: number,
   died: number,
-  fatherName: string | null,
-  motherName: string | null,
+  fatherName?: string | null,
+  motherName?: string | null,
   slug: string,
 }
