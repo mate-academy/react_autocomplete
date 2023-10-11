@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { createContext, useReducer } from 'react';
 import { peopleFromServer } from '../../data/people';
 import { Person } from '../../types/Person';
@@ -7,11 +6,8 @@ interface AutocompleteState {
   inputText: string;
   debouncedText: string;
   suggestions: Person[];
-
-  // new
   displayedSuggestions: Person[];
   isFocused: boolean;
-
   selectedPerson: Person | null;
 }
 
@@ -36,9 +32,6 @@ const autocompleteReducer = (
   state: AutocompleteState,
   action: AutocompleteAction,
 ): AutocompleteState => {
-  console.log(state);
-  console.log(action);
-
   switch (action.type) {
     case AutocompleteActions.UpdateText:
       return {
@@ -83,11 +76,9 @@ const autocompleteReducer = (
 const initialAutocompleteState: AutocompleteState = {
   inputText: '',
   debouncedText: '',
-
-  displayedSuggestions: peopleFromServer,
   isFocused: false,
-
   suggestions: peopleFromServer,
+  displayedSuggestions: peopleFromServer,
   selectedPerson: null,
 };
 

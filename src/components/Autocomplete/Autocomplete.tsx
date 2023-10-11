@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, {
   useContext, useCallback,
 } from 'react';
@@ -15,7 +14,6 @@ import { Person } from '../../types/Person';
 
 interface AutocompleteProps {
   debounceDelay: number;
-  // onSelected: (person: Person) => void;
 }
 
 export const Autocomplete: React.FC<AutocompleteProps>
@@ -78,8 +76,6 @@ export const Autocomplete: React.FC<AutocompleteProps>
         payload: person,
       });
     };
-
-    console.log('Rendering AutoComplete');
 
     return (
       <div className="dropdown is-active">
