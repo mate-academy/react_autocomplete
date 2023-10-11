@@ -26,6 +26,10 @@ export const App: React.FC<Props> = ({ delay }) => {
     setUser(event.target.value);
     window.clearTimeout(timerId.current);
 
+    if (user.length <= 1) {
+      setSelectedUser('');
+    }
+
     timerId.current = window.setTimeout(() => {
       setAppliedQuery(event.target.value);
     }, delay);
