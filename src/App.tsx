@@ -1,14 +1,75 @@
-import React from 'react';
-import './App.scss';
-import { peopleFromServer } from './data/people';
+import React, { useCallback, useMemo, useState } from 'react';
+import debounce from 'lodash.debounce';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+import './App.scss';
+import { Dropdown } from './components';
+import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+
+type Props = {
+  delay: number,
+};
+
+export const App: React.FC<Props> = ({ delay }) => {
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [value, setValue] = useState('');
+  const [appliedValue, setAppliedValue] = useState('');
+  const [isInputFocused, setIsInputFocused] = useState(false);
+
+  const preparedPeople = useMemo(() => {
+    return peopleFromServer.filter(person => (
+      person.name.toLowerCase().includes(appliedValue)
+    )) || null;
+  }, [appliedValue, peopleFromServer]);
+
+  const applyValue = useCallback(
+    debounce(setAppliedValue, delay),
+    [delay],
+  );
+
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const normalisedEvent = event.target.value.toLowerCase().trim();
+
+    if (!normalisedEvent.length) {
+      setIsInputFocused(true);
+    } else {
+      setIsInputFocused(false);
+    }
+
+    setValue(event.target.value);
+    setAppliedValue('');
+    applyValue(normalisedEvent);
+  };
+
+  const handleClick = useCallback((
+    person: Person,
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  ) => {
+    event.preventDefault();
+
+    setValue(person.name);
+    setSelectedPerson(person);
+    setAppliedValue('');
+  }, []);
+
+  const handleInputClick = () => {
+    if (!value.trim().length) {
+      setIsInputFocused(true);
+    }
+  };
+
+  const handleInputBlur = () => {
+    setTimeout(() => setIsInputFocused(false), 100);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +78,20 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={value}
+            onClick={handleInputClick}
+            onBlur={handleInputBlur}
+            onChange={handleChange}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        {(appliedValue || isInputFocused) && (
+          <Dropdown
+            people={preparedPeople}
+            handleClick={handleClick}
+            setIsInputFocused={setIsInputFocused}
+          />
+        )}
       </div>
     </main>
   );
