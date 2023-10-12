@@ -8,6 +8,7 @@ export const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [query, setQuery] = useState('');
   const [chooseHuman, setChooseHuman] = useState('No Selected person');
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const filteredPeople = useMemo(() => {
     const people = [...peopleFromServer];
@@ -22,12 +23,28 @@ export const App: React.FC = () => {
     [],
   );
 
-  const handleChangeInput = (event: { target: {
-    value: React.SetStateAction<string>;
-  }; }) => {
+  const handleInputFocus = () => {
+    setIsInputFocused(true);
+  };
+
+  const applyFocused = useCallback(
+    debounce(setIsInputFocused, 500),
+    [],
+  );
+
+  const handleInputBlur = () => {
+    applyFocused(false);
+  };
+
+  const handleChangeInput = (event: {
+    target: {
+      value: React.SetStateAction<string>;
+    };
+  }) => {
     setInputText(event.target.value);
     applyQuery(event.target.value);
-    setChooseHuman('No Selected person');
+    // setChooseHuman('No Selected person');
+    // setIsInputFocused(false);
   };
 
   return (
@@ -44,32 +61,34 @@ export const App: React.FC = () => {
             className="input"
             value={inputText}
             onChange={handleChangeInput}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
           />
         </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <ul>
-              {filteredPeople.map(human => (
-                <li
-                  key={human.slug}
-
-                >
-                  <button
-                    type="button"
-                    className={classNames('dropdown-item', { 'has-background-info': chooseHuman === `${human.name} (${human.born} - ${human.died})` })}
-                    onClick={() => setChooseHuman(`${human.name} (${human.born} - ${human.died})`)}
+        {isInputFocused && (
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              <ul>
+                {filteredPeople.map(human => (
+                  <li
+                    key={human.slug}
                   >
-                    <p className="has-text-link">{human.name}</p>
-                  </button>
-                </li>
-              ))}
-            </ul>
-            {filteredPeople.length === 0 && (
-              <div>No matching suggestions</div>
-            )}
+                    <button
+                      type="button"
+                      className={classNames('dropdown-item', { 'has-background-info': chooseHuman === `${human.name} (${human.born} - ${human.died})` })}
+                      onClick={() => setChooseHuman(`${human.name} (${human.born} - ${human.died})`)}
+                    >
+                      <p className="has-text-link">{human.name}</p>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              {filteredPeople.length === 0 && (
+                <div>No matching suggestions</div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );
