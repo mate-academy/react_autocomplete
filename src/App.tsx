@@ -33,6 +33,7 @@ export const App: React.FC = () => {
   const handleisSelected = (person: Person) => {
     setIsSelectedPerson(person);
     setIsSelected(true);
+    setIsInput(person.name);
   };
 
   function handleEnterKey(e: React.KeyboardEvent<HTMLDivElement>,
@@ -61,30 +62,33 @@ export const App: React.FC = () => {
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {isInputFocused && filteredPeople.length > 0 ? (
-              filteredPeople.map(person => (
-                <div
-                  className="dropdown-item"
-                  key={person.name}
-                  onMouseDown={() => handleisSelected(person)}
-                  onKeyDown={(e) => handleEnterKey(e, person)}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <p className="has-text-link">
-                    {person.name}
-                  </p>
+        {isInputFocused && (
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              {filteredPeople.length > 0 ? (
+                filteredPeople.map(person => (
+                  <div
+                    className="dropdown-item"
+                    key={person.name}
+                    onMouseDown={() => handleisSelected(person)}
+                    onKeyDown={(e) => handleEnterKey(e, person)}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <p className="has-text-link">
+                      {person.name}
+                    </p>
+                  </div>
+                ))
+              ) : isInputFocused && (
+                <div className="dropdown-item">
+                  <p>No matching suggestions</p>
                 </div>
-              ))
-            ) : isInputFocused && (
-              <div className="dropdown-item">
-                <p>No matching suggestions</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
+        )}
+
       </div>
     </main>
 
