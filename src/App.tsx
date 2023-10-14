@@ -4,36 +4,40 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const [isInput, setIsInput] = useState('');
+  const [input, setInput] = useState('');
   const [isInputFocused, setInputFocused] = useState(false);
-  const [isAppliedInput, setIsAppliedInput] = useState('');
-  const [isSelectedPerson, setIsSelectedPerson] = useState(peopleFromServer[0]);
+  const [appliedInput, setAppliedInput] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState(peopleFromServer[0]);
   const [isSelected, setIsSelected] = useState(false);
-  const { name, born, died } = isSelectedPerson;
+  const { name, born, died } = selectedPerson;
 
   const timerId = useRef(0);
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person => person
-      .name.toLowerCase().includes(isAppliedInput.toLowerCase()));
-  }, [isAppliedInput]);
+      .name.toLowerCase().includes(appliedInput.toLowerCase()));
+  }, [appliedInput]);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsInput(event.target.value);
-
-    if (isAppliedInput !== event.target.value) {
+  function debounce(event: React.ChangeEvent<HTMLInputElement>) {
+    if (appliedInput !== event.target.value) {
       window.clearTimeout(timerId.current);
 
       timerId.current = window.setTimeout(() => {
-        setIsAppliedInput(event.target.value);
+        setAppliedInput(event.target.value);
       }, 500);
     }
+  }
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(event.target.value);
+
+    debounce(event);
   };
 
   const handleisSelected = (person: Person) => {
-    setIsSelectedPerson(person);
+    setSelectedPerson(person);
     setIsSelected(true);
-    setIsInput(person.name);
+    setInput(person.name);
   };
 
   function handleEnterKey(e: React.KeyboardEvent<HTMLDivElement>,
@@ -55,7 +59,7 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            value={isInput}
+            value={input}
             onChange={handleInputChange}
             onFocus={() => setInputFocused(true)}
             onBlur={() => setInputFocused(false)}
