@@ -18,7 +18,7 @@ export const App: React.FC = () => {
       .name.toLowerCase().includes(appliedInput.toLowerCase()));
   }, [appliedInput]);
 
-  function debounce(event: React.ChangeEvent<HTMLInputElement>) {
+  const debounce = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (appliedInput !== event.target.value) {
       window.clearTimeout(timerId.current);
 
@@ -26,7 +26,7 @@ export const App: React.FC = () => {
         setAppliedInput(event.target.value);
       }, 500);
     }
-  }
+  };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
