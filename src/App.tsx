@@ -3,11 +3,17 @@ import './App.scss';
 import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [query, setQuery] = useState('');
-  const [chooseHuman, setChooseHuman] = useState('No Selected person');
+  const [chooseHuman, setChooseHuman] = useState(
+    {
+      name: 'No Selected person',
+    },
+  );
+  const [chooseHumanInfo, setChooseHumanInfo] = useState('No Selected person');
   const [isInputFocused, setIsInputFocused] = useState(false);
 
   const filteredPeople = useMemo(() => {
@@ -18,6 +24,7 @@ export const App: React.FC = () => {
     );
   }, [query]);
 
+  // eslint-disable-next-line
   const applyQuery = useCallback(
     debounce(setQuery, 1000),
     [],
@@ -27,6 +34,7 @@ export const App: React.FC = () => {
     setIsInputFocused(true);
   };
 
+  // eslint-disable-next-line
   const applyFocused = useCallback(
     debounce(setIsInputFocused, 500),
     [],
@@ -43,14 +51,19 @@ export const App: React.FC = () => {
   }) => {
     setInputText(event.target.value);
     applyQuery(event.target.value);
-    // setChooseHuman('No Selected person');
-    // setIsInputFocused(false);
+  };
+
+  const handleClickButton = (men: Person) => {
+    setChooseHuman(men);
+    setInputText(men.name);
+    setQuery(men.name);
+    setChooseHumanInfo(`${men.name} ${men.born} - ${men.died}`);
   };
 
   return (
     <main className="section">
       <h1 className="title">
-        {chooseHuman}
+        {chooseHumanInfo}
       </h1>
 
       <div className="dropdown is-active">
@@ -75,15 +88,17 @@ export const App: React.FC = () => {
                   >
                     <button
                       type="button"
-                      className={classNames('dropdown-item', { 'has-background-info': chooseHuman === `${human.name} (${human.born} - ${human.died})` })}
-                      onClick={() => setChooseHuman(`${human.name} (${human.born} - ${human.died})`)}
+                      className={classNames('dropdown-item', {
+                        'has-background-info': chooseHuman.name === human.name,
+                      })}
+                      onClick={() => handleClickButton(human)}
                     >
                       <p className="has-text-link">{human.name}</p>
                     </button>
                   </li>
                 ))}
               </ul>
-              {filteredPeople.length === 0 && (
+              {!filteredPeople.length && (
                 <div>No matching suggestions</div>
               )}
             </div>
