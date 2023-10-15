@@ -9,9 +9,7 @@ export const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [query, setQuery] = useState('');
   const [chooseHuman, setChooseHuman] = useState(
-    {
-      name: 'No Selected person',
-    },
+    { name: 'No Selected person' },
   );
   const [chooseHumanInfo, setChooseHumanInfo] = useState('No Selected person');
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -83,9 +81,7 @@ export const App: React.FC = () => {
             <div className="dropdown-content">
               <ul>
                 {filteredPeople.map(human => (
-                  <li
-                    key={human.slug}
-                  >
+                  <li key={human.slug}>
                     <button
                       type="button"
                       className={classNames('dropdown-item', {
