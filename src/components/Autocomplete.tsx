@@ -8,7 +8,7 @@ import { Person } from '../types/Person';
 
 type Props = {
   people: Person[];
-  onSelected: (person: Person) => void;
+  onSelected: (person: Person | null) => void;
   delay: number;
 };
 
@@ -42,6 +42,7 @@ export const Autocomplete: React.FC<Props> = ({
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onSelected(people.find(({ name }) => name === event.target.value) || null);
     setQuery(event.target.value);
     applyQuery(event.target.value);
   };
