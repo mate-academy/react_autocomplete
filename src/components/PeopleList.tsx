@@ -34,7 +34,6 @@ export const PeopleList: React.FC<Props> = ({
     setQuery(newQuery);
     applyQuery(newQuery);
 
-    // Убираем 'else'
     if (!newQuery) {
       setAppliedQuery('');
     }
