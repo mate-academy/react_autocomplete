@@ -1,3 +1,20 @@
 iframe {
   display: none;
 }
+
+.dropdown {
+
+  &-menu {
+    width: 100%;
+  }
+
+  &-item button {
+    all: unset;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  &-item:hover {
+    background-color: hsl(219, 70%, 96%);
+  }
+}
