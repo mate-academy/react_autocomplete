@@ -28,15 +28,25 @@ export const PeopleList: React.FC<Props> = ({
   };
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
+    const newQuery = event.target.value;
+
+    onSelect(people.find(({ name }) => name === newQuery) || null);
+    setQuery(newQuery);
+    applyQuery(newQuery);
+
+    // Убираем 'else'
+    if (!newQuery) {
+      setAppliedQuery('');
+    }
   };
 
   const filteredPeople = useMemo(() => {
-    return people
-      .filter((person) => person.name.toLowerCase().trim()
-        .includes(appliedQuery.toLowerCase().trim()));
-  }, [appliedQuery, people]);
+    if (query) {
+      return people.filter(person => person.name.includes(appliedQuery));
+    }
+
+    return people;
+  }, [people, query, appliedQuery]);
 
   return (
     <div className={classNames('dropdown',
