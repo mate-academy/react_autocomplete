@@ -37,8 +37,8 @@ export const Autocomplete: React.FC<Props> = ({
   const [appliedQuery, setAppliedQuery] = useState('');
 
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay),
-    [],
+    (quiz) => debounce(setAppliedQuery, delay)(quiz),
+    [setAppliedQuery, delay],
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
