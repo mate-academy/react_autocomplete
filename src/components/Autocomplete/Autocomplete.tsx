@@ -22,6 +22,7 @@ export const Autocomplete: React.FC<Props> = ({
     onSelected(null);
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay),
     [],
@@ -42,6 +43,7 @@ export const Autocomplete: React.FC<Props> = ({
   const handleSelect = (person: Person) => {
     onSelected(person);
     setQuery(person.name);
+    applyQuery(person.name);
     setIsShownList(false);
   };
 
