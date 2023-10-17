@@ -43,7 +43,7 @@ export const Autocomplete: React.FC<Props> = ({
   const handleSelect = (person: Person) => {
     onSelected(person);
     setQuery(person.name);
-    applyQuery(person.name);
+    setAppliedQuery(person.name);
     setIsShownList(false);
   };
 
