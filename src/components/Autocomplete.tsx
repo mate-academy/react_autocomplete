@@ -13,17 +13,15 @@ type Props = {
   onFocus: () => void;
 };
 
-export const Autocomplete: React.FC<Props> = (
-  {
-    people,
-    selectedPerson,
-    isDropdownActive,
-    query,
-    onQueryChange,
-    onPersonClick,
-    onFocus,
-  },
-) => {
+export const Autocomplete: React.FC<Props> = ({
+  people,
+  selectedPerson,
+  isDropdownActive,
+  query,
+  onQueryChange,
+  onPersonClick,
+  onFocus,
+}) => {
   return (
     <>
       <h1 className="title">
@@ -39,7 +37,7 @@ export const Autocomplete: React.FC<Props> = (
             placeholder="Enter a part of the name"
             className="input"
             value={query}
-            onChange={(event) => onQueryChange(event)}
+            onChange={onQueryChange}
             onFocus={onFocus}
           />
         </div>
@@ -47,23 +45,27 @@ export const Autocomplete: React.FC<Props> = (
         {isDropdownActive && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
-              {people.map(person => (
-                <div className="dropdown-item" key={person.name}>
-                  <a
-                    href="/"
-                    className="dropdown-item"
-                    onClick={(event) => onPersonClick(event, person)}
-                  >
-                    <p className={cn({
-                      'has-text-link': person.sex === 'm',
-                      'has-text-danger': person.sex === 'f',
-                    })}
+              {people.map(person => {
+                const { name, sex } = person;
+
+                return (
+                  <div className="dropdown-item" key={name}>
+                    <a
+                      href="/"
+                      className="dropdown-item"
+                      onClick={(event) => onPersonClick(event, person)}
                     >
-                      {person.name}
-                    </p>
-                  </a>
-                </div>
-              ))}
+                      <p className={cn({
+                        'has-text-link': sex === 'm',
+                        'has-text-danger': sex === 'f',
+                      })}
+                      >
+                        {person.name}
+                      </p>
+                    </a>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

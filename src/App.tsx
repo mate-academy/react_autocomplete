@@ -5,6 +5,7 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { Autocomplete } from './components/Autocomplete';
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 function debounce(callback: Function, delay: number) {
   let timeoutId = 0;
 
