@@ -1,8 +1,6 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import classNames from 'classnames';
-import { useState } from 'react';
 import debounce from 'lodash.debounce';
-import { useCallback } from 'react';
 import './Dropdown.scss';
 import { Person } from '../types/Person';
 
@@ -13,35 +11,41 @@ type Props = {
   setQuery: (query: string) => void
 };
 
-export const Dropdown: React.FC<Props> = ({ delay, personsDisplayed, onSelected, setQuery }) => {
+export const Dropdown: React.FC<Props> = (
+  {
+    delay,
+    personsDisplayed,
+    onSelected,
+    setQuery,
+  },
+) => {
   const [dropdownActive, setDropdownActive] = useState(false);
   const [filterQuery, setFilterQuery] = useState('');
+
+  const applyQuery = useCallback(
+    debounce((query: string) => {
+      setQuery(query);
+    }, delay),
+    [],
+  );
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterQuery(event.target.value);
     applyQuery(event.target.value);
-  }
+  };
 
   const handleFocus = () => {
     if (filterQuery.length === 0) {
       setDropdownActive(true);
     }
-  }
+  };
 
   const handleSelect = (person: Person) => {
     onSelected(person);
     setFilterQuery(person.name);
     setDropdownActive(false);
     setQuery('');
-  }
-
-  const applyQuery = useCallback(
-    debounce((query: string) => {
-      setQuery(query);
-      console.log(query);
-    }, delay),
-    []
-  )
+  };
 
   return (
     <div className={classNames('dropdown', { 'is-active': dropdownActive })}>
@@ -50,7 +54,10 @@ export const Dropdown: React.FC<Props> = ({ delay, personsDisplayed, onSelected,
           type="text"
           placeholder="Enter a part of the name"
           className="input"
-          onChange={(event) => { handleInputChange(event); setDropdownActive(true) }}
+          onChange={(event) => {
+            handleInputChange(event);
+            setDropdownActive(true);
+          }}
           value={filterQuery}
           onFocus={handleFocus}
         />
@@ -63,6 +70,7 @@ export const Dropdown: React.FC<Props> = ({ delay, personsDisplayed, onSelected,
               className="dropdown-item"
               key={person.name}
               onClick={() => handleSelect(person)}
+              aria-hidden="true"
             >
               <p className="has-text-link">{person.name}</p>
             </div>
@@ -76,4 +84,4 @@ export const Dropdown: React.FC<Props> = ({ delay, personsDisplayed, onSelected,
       </div>
     </div>
   );
-}
+};

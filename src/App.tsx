@@ -9,8 +9,10 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
 
   const visiblePersons = useMemo(() => {
-    return peopleFromServer.filter(person => person.name.toLocaleLowerCase().includes(appliedQuery.toLocaleLowerCase()));
-  }, [appliedQuery, peopleFromServer])
+    return peopleFromServer.filter(person => person.name
+      .toLocaleLowerCase()
+      .includes(appliedQuery.toLocaleLowerCase()));
+  }, [appliedQuery]);
 
   return (
     <main className="section">
