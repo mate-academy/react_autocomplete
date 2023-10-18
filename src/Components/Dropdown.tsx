@@ -25,11 +25,13 @@ export const Dropdown: React.FC<Props> = (
   const applyQuery = useCallback(
     debounce((query: string) => {
       setQuery(query);
+      setDropdownActive(true);
     }, delay),
     [],
   );
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDropdownActive(false);
     setFilterQuery(event.target.value);
     applyQuery(event.target.value);
   };
@@ -56,7 +58,6 @@ export const Dropdown: React.FC<Props> = (
           className="input"
           onChange={(event) => {
             handleInputChange(event);
-            setDropdownActive(true);
           }}
           value={filterQuery}
           onFocus={handleFocus}
