@@ -12,13 +12,14 @@ type Props = {
 
 export const Dropdown: React.FC<Props> = ({
   peopleList,
-  onSelected = () => {},
+  onSelected = () => { },
   delay,
 }) => {
   const [query, setQuery] = useState('');
-  const [visible, setVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +30,7 @@ export const Dropdown: React.FC<Props> = ({
   const filteredPeople = useMemo(() => {
     return peopleList.filter(person => {
       const nameToLowerCase = person.name.toLowerCase();
-      const quetyToLowerCase = appliedQuery.toLowerCase();
+      const quetyToLowerCase = appliedQuery.toLowerCase().trim();
 
       return nameToLowerCase.includes(quetyToLowerCase);
     });
@@ -39,11 +40,11 @@ export const Dropdown: React.FC<Props> = ({
     onSelected(person);
     setQuery(person.name);
     setAppliedQuery(person.name);
-    setVisible(false);
+    setIsVisible(false);
   };
 
   return (
-    <div className={cn('dropdown', { 'is-active': visible })}>
+    <div className={cn('dropdown', { 'is-active': isVisible })}>
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -51,8 +52,8 @@ export const Dropdown: React.FC<Props> = ({
           className="input"
           value={query}
           onChange={handleQueryChange}
-          onFocus={() => setVisible(true)}
-          onBlur={() => setVisible(false)}
+          onFocus={() => setIsVisible(true)}
+          onBlur={() => setIsVisible(false)}
         />
       </div>
 
@@ -61,22 +62,30 @@ export const Dropdown: React.FC<Props> = ({
           {
             filteredPeople.length
               ? (
-                filteredPeople.map(person => (
-                  // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-                  <div
-                    className="dropdown-item dropdown-item--hover"
-                    key={person.slug}
-                    onMouseDown={() => handleSelect(person)}
-                    onKeyDown={() => handleSelect(person)}
-                  >
-                    <p className={cn('has-text-link', {
-                      'has-text-danger': person.sex === 'f',
-                    })}
+                filteredPeople.map(person => {
+                  const {
+                    name,
+                    slug,
+                    sex,
+                  } = person;
+
+                  return (
+                    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+                    <div
+                      className="dropdown-item dropdown-item--hover"
+                      key={slug}
+                      onMouseDown={() => handleSelect(person)}
+                      onKeyDown={() => handleSelect(person)}
                     >
-                      {person.name}
-                    </p>
-                  </div>
-                ))
+                      <p className={cn('has-text-link', {
+                        'has-text-danger': sex === 'f',
+                      })}
+                      >
+                        {name}
+                      </p>
+                    </div>
+                  );
+                })
               ) : (
                 <div className="dropdown-item">
                   <p>No matching suggestions</p>
