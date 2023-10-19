@@ -48,7 +48,8 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   const filteredPeople = useMemo(() => {
-    return people.filter(person => person.name.includes(appliedQuery));
+    return people.filter(person => person.name.trim().toLowerCase()
+      .includes(appliedQuery.trim().toLowerCase()));
   }, [people, appliedQuery]);
 
   const handleSelection = (person: Person) => {
