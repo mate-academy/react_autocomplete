@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 export function debounce(callback: Function, delay: number) {
   let timerId = 0;
 
@@ -5,7 +6,7 @@ export function debounce(callback: Function, delay: number) {
     window.clearTimeout(timerId);
 
     timerId = window.setTimeout(() => {
-    callback(...args);
+      callback(...args);
     }, delay);
   };
-};
+}

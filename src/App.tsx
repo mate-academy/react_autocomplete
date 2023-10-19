@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -12,11 +12,11 @@ export const App: React.FC = () => {
       <h1 className="title">
         {
           selectedPerson
-          ? (
-            `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-          ) : (
-            'No selected person'
-          )
+            ? (
+              `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+            ) : (
+              'No selected person'
+            )
         }
       </h1>
 
