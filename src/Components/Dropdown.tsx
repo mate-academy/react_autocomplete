@@ -22,6 +22,7 @@ export const Dropdown: React.FC<Props> = (
   const [dropdownActive, setDropdownActive] = useState(false);
   const [filterQuery, setFilterQuery] = useState('');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(
     debounce((query: string) => {
       setQuery(query);
@@ -37,7 +38,7 @@ export const Dropdown: React.FC<Props> = (
   };
 
   const handleFocus = () => {
-    if (filterQuery.length === 0) {
+    if (!filterQuery.length) {
       setDropdownActive(true);
     }
   };
@@ -56,9 +57,7 @@ export const Dropdown: React.FC<Props> = (
           type="text"
           placeholder="Enter a part of the name"
           className="input"
-          onChange={(event) => {
-            handleInputChange(event);
-          }}
+          onChange={handleInputChange}
           value={filterQuery}
           onFocus={handleFocus}
         />
@@ -66,17 +65,17 @@ export const Dropdown: React.FC<Props> = (
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {personsDisplayed.length > 0 && personsDisplayed.map(person => (
-            <div
+          {/* eslint-disable-next-line no-extra-boolean-cast */}
+          {!!personsDisplayed.length ? personsDisplayed.map(person => (
+            <button
+              type="button"
               className="dropdown-item"
               key={person.name}
               onClick={() => handleSelect(person)}
-              aria-hidden="true"
             >
               <p className="has-text-link">{person.name}</p>
-            </div>
-          ))}
-          {personsDisplayed.length === 0 && (
+            </button>
+          )) : (
             <div className="dropdown-item">
               <p>No matching suggestions</p>
             </div>
