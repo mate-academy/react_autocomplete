@@ -13,7 +13,7 @@ import { Person } from '../types/Person';
 
 interface DropdownProps {
   people: Person[],
-  selectedPerson: Person,
+  selectedPerson: Person | null,
   onPersonSelect: (person: Person) => void,
   delay: number
 }
@@ -40,6 +40,12 @@ export const Dropdown: React.FC<DropdownProps> = ({
     applyQuery(event.target.value);
   };
 
+  const handlePersonSelect = useCallback((person: Person) => {
+    setQuery(person.name);
+    onPersonSelect(person);
+    setIsFocused(false);
+  }, [onPersonSelect]);
+
   useEffect(() => {
     inputRef.current?.blur();
     setIsFocused(false);
@@ -61,7 +67,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
       <DropdownMenu
         query={appliedQuery}
         people={people}
-        onPersonSelect={person => onPersonSelect(person)}
+        onPersonSelect={handlePersonSelect}
       />
 
     </div>

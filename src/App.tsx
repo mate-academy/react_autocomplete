@@ -7,8 +7,10 @@ import { Title } from './components/Title';
 import { Dropdown } from './components/Dropdown';
 
 export const App: React.FC = () => {
-  const [selectedPerson, setSelectedPerson]
-    = useState<Person>(peopleFromServer[0]);
+  const [
+    selectedPerson,
+    setSelectedPerson,
+  ] = useState<Person | null>(null);
 
   return (
     <main className="section">
