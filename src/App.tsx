@@ -1,54 +1,83 @@
-import React from 'react';
+import React, {
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
+import debounce from 'lodash.debounce';
+import cn from 'classnames';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { PeopleList } from './components';
+import { Person } from './types/Person';
+
+const DELAY = 1000;
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isVisibleList, setIsVisibleList] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const apllyQuery = useCallback(
+    debounce(setAppliedQuery, DELAY),
+    [],
+  );
+
+  const handlInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    apllyQuery(event.target.value);
+    setQuery(event.target.value);
+  };
+
+  const handleSelect = (person: Person) => {
+    setSelectedPerson(person);
+    setIsVisibleList(false);
+    setQuery(person.name);
+    setAppliedQuery('');
+  };
+
+  const handleChangeFocus = () => {
+    setIsVisibleList(false);
+  };
+
+  const filterPeople = useMemo(() => {
+    return peopleFromServer.filter(
+      person => person.name.toLocaleLowerCase()
+        .includes(appliedQuery.toLocaleLowerCase()),
+    );
+  }, [appliedQuery]);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {
+          selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+            : 'No selected person'
+        }
       </h1>
 
-      <div className="dropdown is-active">
+      <div className={cn('dropdown', {
+        'is-active': isVisibleList,
+      })}
+      >
         <div className="dropdown-trigger">
           <input
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onFocus={() => setIsVisibleList(true)}
+            onBlur={handleChangeFocus}
+            onChange={handlInputChange}
           />
         </div>
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
+            <PeopleList
+              people={filterPeople}
+              onSelect={handleSelect}
+            />
           </div>
         </div>
       </div>
