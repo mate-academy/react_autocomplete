@@ -7,10 +7,9 @@ type Props = {
   isDropdownActive: boolean;
   query: string;
   onQueryChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onPersonClick: (
-    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-    person: Person) => void;
+  onPersonClick: (person: Person) => void;
   onFocus: () => void;
+  onBlur: () => void;
 };
 
 export const Autocomplete: React.FC<Props> = ({
@@ -21,11 +20,12 @@ export const Autocomplete: React.FC<Props> = ({
   onQueryChange,
   onPersonClick,
   onFocus,
+  onBlur,
 }) => {
   return (
     <>
       <h1 className="title">
-        {selectedPerson === null
+        {!selectedPerson
           ? 'No person selected'
           : `${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`}
       </h1>
@@ -39,33 +39,36 @@ export const Autocomplete: React.FC<Props> = ({
             value={query}
             onChange={onQueryChange}
             onFocus={onFocus}
+            onBlur={onBlur}
           />
         </div>
 
         {isDropdownActive && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
-              {people.map(person => {
-                const { name, sex } = person;
+              {people.length === 0
+                ? (<p className="dropdown-item">No matching suggestion</p>)
+                : (people.map(person => {
+                  const { name, sex } = person;
 
-                return (
-                  <div className="dropdown-item" key={name}>
-                    <a
-                      href="/"
-                      className="dropdown-item"
-                      onClick={(event) => onPersonClick(event, person)}
-                    >
-                      <p className={cn({
-                        'has-text-link': sex === 'm',
-                        'has-text-danger': sex === 'f',
-                      })}
+                  return (
+                    <div className="dropdown-item" key={name}>
+                      <a
+                        href="/"
+                        className="dropdown-item"
+                        onMouseDown={() => onPersonClick(person)}
                       >
-                        {person.name}
-                      </p>
-                    </a>
-                  </div>
-                );
-              })}
+                        <p className={cn({
+                          'has-text-link': sex === 'm',
+                          'has-text-danger': sex === 'f',
+                        })}
+                        >
+                          {person.name}
+                        </p>
+                      </a>
+                    </div>
+                  );
+                }))}
             </div>
           </div>
         )}

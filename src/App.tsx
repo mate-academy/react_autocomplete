@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import './App.scss';
 import { peopleFromServer } from './data/people';
@@ -27,13 +27,15 @@ export const App: React.FC = () => {
 
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const filteredArray = peopleFromServer
-    .filter(person => {
-      const name = person.name.toLowerCase();
-      const queryLowerCase = appliedQuery.toLowerCase();
+  const filteredArray = useMemo(() => {
+    return peopleFromServer
+      .filter(person => {
+        const name = person.name.toLowerCase().trim();
+        const queryLowerCase = appliedQuery.toLowerCase().trim();
 
-      return name.includes(queryLowerCase);
-    });
+        return name.includes(queryLowerCase);
+      });
+  }, [appliedQuery, query]);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay),
@@ -45,9 +47,9 @@ export const App: React.FC = () => {
     applyQuery(event.target.value);
   };
 
-  // eslint-disable-next-line max-len
-  const handlePersonClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, person: Person) => {
-    event.preventDefault();
+  const handlePersonClick = (
+    person: Person,
+  ) => {
     if (selectedPerson === person) {
       setSelectedPerson(null);
 
@@ -69,6 +71,7 @@ export const App: React.FC = () => {
         onQueryChange={handleQueryChange}
         onPersonClick={handlePersonClick}
         onFocus={() => setIsDropdownActive(true)}
+        onBlur={() => setIsDropdownActive(false)}
       />
     </main>
   );
