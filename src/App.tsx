@@ -10,16 +10,17 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const personInfo =`${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`;
+  const personInfo = `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`;
 
   const handleQueryChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    delay: number) => {
-      setQuery(event.target.value);
+    delay: number,
+  ) => {
+    setQuery(event.target.value);
 
-      setTimeout(() => {
-        setAppliedQuery(event.target.value)
-      }, delay)
+    setTimeout(() => {
+      setAppliedQuery(event.target.value);
+    }, delay);
   };
 
   const filteredPeople = useMemo(() => {
@@ -28,17 +29,18 @@ export const App: React.FC = () => {
       const lowerQuery = appliedQuery.toLowerCase().trim();
 
       return name.includes(lowerQuery);
-    })
+    });
   }, [appliedQuery]);
 
   const onSelected = (
     event: React.MouseEvent<HTMLParagraphElement, MouseEvent>,
-    person: Person) => {
-      event.preventDefault();
-      setSelectedPerson(person);
-      setAppliedQuery(person.name);
-      setQuery(person.name)
-  }
+    person: Person,
+  ) => {
+    event.preventDefault();
+    setSelectedPerson(person);
+    setAppliedQuery(person.name);
+    setQuery(person.name);
+  };
 
   return (
     <main className="section">
@@ -59,28 +61,32 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {inputFocus &&
-          <div className="dropdown-menu" role="menu">
-            <div className="dropdown-content">
-              {filteredPeople.length === 0
-                ? (
-                  <div className="dropdown-item">
-                    <p>No selected person</p>
-                  </div>
-                )
-                : (filteredPeople.map(person => (
-                  <div className="dropdown-item">
-                    <p
-                      className={person.sex === 'f' ? 'has-text-danger' : 'has-text-link'}
-                      style={{ cursor: 'pointer' }}
-                      onMouseDown={(event) => onSelected(event, person)}
-                    >
-                      {person.name}
-                    </p>
-                  </div>
-                )))}
+        {inputFocus
+          && (
+            <div className="dropdown-menu" role="menu">
+              <div className="dropdown-content">
+                {filteredPeople.length === 0
+                  ? (
+                    <div className="dropdown-item">
+                      <p>No selected person</p>
+                    </div>
+                  )
+                  : (filteredPeople.map(person => (
+                    <div className="dropdown-item">
+                      <p
+                        className={person.sex === 'f'
+                          ? 'has-text-danger' : 'has-text-link'}
+                        style={{ cursor: 'pointer' }}
+                        role="presentation"
+                        onMouseDown={(event) => onSelected(event, person)}
+                      >
+                        {person.name}
+                      </p>
+                    </div>
+                  )))}
+              </div>
             </div>
-          </div>}
+          )}
       </div>
     </main>
   );
