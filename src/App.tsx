@@ -35,7 +35,7 @@ export const App: React.FC = () => {
 
         return name.includes(queryLowerCase);
       });
-  }, [appliedQuery, query]);
+  }, [appliedQuery]);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay),
