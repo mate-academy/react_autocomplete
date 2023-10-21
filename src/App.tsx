@@ -18,9 +18,9 @@ function debounce(callback: Function, delay: number) {
   };
 }
 
-export const App: React.FC = () => {
-  const delay = 600;
+const delay = 600;
 
+export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isDropdownActive, setIsDropdownActive] = useState(false);

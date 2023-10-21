@@ -27,7 +27,7 @@ export const Autocomplete: React.FC<Props> = ({
       <h1 className="title">
         {!selectedPerson
           ? 'No person selected'
-          : `${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`}
+          : `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
       </h1>
 
       <div className="dropdown is-active">
