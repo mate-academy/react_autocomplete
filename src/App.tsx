@@ -1,57 +1,78 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { Autocomplete } from './components/Autocomplete';
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+function debounce(callback: Function, delay: number) {
+  let timeoutId = 0;
+
+  return (...args: any) => {
+    window.clearTimeout(timeoutId);
+
+    timeoutId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
+
+const delay = 600;
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isDropdownActive, setIsDropdownActive] = useState(false);
+
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const filteredArray = useMemo(() => {
+    return peopleFromServer
+      .filter(person => {
+        const name = person.name.toLowerCase().trim();
+        const queryLowerCase = appliedQuery.toLowerCase().trim();
+
+        return name.includes(queryLowerCase);
+      });
+  }, [appliedQuery]);
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, delay),
+    [appliedQuery, delay],
+  );
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
+
+  const handlePersonClick = (
+    person: Person,
+  ) => {
+    if (selectedPerson === person) {
+      setSelectedPerson(null);
+
+      return;
+    }
+
+    setSelectedPerson(person);
+    setQuery(person.name);
+    setIsDropdownActive(false);
+  };
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
-
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Autocomplete
+        people={filteredArray}
+        selectedPerson={selectedPerson}
+        isDropdownActive={isDropdownActive}
+        query={query}
+        onQueryChange={handleQueryChange}
+        onPersonClick={handlePersonClick}
+        onFocus={() => setIsDropdownActive(true)}
+        onBlur={() => setIsDropdownActive(false)}
+      />
     </main>
   );
 };
