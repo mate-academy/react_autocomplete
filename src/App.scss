@@ -1,3 +1,15 @@
 iframe {
   display: none;
 }
+
+.dropdown-item {
+  &:hover {
+    cursor: pointer;
+    background-color: rgb(240, 240, 240);
+  }
+
+  &--no-suggestion:hover {
+    cursor: default;
+    background-color: #fff;
+  }
+}
