@@ -5,33 +5,45 @@ import { Person } from '../types/Person';
 
 type Props = {
   people: Person[];
-  selectedPerson?: Person | null;
-  onSelect: (person: Person) => void;
+  onSelect: (person: Person | null) => void;
+  delay: number;
 };
 
 export const AutoComplete: React.FC<Props> = ({
   people,
-  selectedPerson,
+  delay,
   onSelect = () => { },
 }) => {
   const [visibleList, setVisibleList] = useState(false);
-  const [query, setQuery] = useState(selectedPerson?.name || '');
+  const [query, setQuery] = useState('');
   const [applieQuery, setAppliedQuery] = useState('');
 
+  if (query === '') {
+    onSelect(null);
+  }
+
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, 1000),
-    [setAppliedQuery],
+    debounce(setAppliedQuery, delay),
+    [],
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setVisibleList(true);
   };
 
   const filteredPeople = useMemo(() => {
     return people
       .filter(p => p.name.toLowerCase().includes(applieQuery.toLowerCase()));
   }, [applieQuery, people]);
+
+  const handleSelect = (person: Person) => {
+    onSelect(person);
+    setQuery(person.name);
+    setAppliedQuery(person.name);
+    setVisibleList(false);
+  };
 
   return (
     <div className={classNames('dropdown', { 'is-active': visibleList })}>
@@ -54,7 +66,7 @@ export const AutoComplete: React.FC<Props> = ({
               key={person.slug}
               href="/"
               className="dropdown-item"
-              onMouseDown={() => onSelect(person)}
+              onMouseDown={() => handleSelect(person)}
             >
               {person.name}
             </a>
