@@ -3,6 +3,7 @@ import React, {
   useMemo, useState,
 } from 'react';
 import cn from 'classnames';
+import './dropdown.scss';
 import debounce from 'lodash.debounce';
 import { Person } from '../types/Person';
 
