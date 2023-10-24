@@ -1,9 +1,9 @@
-import { Person } from '../types/Person';
+import { Person, PersonSex } from '../types/Person';
 
 export const peopleFromServer: Person[] = [
   {
     name: 'Carolus Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1832,
     died: 1905,
     fatherName: 'Carel Haverbeke',
@@ -12,7 +12,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Emma de Milliano',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1876,
     died: 1956,
     fatherName: 'Petrus de Milliano',
@@ -21,7 +21,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Maria de Rycke',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1683,
     died: 1724,
     fatherName: 'Frederik de Rycke',
@@ -30,7 +30,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Jan van Brussel',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1714,
     died: 1748,
     fatherName: 'Jacobus van Brussel',
@@ -39,7 +39,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Philibert Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1907,
     died: 1997,
     fatherName: 'Emile Haverbeke',
@@ -48,7 +48,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Jan Frans van Brussel',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1761,
     died: 1833,
     fatherName: 'Jacobus Bernardus van Brussel',
@@ -57,7 +57,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Pauwels van Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1535,
     died: 1582,
     fatherName: 'N. van Haverbeke',
@@ -66,7 +66,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Clara Aernoudts',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1918,
     died: 2012,
     fatherName: 'Henry Aernoudts',
@@ -75,7 +75,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Emile Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1877,
     died: 1968,
     fatherName: 'Carolus Haverbeke',
@@ -84,7 +84,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Lieven de Causmaecker',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1696,
     died: 1724,
     fatherName: 'Carel de Causmaecker',
@@ -93,7 +93,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Pieter Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1602,
     died: 1642,
     fatherName: 'Lieven van Haverbeke',
@@ -102,7 +102,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Livina Haverbeke',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1692,
     died: 1743,
     fatherName: 'Daniel Haverbeke',
@@ -111,7 +111,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Pieter Bernard Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1695,
     died: 1762,
     fatherName: 'Willem Haverbeke',
@@ -120,7 +120,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Lieven van Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1570,
     died: 1636,
     fatherName: 'Pauwels van Haverbeke',
@@ -129,7 +129,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Joanna de Causmaecker',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1762,
     died: 1807,
     fatherName: 'Bernardus de Causmaecker',
@@ -138,7 +138,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Willem Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1668,
     died: 1731,
     fatherName: 'Lieven Haverbeke',
@@ -147,7 +147,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Pieter Antone Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1753,
     died: 1798,
     fatherName: 'Jan Francies Haverbeke',
@@ -156,7 +156,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Maria van Brussel',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1801,
     died: 1834,
     fatherName: 'Jan Frans van Brussel',
@@ -165,7 +165,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Angela Haverbeke',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1728,
     died: 1734,
     fatherName: 'Pieter Bernard Haverbeke',
@@ -174,7 +174,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Elisabeth Haverbeke',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1711,
     died: 1754,
     fatherName: 'Jan Haverbeke',
@@ -183,7 +183,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Lievijne Jans',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1542,
     died: 1582,
     fatherName: null,
@@ -192,7 +192,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Bernardus de Causmaecker',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1721,
     died: 1789,
     fatherName: 'Lieven de Causmaecker',
@@ -201,7 +201,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Jacoba Lammens',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1699,
     died: 1740,
     fatherName: 'Lieven Lammens',
@@ -210,7 +210,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Pieter de Decker',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1705,
     died: 1780,
     fatherName: 'Joos de Decker',
@@ -219,7 +219,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Joanna de Pape',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1654,
     died: 1723,
     fatherName: 'Vincent de Pape',
@@ -228,7 +228,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Daniel Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1652,
     died: 1723,
     fatherName: 'Lieven Haverbeke',
@@ -237,7 +237,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Lieven Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1631,
     died: 1676,
     fatherName: 'Pieter Haverbeke',
@@ -246,7 +246,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Martina de Pape',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1666,
     died: 1727,
     fatherName: 'Vincent de Pape',
@@ -255,7 +255,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Jan Francies Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1725,
     died: 1779,
     fatherName: 'Pieter Bernard Haverbeke',
@@ -264,7 +264,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Maria Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1905,
     died: 1997,
     fatherName: 'Emile Haverbeke',
@@ -273,7 +273,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Petronella de Decker',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1731,
     died: 1781,
     fatherName: 'Pieter de Decker',
@@ -282,7 +282,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Livina Sierens',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1761,
     died: 1826,
     fatherName: 'Jan Sierens',
@@ -291,7 +291,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Laurentia Haverbeke',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1710,
     died: 1786,
     fatherName: 'Jan Haverbeke',
@@ -300,7 +300,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Carel Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1796,
     died: 1837,
     fatherName: 'Pieter Antone Haverbeke',
@@ -309,7 +309,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Elisabeth Hercke',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1632,
     died: 1674,
     fatherName: 'Willem Hercke',
@@ -318,7 +318,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Jan Haverbeke',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1671,
     died: 1731,
     fatherName: 'Lieven Haverbeke',
@@ -327,7 +327,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Anna van Hecke',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1607,
     died: 1670,
     fatherName: 'Paschasius van Hecke',
@@ -336,7 +336,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Maria Sturm',
-    sex: 'f',
+    sex: PersonSex.Female,
     born: 1835,
     died: 1917,
     fatherName: 'Charles Sturm',
@@ -345,7 +345,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Jacobus Bernardus van Brussel',
-    sex: 'm',
+    sex: PersonSex.Male,
     born: 1736,
     died: 1809,
     fatherName: 'Jan van Brussel',
