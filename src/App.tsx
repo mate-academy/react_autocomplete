@@ -29,6 +29,7 @@ export const App: React.FC = () => {
 
     if (event.target.value === appliedQuery) {
       aplyQuery.cancel();
+      setIsFocusedInput(true);
     }
 
     setQuery(event.target.value);
