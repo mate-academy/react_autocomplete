@@ -6,6 +6,7 @@ import { peopleFromServer } from './data/people';
 
 export const App: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<Person | null>(null);
+  const delay = 1000;
 
   return (
     <main className="section">
@@ -16,7 +17,7 @@ export const App: React.FC = () => {
       </h1>
       <Dropdown
         users={peopleFromServer}
-        delay={1000}
+        delay={delay}
         onSelected={setSelectedUser}
       />
     </main>

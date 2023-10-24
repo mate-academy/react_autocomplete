@@ -1,5 +1,9 @@
 import { debounce } from 'lodash';
-import { useCallback, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 import cn from 'classnames';
 import { Person } from '../../types/Person';
 import { PeopleList } from '../PeopleList';
@@ -7,7 +11,7 @@ import { PeopleList } from '../PeopleList';
 interface Props {
   users: Person[];
   delay: number;
-  onSelected?: (person: Person | null) => void;
+  onSelected: (person: Person | null) => void;
 }
 
 export const Dropdown: React.FC<Props> = ({
@@ -22,11 +26,10 @@ export const Dropdown: React.FC<Props> = ({
   const filteredPeople: Person[] = useMemo(() => {
     return users.filter(person => person.name.toLowerCase()
       .includes(appliedQuery.trim().toLowerCase()));
-  }, [appliedQuery]);
+  }, [appliedQuery, users]);
 
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay),
-    [appliedQuery],
+    debounce(setAppliedQuery, delay), [],
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +45,9 @@ export const Dropdown: React.FC<Props> = ({
   };
 
   return (
-    <div className={cn('dropdown', { 'is-active': isVisible })}>
+    <div className={cn('dropdown',
+      { 'is-active': isVisible })}
+    >
       <div className="dropdown-trigger">
         <input
           type="text"

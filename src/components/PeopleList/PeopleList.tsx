@@ -23,8 +23,8 @@ export const PeopleList: React.FC<Props> = ({ users, onSelect }) => {
               } = person;
 
               return (
-                // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-                <div
+                <button
+                  type="button"
                   className="dropdown-item"
                   key={slug}
                   onMouseDown={() => onSelect(person)}
@@ -39,7 +39,7 @@ export const PeopleList: React.FC<Props> = ({ users, onSelect }) => {
                   >
                     {name}
                   </a>
-                </div>
+                </button>
               );
             })
             ) : (
