@@ -1,9 +1,10 @@
 .dropdown {
   &-item {
-    &--people {
+    &--person {
       &:hover {
         cursor: pointer;
-        background-color: rgb(243, 243, 243);
+        background-color: rgba(231, 231, 231, 0.932);
+        border-radius: 5px;
       }
     }
   }

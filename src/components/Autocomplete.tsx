@@ -6,12 +6,13 @@ import { Person } from '../types/Person';
 
 type Props = {
   people: Person[];
-  onSelected: (person: Person | null) => void;
+  onSelected?: (person: Person | null) => void;
   delay: number;
 };
+
 export const Autocomplete: React.FC<Props> = ({
   people,
-  onSelected,
+  onSelected = () => {},
   delay,
 }) => {
   const [query, setQuery] = useState('');
@@ -37,10 +38,15 @@ export const Autocomplete: React.FC<Props> = ({
     onSelected(person);
     setQuery(person.name);
     setAppliedQuery(person.name);
+    setІsDisplayedList(false);
   };
 
   return (
-    <div className="dropdown is-active">
+    <div
+      className={classNames('dropdown', {
+        'is-active': isDisplayedList
+      })}
+    >
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -63,11 +69,12 @@ export const Autocomplete: React.FC<Props> = ({
             ) : (
               filteredPeople.map(person => (
                 <div
-                  className="dropdown-item dropdown-item--people"
+                  className="dropdown-item dropdown-item--person"
                   key={person.slug}
                   role="button"
                   tabIndex={0}
                   onMouseDown={() => handleSelected(person)}
+                  onKeyDown={() => handleSelected(person)}
                 >
                   <hr className="dropdown-divider" />
                   <p className={classNames({
