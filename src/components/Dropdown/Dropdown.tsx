@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { Person } from '../../types/Person';
 
 type Props = {
@@ -17,7 +18,11 @@ export const Dropdown: React.FC<Props> = ({
             key={person.slug}
             href="/#"
             onMouseDown={() => handlePersonSelect(person)}
-            className="dropdown-item"
+            className={cn(
+              { 'has-text-primary': person.sex === 'f' },
+              { 'has-text-link': person.sex === 'm' },
+              'dropdown-item',
+            )}
           >
             {person.name}
           </a>

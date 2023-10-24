@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 import './App.scss';
 import cn from 'classnames';
@@ -12,6 +12,7 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState<string>('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isFocusedInput, setIsFocusedInput] = useState(false);
+  const [firstRender, setFirstRender] = useState(true);
 
   const aplyQuery = useCallback(
     debounce(setAppliedQuery, 1000),
@@ -20,6 +21,7 @@ export const App: React.FC = () => {
 
   const handleQueryChange = ((event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
+    setIsFocusedInput(false);
 
     aplyQuery(event.target.value);
 
@@ -32,7 +34,8 @@ export const App: React.FC = () => {
 
   const filteredPeople: Person[] = useMemo(() => {
     return peopleFromServer
-      .filter(person => person.name.includes(appliedQuery));
+      .filter(person => person.name.toLocaleLowerCase()
+        .includes(appliedQuery.toLocaleLowerCase()));
   }, [appliedQuery]);
 
   const handlePersonSelect = (person: Person) => {
@@ -40,6 +43,16 @@ export const App: React.FC = () => {
     setQuery(person.name);
     setIsFocusedInput(false);
   };
+
+  useEffect(() => {
+    setFirstRender(false);
+  }, []);
+
+  useEffect(() => {
+    if (!firstRender) {
+      setIsFocusedInput(true);
+    }
+  }, [appliedQuery]);
 
   return (
     <main className="section">
