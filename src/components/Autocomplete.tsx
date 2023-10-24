@@ -6,7 +6,7 @@ import { Person } from '../types/Person';
 
 type Props = {
   people: Person[];
-  onSelected?: (person: Person | null) => void;
+  onSelected: (person: Person | null) => void;
   delay: number;
 };
 
@@ -18,11 +18,15 @@ export const Autocomplete: React.FC<Props> = ({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isDisplayedList, setІsDisplayedList] = useState(false);
-  // eslint-disable-next-line
+
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay),
-    [],
+    debounce((value) => {
+      setAppliedQuery(value.trim() !== '' ? value : '');
+      setІsDisplayedList(true);
+    }, delay),
+    [setAppliedQuery],
   );
+
 
   const filteredPeople = useMemo(() => {
     return people.filter(person => person
@@ -30,8 +34,12 @@ export const Autocomplete: React.FC<Props> = ({
   }, [appliedQuery, people]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
+    const newQuery = event.target.value;
+
+    setІsDisplayedList(false);
+
+    setQuery(newQuery);
+    applyQuery(newQuery);
   };
 
   const handleSelected = (person: Person) => {
@@ -44,7 +52,7 @@ export const Autocomplete: React.FC<Props> = ({
   return (
     <div
       className={classNames('dropdown', {
-        'is-active': isDisplayedList
+        'is-active': isDisplayedList,
       })}
     >
       <div className="dropdown-trigger">
