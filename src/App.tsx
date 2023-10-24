@@ -4,6 +4,8 @@ import './App.scss';
 import cn from 'classnames';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { Input } from './components/Input/Input';
+import { Dropdown } from './components/Dropdown/Dropdown';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -28,30 +30,16 @@ export const App: React.FC = () => {
     setQuery(event.target.value);
   });
 
-  const filteredPeople = useMemo(() => {
+  const filteredPeople: Person[] = useMemo(() => {
     return peopleFromServer
-      .filter(person => person.name.includes(appliedQuery))
-      .map(person => {
-        return (
-          <>
-            <a
-              key={person.slug}
-              href="/#"
-              onClick={() => {
-                setSelectedPerson(person);
-                setQuery(person.name);
-                setIsFocusedInput(false);
-              }}
-              className="dropdown-item"
-            >
-              {person.name}
-            </a>
-
-            <hr className="dropdown-divider" />
-          </>
-        );
-      });
+      .filter(person => person.name.includes(appliedQuery));
   }, [appliedQuery]);
+
+  const handlePersonSelect = (person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+    setIsFocusedInput(false);
+  };
 
   return (
     <main className="section">
@@ -66,30 +54,18 @@ export const App: React.FC = () => {
         { 'is-active': isFocusedInput },
       )}
       >
-        <div className="dropdown-trigger">
-          <input
-            value={query}
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-            onChange={(event => handleQueryChange(event))}
-            onFocus={() => setIsFocusedInput(true)}
-          />
-        </div>
-
-        <div className="dropdown-menu" id="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {filteredPeople.length
-              ? filteredPeople
-              : (
-                <div
-                  className="dropdown-item"
-                >
-                  No matching suggestions
-                </div>
-              )}
-          </div>
-        </div>
+        <Input
+          value={query}
+          type="text"
+          placeholder="Enter a part of the name"
+          onChangeValue={handleQueryChange}
+          focusChanger={setIsFocusedInput}
+        />
+        <Dropdown
+          filteredPeople={filteredPeople}
+          handlePersonSelect={handlePersonSelect}
+          appliedQuery={appliedQuery}
+        />
       </div>
     </main>
   );
