@@ -18,7 +18,7 @@ export const Autocomplete: React.FC<Props> = ({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isDisplayedList, setІsDisplayedList] = useState(false);
-
+  // eslint-disable-next-line
   const applyQuery = useCallback(
     debounce((value) => {
       setAppliedQuery(value.trim() !== '' ? value : '');
@@ -26,7 +26,6 @@ export const Autocomplete: React.FC<Props> = ({
     }, delay),
     [setAppliedQuery],
   );
-
 
   const filteredPeople = useMemo(() => {
     return people.filter(person => person
