@@ -45,6 +45,7 @@ export const App: React.FC = () => {
     setSelectedPerson(person);
     setQuery(person.name);
     setIsFocusedInput(false);
+    setAppliedQuery(person.name);
   };
 
   useEffect(() => {
