@@ -38,7 +38,12 @@ export const PeopleAutocomplete: React.FC<Props> = (
     applyQuery(event.target.value);
   };
 
-  const handleSelectPerson = (person: Person) => {
+  const handleSelectPerson = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    person: Person,
+  ) => {
+    event.preventDefault();
+
     onSelect(person);
     setQuery(person.name);
     setShowSuggestions(false);
@@ -88,7 +93,7 @@ export const PeopleAutocomplete: React.FC<Props> = (
                 href="/#"
                 className="dropdown-item"
                 key={person.slug}
-                onClick={() => handleSelectPerson(person)}
+                onClick={(event) => handleSelectPerson(event, person)}
               >
                 <p className="has-text-link">{person.name}</p>
               </a>
