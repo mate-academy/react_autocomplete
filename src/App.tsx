@@ -64,7 +64,6 @@ export const App: React.FC = () => {
         <Dropdown
           filteredPeople={filteredPeople}
           handlePersonSelect={handlePersonSelect}
-          appliedQuery={appliedQuery}
         />
       </div>
     </main>
