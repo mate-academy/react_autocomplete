@@ -18,12 +18,15 @@ export const App: React.FC = () => {
 
   const aplyQuery = useMemo(
     () => debounce(setAppliedQuery, 1000),
-    [setAppliedQuery],
+    [appliedQuery],
   );
 
   const handleQueryChange = ((event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
-    setIsFocusedInput(false);
+
+    if (isFocusedInput) {
+      setIsFocusedInput(false);
+    }
 
     aplyQuery(event.target.value);
 

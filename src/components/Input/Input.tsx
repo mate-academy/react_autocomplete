@@ -20,7 +20,7 @@ export const Input: React.FC<Props> = ({
         type={type}
         placeholder={placeholder}
         className="input"
-        onChange={(event => onChangeValue(event))}
+        onChange={onChangeValue}
         onFocus={() => focusChanger(true)}
         onBlur={() => focusChanger(false)}
       />
