@@ -62,6 +62,13 @@ export const Dropdown: React.FC<Props> = ({
     setAppliedQuery(person.name);
   };
 
+  // setInterval(() => {
+  //   setIsActive(true);
+  //   console.log("Interval working...")
+  // }, 1000);
+
+  // console.log('Rendering...');
+
   return (
     <div className={cn('dropdown', { 'is-active': isActive })}>
       <div
