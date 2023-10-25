@@ -27,13 +27,17 @@ export const App: React.FC = () => {
   };
 
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, 1000),
-    [],
+    debounce(setAppliedQuery, 500),
+    [appliedQuery],
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsFocused(false);
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setTimeout(() => {
+      setIsFocused(true);
+    }, 1000);
   };
 
   return (
@@ -59,7 +63,7 @@ export const App: React.FC = () => {
         {isFocused && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
-              {filteredPeople.length > 0
+              {filteredPeople.length
                 ? (filteredPeople.map(person => (
                   <button
                     type="button"
