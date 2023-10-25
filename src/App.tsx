@@ -12,14 +12,6 @@ export const App: React.FC = () => {
   const [apliedQuery, setApliedQuery] = useState('');
   const [showPersonList, setShowPersonList] = useState(false);
 
-  // const nameSearch = useRef<HTMLInputElement>(null);
-
-  // useEffect(() => {
-  //   if (nameSearch.current) {
-  //     nameSearch.current.focus();
-  //   }
-  // }, []);
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyDebounce = useCallback(debounce(setApliedQuery, 1000), []);
 
@@ -28,8 +20,10 @@ export const App: React.FC = () => {
     : 'No selected person';
 
   const filterPerson: Person[] = useMemo(() => {
+    const normalizeQuery = apliedQuery.toLowerCase();
+
     return data.filter((person) => {
-      return person.name.includes(apliedQuery);
+      return person.name.toLowerCase().includes(normalizeQuery);
     });
   }, [apliedQuery, data]);
 
@@ -57,7 +51,6 @@ export const App: React.FC = () => {
             className="input"
             onBlur={() => setShowPersonList((prev) => !prev)}
             onFocus={() => setShowPersonList((prev) => !prev)}
-            // ref={nameSearch}
           />
           {query && (
             <button
