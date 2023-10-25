@@ -58,8 +58,8 @@ export const App: React.FC = () => {
 
         {filteredPeople.length > 0 ? (
           <DropDown
-            filteredPeople={filteredPeople}
-            setSelectedPerson={setSelectedPerson}
+            items={filteredPeople}
+            onSelect={setSelectedPerson}
             setQuery={setQuery}
           />
         ) : (
