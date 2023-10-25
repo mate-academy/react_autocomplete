@@ -13,9 +13,10 @@ export const Dropdown: React.FC<Props> = ({
   const people = filteredPeople
     .map(person => {
       return (
-        <>
+        <div
+          key={person.slug}
+        >
           <a
-            key={person.slug}
             href="/#"
             onMouseDown={() => handlePersonSelect(person)}
             className={cn(
@@ -28,7 +29,7 @@ export const Dropdown: React.FC<Props> = ({
           </a>
 
           <hr className="dropdown-divider" />
-        </>
+        </div>
       );
     });
 

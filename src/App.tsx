@@ -1,5 +1,5 @@
 import React, {
-  useCallback, useEffect, useMemo, useState,
+  useEffect, useMemo, useRef, useState,
 } from 'react';
 import debounce from 'lodash.debounce';
 import './App.scss';
@@ -14,11 +14,11 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState<string>('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isFocusedInput, setIsFocusedInput] = useState(false);
-  const [firstRender, setFirstRender] = useState(true);
+  const ref = useRef(true);
 
-  const aplyQuery = useCallback(
-    debounce(setAppliedQuery, 1000),
-    [],
+  const aplyQuery = useMemo(
+    () => debounce(setAppliedQuery, 1000),
+    [setAppliedQuery],
   );
 
   const handleQueryChange = ((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,14 +49,14 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    setFirstRender(false);
-  }, []);
-
-  useEffect(() => {
-    if (!firstRender) {
+    if (!ref.current) {
       setIsFocusedInput(true);
     }
-  }, [appliedQuery]);
+
+    if (ref) {
+      ref.current = false;
+    }
+  }, [appliedQuery, ref]);
 
   return (
     <main className="section">
