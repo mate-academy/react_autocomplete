@@ -15,24 +15,20 @@ export const DropMenu: React.FC<Props> = ({
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
         {visiblePeople.map(person => (
-          <div
-            className="dropdown-item"
+          <button
             key={person.slug}
+            type="button"
+            className={cn('dropdown-item', {
+              'has-text-link': person.sex === 'm',
+              'has-text-danger': person.sex === 'f',
+            })}
+            onClick={() => {
+              onSelected(person);
+            }}
+            style={{ cursor: 'pointer' }}
           >
-            <button
-              type="button"
-              className={cn({
-                'has-text-link': person.sex === 'm',
-                'has-text-danger': person.sex === 'f',
-              })}
-              onClick={() => {
-                onSelected(person);
-              }}
-              style={{ cursor: 'pointer' }}
-            >
-              {person.name}
-            </button>
-          </div>
+            {person.name}
+          </button>
         ))}
       </div>
     </div>

@@ -10,36 +10,44 @@ export const App: React.FC = () => {
   const [personName, setPersonName] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [visiblePeople, setVisiblePeople]
-    = useState<Person[]>([...peopleFromServer]);
-  const [isVisible, setIsVisible] = useState(true);
+  const [people, setPeople] = useState<Person[]>([...peopleFromServer]);
+  const [isDropdownVisible, setDropdownVisible] = useState(true);
   const [selectedPersonSlug, setSelectedPersonSlug] = useState('');
 
   const applyQuery = debounce(setAppliedQuery, 1000);
-  // not sure how to do it, just wait for a class
 
   useEffect(() => {
     const filteredPeople = getFilteredPeople(peopleFromServer, appliedQuery);
 
-    setVisiblePeople(filteredPeople);
+    setPeople(filteredPeople);
   }, [appliedQuery]);
 
-  const handleQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPersonName(event.target.value);
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value;
 
-    applyQuery(event.target.value);
-    if (event.target.value === '') {
-      setIsVisible(true);
+    if (inputValue) {
+      setPersonName(inputValue);
+      applyQuery(inputValue);
+    } else {
+      setDropdownVisible(true);
       setSelectedPersonSlug('');
+      setPersonName('');
+      applyQuery('');
     }
   };
 
+  const handlePersonSelected = (person: Person) => {
+    setPersonName(person.name);
+    setDropdownVisible(false);
+    setSelectedPersonSlug(person.slug);
+  };
+
   const findPerson = (slug: string) => {
-    return visiblePeople.find(person => person.slug === slug);
+    return people.find(person => person.slug === slug);
   };
 
   const selectedPerson = findPerson(selectedPersonSlug);
-  const isShowDropMenu = isFocused && isVisible && visiblePeople.length !== 0;
+  const isShowDropMenu = isFocused && isDropdownVisible && people.length;
 
   return (
     <main className="section">
@@ -55,18 +63,14 @@ export const App: React.FC = () => {
         <Input
           personName={personName}
           setIsFocused={setIsFocused}
-          visiblePeople={visiblePeople}
-          handleQuery={handleQuery}
+          visiblePeople={people}
+          handleQuery={handleQueryChange}
         />
 
         {isShowDropMenu && (
           <DropMenu
-            visiblePeople={visiblePeople}
-            onSelected={(person) => {
-              setPersonName(person.name);
-              setIsVisible(false);
-              setSelectedPersonSlug(person.slug);
-            }}
+            visiblePeople={people}
+            onSelected={handlePersonSelected}
           />
         )}
       </div>
