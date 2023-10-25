@@ -14,7 +14,7 @@ type Props = {
 
 export const Dropdown: React.FC<Props> = ({
   peopleFromServer,
-  onSelected = () => {},
+  onSelected,
 }) => {
   const [isActive, setIsActive] = useState(false);
   const [query, setQuery] = useState('');
@@ -22,7 +22,7 @@ export const Dropdown: React.FC<Props> = ({
 
   const applyQuery = useCallback(
     debounce((value) => {
-      setAppliedQuery(value.trim() !== '' ? value : '');
+      setAppliedQuery(value.trim());
       setIsActive(true);
     }, 1000),
     [setAppliedQuery],
