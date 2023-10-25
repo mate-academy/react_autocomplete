@@ -77,6 +77,7 @@ export const Dropdown: FC<Props> = ({ setSelectedPerson, delayTime }) => {
                 )
                 : (filteredPeople.map(person => (
                   <div className="dropdown-item" key={person.slug}>
+                    {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */}
                     <p
                       className={person.sex === 'f'
                         ? 'has-text-danger'

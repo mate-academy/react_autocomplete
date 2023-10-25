@@ -1,7 +1,7 @@
 import { useState, FC } from 'react';
 import './App.scss';
 import { Person } from './types/Person';
-import { Dropdown } from './components/Dropdown/Dropdown';
+import { Dropdown } from './components/Dropdown';
 
 export const App: FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person>();
