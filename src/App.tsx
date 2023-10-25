@@ -59,12 +59,18 @@ export const App: React.FC = () => {
 
         {shownList && (
           <div className="dropdown-menu" role="menu">
-            <PeopleList
-              people={filteredPeople}
-              setSelectedPerson={setSelectedPerson}
-              setShownList={setShownList}
-              setQuery={setQuery}
-            />
+            {filteredPeople.length
+              ? (
+                <PeopleList
+                  people={filteredPeople}
+                  setSelectedPerson={setSelectedPerson}
+                  setShownList={setShownList}
+                  setQuery={setQuery}
+                />
+              )
+              : (
+                <p>No matching suggestions</p>
+              )}
           </div>
         )}
       </div>
