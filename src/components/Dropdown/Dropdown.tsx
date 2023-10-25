@@ -65,11 +65,16 @@ const InnerDropdown: React.FC<Props> = ({
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
             {people.length ? (
-              people.map((person) => (
-                <a
-                  role="button"
+              people.map((person, index) => (
+                <div
                   className="dropdown-item"
+                  role="menuitem"
+                  tabIndex={index}
                   key={person.slug}
+                  onKeyDown={() => {
+                    onSelected(person);
+                    revealDelay(false);
+                  }}
                   onClick={() => {
                     onSelected(person);
                     revealDelay(false);
@@ -83,7 +88,7 @@ const InnerDropdown: React.FC<Props> = ({
                   >
                     {person.name}
                   </p>
-                </a>
+                </div>
               ))
             ) : (
               <div className="dropdown-item">
