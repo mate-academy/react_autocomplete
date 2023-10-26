@@ -14,7 +14,10 @@ export const App: React.FC = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(true);
   const [selectedPersonSlug, setSelectedPersonSlug] = useState('');
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 1000),
+    [appliedQuery],
+  );
 
   useEffect(() => {
     const filteredPeople = getFilteredPeople(peopleFromServer, appliedQuery);
