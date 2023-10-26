@@ -5,13 +5,13 @@ import { peopleFromServer } from '../data/people';
 import { Person } from '../types/Person';
 
 type Props = {
-  setSelectedPerson: (person: Person | null) => void;
+  setSelectedPerson: (person: Person) => void;
 };
 
 const DELAY = 1000;
 
 export const DropdownMenu: React.FC<Props> = ({ setSelectedPerson }) => {
-  const [isMenuShown, setIsMenuShown] = useState(false);
+  const [showUserList, setShowUserList] = useState(false);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
@@ -21,17 +21,25 @@ export const DropdownMenu: React.FC<Props> = ({ setSelectedPerson }) => {
     [appliedQuery],
   );
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, DELAY), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const applyQuery = useCallback(
+    debounce((value) => {
+      setAppliedQuery(value);
+      setShowUserList(true);
+    }, DELAY),
+    [],
+  );
 
-  const handleDropdownChange = (person: Person) => {
+  const handleUserSelect = (person: Person) => {
     setSelectedPerson(person);
-    setQuery('');
+    setQuery(person.name);
     setAppliedQuery('');
   };
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setShowUserList(false);
   };
 
   return (
@@ -43,15 +51,15 @@ export const DropdownMenu: React.FC<Props> = ({ setSelectedPerson }) => {
           className="input"
           value={query}
           onChange={handleQueryChange}
-          onFocus={() => setIsMenuShown(true)}
-          onBlur={() => setIsMenuShown(false)}
+          onFocus={() => setShowUserList(true)}
+          onBlur={() => setShowUserList(false)}
         />
       </div>
 
-      {isMenuShown && (
+      {showUserList && (
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {filteredPeople.length === 0 ? (
+            {!filteredPeople.length ? (
               <div className="dropdown-item">No matching suggestions</div>
             ) : (
               filteredPeople.map((person) => (
@@ -61,7 +69,7 @@ export const DropdownMenu: React.FC<Props> = ({ setSelectedPerson }) => {
                     className={cn('has-text-link', {
                       'has-text-danger': person.sex === 'f',
                     })}
-                    onMouseDown={() => handleDropdownChange(person)}
+                    onMouseDown={() => handleUserSelect(person)}
                   >
                     {person.name}
                   </a>

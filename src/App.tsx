@@ -6,7 +6,7 @@ import { DropdownMenu } from './components/DropdownMenu';
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const onSelected = (person: Person | null) => {
+  const onSelected = (person: Person) => {
     setSelectedPerson(person);
   };
 
