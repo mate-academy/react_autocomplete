@@ -19,9 +19,14 @@ function debounce(
 type Props = {
   people: Person[];
   handleButton: (slugSelect: string) => void
+  setPersonIndex: (index: number) => void
 };
 
-export const Dropdown: React.FC<Props> = ({ people, handleButton }) => {
+export const Dropdown: React.FC<Props> = ({
+  people,
+  handleButton,
+  setPersonIndex,
+}) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isPeopleVisible, setIsPeopleVisible] = useState(false);
@@ -39,6 +44,10 @@ export const Dropdown: React.FC<Props> = ({ people, handleButton }) => {
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+
+    if (event.target.value === '') {
+      setPersonIndex(-1);
+    }
   };
 
   const onFocusInput = () => {

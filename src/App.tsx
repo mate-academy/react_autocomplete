@@ -28,7 +28,11 @@ export const App: React.FC = () => {
         died={died}
       />
 
-      <Dropdown handleButton={selectPerson} people={peopleFromServer} />
+      <Dropdown
+        handleButton={selectPerson}
+        setPersonIndex={setVisiblePersonIndex}
+        people={peopleFromServer}
+      />
     </main>
   );
 };
