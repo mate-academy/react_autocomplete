@@ -42,22 +42,20 @@ export const Dropdown: React.FC<Props> = ({ people, handleButton }) => {
   };
 
   const onFocusInput = () => {
-    if (query === '') {
-      setIsPeopleVisible(true);
-    }
+    setIsPeopleVisible(true);
   };
 
   const onBlurInput = (event: React.FocusEvent<HTMLInputElement>) => {
-    if (query === '' && event.relatedTarget === null) {
+    if (event.relatedTarget === null) {
       setIsPeopleVisible(false);
     }
   };
 
-  const clickButton = (newPersonSlug: string) => {
+  const clickButton = (selectPerson: Person) => {
     setIsPeopleVisible(false);
-    setQuery('');
-    setAppliedQuery('');
-    handleButton(newPersonSlug);
+    setQuery(selectPerson.name);
+    setAppliedQuery(selectPerson.name);
+    handleButton(selectPerson.slug);
   };
 
   return (
@@ -100,7 +98,7 @@ export const Dropdown: React.FC<Props> = ({ people, handleButton }) => {
                 <button
                   type="button"
                   className="button is-success is-small"
-                  onClick={() => clickButton(person.slug)}
+                  onClick={() => clickButton(person)}
                 >
                   <span className="icon is-small">
                     <i className="fas fa-check" />
