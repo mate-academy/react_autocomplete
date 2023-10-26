@@ -20,15 +20,18 @@ export const Dropdown: React.FC<Props> = ({ persons, onSelect }) => {
     onSelect(person);
   };
 
-  const handleQuery = (inputQuery: string, delay: number) => {
+  const handleQuery = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    delay: number,
+  ) => {
     if (isActiveSuggestions) {
       setIsActiveSuggestions(false);
     }
 
-    setQuery(inputQuery);
-    setAppliedQuery(inputQuery);
+    setQuery(event.target.value);
 
     setTimeout(() => {
+      setAppliedQuery(event.target.value);
       setIsActiveSuggestions(true);
     }, delay);
   };
@@ -54,7 +57,7 @@ export const Dropdown: React.FC<Props> = ({ persons, onSelect }) => {
           placeholder="Enter a part of the name"
           className="input"
           value={query}
-          onChange={(event) => handleQuery(event.target.value, 1000)}
+          onChange={(event) => handleQuery(event, 1000)}
           onFocus={() => setIsActiveSuggestions(true)}
           onBlur={() => setIsActiveSuggestions(false)}
         />
