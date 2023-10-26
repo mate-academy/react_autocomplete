@@ -15,25 +15,25 @@ const DropdownMenu: React.FC<Props> = React.memo(
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {filterPerson.length > 0 ? (
-                  filterPerson.map((person: Person) => (
-                    <div
-                      key={person.slug}
-                      role="button"
-                      className="dropdown-item"
-                      onMouseDown={() => {
-                        handlerOnMouseDown(person);
-                      }}
-                      tabIndex={0}
+                filterPerson.map((person: Person) => (
+                  <div
+                    key={person.slug}
+                    role="button"
+                    className="dropdown-item"
+                    onMouseDown={() => {
+                      handlerOnMouseDown(person);
+                    }}
+                    tabIndex={0}
+                  >
+                    <p
+                      className={`person has-text-${
+                        person.sex === 'm' ? 'link' : 'danger'
+                      }`}
                     >
-                      <p
-                        className={`person has-text-${
-                          person.sex === 'm' ? 'link' : 'danger'
-                        }`}
-                      >
-                        {person.name}
-                      </p>
-                    </div>
-                  ))
+                      {person.name}
+                    </p>
+                  </div>
+                ))
               ) : (
                 <span>No matching suggestions</span>
               )}
