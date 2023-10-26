@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { Dropdown } from './Dropdown';
 
 export const App: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
@@ -15,7 +16,6 @@ export const App: React.FC = () => {
   };
 
   const handleInputFocus = () => {
-    clearTimeout(0);
     setIsFocused(true);
   };
 
@@ -43,48 +43,15 @@ export const App: React.FC = () => {
           : 'No selected person'}
       </h1>
 
-      <div className={`dropdown ${isFocused ? 'is-active' : ''}`}>
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-            value={inputValue}
-            onChange={handleInputChange}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          {(isFocused || inputValue === '') && (
-            filteredPeople.length > 0 ? (
-              filteredPeople.map(person => (
-                <button
-                  type="button"
-                  className="dropdown-content"
-                  key={person.name}
-                  onClick={() => handleSuggestionClick(person)}
-                >
-                  <div className="dropdown-item">
-                    <p className="has-text-link">
-                      {person.name}
-                    </p>
-                  </div>
-                </button>
-              ))
-            ) : (
-              <div className="dropdown-content">
-                <div className="dropdown-item">
-                  <p className="has-text-danger">
-                    No matching suggestions
-                  </p>
-                </div>
-              </div>
-            )
-          )}
-        </div>
-      </div>
+      <Dropdown
+        isFocused={isFocused}
+        inputValue={inputValue}
+        filteredPeople={filteredPeople}
+        handleInputChange={handleInputChange}
+        handleInputFocus={handleInputFocus}
+        handleInputBlur={handleInputBlur}
+        handleSuggestionClick={handleSuggestionClick}
+      />
     </main>
   );
 };
