@@ -6,63 +6,53 @@ import {
   useRef,
   useEffect,
 } from 'react';
+import debounce from 'lodash.debounce';
 import { Person } from '../types/Person';
 
 type Props = {
   people: Person[];
-  slectedPerson:(person: Person)=> void;
+  setSelectedPerson:(person: Person)=> void;
   delay:number;
 };
-function debounce (callback:Function, delay:number) {
-  let timerId = 0;
-  return (...arg: any) => {
-    window.clearTimeout(timerId);
-    timerId = window.setTimeout(() =>{
-      callback(...arg);
-    }, delay);
-  };
-}
 
 export const People: React.FC<Props> = ({
   people,
-  slectedPerson,
-  delay
+  setSelectedPerson,
+  delay,
 }) => {
-  
   const [hasInputFocus, setHasInputFocus] = useState(false);
   const [query, setQuery] = useState('');
   const [querywithdelay, setQuerywithdelay] = useState('');
-  
-  const aplayquerywithdelay = useCallback(
-    debounce(setQuerywithdelay,delay),[]
-  )
 
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const aplayquerywithdelay = useCallback(
+    debounce(setQuerywithdelay, delay), [],
+  );
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement >) => {
     setQuery(event.target.value.toLowerCase().trim());
-    aplayquerywithdelay(event.target.value.toLowerCase().trim())
+    aplayquerywithdelay(event.target.value.toLowerCase().trim());
   };
 
   const filteredPeople = useMemo(() => {
-    
-      return people.filter(person => person.name.toLowerCase().includes(querywithdelay));
-
-  }, [ querywithdelay]);
+    return people.filter((person) => {
+      return person.name.toLowerCase().includes(querywithdelay);
+    });
+  }, [querywithdelay, people]);
 
   const handleSelectPerson = (item: Person) => {
-    slectedPerson(item);
-    setQuery(item.name)
-    setQuerywithdelay(item.name)
+    setSelectedPerson(item);
+    setQuery(item.name);
+    setQuerywithdelay(item.name);
   };
 
-  const inputfocus = useRef<HTMLInputElement>(null)
-  
-  useEffect(()=>{
+  const inputfocus = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
     if (inputfocus.current && hasInputFocus) {
-      inputfocus.current.focus()
+      inputfocus.current.focus();
     }
-    
-  },[hasInputFocus])
-  
+  }, [hasInputFocus]);
+
   return (
     <div className={classNames('dropdown', {
       'is-active': hasInputFocus,
@@ -92,11 +82,11 @@ export const People: React.FC<Props> = ({
               <div
                 className="dropdown-item"
                 key={item.name}
+                tabIndex={0}
                 role="button"
                 onMouseDown={() => handleSelectPerson(item)}
               >
-                <p className="has-text-link"
-                >
+                <p className="has-text-link">
                   {item.name}
                 </p>
               </div>

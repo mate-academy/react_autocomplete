@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
-import { People} from './People';
+import { People } from './People';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  console.log(selectedPerson);
-  
+
   return (
     <main className="section">
       <h1 className="title">
@@ -18,7 +17,7 @@ export const App: React.FC = () => {
       </h1>
       <People
         people={peopleFromServer}
-        slectedPerson={setSelectedPerson}
+        setSelectedPerson={setSelectedPerson}
         delay={1000}
       />
     </main>
