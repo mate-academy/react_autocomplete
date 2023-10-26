@@ -4,6 +4,7 @@ import { Person } from './types/Person';
 interface DropdownProps {
   isFocused: boolean;
   inputValue: string;
+  showSuggestions: boolean;
   filteredPeople: Person[];
   handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleInputFocus: () => void;
@@ -15,13 +16,17 @@ export const Dropdown: React.FC<DropdownProps> = ({
   isFocused,
   inputValue,
   filteredPeople,
+  showSuggestions,
   handleInputChange,
   handleInputFocus,
   handleInputBlur,
   handleSuggestionClick,
 }) => {
   return (
-    <div className={`dropdown ${isFocused ? 'is-active' : ''}`}>
+    <div className={`dropdown ${isFocused
+      ? 'is-active'
+      : ''}`}
+    >
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -35,38 +40,39 @@ export const Dropdown: React.FC<DropdownProps> = ({
       </div>
 
       <div className="dropdown-menu" role="menu">
-        {(isFocused || inputValue === '') && (
-          filteredPeople.length > 0 ? (
-            filteredPeople.map(person => {
-              const { name, sex } = person;
+        {showSuggestions && (
+          filteredPeople.length > 0
+            ? (
+              filteredPeople.map(person => {
+                const { name, sex } = person;
 
-              return (
-                <button
-                  type="button"
-                  className="dropdown-content"
-                  key={name}
-                  onClick={() => handleSuggestionClick(person)}
-                >
-                  <div className="dropdown-item">
-                    <p className={sex === 'f'
-                      ? 'has-text-danger'
-                      : 'has-text-link'}
-                    >
-                      {name}
-                    </p>
-                  </div>
-                </button>
-              );
-            })
-          ) : (
-            <div className="dropdown-content">
-              <div className="dropdown-item">
-                <p className="has-text-danger">
-                  No matching suggestions
-                </p>
+                return (
+                  <button
+                    type="button"
+                    className="dropdown-content"
+                    key={name}
+                    onClick={() => handleSuggestionClick(person)}
+                  >
+                    <div className="dropdown-item">
+                      <p className={sex === 'f'
+                        ? 'has-text-danger'
+                        : 'has-text-link'}
+                      >
+                        {name}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })
+            ) : (
+              <div className="dropdown-content">
+                <div className="dropdown-item">
+                  <p className="has-text-danger">
+                    No matching suggestions
+                  </p>
+                </div>
               </div>
-            </div>
-          )
+            )
         )}
       </div>
     </div>
