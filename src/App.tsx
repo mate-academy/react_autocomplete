@@ -36,7 +36,6 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
 
-    // Clear the selected person and set onFocus to true
     setSelectedPerson(null);
     setOnFocus(true);
   };
@@ -55,10 +54,11 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
             className="input"
             value={text}
             onChange={handleInputChange}
+            onFocus={() => setOnFocus(true)}
           />
         </div>
 
-        {debouncedInput && onFocus && (
+        {(debouncedInput || onFocus) && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {filteredPeople(peopleFromServer, debouncedInput).length === 0 ? (
