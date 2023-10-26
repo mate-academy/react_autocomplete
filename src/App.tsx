@@ -6,7 +6,7 @@ import { Person } from './types/Person';
 import DropdownMenu from './components/DropdownMenu/DropdownMenu';
 
 export const App: React.FC = () => {
-  const [data] = useState<Person[]>(peopleFromServer);
+  const data: Person[] = peopleFromServer;
   const [curentPerson, setCurrentPerson] = useState<null | Person>(null);
   const [query, setQuery] = useState('');
   const [apliedQuery, setApliedQuery] = useState('');

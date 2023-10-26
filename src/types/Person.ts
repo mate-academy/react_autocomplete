@@ -1,5 +1,4 @@
 export interface Person {
-  // id?: Key | null | undefined;
   name: string,
   sex: 'm' | 'f',
   born: number,
