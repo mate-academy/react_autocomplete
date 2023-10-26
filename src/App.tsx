@@ -1,10 +1,10 @@
 import React, { useMemo, useRef, useState } from 'react';
+
 import './App.scss';
+
 import { DropDown } from './components/DropDown';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-
-/*eslint-disable*/
 
 export const App: React.FC = () => {
   const [state, setState] = useState({
@@ -14,6 +14,8 @@ export const App: React.FC = () => {
     query: '',
     appliedQuery: '',
   });
+
+  // debounce
 
   const timeOut = useRef(0);
 
@@ -34,52 +36,65 @@ export const App: React.FC = () => {
     }, 1000);
   };
 
+  //
+
   const normalizeQuery = state.appliedQuery.toLowerCase().trim();
 
-  const filterByPerson = useMemo(() => {
+  const filteredByPerson = useMemo(() => {
     return peopleFromServer.filter(
       person => person.name.toLowerCase().includes(normalizeQuery),
     );
   }, [normalizeQuery]);
 
+  const {
+    isSelectedPersonData,
+    isSelectedInput,
+    isSelectedPerson,
+    query,
+  } = state;
+
   return (
     <main className="section">
       <h1 className="title">
-        {state.isSelectedPersonData ? (
-          `${state.isSelectedPersonData.name}
-          (${state.isSelectedPersonData.born}
-          = ${state.isSelectedPersonData.died})`
+        {isSelectedPersonData ? (
+          `${isSelectedPersonData.name}
+          (${isSelectedPersonData.born}
+          = ${isSelectedPersonData.died})`
         ) : (
           'No selected person'
         )}
 
       </h1>
 
-      <div className="dropdown is-active">
+      <div
+        className="dropdown is-active"
+      >
         <div
           className="dropdown-trigger"
-          onClick={() => setState({
-            ...state, isSelectedInput: true,
-          })}
         >
           <input
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            value={state.isSelectedPerson ? (
-              state.isSelectedPersonData?.name
+            value={isSelectedPerson ? (
+              isSelectedPersonData?.name
             ) : (
-              state.query
+              query
             )}
             onChange={handleQueryChange}
+            onFocus={() => setState({ ...state, isSelectedInput: true })}
+            onBlur={() => setState({ ...state, isSelectedInput: false })}
           />
         </div>
 
-        {state.isSelectedInput && (
-          <div className="dropdown-menu" role="menu">
+        {isSelectedInput && (
+          <div
+            className="dropdown-menu"
+            role="menu"
+          >
             <DropDown
               setState={setState}
-              filterByPerson={filterByPerson}
+              filteredByPerson={filteredByPerson}
             />
           </div>
         )}

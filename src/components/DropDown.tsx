@@ -1,7 +1,6 @@
 import cn from 'classnames';
 import { Person } from '../types/Person';
-
-/*eslint-disable*/
+import './DropDown.scss';
 
 type Props = {
   setState: React.Dispatch<React.SetStateAction<{
@@ -11,19 +10,23 @@ type Props = {
     query: string,
     appliedQuery: string,
   }>>,
-  filterByPerson: Person[],
+
+  filteredByPerson: Person[],
 };
 
 export const DropDown: React.FC<Props> = ({
   setState,
-  filterByPerson,
+  filteredByPerson,
 }) => {
   return (
     <div className="dropdown-content">
-      {filterByPerson.map(person => (
-        <div className="dropdown-item" key={person.slug}>
-          <p
-            onClick={() => {
+      {filteredByPerson.length !== 0 ? (
+        filteredByPerson.map(person => (
+          <div
+            role="button"
+            tabIndex={0}
+            key={person.slug}
+            onMouseDown={() => {
               setState((prevState) => ({
                 ...prevState,
                 isSelectedPerson: true,
@@ -31,15 +34,19 @@ export const DropDown: React.FC<Props> = ({
                 isSelectedInput: false,
               }));
             }}
-            className={cn({
+            className={cn('dropdown-item', {
               'has-text-link': person.sex === 'm',
               'has-text-danger': person.sex === 'f',
             })}
           >
-            {person.name}
-          </p>
+            <p>{person.name}</p>
+          </div>
+        ))
+      ) : (
+        <div className="dropdown-item has-text-danger">
+          No matching suggestions
         </div>
-      ))}
+      )}
     </div>
   );
 };

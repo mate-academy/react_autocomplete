@@ -1,0 +1,11 @@
+* {
+  transition: all 0.3s;
+}
+
+.dropdown-item {
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(243, 243, 243, 0.75);
+    box-shadow: 2px 2px 1px 1px rgba(0, 0, 255, 0.14);
+  }
+}
