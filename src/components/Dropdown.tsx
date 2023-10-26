@@ -1,8 +1,10 @@
+/* eslint-disable no-console */
 import React, { useState, useMemo, useCallback } from 'react';
 import { Person } from '../types/Person';
 
 function debounce(
   callback: React.Dispatch<React.SetStateAction<string>>,
+  isVisible: React.Dispatch<React.SetStateAction<boolean>>,
   delay: number,
 ) {
   let timerId = 0;
@@ -12,6 +14,7 @@ function debounce(
 
     timerId = window.setTimeout(() => {
       callback(args);
+      isVisible(true);
     }, delay);
   };
 }
@@ -31,7 +34,10 @@ export const Dropdown: React.FC<Props> = ({
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isPeopleVisible, setIsPeopleVisible] = useState(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, setIsPeopleVisible, 1000),
+    [],
+  );
 
   const filterPeople = useMemo(() => {
     return people.filter(person => (
@@ -42,6 +48,7 @@ export const Dropdown: React.FC<Props> = ({
   }, [appliedQuery, people]);
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsPeopleVisible(false);
     setQuery(event.target.value);
     applyQuery(event.target.value);
 
