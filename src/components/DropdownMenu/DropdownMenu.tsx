@@ -15,8 +15,7 @@ const DropdownMenu: React.FC<Props> = React.memo(
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {filterPerson.length > 0 ? (
-                <>
-                  {filterPerson.map((person: Person) => (
+                  filterPerson.map((person: Person) => (
                     <div
                       key={person.slug}
                       role="button"
@@ -34,8 +33,7 @@ const DropdownMenu: React.FC<Props> = React.memo(
                         {person.name}
                       </p>
                     </div>
-                  ))}
-                </>
+                  ))
               ) : (
                 <span>No matching suggestions</span>
               )}
