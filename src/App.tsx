@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -14,7 +14,7 @@ export const App: React.FC = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(true);
   const [selectedPersonSlug, setSelectedPersonSlug] = useState('');
 
-  const applyQuery = debounce(setAppliedQuery, 1000);
+  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
 
   useEffect(() => {
     const filteredPeople = getFilteredPeople(peopleFromServer, appliedQuery);
