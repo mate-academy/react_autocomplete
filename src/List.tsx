@@ -22,7 +22,7 @@ export const List: React.FC<Props> = ({
             onClick={() => {
               onSelectPerson(person);
             }}
-            className={classNames({
+            className={classNames('my-button', {
               'has-text-link': person.sex === 'm',
               'has-text-danger': person.sex === 'f',
             })}

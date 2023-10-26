@@ -28,7 +28,7 @@ export const App: React.FC = () => {
   };
 
   const handleQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value.toLowerCase());
+    setQuery(event.target.value);
     applyQuery(event.target.value.toLowerCase());
     ref.current = null;
   };
