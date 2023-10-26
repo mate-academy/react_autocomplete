@@ -3,11 +3,18 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { Dropdown } from './Dropdown';
+import { useDebounce } from './hooks/useDebounce';
 
-export const App: React.FC = () => {
+interface AppProps {
+  debounceDelay?: number;
+}
+
+export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
   const [inputValue, setInputValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const debouncedInputValue = useDebounce(inputValue, debounceDelay);
 
   const handleInputBlur = () => {
     setTimeout(() => {
@@ -31,9 +38,10 @@ export const App: React.FC = () => {
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter((person) => {
-      return person.name.toLowerCase().includes(inputValue.toLowerCase());
+      return person.name.toLowerCase().includes(debouncedInputValue
+        .toLowerCase());
     });
-  }, [inputValue]);
+  }, [debouncedInputValue]);
 
   return (
     <main className="section">
