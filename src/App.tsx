@@ -5,7 +5,7 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person>();
-  const [inputFocus, setInputFocus] = useState(false);
+  const [inputFocus, setIsInputFocused] = useState(false);
 
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -32,7 +32,7 @@ export const App: React.FC = () => {
     });
   }, [appliedQuery]);
 
-  const onSelected = (
+  const handlePersonSelected = (
     event: React.MouseEvent<HTMLParagraphElement, MouseEvent>,
     person: Person,
   ) => {
@@ -56,8 +56,8 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={(event) => handleQueryChange(event, 1000)}
-            onFocus={() => setInputFocus(true)}
-            onBlur={() => setInputFocus(false)}
+            onFocus={() => setIsInputFocused(true)}
+            onBlur={() => setIsInputFocused(false)}
           />
         </div>
 
@@ -65,25 +65,25 @@ export const App: React.FC = () => {
           && (
             <div className="dropdown-menu" role="menu">
               <div className="dropdown-content">
-                {filteredPeople.length === 0
-                  ? (
-                    <div className="dropdown-item">
+                <div className="dropdown-item">
+                  {filteredPeople.length === 0
+                    ? (
                       <p>No selected person</p>
-                    </div>
-                  )
-                  : (filteredPeople.map(person => (
-                    <div className="dropdown-item">
+                    )
+                    : (filteredPeople.map(person => (
                       <p
                         className={person.sex === 'f'
                           ? 'has-text-danger' : 'has-text-link'}
                         style={{ cursor: 'pointer' }}
                         role="presentation"
-                        onMouseDown={(event) => onSelected(event, person)}
+                        onMouseDown={(event) => {
+                          handlePersonSelected(event, person);
+                        }}
                       >
                         {person.name}
                       </p>
-                    </div>
-                  )))}
+                    )))}
+                </div>
               </div>
             </div>
           )}
