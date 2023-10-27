@@ -70,34 +70,37 @@ export const People: React.FC<Props> = ({
           onBlur={() => setHasInputFocus(false)}
         />
       </div>
+      {query === querywithdelay
+      && (
+        <div
+          className="dropdown-menu"
+          role="menu"
+        >
 
-      <div
-        className="dropdown-menu"
-        role="menu"
-      >
+          {filteredPeople.length > 0 ? (
+            <div className="dropdown-content">
+              {filteredPeople.map(item => (
+                <div
+                  className="dropdown-item"
+                  key={item.name}
+                  tabIndex={0}
+                  role="button"
+                  onMouseDown={() => handleSelectPerson(item)}
+                >
+                  <p className="has-text-link">
+                    {item.name}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="notification is-info">
+              No matching suggestions
+            </p>
+          )}
+        </div>
+      )}
 
-        {filteredPeople.length > 0 ? (
-          <div className="dropdown-content">
-            {filteredPeople.map(item => (
-              <div
-                className="dropdown-item"
-                key={item.name}
-                tabIndex={0}
-                role="button"
-                onMouseDown={() => handleSelectPerson(item)}
-              >
-                <p className="has-text-link">
-                  {item.name}
-                </p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="notification is-info">
-            No matching suggestions
-          </p>
-        )}
-      </div>
     </div>
   );
 };
