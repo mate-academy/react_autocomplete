@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import debounce from 'lodash.debounce';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Person } from '../types/Person';
 
 interface Props {
@@ -19,7 +19,7 @@ export const Dropdown: React.FC<Props> = ({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const applyQuery = useCallback(debounce((value: string) => {
+  const applyQuery = useMemo(() => debounce((value: string) => {
     setAppliedQuery(value);
     setIsDropdownOpen(true);
   }, delay), [delay]);
