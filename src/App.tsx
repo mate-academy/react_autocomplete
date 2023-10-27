@@ -5,11 +5,13 @@ import { Person } from './types/Person';
 
 interface AppProps {
   debounceDelay: number;
+  hideDelay: number;
 }
 
-export const App: React.FC<AppProps> = ({ debounceDelay }) => {
+export const App: React.FC<AppProps> = ({ debounceDelay, hideDelay }) => {
   const [text, setInput] = useState('');
-  const [onFocus, setOnFocus] = useState(false);
+  const [onFocus, setOnFocus]
+  = useState<HTMLInputElement | null | boolean>(null);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [debouncedInput, setDebouncedInput] = useState('');
 
@@ -18,13 +20,31 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
       setDebouncedInput(text);
     }, debounceDelay);
 
-    return () => clearTimeout(debounceTimeout);
+    return () => {
+      clearTimeout(debounceTimeout);
+    };
   }, [text, debounceDelay]);
 
   const handleSuggestionClick = (person: Person) => {
     setInput(person.name);
     setSelectedPerson(person);
     setOnFocus(false);
+  };
+
+  const handleOnFocus: React.FocusEventHandler<HTMLInputElement> = (event) => {
+    if (event.target.value === '') {
+      setOnFocus(true);
+    } else {
+      setOnFocus(event.target);
+    }
+  };
+
+  const handleOnBlur: React.FocusEventHandler<HTMLInputElement> = () => {
+    setTimeout(() => {
+      if (text === '') {
+        setOnFocus(false);
+      }
+    }, hideDelay);
   };
 
   function filteredPeople(people: Person[], input: string) {
@@ -54,11 +74,12 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
             className="input"
             value={text}
             onChange={handleInputChange}
-            onFocus={() => setOnFocus(true)}
+            onFocus={handleOnFocus}
+            onBlur={handleOnBlur}
           />
         </div>
 
-        {(debouncedInput || onFocus) && (
+        {(onFocus && !debouncedInput) && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {filteredPeople(peopleFromServer, debouncedInput).length === 0 ? (
