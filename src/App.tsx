@@ -28,15 +28,10 @@ export const App: React.FC<AppProps> = ({ debounceDelay, hideDelay }) => {
   const handleSuggestionClick = (person: Person) => {
     setInput(person.name);
     setSelectedPerson(person);
-    setOnFocus(false);
   };
 
-  const handleOnFocus: React.FocusEventHandler<HTMLInputElement> = (event) => {
-    if (event.target.value === '') {
-      setOnFocus(true);
-    } else {
-      setOnFocus(event.target);
-    }
+  const handleOnFocus = () => {
+    setOnFocus(true);
   };
 
   const handleOnBlur: React.FocusEventHandler<HTMLInputElement> = () => {
@@ -56,7 +51,6 @@ export const App: React.FC<AppProps> = ({ debounceDelay, hideDelay }) => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
 
-    setSelectedPerson(null);
     setOnFocus(true);
   };
 
@@ -79,7 +73,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay, hideDelay }) => {
           />
         </div>
 
-        {(onFocus && !debouncedInput) && (
+        {((onFocus && !debouncedInput) || debouncedInput) && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {filteredPeople(peopleFromServer, debouncedInput).length === 0 ? (
