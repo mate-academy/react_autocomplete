@@ -6,17 +6,17 @@ import { Person } from './types/Person';
 import { Dropdown } from './components/Dropdown';
 
 export const App: React.FC = () => {
-  const [selectedHuman, setSelectedHuman] = useState<Person | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const onSelect = (person: Person) => (
-    setSelectedHuman(person)
+    setSelectedPerson(person)
   );
 
   return (
     <main className="section">
       <h1 className="title">
-        {selectedHuman
-          ? `${selectedHuman.name} (${selectedHuman.born} = ${selectedHuman.died})`
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
           : 'No selected person'}
       </h1>
 

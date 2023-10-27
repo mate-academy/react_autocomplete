@@ -1,7 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import cn from 'classnames';
+import debounce from 'lodash.debounce';
 import { Person } from '../types/Person';
 
 interface Props {
@@ -20,20 +23,20 @@ export const Dropdown: React.FC<Props> = ({ persons, onSelect }) => {
     onSelect(person);
   };
 
-  const handleQuery = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    delay: number,
-  ) => {
-    if (isActiveSuggestions) {
-      setIsActiveSuggestions(false);
-    }
-
-    setQuery(event.target.value);
-
-    setTimeout(() => {
-      setAppliedQuery(event.target.value);
+  const applyQuery = useCallback(
+    debounce((inputQuery) => {
+      setAppliedQuery(inputQuery.trim());
       setIsActiveSuggestions(true);
-    }, delay);
+    }, 1000),
+    [setAppliedQuery],
+  );
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputQuery = event.target.value;
+
+    setIsActiveSuggestions(false);
+    setQuery(inputQuery);
+    applyQuery(inputQuery);
   };
 
   const filteredSuggestions = useMemo(() => {
@@ -57,7 +60,7 @@ export const Dropdown: React.FC<Props> = ({ persons, onSelect }) => {
           placeholder="Enter a part of the name"
           className="input"
           value={query}
-          onChange={(event) => handleQuery(event, 1000)}
+          onChange={handleQueryChange}
           onFocus={() => setIsActiveSuggestions(true)}
           onBlur={() => setIsActiveSuggestions(false)}
         />
@@ -67,19 +70,19 @@ export const Dropdown: React.FC<Props> = ({ persons, onSelect }) => {
         <div className="dropdown-content">
           {filteredSuggestions.length
             ? (
-              filteredSuggestions.map(human => (
+              filteredSuggestions.map(person => (
                 <a
-                  key={human.slug}
+                  key={person.slug}
                   className={cn(
                     'dropdown-item',
                     {
-                      'has-text-link': human.sex === 'm',
-                      'has-text-danger': human.sex === 'f',
+                      'has-text-link': person.sex === 'm',
+                      'has-text-danger': person.sex === 'f',
                     },
                   )}
-                  onMouseDown={() => handlePersonSelect(human)}
+                  onMouseDown={() => handlePersonSelect(person)}
                 >
-                  {human.name}
+                  {person.name}
                 </a>
               ))
             )
