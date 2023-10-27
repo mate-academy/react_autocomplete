@@ -36,9 +36,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay, hideDelay }) => {
 
   const handleOnBlur: React.FocusEventHandler<HTMLInputElement> = () => {
     setTimeout(() => {
-      if (text === '') {
-        setOnFocus(false);
-      }
+      setOnFocus(false);
     }, hideDelay);
   };
 
@@ -71,7 +69,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay, hideDelay }) => {
           />
         </div>
 
-        {((onFocus && !debouncedInput) || debouncedInput) && (
+        {((onFocus)) && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {filteredPeople.length === 0 ? (
