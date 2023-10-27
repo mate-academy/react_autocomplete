@@ -11,7 +11,7 @@ interface AppProps {
 export const App: React.FC<AppProps> = ({ debounceDelay, hideDelay }) => {
   const [text, setInput] = useState('');
   const [onFocus, setOnFocus]
-  = useState<HTMLInputElement | null | boolean>(null);
+    = useState<HTMLInputElement | null | boolean>(null);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [debouncedInput, setDebouncedInput] = useState('');
 
@@ -83,9 +83,13 @@ export const App: React.FC<AppProps> = ({ debounceDelay, hideDelay }) => {
                   <div
                     className="dropdown-item"
                     key={person.slug}
-                    onClick={() => handleSuggestionClick(person)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleSuggestionClick(person);
+                    }}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
+                        e.preventDefault();
                         handleSuggestionClick(person);
                       }
                     }}

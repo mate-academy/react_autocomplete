@@ -4,5 +4,5 @@ import 'bulma/css/bulma.css';
 
 ReactDOM.render(<App
   debounceDelay={1000}
-  hideDelay={1000}
+  hideDelay={500}
 />, document.getElementById('root'));
