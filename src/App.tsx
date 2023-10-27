@@ -42,11 +42,9 @@ export const App: React.FC<AppProps> = ({ debounceDelay, hideDelay }) => {
     }, hideDelay);
   };
 
-  function filteredPeople(people: Person[], input: string) {
-    return people.filter(person => person.name
-      .toLowerCase()
-      .includes(input.toLowerCase()));
-  }
+  const filteredPeople = peopleFromServer.filter(({ name }) => name
+    .toLowerCase()
+    .includes(debouncedInput.toLowerCase()));
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
@@ -76,10 +74,10 @@ export const App: React.FC<AppProps> = ({ debounceDelay, hideDelay }) => {
         {((onFocus && !debouncedInput) || debouncedInput) && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
-              {filteredPeople(peopleFromServer, debouncedInput).length === 0 ? (
+              {filteredPeople.length === 0 ? (
                 <div className="dropdown-item">No matching suggestions</div>
               ) : (
-                filteredPeople(peopleFromServer, debouncedInput).map(person => (
+                filteredPeople.map(person => (
                   <div
                     className="dropdown-item"
                     key={person.slug}
