@@ -1,5 +1,4 @@
-import React, { useCallback } from 'react';
-import debounce from 'lodash.debounce';
+import React, { useRef } from 'react';
 
 type Props = {
   query: string;
@@ -16,15 +15,16 @@ export const Input: React.FC<Props> = ({
   setIsFocused,
   delay,
 }) => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay),
-    [delay],
-  );
+  const timerId = useRef(0);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    applyQuery(event.target.value);
+
+    window.clearTimeout(timerId.current);
+
+    timerId.current = window.setTimeout(() => {
+      setAppliedQuery(event.target.value);
+    }, delay);
   };
 
   return (
