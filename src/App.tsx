@@ -1,27 +1,38 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import debounce from 'lodash.debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Dropdown } from './components/Dropdown';
 import { Person } from './types/Person';
 
+const getFilteredPeople = (query:string) => {
+  if (!query) {
+    return peopleFromServer;
+  }
+
+  const newPeople = peopleFromServer.filter((person) =>
+    person.name.toLowerCase().includes(query.toLowerCase()));
+
+  return newPeople;
+};
+
 export const App: React.FC = () => {
   const [selected, setSelected] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
 
-  const people = useMemo(() => {
-    if (!query) {
-      return peopleFromServer;
-    }
+  const people = getFilteredPeople(appliedQuery);
 
-    return peopleFromServer.filter(
-      (person) => person.name.toLowerCase().includes(query.toLowerCase()),
-    );
-  }, [query]);
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 500),
+    [appliedQuery],
+  );
 
   const onQueryChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
       setSelected(null);
+      applyQuery(event.target.value);
     },
     [],
   );
@@ -30,6 +41,7 @@ export const App: React.FC = () => {
     if (person) {
       setSelected(person);
       setQuery('');
+      applyQuery('');
     }
   }, []);
 

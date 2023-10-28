@@ -1,5 +1,5 @@
-import React, { useState, memo } from 'react';
 import cn from 'classnames';
+import React, { useState } from 'react';
 
 import { Person } from '../../types/Person';
 
@@ -102,4 +102,4 @@ const InnerDropdown: React.FC<Props> = ({
   );
 };
 
-export const Dropdown = memo(InnerDropdown);
+export const Dropdown = React.memo(InnerDropdown);
