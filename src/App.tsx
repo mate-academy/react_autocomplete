@@ -10,8 +10,9 @@ const getFilteredPeople = (query:string) => {
     return peopleFromServer;
   }
 
-  const newPeople = peopleFromServer.filter((person) =>
-    person.name.toLowerCase().includes(query.toLowerCase()));
+  const newPeople = peopleFromServer
+    .filter((person) => person.name.toLowerCase()
+      .includes(query.toLowerCase()));
 
   return newPeople;
 };
@@ -34,7 +35,7 @@ export const App: React.FC = () => {
       setSelected(null);
       applyQuery(event.target.value);
     },
-    [],
+    [applyQuery],
   );
 
   const onSelected = useCallback((person: Person | null) => {
@@ -43,7 +44,7 @@ export const App: React.FC = () => {
       setQuery('');
       applyQuery('');
     }
-  }, []);
+  }, [applyQuery]);
 
   return (
     <main className="section">

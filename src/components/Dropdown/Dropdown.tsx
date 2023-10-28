@@ -67,7 +67,6 @@ const InnerDropdown: React.FC<Props> = ({
             {people.length ? (
               people.map((person, index) => (
                 <div
-                  className="dropdown-item"
                   role="menuitem"
                   tabIndex={index}
                   key={person.slug}
@@ -79,11 +78,15 @@ const InnerDropdown: React.FC<Props> = ({
                     onSelected(person);
                     revealDelay(false);
                   }}
+                  className={cn("dropdown-item",{
+                    'has-background-info-light': selected?.slug === person.slug,
+                    '': selected?.slug !== person.slug,
+                  })}
                 >
                   <p
                     className={cn({
-                      'has-text-danger': selected?.slug === person.slug,
-                      'has-text-link': selected?.slug !== person.slug,
+                      'has-text-danger': person?.sex === 'f',
+                      'has-text-link':  person?.sex === 'm',
                     })}
                   >
                     {person.name}
