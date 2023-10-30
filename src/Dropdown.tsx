@@ -23,10 +23,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   handleSuggestionClick,
 }) => {
   return (
-    <div className={`dropdown ${isFocused
-      ? 'is-active'
-      : ''}`}
-    >
+    <div className={`dropdown ${isFocused && 'is-active'}`}>
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -41,7 +38,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
       <div className="dropdown-menu" role="menu">
         {showSuggestions && (
-          filteredPeople.length > 0
+          filteredPeople.length
             ? (
               filteredPeople.map(person => {
                 const { name, sex } = person;
@@ -54,10 +51,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
                     onClick={() => handleSuggestionClick(person)}
                   >
                     <div className="dropdown-item">
-                      <p className={sex === 'f'
-                        ? 'has-text-danger'
-                        : 'has-text-link'}
-                      >
+                      <p className={`has-text-${sex === 'f' ? 'danger' : 'link'}`}>
                         {name}
                       </p>
                     </div>
