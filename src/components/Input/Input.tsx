@@ -5,7 +5,8 @@ type Props = {
   setQuery: (value: string) => void;
   setAppliedQuery: (value: string) => void;
   setIsFocused: (value: boolean) => void;
-  delay: number;
+  setIsVisible: (value: boolean) => void;
+  delay: number,
 };
 
 export const Input: React.FC<Props> = ({
@@ -13,17 +14,20 @@ export const Input: React.FC<Props> = ({
   setQuery,
   setAppliedQuery,
   setIsFocused,
+  setIsVisible,
   delay,
 }) => {
   const timerId = useRef(0);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
+    setIsVisible(false);
 
     window.clearTimeout(timerId.current);
 
     timerId.current = window.setTimeout(() => {
       setAppliedQuery(event.target.value);
+      setIsVisible(true);
     }, delay);
   };
 

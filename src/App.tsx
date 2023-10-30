@@ -11,6 +11,7 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer
@@ -32,15 +33,17 @@ export const App: React.FC = () => {
           setQuery={setQuery}
           setAppliedQuery={setAppliedQuery}
           setIsFocused={setIsFocused}
+          setIsVisible={setIsVisible}
           delay={1000}
         />
-
-        <Dropdown
-          filteredPeople={filteredPeople}
-          setSelectedPerson={setSelectedPerson}
-          setQuery={setQuery}
-          setIsFocused={setIsFocused}
-        />
+        {isVisible && (
+          <Dropdown
+            filteredPeople={filteredPeople}
+            setSelectedPerson={setSelectedPerson}
+            setQuery={setQuery}
+            setIsFocused={setIsFocused}
+          />
+        )}
       </div>
     </main>
   );
