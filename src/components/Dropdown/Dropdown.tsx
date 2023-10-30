@@ -14,11 +14,11 @@ interface Props {
 
 const InnerDropdown: React.FC<Props> = ({
   people,
-  delay = 150,
-  selected,
   onSelected,
   query,
   onQueryChange,
+  delay = 150,
+  selected,
 }) => {
   const [reveal, setReveal] = useState(false);
 
@@ -36,6 +36,11 @@ const InnerDropdown: React.FC<Props> = ({
     if (event.target.value) {
       onQueryChange(event);
     }
+  };
+
+  const handleSelect = (person:Person) => {
+    onSelected(person);
+    revealDelay(false);
   };
 
   return (
@@ -70,14 +75,8 @@ const InnerDropdown: React.FC<Props> = ({
                   role="menuitem"
                   tabIndex={index}
                   key={person.slug}
-                  onKeyDown={() => {
-                    onSelected(person);
-                    revealDelay(false);
-                  }}
-                  onClick={() => {
-                    onSelected(person);
-                    revealDelay(false);
-                  }}
+                  onKeyDown={() => handleSelect(person)}
+                  onClick={() => handleSelect(person)}
                   className={cn('dropdown-item', {
                     'has-background-info-light': selected?.slug === person.slug,
                     '': selected?.slug !== person.slug,

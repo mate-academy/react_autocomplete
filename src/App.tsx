@@ -5,14 +5,14 @@ import { peopleFromServer } from './data/people';
 import { Dropdown } from './components/Dropdown';
 import { Person } from './types/Person';
 
-const getFilteredPeople = (query:string) => {
+const getFilteredPeople = (query: string) => {
   if (!query) {
     return peopleFromServer;
   }
 
-  const newPeople = peopleFromServer
-    .filter((person) => person.name.toLowerCase()
-      .includes(query.toLowerCase()));
+  const newPeople = peopleFromServer.filter((person) => person.name
+    .toLowerCase()
+    .includes(query.toLowerCase()));
 
   return newPeople;
 };
@@ -24,10 +24,9 @@ export const App: React.FC = () => {
 
   const people = getFilteredPeople(appliedQuery);
 
-  const applyQuery = useCallback(
-    debounce(setAppliedQuery, 100),
-    [appliedQuery],
-  );
+  const applyQuery = useCallback(debounce(setAppliedQuery, 100), [
+    appliedQuery,
+  ]);
 
   const onQueryChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,21 +37,24 @@ export const App: React.FC = () => {
     [applyQuery],
   );
 
-  const onSelected = useCallback((person: Person | null) => {
-    if (person) {
-      setSelectedPerson(person);
-      setQuery('');
-      applyQuery('');
-    }
-  }, [applyQuery]);
+  const onSelected = useCallback(
+    (person: Person | null) => {
+      if (person) {
+        setSelectedPerson(person);
+        setQuery('');
+        applyQuery('');
+      }
+    },
+    [applyQuery],
+  );
 
   return (
     <main className="section">
-      {selectedPerson ? (
-        <h1 className="title">{`${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`}</h1>
-      ) : (
-        <h1 className="title">Select a person</h1>
-      )}
+      <h1 className="title">
+        {selectedPerson
+          ? `${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`
+          : 'Select a person'}
+      </h1>
       <Dropdown
         people={people}
         delay={150}
