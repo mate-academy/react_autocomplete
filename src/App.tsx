@@ -1,10 +1,11 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import './App.scss';
 
 import { DropDown } from './components/DropDown';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { debounce } from './helpers/helper';
 
 export const App: React.FC = () => {
   const [state, setState] = useState({
@@ -12,12 +13,13 @@ export const App: React.FC = () => {
     isSelectedPerson: false,
     isSelectedPersonData: null as Person | null,
     query: '',
-    appliedQuery: '',
   });
+  const [appliedQuery, setAppliedQuery] = useState('');
 
-  // debounce
-
-  const timeOut = useRef(0);
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 1000),
+    [],
+  );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState((prevState) => ({
@@ -25,20 +27,10 @@ export const App: React.FC = () => {
       query: event.target.value,
       isSelectedPerson: false,
     }));
-
-    window.clearTimeout(timeOut.current);
-
-    timeOut.current = window.setTimeout(() => {
-      setState((prevState) => ({
-        ...prevState,
-        appliedQuery: event.target.value,
-      }));
-    }, 1000);
+    applyQuery(event.target.value);
   };
 
-  //
-
-  const normalizeQuery = state.appliedQuery.toLowerCase().trim();
+  const normalizeQuery = appliedQuery.toLowerCase().trim();
 
   const filteredByPerson = useMemo(() => {
     return peopleFromServer.filter(

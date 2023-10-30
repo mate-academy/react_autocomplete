@@ -8,7 +8,6 @@ type Props = {
     isSelectedPerson: boolean,
     isSelectedPersonData: Person | null,
     query: string,
-    appliedQuery: string,
   }>>,
 
   filteredByPerson: Person[],
@@ -20,7 +19,7 @@ export const DropDown: React.FC<Props> = ({
 }) => {
   return (
     <div className="dropdown-content">
-      {filteredByPerson.length !== 0 ? (
+      {filteredByPerson.length ? (
         filteredByPerson.map(person => (
           <div
             role="button"

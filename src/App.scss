@@ -9,14 +9,14 @@ iframe {
 }
 
 .input {
-  color: rgba(60, 90, 105, 0.637);
+  color: rgba(60, 90, 105, 0.64);
   border: 1px solid #c24242c7;
 
-  &:hover{
+  &:hover {
     border: 1px solid #4284c2c7;
   }
 
-  &::placeholder{
-    color: rgba(60, 90, 105, 0.637);
+  &::placeholder {
+    color: rgba(60, 90, 105, 0.64);
   }
 }
