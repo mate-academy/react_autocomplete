@@ -9,19 +9,18 @@ export const App: React.FC = () => {
 
   const handleSelected = (person: Person | string) => {
     if (typeof person === 'string') {
-      return;
+      //
     } else {
       setSelected(person);
     }
-  }
+  };
 
   return (
     <main className="section">
       <h1 className="title">
         {selected
           ? `${selected.name} (${selected.born} - ${selected.died})`
-          : 'No selected person'
-        }
+          : 'No selected person'}
       </h1>
 
       <Autocomplete
