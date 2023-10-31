@@ -1,11 +1,11 @@
-export function debounce(callback, delay: number) {
+export function debounce(callback: (v: string) => void, delay: number) {
   let timerId = 0;
 
-  return (...args) => {
+  return (arg: string) => {
     window.clearTimeout(timerId);
 
     timerId = window.setTimeout(() => {
-      callback(...args);
+      callback(arg);
     }, delay);
   };
 }
