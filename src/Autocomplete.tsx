@@ -13,6 +13,7 @@ const Autocomplete: React.FC<Props> = (
   const [query, setQuery] = useState('');
   const [suggestion, setSuggestion] = useState<Person[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     const debounce = setTimeout(() => {
@@ -28,7 +29,11 @@ const Autocomplete: React.FC<Props> = (
         setSuggestion(people);
       }
 
-      setShowSuggestions(true);
+      if (isFocused === true) {
+        setShowSuggestions(true);
+      } else {
+        setShowSuggestions(false);
+      }
     }, debounceDelay);
 
     return () => clearTimeout(debounce);
@@ -39,10 +44,10 @@ const Autocomplete: React.FC<Props> = (
 
     setQuery(newValue);
     setShowSuggestions(false);
+    setIsFocused(true);
 
     if (newValue.length === 0) {
       onSelected('');
-      setSuggestion(people);
     }
   };
 
@@ -50,6 +55,8 @@ const Autocomplete: React.FC<Props> = (
     setQuery(selected.name);
     setShowSuggestions(false);
     onSelected(selected);
+
+    setSuggestion([]);
   };
 
   return (
@@ -75,7 +82,10 @@ const Autocomplete: React.FC<Props> = (
                   type="button"
                   className="dropdown-item"
                   key={person.name}
-                  onClick={() => handleSuggestionClick(person)}
+                  onClick={() => {
+                    handleSuggestionClick(person);
+                    setIsFocused(false);
+                  }}
                 >
                   <p className="has-text-link">{person.name}</p>
                 </button>
