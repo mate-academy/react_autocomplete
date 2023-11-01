@@ -68,6 +68,7 @@ const Autocomplete: React.FC<Props> = (
           className="input"
           value={query}
           onChange={handleQueryChange}
+          onFocus={() => setShowSuggestions(true)}
         />
       </div>
 
