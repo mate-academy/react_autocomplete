@@ -25,7 +25,7 @@ const Autocomplete: React.FC<Props> = (
 
         setSuggestion(filteredPeople);
       } else {
-        setSuggestion([]);
+        setSuggestion(people);
       }
 
       setShowSuggestions(true);
@@ -35,8 +35,15 @@ const Autocomplete: React.FC<Props> = (
   }, [query, people, debounceDelay]);
 
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
+    const newValue = e.target.value;
+
+    setQuery(newValue);
     setShowSuggestions(false);
+
+    if (newValue.length === 0) {
+      onSelected('');
+      setSuggestion(people);
+    }
   };
 
   const handleSuggestionClick = (selected: Person) => {

@@ -9,7 +9,7 @@ export const App: React.FC = () => {
 
   const handleSelected = (person: Person | string) => {
     if (typeof person === 'string') {
-      //
+      setSelected(null);
     } else {
       setSelected(person);
     }
