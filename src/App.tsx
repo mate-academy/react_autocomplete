@@ -4,7 +4,6 @@ import { peopleFromServer } from './data/people';
 import { DropDownList } from './components/DropDownList';
 import { Person } from './types/Person';
 
-
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
