@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 import { Person } from '../types/Person';
@@ -12,17 +12,15 @@ type Props = {
 export const DropDownList: React.FC<Props> = ({
   people,
   onSelected,
-  delay,
+  delay = 300,
 }) => {
   const [query, setQuery] = useState('');
   const [select, setSelect] = useState('');
   const [isShown, setIsShown] = useState(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const setDelay = useCallback(debounce(setSelect, delay), [delay]);
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    setDelay(event.target.value);
+    setSelect(event.target.value);
     onSelected(null);
   };
 
@@ -35,10 +33,22 @@ export const DropDownList: React.FC<Props> = ({
   const filteredPeople = useMemo(() => {
     const trimmedSelect = select.toLowerCase().trim();
 
-    return people.filter((person) => person.name
-      .toLowerCase()
+    return people.filter((person) => person.name.toLowerCase()
       .includes(trimmedSelect));
   }, [people, select]);
+
+  const delayedSetSelect = useCallback(
+    debounce((value: string) => {
+      setSelect(value);
+    }, delay),
+    [delay],
+  );
+
+  useEffect(() => {
+    delayedSetSelect(query);
+
+    return delayedSetSelect.cancel;
+  }, [delayedSetSelect, query]);
 
   return (
     <div className={classNames('dropdown', {
@@ -56,11 +66,10 @@ export const DropDownList: React.FC<Props> = ({
           onBlur={() => setIsShown(false)}
         />
       </div>
-
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {filteredPeople.length > 0
-            ? (filteredPeople.map((person) => (
+          {filteredPeople.length ? (
+            filteredPeople.map((person) => (
               <a
                 className="dropdown-item"
                 href="/"
@@ -70,9 +79,9 @@ export const DropDownList: React.FC<Props> = ({
                 {person.name}
               </a>
             ))
-            ) : (
-              <p>No matching suggestion</p>
-            )}
+          ) : (
+            <p>No matching suggestion</p>
+          )}
         </div>
       </div>
     </div>
