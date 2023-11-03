@@ -1,9 +1,5 @@
-import React, {
-  useMemo,
-  useState,
-  ChangeEvent,
-  FC,
-} from 'react';
+/* eslint-disable object-curly-newline */
+import React, { useMemo, useState, ChangeEvent, FC } from 'react';
 import { peopleFromServer } from '../../data/people';
 import { Person } from '../../types/Person';
 

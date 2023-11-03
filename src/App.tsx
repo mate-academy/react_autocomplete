@@ -1,4 +1,4 @@
-import React, { useState, FC } from 'react';
+import { useState, FC } from 'react';
 import './App.scss';
 import { Person } from './types/Person';
 import { Dropdown } from './components/Dropdown/Dropdown';
