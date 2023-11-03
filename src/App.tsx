@@ -11,14 +11,6 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
-  // const handleFocus = () => {
-  //   setIsFocused(true);
-  // };
-
-  // const handleBlur = () => {
-  //   setIsFocused(true);
-  // };
-
   const reset = () => {
     setSelectedPerson('');
   };
