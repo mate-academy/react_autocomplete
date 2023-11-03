@@ -1,27 +1,25 @@
 /* eslint-disable object-curly-newline */
 import React, { useMemo, useState, ChangeEvent, FC } from 'react';
+import classNames from 'classnames';
 import { peopleFromServer } from '../../data/people';
 import { Person } from '../../types/Person';
 
+const DROPDOWN_DELAY_TIME = 1000;
+
 type Props = {
   setSelectedPerson: (person: Person) => void;
-  delayTime: number,
 };
 
-export const Dropdown: FC<Props> = ({ setSelectedPerson, delayTime }) => {
+export const Dropdown: FC<Props> = ({ setSelectedPerson }) => {
   const [inputFocus, setInputFocus] = useState(false);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement>,
-    delay: number,
-  ) => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-
     setTimeout(() => {
       setAppliedQuery(event.target.value);
-    }, delay);
+    }, DROPDOWN_DELAY_TIME);
   };
 
   const filteredPeople = useMemo(() => {
@@ -43,7 +41,6 @@ export const Dropdown: FC<Props> = ({ setSelectedPerson, delayTime }) => {
     event: React.MouseEvent<HTMLParagraphElement>, person: Person,
   ) => {
     event.preventDefault();
-
     setAllData(person);
   };
 
@@ -55,7 +52,7 @@ export const Dropdown: FC<Props> = ({ setSelectedPerson, delayTime }) => {
           placeholder="Enter a part of the name"
           className="input"
           value={query}
-          onChange={(e) => handleInputChange(e, delayTime)}
+          onChange={handleInputChange}
           onFocus={() => setInputFocus(true)}
           onBlur={() => setInputFocus(false)}
         />
@@ -65,7 +62,7 @@ export const Dropdown: FC<Props> = ({ setSelectedPerson, delayTime }) => {
         && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
-              {filteredPeople.length === 0
+              {!filteredPeople.length
                 ? (
                   <div className="dropdown-item">
                     <p>No selected person</p>
@@ -75,9 +72,10 @@ export const Dropdown: FC<Props> = ({ setSelectedPerson, delayTime }) => {
                   <div className="dropdown-item" key={person.slug}>
                     {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */}
                     <p
-                      className={person.sex === 'f'
-                        ? 'has-text-danger'
-                        : 'has-text-link'}
+                      className={classNames({
+                        'has-text-danger': person.sex === 'f',
+                        'has-text-link': person.sex !== 'f',
+                      })}
                       onMouseDown={(event) => onSelected(event, person)}
                     >
                       {person.name}
