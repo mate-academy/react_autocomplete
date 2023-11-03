@@ -1,4 +1,6 @@
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, {
+  useMemo, useState, useEffect,
+} from 'react';
 import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 import { Person } from '../types/Person';
@@ -37,18 +39,17 @@ export const DropDownList: React.FC<Props> = ({
       .includes(trimmedSelect));
   }, [people, select]);
 
-  const delayedSetSelect = useCallback(
-    debounce((value: string) => {
-      setSelect(value);
-    }, delay),
-    [delay],
-  );
-
   useEffect(() => {
+    const delayedSetSelect = debounce((value: string) => {
+      setSelect(value);
+    }, delay);
+
     delayedSetSelect(query);
 
-    return delayedSetSelect.cancel;
-  }, [delayedSetSelect, query]);
+    return () => {
+      delayedSetSelect.cancel();
+    };
+  }, [query, delay]);
 
   return (
     <div className={classNames('dropdown', {
