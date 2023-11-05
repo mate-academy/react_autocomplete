@@ -37,8 +37,7 @@ export const Autofill: React.FC<Props> = ({ selected, setSelected }) => {
     setActive(false);
   }
 
-  const preparedPeople
-    = peopleFromServer.filter(
+  const preparedPeople = peopleFromServer.filter(
       person => person.name.toLowerCase().includes(
         appliedQueyry.trim().toLowerCase(),
       ),
@@ -55,17 +54,16 @@ export const Autofill: React.FC<Props> = ({ selected, setSelected }) => {
   return (
 
     <main className="section">
-      {selected
-        ? (
+
           <h1 className="title">
-            {`${selected.name} (${selected.born} - ${selected.died})`}
+            {
+              selected
+                ? (`${selected?.name} (${selected?.born} - ${selected?.died})`)
+                : ('No selected person')
+            }
           </h1>
-        )
-        : (
-          <h1 className="title">
-            No Selected Person
-          </h1>
-        )}
+
+
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
@@ -80,16 +78,12 @@ export const Autofill: React.FC<Props> = ({ selected, setSelected }) => {
           />
         </div>
         {active
-
           && (
             <div className="dropdown-menu" role="menu">
               <div className="dropdown-content">
-
                 {
                   preparedPeople.length ? (
-
                     preparedPeople.map(person => (
-
                       <div className="dropdown-item" key={person.slug}>
                         <p
                           className={cn('has-text-link', {
