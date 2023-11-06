@@ -23,7 +23,7 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [visibleDropdownMenu, setVisibleDropdownMenu]
-    = useState<boolean>(false);
+  = useState<boolean>(false);
   // #endregion
 
   const filteredPeople = useMemo(() => {
@@ -86,7 +86,7 @@ export const App: React.FC = () => {
                   ? (
                     filteredPeople.map(person => (
                       <div
-                        role="menuitem"
+                        role="button"
                         key={person.slug}
                         className="dropdown-item"
                         onMouseDown={() => { onSelected(person) }}
@@ -97,7 +97,7 @@ export const App: React.FC = () => {
                   )
                   : (
                     <div
-                      role="menuitem"
+                      role="button"
                       className="dropdown-item"
                       onMouseDown={() => { onSelected(null) }}
                     >
