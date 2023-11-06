@@ -10,10 +10,10 @@ export const DropDownMenu: React.FC<Props> = ({ personList, selectPerson }) => {
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
-        {personList.length !== 0
+        {personList.length
           ? personList.map(person => (
             <a
-              href="/"
+              href={`/${person.slug}`}
               type="button"
               className="dropdown-item"
               onClick={() => {
