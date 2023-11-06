@@ -4,7 +4,6 @@ import { debounce } from 'lodash';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
-// #start region Autocomplete
 const Autocomplete: React.FC<{
   delay: number;
   people: Person[];
@@ -32,7 +31,6 @@ const Autocomplete: React.FC<{
 
     setText(input);
 
-    // Відображаємо попередній список з затримкою
     filterPeopleWithDelay(input);
   };
 
@@ -89,7 +87,6 @@ const Autocomplete: React.FC<{
     </div>
   );
 };
-// #end region Autocomplete
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
