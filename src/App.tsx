@@ -4,24 +4,24 @@ import { DropDownMenu } from './components/DropDownMenu/DropDownMenu';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const [selected, setSelected] = useState<Person | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const onSelected = (person: Person) => {
-    setSelected(person);
+    setSelectedPerson(person);
   };
 
   return (
     <main className="section">
       <h1 className="title">
         {
-          selected
-            ? `${selected.name} (${selected.born} = ${selected.died})`
+          selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
             : 'No selected person'
         }
       </h1>
 
       <DropDownMenu
-        setSelected={onSelected}
+        setSelectedPerson={onSelected}
       />
     </main>
   );

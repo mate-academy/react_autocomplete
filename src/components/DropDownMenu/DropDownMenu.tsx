@@ -5,9 +5,9 @@ import { peopleFromServer } from '../../data/people';
 import { Person } from '../../types/Person';
 
 type Props = {
-  setSelected: (person: Person) => void;
+  setSelectedPerson: (person: Person) => void;
 };
-export const DropDownMenu: React.FC<Props> = ({ setSelected }) => {
+export const DropDownMenu: React.FC<Props> = ({ setSelectedPerson }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [showDropDownMenu, setShowDropDownMenu] = useState(false);
@@ -20,11 +20,17 @@ export const DropDownMenu: React.FC<Props> = ({ setSelected }) => {
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setShowDropDownMenu(false);
   };
 
   const filteredPeople = useMemo(
-    () => peopleFromServer.filter((person: Person) => person.name
-      .toLowerCase().includes(appliedQuery.toLowerCase().trim())),
+    () => {
+      setShowDropDownMenu(true);
+
+      return peopleFromServer
+        .filter((person: Person) => person.name
+          .toLowerCase().includes(appliedQuery.toLowerCase().trim()));
+    },
     [appliedQuery],
   );
 
@@ -54,7 +60,7 @@ export const DropDownMenu: React.FC<Props> = ({ setSelected }) => {
                     { 'has-text-danger': person.sex === 'f' },
                   )}
                   onMouseDown={() => {
-                    setSelected(person);
+                    setSelectedPerson(person);
                     setQuery(person.name);
                     setAppliedQuery(person.name);
                   }}
