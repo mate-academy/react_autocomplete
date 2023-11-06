@@ -1,3 +1,13 @@
 iframe {
   display: none;
 }
+
+button.dropdown-item {
+  border: 0;
+  background-color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  &:hover {
+    background-color: #979191;
+  }
+}
