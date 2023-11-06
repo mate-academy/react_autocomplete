@@ -13,7 +13,7 @@ export const DropDownMenu: React.FC<Props> = ({ personList, selectPerson }) => {
         {personList.length
           ? personList.map(person => (
             <a
-              href={`/${person.slug}`}
+              href="/"
               type="button"
               className="dropdown-item"
               onClick={() => {
