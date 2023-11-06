@@ -13,7 +13,10 @@ export const DropDownMenu: React.FC<Props> = ({ setSelectedPerson }) => {
   const [showDropDownMenu, setShowDropDownMenu] = useState(false);
   // eslint-disable-next-line
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, 1000),
+    debounce((value) => {
+      setAppliedQuery(value);
+      setShowDropDownMenu(true);
+    }, 1000),
     [],
   );
 
@@ -25,8 +28,6 @@ export const DropDownMenu: React.FC<Props> = ({ setSelectedPerson }) => {
 
   const filteredPeople = useMemo(
     () => {
-      setShowDropDownMenu(true);
-
       return peopleFromServer
         .filter((person: Person) => person.name
           .toLowerCase().includes(appliedQuery.toLowerCase().trim()));
