@@ -6,9 +6,9 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
 const filterPeopleByName = (
-  items:  Person[],
+  items: Person[],
   query: string,
-):  Person[] => {
+): Person[] => {
   const formatedQuery = query.toLowerCase().trim();
 
   return items.filter((item) =>
@@ -36,7 +36,7 @@ export const App: React.FC = () => {
     (person: Person | null) => {
       setSelectedPerson(person);
       setVisibleDropdownMenu(false);
-      setQuery('');
+      setQuery(person?.name || '');
       applyQuery('');
     }, [],);
 
@@ -94,7 +94,10 @@ export const App: React.FC = () => {
                     ))
                   )
                   : (
-                    <div className="dropdown-item">
+                    <div
+                      className="dropdown-item"
+                      onMouseDown={() => { onSelected(null) }}
+                    >
                       <p className="has-text-danger">No matching suggestions</p>
                     </div>
                   )
