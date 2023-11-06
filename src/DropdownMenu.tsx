@@ -17,6 +17,7 @@ export const DropdownMenu: React.FC<Props> = ({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isShown, setIsShown] = useState(false);
+  let blurTimeout: ReturnType<typeof setTimeout>;
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay), [],
@@ -33,10 +34,17 @@ export const DropdownMenu: React.FC<Props> = ({
     }
   };
 
+  const handleOnBlurInput = () => {
+    blurTimeout = setTimeout(() => {
+      setIsShown(false);
+    }, 200);
+  };
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
-    setIsShown(true);
+    const newQuery = event.target.value;
+    setQuery(newQuery);
+    applyQuery(newQuery);
+    setIsShown(!!newQuery.length);
   };
 
   const handleSelectPerson = (
@@ -47,6 +55,7 @@ export const DropdownMenu: React.FC<Props> = ({
     setQuery(person.name);
     onSelected(person);
     setIsShown(false);
+    clearTimeout(blurTimeout);
   };
 
   return (
@@ -59,34 +68,36 @@ export const DropdownMenu: React.FC<Props> = ({
             className="input"
             onChange={handleInputChange}
             onFocus={handleOnFocus}
+            onBlur={handleOnBlurInput}
             value={query}
           />
         </div>
         {isShown && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
-              {(filteredPeople.length === 0) && (
+              {(!filteredPeople.length) ? (
                 <div className="dropdown-item">
                   No matching suggestions
                 </div>
-              )}
-              {filteredPeople.map(person => (
-                <div
-                  className="dropdown-item"
-                  key={person.name}
-                >
-                  <a
-                    href="/"
-                    className={classNames('button is-light', {
-                      'has-text-link': person.sex === 'm',
-                      'has-text-danger': person.sex === 'f',
-                    })}
-                    onClick={(event) => handleSelectPerson(event, person)}
+              ) : (
+                filteredPeople.map((person: Person) => (
+                  <div
+                    className="dropdown-item"
+                    key={person.name}
                   >
-                    {person.name}
-                  </a>
-                </div>
-              ))}
+                    <a
+                      href="/"
+                      className={classNames('button is-light', {
+                        'has-text-link': person.sex === 'm',
+                        'has-text-danger': person.sex === 'f',
+                      })}
+                      onClick={(event) => handleSelectPerson(event, person)}
+                    >
+                      {person.name}
+                    </a>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}
