@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo, useRef } from 'react';
 import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
 
@@ -32,34 +32,64 @@ export const Dropdown: React.FC<Props<Person>>
     const applyQuery = useCallback(
       debounce(setAppliedQuery, filtrationDelay), [],);
 
-    // #region handle
-    const handleSelect = useCallback(
-      (item: typeof items[0] | null) => {
-        setVisibleDropdownMenu(false);
-        setQuery(onSelected(item) || '');
-        applyQuery('');
-      }, [],);
-
-    const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(event.target.value);
-      applyQuery(event.target.value);
+    const queryInput = useRef<HTMLInputElement | null>(null);
+    
+    const onElementFocus = (
+      ref: React.MutableRefObject<HTMLInputElement | null>
+    ) => {
+      if (ref.current) {
+        ref.current.focus();
+      }
     };
+
+    // #region handle
+    const handleSelect = (
+      event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+      item: typeof items[0] | null,
+    ) => {
+      event.preventDefault();
+      setVisibleDropdownMenu(false);
+      setQuery(onSelected(item) || '');
+      applyQuery('');
+    };
+
+    const handleBtnCancel = () => {
+      setQuery('');
+      applyQuery('');
+      onElementFocus(queryInput);
+    };
+
+    const handleBtnDropdown = () => {
+      setVisibleDropdownMenu(prev => !prev);
+    };
+
+    const handleQueryChange = useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        setQuery(event.target.value);
+        applyQuery(event.target.value);
+
+        if (!event.target.value) {
+          onSelected(null);
+        }
+      }, []
+    );
 
     const handleInputOnFocus = useCallback(() => {
       setVisibleDropdownMenu(true);
-    }, [],);
+    }, []);
 
     const handleInputOnBlur = useCallback(() => {
       setVisibleDropdownMenu(false);
-    }, [],);
+    }, []);
     // #endregion
 
     return (
       <div className="dropdown is-active">
         <div className="dropdown-trigger ">
-          <div className="input" style={{paddingInline: '0'}}>
+          <div className="input" style={{ paddingInline: '0' }}>
             <input
               type="text"
+              ref={queryInput}
               value={query}
               placeholder="Enter a part of the name"
               className="input"
@@ -70,12 +100,12 @@ export const Dropdown: React.FC<Props<Person>>
             <button
               className="button is-small is-inverted is-info"
               style={query ? {} : { display: 'none' }}
-              onClick={() => { setQuery(''); applyQuery(''); }}
+              onClick={handleBtnCancel}
             >
               <i className="fas fa-xmark"></i>
             </button>
             <button className="button is-small is-inverted is-info"
-              onClick={() => setVisibleDropdownMenu(prev => !prev)}>
+              onClick={handleBtnDropdown}>
               <i className="fas fa-angle-down"></i>
             </button>
           </div>
@@ -96,7 +126,7 @@ export const Dropdown: React.FC<Props<Person>>
                       role="button"
                       key={item?.slug}
                       className="dropdown-item"
-                      onMouseDown={() => { handleSelect(item) }}
+                      onMouseDown={(event) => { handleSelect(event, item) }}
                     >
                       <p className="has-text-link">{item?.name}</p>
                     </a>
@@ -107,7 +137,7 @@ export const Dropdown: React.FC<Props<Person>>
                     href="#"
                     role="button"
                     className="dropdown-item"
-                    onMouseDown={() => { handleSelect(null) }}
+                    onMouseDown={(event) => { handleSelect(event, null) }}
                   >
                     <p className="has-text-danger">No matching suggestions</p>
                   </a>
