@@ -94,7 +94,7 @@ const InnerDropdown: React.FC<Props> = ({
               ))
             ) : (
               <div className="dropdown-item">
-                <p className="has-text-link">No selected person</p>
+                <p className="has-text-link">No matching suggestions</p>
               </div>
             )}
           </div>

@@ -24,7 +24,7 @@ export const App: React.FC = () => {
 
   const people = getFilteredPeople(appliedQuery);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 100), [
+  const applyQuery = useCallback(debounce(setAppliedQuery, 500), [
     appliedQuery,
   ]);
 
@@ -53,7 +53,7 @@ export const App: React.FC = () => {
       <h1 className="title">
         {selectedPerson
           ? `${selectedPerson?.name} (${selectedPerson?.born} = ${selectedPerson?.died})`
-          : 'Select a person'}
+          : 'No selected person'}
       </h1>
       <Dropdown
         people={people}
