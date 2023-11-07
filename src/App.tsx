@@ -11,6 +11,7 @@ const Autocomplete: React.FC<{
 }> = ({ delay, people, onSelected }) => {
   const [text, setText] = useState<string>('');
   const [suggestions, setSuggestions] = useState<Person[]>(people);
+  const [isShowList, setIsShowList] = useState<boolean>(false);
 
   const filterPeopleWithDelay = useMemo(() => {
     return debounce((input: string) => {
@@ -35,15 +36,29 @@ const Autocomplete: React.FC<{
   };
 
   const handleInputFocus = () => {
+    setIsShowList(true);
     if (text === '') {
       setSuggestions(people);
     }
   };
 
-  const handleSuggestionClick = (person: Person) => {
+  const handleSuggestionClick = (
+    person: Person,
+  ) => {
     setText(person.name);
     setSuggestions([]);
     onSelected(person);
+  };
+
+  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.value.length) {
+      setIsShowList(false);
+    }
+
+    const input = e.target.value;
+
+    setText(input);
+    filterPeopleWithDelay(input);
   };
 
   return (
@@ -55,13 +70,14 @@ const Autocomplete: React.FC<{
           className="input"
           onFocus={handleInputFocus}
           onChange={handleInputChange}
+          onBlur={handleBlur}
           value={text}
         />
       </div>
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {suggestions.length === 0 ? (
+          {!isShowList ? (
             <div className="dropdown-item">No matching suggestions</div>
           ) : (
             suggestions.map((person) => (
@@ -69,7 +85,9 @@ const Autocomplete: React.FC<{
                 type="button"
                 className="dropdown-item"
                 key={person.slug}
-                onClick={() => handleSuggestionClick(person)}
+                onClick={() => {
+                  handleSuggestionClick(person);
+                }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     handleSuggestionClick(person);
