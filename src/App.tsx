@@ -19,7 +19,7 @@ export const App: React.FC = () => {
 
       <SearchForm
         people={peopleFromServer}
-        onSelected={(person) => setSelectedPerson(person)}
+        onSelected={setSelectedPerson}
         delay={1000}
       />
     </main>
