@@ -3,17 +3,21 @@ import { Person } from '../../types/Person';
 
 interface Props {
   person: Person,
-  onSelected: (value: string) => void
+  onSelected: (person: Person) => void
 }
 
-export const List: React.FC<Props> = ({
+export const PersonName: React.FC<Props> = ({
   person,
   onSelected,
 }) => {
-  const handlerOnKey = (event: React.KeyboardEvent) => {
+  const handlerOnKey = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === 'Enter') {
-      onSelected(person.name);
+      onSelected(person);
     }
+  };
+
+  const handleOnClick = () => {
+    onSelected(person);
   };
 
   return (
@@ -21,7 +25,7 @@ export const List: React.FC<Props> = ({
       role="button"
       tabIndex={0}
       className="dropdown-item"
-      onClick={(event) => onSelected(event.currentTarget.innerText)}
+      onClick={handleOnClick}
       onKeyDown={handlerOnKey}
     >
       <p className="has-text-link">{person.name}</p>

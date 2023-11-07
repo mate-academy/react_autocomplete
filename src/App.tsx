@@ -1,50 +1,42 @@
 import debounce from 'lodash.debounce';
-import { useMemo, useCallback, useState } from 'react';
+import {
+  useMemo,
+  useState,
+  useEffect,
+} from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-import { List } from './components/List/List';
+import { PersonName } from './components/Person/PersonName';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setApplyQuerry] = useState('');
-  const [selectedPerson, setSelectedPerson] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [noSuggestion, setNoSuggestions] = useState(false);
 
   const reset = () => {
-    setSelectedPerson('');
+    setSelectedPerson(null);
   };
 
-  const handleValue = () => {
-    let value = query;
-
-    if (selectedPerson) {
-      value = selectedPerson;
-    }
-
-    return value;
+  const handleSelected = (newPerson: Person) => {
+    setSelectedPerson(newPerson);
   };
 
-  const onSelected = (newPerson: string) => {
-    if (newPerson !== selectedPerson) {
-      setSelectedPerson(newPerson);
-    }
-  };
-
-  const findPerson = peopleFromServer.find(
-    person => person.name === selectedPerson,
-  );
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const applyQuerry = useCallback(
-    debounce(setApplyQuerry, 1000),
-    [],
-  );
+  const applyQuerry = useMemo(() => debounce(
+    (value: string) => {
+      setApplyQuerry(value);
+      setNoSuggestions(false);
+    }, 1000,
+  ),
+  [setApplyQuerry, setNoSuggestions]);
 
   const handlerQuery = (event:React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuerry(event.target.value);
     reset();
+    setNoSuggestions(false);
   };
 
   const filteredPeople: Person[] = useMemo(() => {
@@ -54,12 +46,20 @@ export const App: React.FC = () => {
   },
   [appliedQuery]);
 
+  useEffect(() => {
+    if (!filteredPeople.length && query) {
+      setNoSuggestions(true);
+    }
+  }, [filteredPeople, query]);
+
   return (
     <main
       className="section"
     >
       <h1 className="title">
-        { findPerson && `${findPerson.name} (${findPerson.born} = ${findPerson.died})`}
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -68,36 +68,44 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            value={handleValue()}
+            value={selectedPerson ? selectedPerson.name : query}
             onChange={handlerQuery}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(true)}
+            onFocus={() => {
+              setIsFocused(true);
+              setNoSuggestions(false);
+            }}
+            onBlur={() => {
+              setIsFocused(true);
+              setNoSuggestions(false);
+            }}
           />
         </div>
         <div className="dropdown-menu" role="menu">
-          <div
-            className="dropdown-content"
-          >
-            {(isFocused && !query)
-            && (!selectedPerson) && peopleFromServer.map(person => (
-              <List
+          {(isFocused && !query && !selectedPerson)
+                && peopleFromServer.map(person => (
+                  <div
+                    className="dropdown-content"
+                    key={person.name}
+                  >
+                    <PersonName
+                      person={person}
+                      onSelected={handleSelected}
+                    />
+                  </div>
+                ))}
+          {(query && !selectedPerson) && filteredPeople.map((person) => (
+            <div
+              className="dropdown-content"
+              key={person.name}
+            >
+              <PersonName
                 person={person}
-                onSelected={onSelected}
-                key={person.name}
+                onSelected={handleSelected}
               />
-            ))}
-            {(query && !selectedPerson) && filteredPeople.map((person) => (
-              <List
-                person={person}
-                onSelected={onSelected}
-                key={person.name}
-              />
-            ))}
-            {(!selectedPerson && !filteredPeople.find(
-              p => p.name.includes(query),
-            ) && query)
-              && 'No matching suggestions'}
-          </div>
+            </div>
+          ))}
+
+          {noSuggestion && <div>No matching suggestions</div>}
         </div>
       </div>
     </main>
