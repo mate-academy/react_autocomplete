@@ -27,10 +27,10 @@ export const Dropdown: React.FC<Props<Person>>
 
     const filteredItems = useMemo(() => {
       return filterFn([...items], appliedQuery);
-    }, [appliedQuery],);
+    }, [filterFn, items, appliedQuery],);
 
     const applyQuery = useCallback(
-      debounce(setAppliedQuery, filtrationDelay), [],);
+      debounce(setAppliedQuery, filtrationDelay), [filtrationDelay],);
 
     const queryInput = useRef<HTMLInputElement | null>(null);
 
@@ -126,7 +126,6 @@ export const Dropdown: React.FC<Props<Person>>
                   filteredItems.map(item => (
                     <button
                       type="button"
-                      role="button"
                       key={item?.slug}
                       className="dropdown-item button is-white"
                       onMouseDown={(event) => { handleSelect(event, item) }}
@@ -138,7 +137,6 @@ export const Dropdown: React.FC<Props<Person>>
                 : (
                   <button
                     type="button"
-                    role="button"
                     className="dropdown-item button is-white"
                     onMouseDown={(event) => { handleSelect(event, null) }}
                   >
