@@ -33,7 +33,7 @@ export const Dropdown: React.FC<Props<Person>>
       debounce(setAppliedQuery, filtrationDelay), [],);
 
     const queryInput = useRef<HTMLInputElement | null>(null);
-    
+
     const onElementFocus = (
       ref: React.MutableRefObject<HTMLInputElement | null>
     ) => {
@@ -44,7 +44,7 @@ export const Dropdown: React.FC<Props<Person>>
 
     // #region handle
     const handleSelect = (
-      event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+      event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
       item: typeof items[0] | null,
     ) => {
       event.preventDefault();
@@ -98,13 +98,16 @@ export const Dropdown: React.FC<Props<Person>>
               onBlur={handleInputOnBlur}
             />
             <button
+              type="button"
               className="button is-small is-inverted is-info"
               style={query ? {} : { display: 'none' }}
               onClick={handleBtnCancel}
             >
               <i className="fas fa-xmark"></i>
             </button>
-            <button className="button is-small is-inverted is-info"
+            <button
+              type="button"
+              className="button is-small is-inverted is-info"
               onClick={handleBtnDropdown}>
               <i className="fas fa-angle-down"></i>
             </button>
@@ -121,26 +124,26 @@ export const Dropdown: React.FC<Props<Person>>
               filteredItems.length
                 ? (
                   filteredItems.map(item => (
-                    <a
-                      href="#"
+                    <button
+                      type="button"
                       role="button"
                       key={item?.slug}
-                      className="dropdown-item"
+                      className="dropdown-item button is-white"
                       onMouseDown={(event) => { handleSelect(event, item) }}
                     >
                       <p className="has-text-link">{item?.name}</p>
-                    </a>
+                    </button>
                   ))
                 )
                 : (
-                  <a
-                    href="#"
+                  <button
+                    type="button"
                     role="button"
-                    className="dropdown-item"
+                    className="dropdown-item button is-white"
                     onMouseDown={(event) => { handleSelect(event, null) }}
                   >
                     <p className="has-text-danger">No matching suggestions</p>
-                  </a>
+                  </button>
                 )
             }
           </div>
