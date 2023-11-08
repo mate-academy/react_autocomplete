@@ -2,6 +2,11 @@ iframe {
   display: none;
 }
 
+.dropdown-menu {
+  display: flex;
+  flex-direction: column;
+}
+
 button.dropdown-item {
   border: 0;
   background-color: #fff;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import './App.scss';
 import { debounce } from 'lodash';
 import { peopleFromServer } from './data/people';
@@ -10,7 +10,7 @@ const Autocomplete: React.FC<{
   onSelected: (person: Person | null) => void;
 }> = ({ delay, people, onSelected }) => {
   const [text, setText] = useState<string>('');
-  const [suggestions, setSuggestions] = useState<Person[]>(people);
+  const [suggestions, setSuggestions] = useState<Person[]>([]);
   const [isShowList, setIsShowList] = useState<boolean>(false);
 
   const filterPeopleWithDelay = useMemo(() => {
@@ -19,19 +19,16 @@ const Autocomplete: React.FC<{
         person.name.toLowerCase().includes(input.toLowerCase())
       ));
 
+      setIsShowList(true);
       setSuggestions(filteredPeople);
     }, delay);
   }, [people, delay]);
 
-  useEffect(() => {
-    filterPeopleWithDelay(text);
-  }, [text, filterPeopleWithDelay]);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
 
+    setIsShowList(false);
     setText(input);
-
     filterPeopleWithDelay(input);
   };
 
@@ -46,12 +43,13 @@ const Autocomplete: React.FC<{
     person: Person,
   ) => {
     setText(person.name);
-    setSuggestions([]);
+    setSuggestions([person]);
     onSelected(person);
+    setIsShowList(false);
   };
 
   const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.value.length) {
+    if (!e.target.value.length || !text.length) {
       setIsShowList(false);
     }
 
@@ -62,45 +60,50 @@ const Autocomplete: React.FC<{
   };
 
   return (
-    <div className="dropdown is-active">
-      <div className="dropdown-trigger">
+    <div
+      className="dropdown is-active"
+    >
+      <div
+        className="dropdown-trigger"
+      >
         <input
           type="text"
           placeholder="Enter a part of the name"
           className="input"
           onFocus={handleInputFocus}
           onChange={handleInputChange}
-          onBlur={handleBlur}
           value={text}
+          onBlur={(e) => handleBlur(e)}
         />
       </div>
 
-      <div className="dropdown-menu" role="menu">
-        <div className="dropdown-content">
-          {!isShowList ? (
-            <div className="dropdown-item">No matching suggestions</div>
-          ) : (
-            suggestions.map((person) => (
-              <button
-                type="button"
-                className="dropdown-item"
-                key={person.slug}
-                onClick={() => {
-                  handleSuggestionClick(person);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+      <div
+        className="dropdown-menu"
+        role="menu"
+      >
+        {isShowList && (
+          <div className="dropdown-content">
+            {suggestions.length === 0 ? (
+              <div className="dropdown-item">No matching suggestions</div>
+            ) : (
+              suggestions.map((person) => (
+                <button
+                  type="button"
+                  className="dropdown-item"
+                  key={person.slug}
+                  onFocus={handleInputFocus}
+                  onClick={() => {
                     handleSuggestionClick(person);
-                  }
-                }}
-              >
-                <p>
-                  {person.name}
+                  }}
+                >
+                  <p>
+                    {person.name}
 
-                </p>
-              </button>
-            )))}
-        </div>
+                  </p>
+                </button>
+              )))}
+          </div>
+        )}
       </div>
     </div>
   );
