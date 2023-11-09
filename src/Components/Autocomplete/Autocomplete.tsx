@@ -9,16 +9,14 @@ import { peopleFromServer } from '../../data/people';
 const toNormalizeQuery = (query: string) => query.trim().toLowerCase();
 
 type Props = {
-  onSelect: (person: Person) => void,
-  delay: number,
+  onSelect: (person: Person) => void;
+  delay: number;
 };
 
 export const Autocomplete: React.FC<Props> = ({ onSelect, delay }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isVisible, setIsVisible] = useState(false);
-
-  console.log('rendering');
 
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
@@ -28,20 +26,22 @@ export const Autocomplete: React.FC<Props> = ({ onSelect, delay }) => {
     setIsVisible(true);
   };
 
-  const handleSelectedPerson = (person: Person) => {
+  const handleSelectedPerson = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    person: Person,
+  ) => {
+    event.preventDefault();
+
     onSelect(person);
     setQuery(person.name);
     setIsVisible(false);
   };
 
-  const filteredPeople = useMemo(
-    () => {
-      return peopleFromServer.filter((person: Person) => (
-        person.name.toLowerCase().includes(toNormalizeQuery(appliedQuery))
-      ));
-    },
-    [appliedQuery],
-  );
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter((person: Person) => {
+      return person.name.toLowerCase().includes(toNormalizeQuery(appliedQuery));
+    });
+  }, [appliedQuery]);
 
   return (
     <div className="dropdown is-active">
@@ -52,6 +52,8 @@ export const Autocomplete: React.FC<Props> = ({ onSelect, delay }) => {
           className="input"
           value={query}
           onChange={handleQueryChange}
+          onFocus={() => setIsVisible(true)}
+          onBlur={() => setIsVisible(false)}
         />
       </div>
 
@@ -62,12 +64,12 @@ export const Autocomplete: React.FC<Props> = ({ onSelect, delay }) => {
               filteredPeople.map((person) => (
                 <div className="dropdown-item" key={person.name}>
                   <a
-                    href="\#"
-                    className={cn({
+                    href="/"
+                    className={cn('button is-light', {
                       'has-text-link': person.sex === 'm',
                       'has-text-danger': person.sex === 'f',
                     })}
-                    onClick={() => handleSelectedPerson(person)}
+                    onClick={(event) => handleSelectedPerson(event, person)}
                   >
                     {person.name}
                   </a>
