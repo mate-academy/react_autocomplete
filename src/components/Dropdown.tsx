@@ -23,6 +23,11 @@ export const Dropdown: React.FC<Props> = ({ people, delay, onSelect }) => {
     applyQuery(e.target.value);
   };
 
+  const handleSelect = (person:Person) => {
+    setQuery(person.name);
+    onSelect(person);
+  };
+
   const filteredPeople = useMemo(() => {
     return people.filter(person => person.name.toLowerCase()
       .includes(appliedQuery.toLowerCase().trim()));
@@ -52,8 +57,7 @@ export const Dropdown: React.FC<Props> = ({ people, delay, onSelect }) => {
                 className={cn('dropdown-item',
                   { 'has-text-link': person.sex === 'm' },
                   { 'has-text-danger': person.sex === 'f' })}
-                onMouseDown={() => onSelect(person)}
-
+                onMouseDown={() => handleSelect(person)}
               >
                 {person.name}
               </a>
