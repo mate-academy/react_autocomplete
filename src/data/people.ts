@@ -264,7 +264,7 @@ export const peopleFromServer: Person[] = [
   },
   {
     name: 'Maria Haverbeke',
-    sex: 'm',
+    sex: 'f',
     born: 1905,
     died: 1997,
     fatherName: 'Emile Haverbeke',
