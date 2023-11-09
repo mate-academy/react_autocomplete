@@ -13,13 +13,16 @@ export const Dropdown: React.FC<Props> = ({ people, delay, onSelect }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [isUserTyping, setIsUserTyping] = useState(false);
 
   const applyQuery = useCallback(debounce((value:string) => {
     setAppliedQuery(value);
+    setIsUserTyping(false);
   }, delay), [delay]);
 
   const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
+    setIsUserTyping(true);
     applyQuery(e.target.value);
   };
 
@@ -34,7 +37,9 @@ export const Dropdown: React.FC<Props> = ({ people, delay, onSelect }) => {
   }, [appliedQuery, people]);
 
   return (
-    <div className={cn('dropdown', { 'is-active': isFocused })}>
+    <div
+      className={cn('dropdown', { 'is-active': isFocused && !isUserTyping })}
+    >
       <div className="dropdown-trigger">
         <input
           type="text"
