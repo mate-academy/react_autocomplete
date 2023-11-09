@@ -9,12 +9,22 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { PersonName } from './components/Person/PersonName';
 
-export const App: React.FC = () => {
+interface Props {
+  deley: number;
+}
+
+export const App: React.FC<Props> = ({ deley = 1000 }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setApplyQuerry] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isFocused, setIsFocused] = useState(false);
-  const [noSuggestion, setNoSuggestions] = useState(false);
+  const [noMatches, setNoMatches] = useState(false);
+  const [drobdownHide, setDropdownHide] = useState(false);
+
+  const handleFocus = () => {
+    setIsFocused(true);
+    setNoMatches(false);
+  };
 
   const reset = () => {
     setSelectedPerson(null);
@@ -26,17 +36,19 @@ export const App: React.FC = () => {
 
   const applyQuerry = useMemo(() => debounce(
     (value: string) => {
+      setDropdownHide(false);
+      setNoMatches(false);
       setApplyQuerry(value);
-      setNoSuggestions(false);
-    }, 1000,
+    }, deley,
   ),
-  [setApplyQuerry, setNoSuggestions]);
+  [setApplyQuerry, deley]);
 
   const handlerQuery = (event:React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuerry(event.target.value);
+    setDropdownHide(true);
     reset();
-    setNoSuggestions(false);
+    setNoMatches(false);
   };
 
   const filteredPeople: Person[] = useMemo(() => {
@@ -48,7 +60,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (!filteredPeople.length && query) {
-      setNoSuggestions(true);
+      setNoMatches(true);
     }
   }, [filteredPeople, query]);
 
@@ -70,14 +82,8 @@ export const App: React.FC = () => {
             className="input"
             value={selectedPerson ? selectedPerson.name : query}
             onChange={handlerQuery}
-            onFocus={() => {
-              setIsFocused(true);
-              setNoSuggestions(false);
-            }}
-            onBlur={() => {
-              setIsFocused(true);
-              setNoSuggestions(false);
-            }}
+            onFocus={handleFocus}
+            onBlur={handleFocus}
           />
         </div>
         <div className="dropdown-menu" role="menu">
@@ -93,19 +99,27 @@ export const App: React.FC = () => {
                     />
                   </div>
                 ))}
-          {(query && !selectedPerson) && filteredPeople.map((person) => (
+
+          {(!selectedPerson && appliedQuery && !drobdownHide)
+            && filteredPeople.map((person) => (
+              <div
+                className="dropdown-content"
+                key={person.name}
+              >
+                <PersonName
+                  person={person}
+                  onSelected={handleSelected}
+                />
+              </div>
+            ))}
+          {noMatches
+          && (
             <div
               className="dropdown-content"
-              key={person.name}
             >
-              <PersonName
-                person={person}
-                onSelected={handleSelected}
-              />
+              No matching suggestions
             </div>
-          ))}
-
-          {noSuggestion && <div>No matching suggestions</div>}
+          )}
         </div>
       </div>
     </main>
