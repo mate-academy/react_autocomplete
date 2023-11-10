@@ -1,6 +1,9 @@
 import React, { useCallback, useState, useMemo, useRef } from 'react';
+
+import './Dropdown.scss';
 import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
+import cn from 'classnames';
 
 type Props<Ty> = {
   items: Ty[],
@@ -86,38 +89,44 @@ export const Dropdown: React.FC<Props<Person>>
     return (
       <div className="dropdown is-active">
         <div className="dropdown-trigger ">
-          <div className="input" style={{ paddingInline: '0' }}>
+          <div className="input has-input-inner">
             <input
               type="text"
               ref={queryInput}
               value={query}
               placeholder="Enter a part of the name"
-              className="input"
+              className="input-inner"
               onChange={handleQueryChange}
               onFocus={handleInputOnFocus}
               onBlur={handleInputOnBlur}
             />
             <button
               type="button"
-              className="button is-small is-inverted is-info"
-              style={query ? {} : { display: 'none' }}
+              className={cn("button is-small is-white", {
+                'is-hidden': !query,
+              })}
               onClick={handleBtnCancel}
             >
-              <i className="fas fa-xmark"></i>
+              <i className="fas fa-xmark" />
             </button>
             <button
               type="button"
-              className="button is-small is-inverted is-info"
+              className="button is-small is-white"
               onClick={handleBtnDropdown}>
-              <i className="fas fa-angle-down"></i>
+              <i
+                className={cn("fas fa-angle-down", {
+                  'is-flap-v': visibleDropdownMenu,
+                })}
+              />
             </button>
           </div>
         </div>
 
         <div
           role="menu"
-          className="dropdown-menu"
-          style={visibleDropdownMenu ? {} : { display: 'none' }}
+          className={cn("dropdown-menu", {
+            'is-hidden': !visibleDropdownMenu,
+          })}
         >
           <div className="dropdown-content">
             {
