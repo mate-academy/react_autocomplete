@@ -18,7 +18,7 @@ export const Autocomplete: React.FC<Props> = ({ onSelect, delay }) => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isVisible, setIsVisible] = useState(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), [delay]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value.toLowerCase());
@@ -44,7 +44,10 @@ export const Autocomplete: React.FC<Props> = ({ onSelect, delay }) => {
   }, [appliedQuery]);
 
   return (
-    <div className="dropdown is-active">
+    <div className={cn('dropdown', {
+      'is-active': isVisible,
+    })}
+    >
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -57,32 +60,31 @@ export const Autocomplete: React.FC<Props> = ({ onSelect, delay }) => {
         />
       </div>
 
-      {isVisible && (
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {filteredPeople.length ? (
-              filteredPeople.map((person) => (
-                <div className="dropdown-item" key={person.name}>
-                  <a
-                    href="/"
-                    className={cn('button is-light', {
-                      'has-text-link': person.sex === 'm',
-                      'has-text-danger': person.sex === 'f',
-                    })}
-                    onClick={(event) => handleSelectedPerson(event, person)}
-                  >
-                    {person.name}
-                  </a>
-                </div>
-              ))
-            ) : (
+      <div className="dropdown-menu" role="menu">
+        <div className="dropdown-content">
+          {filteredPeople.length ? (
+            filteredPeople.map((person) => (
               <div className="dropdown-item">
-                <p>No matching suggestions</p>
+                <a
+                  href="/#"
+                  key={person.name}
+                  className={cn('button is-light', {
+                    'has-text-link': person.sex === 'm',
+                    'has-text-danger': person.sex === 'f',
+                  })}
+                  onMouseDown={(event) => handleSelectedPerson(event, person)}
+                >
+                  {person.name}
+                </a>
               </div>
-            )}
-          </div>
+            ))
+          ) : (
+            <div className="dropdown-item">
+              <p>No matching suggestions</p>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
