@@ -81,7 +81,24 @@ export const Dropdown: React.FC<Props<Person>>
       setVisibleDropdownMenu(true);
     }, []);
 
-    const handleInputOnBlur = useCallback(() => {
+    const handleInputOnBlur = useCallback((event) => {
+      console.info(
+        'timeStamp = %d\n'
+        + 'target = %s\n'
+        + 'currentTarget = %s\n'
+        + 'relatedTarget = %s',
+        event.timeStamp,
+        event.target,
+        event.currentTarget,
+        event.relatedTarget,
+      );
+
+      if (event.currentTarget.contains(event.relatedTarget)) {
+        // console.info('currentTarget.contains(relatedTarget) = ',
+        // event.currentTarget.contains(event.relatedTarget));
+        return;
+      }
+
       setVisibleDropdownMenu(false);
     }, []);
     // #endregion
@@ -89,16 +106,19 @@ export const Dropdown: React.FC<Props<Person>>
     return (
       <div className="dropdown is-active">
         <div className="dropdown-trigger ">
-          <div className="input has-input-inner">
+          <div
+            className="input has-input-inner"
+            onBlur={handleInputOnBlur}
+            onFocus={handleInputOnFocus}
+          >
             <input
               type="text"
+              name="input-inner"
               ref={queryInput}
               value={query}
               placeholder="Enter a part of the name"
               className="input-inner"
               onChange={handleQueryChange}
-              onFocus={handleInputOnFocus}
-              onBlur={handleInputOnBlur}
             />
             <button
               type="button"

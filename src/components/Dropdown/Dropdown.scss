@@ -4,11 +4,11 @@
 
   &:focus-within {
     border-color: #485fc7;
-    box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
+    box-shadow: 0 0 0 0.13em rgba(72, 95, 199, 0.25);
   }
 }
 
-.input.has-input-inner>input.input-inner {
+.input.has-input-inner > input.input-inner {
   border: none !important;
   outline: none !important;
 
@@ -17,6 +17,6 @@
   }
 }
 
-i[class~=is-flap-v] {
+i[class~="is-flap-v"] {
   transform: scaleY(-1);
 }
