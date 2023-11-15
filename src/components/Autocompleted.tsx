@@ -49,6 +49,20 @@ export const Autocomplete: React.FC<Props> = ({
     }
   };
 
+  const handleOnBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (query || appliedQuery) {
+      applyQuery('');
+      setAppliedQuery(event.target.value);
+      setTimeout(() => {
+        setIsFocused(false);
+      });
+    } else {
+      setTimeout(() => {
+        setIsFocused(false);
+      });
+    }
+  };
+
   return (
     <div className={classNames('dropdown', {
       'is-active': isFocused,
@@ -61,7 +75,7 @@ export const Autocomplete: React.FC<Props> = ({
           className="input"
           value={query}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onBlur={handleOnBlur}
           onChange={handleQueryChange}
         />
       </div>
