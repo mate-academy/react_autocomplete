@@ -71,6 +71,7 @@ export const Autocomplete: React.FC<Props> = ({
           {filteredPeople.length
             ? filteredPeople.map(person => {
               const isWoman = person.sex === 'f';
+              const { name } = person;
 
               return (
                 <a
@@ -85,7 +86,7 @@ export const Autocomplete: React.FC<Props> = ({
                       : 'has-text-link',
                   )}
                   >
-                    {person.name}
+                    {name}
                   </p>
                 </a>
               );
