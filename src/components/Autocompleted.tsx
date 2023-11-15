@@ -41,9 +41,12 @@ export const Autocomplete: React.FC<Props> = ({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
 
+    setIsFocused(false);
     setQuery(inputValue);
     applyQuery(inputValue);
-
+    setTimeout(() => {
+      setIsFocused(true);
+    }, timer);
     if (inputValue.length === 0) {
       handlePersonSelect(null);
     }
@@ -51,6 +54,7 @@ export const Autocomplete: React.FC<Props> = ({
 
   const handleOnBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (query || appliedQuery) {
+      setQuery('');
       applyQuery('');
       setAppliedQuery(event.target.value);
       setTimeout(() => {
