@@ -18,6 +18,7 @@ export const Autocomplete: React.FC<Props> = ({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(
     debounce(setAppliedQuery, timer),
     [timer],
@@ -29,9 +30,12 @@ export const Autocomplete: React.FC<Props> = ({
     });
   }, [people, appliedQuery]);
 
-  const handlePersonSelect = (person: Person) => {
+  const handlePersonSelect = (person: Person | null) => {
     onSelect(person);
-    setQuery(person.name);
+
+    if (person) {
+      setQuery(person.name);
+    }
   };
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,6 +43,10 @@ export const Autocomplete: React.FC<Props> = ({
 
     setQuery(inputValue);
     applyQuery(inputValue);
+
+    if (inputValue.length === 0) {
+      handlePersonSelect(null);
+    }
   };
 
   return (
