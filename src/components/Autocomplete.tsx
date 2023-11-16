@@ -68,7 +68,7 @@ export const Autocomplete: React.FC<Props> = ({
     applyQuery(event.target.value);
     setIsUserTyping(true);
 
-    if (event.target.value === '') {
+    if (!event.target.value) {
       onSelected(null);
     }
   };
