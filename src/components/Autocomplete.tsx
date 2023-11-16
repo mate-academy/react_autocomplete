@@ -39,6 +39,8 @@ export const Autocomplete: React.FC<Props> = ({
     [setAppliedQuery, delay],
   );
 
+  const handleOnFocus = () => setShowDrop(true);
+
   const filteredPeople = useMemo(() => {
     const preparedAppliedQuery = appliedQuery.toLowerCase().trim();
 
@@ -104,7 +106,7 @@ export const Autocomplete: React.FC<Props> = ({
           className="input"
           value={query}
           onChange={handleQueryChange}
-          onFocus={() => setShowDrop(true)}
+          onFocus={handleOnFocus}
           onBlur={() => setShowDrop(false)}
         />
       </div>
