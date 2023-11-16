@@ -92,6 +92,16 @@ export const Autocomplete: React.FC<Props> = ({
     };
   }, [handleEscape]);
 
+  const handleOnMouse = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    person: Person,
+  ): void => {
+    event.stopPropagation();
+    event.preventDefault();
+    handleItemChange(event, person);
+    setShowDrop(false);
+  };
+
   return (
     <div
       className={classNames(
@@ -124,12 +134,7 @@ export const Autocomplete: React.FC<Props> = ({
                   { 'has-text-danger': person.sex === 'f' },
                   { 'has-text-link': person.sex === 'm' },
                 )}
-                onMouseDown={(event) => {
-                  event.stopPropagation();
-                  event.preventDefault();
-                  handleItemChange(event, person);
-                  setShowDrop(false);
-                }}
+                onMouseDown={(event) => handleOnMouse(event, person)}
               >
                 {person.name}
               </a>
