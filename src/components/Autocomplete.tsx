@@ -23,10 +23,12 @@ export const Autocomplete: React.FC<Props> = ({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [showDrop, setShowDrop] = useState(false);
+  const [isUserTyping, setIsUserTyping] = useState(false);
 
   const applyQuery = useCallback(
     debounce((newQuery: string) => {
       setAppliedQuery(newQuery);
+      setIsUserTyping(false);
     }, delay),
     [setAppliedQuery, delay],
   );
@@ -54,6 +56,7 @@ export const Autocomplete: React.FC<Props> = ({
   ) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setIsUserTyping(true);
 
     if (event.target.value === '') {
       onSelected(null);
@@ -80,7 +83,7 @@ export const Autocomplete: React.FC<Props> = ({
     <div
       className={classNames(
         'dropdown',
-        { 'is-active': showDrop },
+        { 'is-active': showDrop && !isUserTyping },
       )}
     >
       <div className="dropdown-trigger">
