@@ -31,6 +31,9 @@ export const Autocomplete: React.FC<Props> = ({
   const [isUserTyping, setIsUserTyping] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const handleOnFocus = () => setShowDrop(true);
+  const handleOnBlue = () => setShowDrop(false);
+
   const applyQuery = useCallback(
     debounce((newQuery: string) => {
       setAppliedQuery(newQuery);
@@ -38,8 +41,6 @@ export const Autocomplete: React.FC<Props> = ({
     }, delay),
     [setAppliedQuery, delay],
   );
-
-  const handleOnFocus = () => setShowDrop(true);
 
   const filteredPeople = useMemo(() => {
     const preparedAppliedQuery = appliedQuery.toLowerCase().trim();
@@ -107,7 +108,7 @@ export const Autocomplete: React.FC<Props> = ({
           value={query}
           onChange={handleQueryChange}
           onFocus={handleOnFocus}
-          onBlur={() => setShowDrop(false)}
+          onBlur={handleOnBlue}
         />
       </div>
 
