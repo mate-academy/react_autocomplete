@@ -7,12 +7,14 @@ interface Props {
   people: Person[],
   timer?: number,
   onSelect?: (person: Person | null) => void,
+  selectPerson?: string,
 }
 
 export const Autocomplete: React.FC<Props> = ({
   people,
   timer = 1000,
   onSelect = () => { },
+  selectPerson,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useState('');
@@ -32,7 +34,6 @@ export const Autocomplete: React.FC<Props> = ({
 
   const handlePersonSelect = (person: Person | null) => {
     onSelect(person);
-
     if (person) {
       setQuery(person.name);
     }
@@ -77,7 +78,7 @@ export const Autocomplete: React.FC<Props> = ({
           type="text"
           placeholder="Enter a part of the name"
           className="input"
-          value={query}
+          value={(query && query) || selectPerson}
           onFocus={() => setIsFocused(true)}
           onBlur={handleOnBlur}
           onChange={handleQueryChange}

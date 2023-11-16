@@ -21,6 +21,7 @@ export const App: React.FC = () => {
         people={peopleFromServer}
         timer={1000}
         onSelect={setSelectedPerson}
+        selectPerson={name}
       />
     </main>
   );
