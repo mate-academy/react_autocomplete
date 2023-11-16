@@ -4,6 +4,7 @@ import {
   useMemo,
   useState,
   useEffect,
+  useRef,
 } from 'react';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
@@ -28,6 +29,7 @@ export const Autocomplete: React.FC<Props> = ({
   const [appliedQuery, setAppliedQuery] = useState('');
   const [showDrop, setShowDrop] = useState(false);
   const [isUserTyping, setIsUserTyping] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const applyQuery = useCallback(
     debounce((newQuery: string) => {
@@ -53,6 +55,10 @@ export const Autocomplete: React.FC<Props> = ({
     onSelected(person);
     setShowDrop(false);
     setQuery(person.name);
+
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
   };
 
   const handleQueryChange = (
@@ -92,6 +98,7 @@ export const Autocomplete: React.FC<Props> = ({
     >
       <div className="dropdown-trigger">
         <input
+          ref={inputRef}
           type="text"
           placeholder="Enter a part of the name"
           className="input"
