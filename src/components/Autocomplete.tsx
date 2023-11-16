@@ -15,6 +15,10 @@ interface Props {
   onSelected: (person: Person | null) => void;
 }
 
+enum Key {
+  Escape = 'Escape',
+}
+
 export const Autocomplete: React.FC<Props> = ({
   people,
   delay,
@@ -65,7 +69,7 @@ export const Autocomplete: React.FC<Props> = ({
 
   const handleEscape = useCallback(
     (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === Key.Escape) {
         setShowDrop(false);
       }
     }, [],
