@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Person } from '../types/Person';
 
 export const peopleFromServer: Person[] = [
