@@ -43,6 +43,12 @@ export const Namelist: React.FC<Props>
     }
   };
 
+  const handleBlur = () => {
+    if (query === '') {
+      setIsFocused(false);
+    }
+  };
+
   const currentPeople = useMemo(() => {
     return names.filter(person => (
       person.name.toLowerCase().includes(filteredPeople.toLowerCase())
@@ -58,6 +64,7 @@ export const Namelist: React.FC<Props>
           value={query}
           onChange={handleCurrentChange}
           onFocus={handleFocus}
+          onBlur={handleBlur}
           className="input"
         />
       </div>
