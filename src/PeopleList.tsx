@@ -15,14 +15,19 @@ export const Peoplelist: React.FC<Props> = ({ people, onSelect, delay }) => {
   const [appliedtextField, setAppliedtextField] = useState('');
   const [isHide, setIsHide] = useState(false);
 
+  const handleApplyTextSet = (value: string) => {
+    setAppliedtextField(value);
+    setIsHide(true);
+  };
+
   const applyTextField = useCallback(
-    debounce(setAppliedtextField, delay), [],
+    debounce(handleApplyTextSet, delay), [],
   );
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsHide(false);
     setTextField(event.target.value);
     applyTextField(event.target.value);
-    setIsHide(true);
   };
 
   const handleButtonClick = (
@@ -42,7 +47,13 @@ export const Peoplelist: React.FC<Props> = ({ people, onSelect, delay }) => {
     }
   };
 
-  const curentPiople = useMemo(() => {
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    if (!event.relatedTarget) {
+      setIsHide(false);
+    }
+  };
+
+  const currentPiople = useMemo(() => {
     return people.filter(person => (
       person.name.toLowerCase().includes(appliedtextField.toLowerCase())
     ));
@@ -57,6 +68,7 @@ export const Peoplelist: React.FC<Props> = ({ people, onSelect, delay }) => {
           value={textField}
           onChange={handleTextChange}
           onFocus={handleFocus}
+          onBlur={handleBlur}
           className="input"
         />
       </div>
@@ -64,8 +76,8 @@ export const Peoplelist: React.FC<Props> = ({ people, onSelect, delay }) => {
       <div className="dropdown-menu" role="menu">
         {isHide && (
           <div className="dropdown-content">
-            {curentPiople.length
-              ? curentPiople.map((person) => (
+            {currentPiople.length
+              ? currentPiople.map((person) => (
                 <div
                   key={person.name}
                   className="dropdown-item"
