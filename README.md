@@ -7,7 +7,7 @@ that will suggest people matching an entered text.
 > The task does not have tests or a working example
 
 - suggestions should appear after some `delay` in typing (`debounce`);
-- the `delay` should be customizable via props;
+- the `delay` should be customizable via props;-
 - show the list of all people when input is focused but empty ([Check this](https://mui.com/material-ui/react-autocomplete/#combo-box) to see how it can work)
 - show `No matching suggestions` message if there are no people containing the entered text;
 - don't run filtering again if the text has not changed (pause in typing happened when the text was the same as before)
@@ -20,4 +20,4 @@ that will suggest people matching an entered text.
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_autocomplete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://yuliiaaaaa.github.io/react_autocomplete/) and add it to the PR description.
