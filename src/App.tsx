@@ -1,9 +1,9 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import React, { useCallback, useState } from 'react';
 import './App.scss';
 import { PostList } from './components/PostList';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-/* eslint-disable  @typescript-eslint/no-explicit-any */
 
 function debounce(callback: any, delay: number) {
   let timerId = 0;
