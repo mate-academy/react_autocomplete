@@ -49,6 +49,8 @@ export const Dropdown: React.FC<Props> = ({
   }, [appliedQuery]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+
     setQuery(event.target.value);
     applyQuery(event.target.value);
     setIsShownList(true);
@@ -85,6 +87,7 @@ export const Dropdown: React.FC<Props> = ({
         <input
           type="text"
           placeholder="Enter a part of the name"
+          autoComplete="off"
           className="input"
           value={query}
           onChange={handleQueryChange}
