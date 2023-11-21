@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, { useCallback, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
@@ -9,8 +8,6 @@ export const App: React.FC = () => {
   const [, setSelectedPerson] = useState<Person | null>();
 
   const handlePersonSelect = useCallback((person: Person | null) => {
-    console.log('Selected Person:', person);
-
     setSelectedPerson(person);
   }, []);
 
