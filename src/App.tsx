@@ -1,34 +1,45 @@
 import debounce from 'lodash.debounce';
 import cn from 'classnames';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Person } from './types/Person';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 
-const FILTER_DELAY = 300;
+const FILTER_DELAY = 1000;
 
 export const App: React.FC = () => {
   const [people] = useState<Person[]>(peopleFromServer);
   const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
   const [focus, setFocus] = useState(false);
 
   const filteredPeople: Person[] = useMemo(() => {
     return people
       .filter((person: Person) => {
         const name = person.name.trim().toUpperCase();
-        const appliedQuery = query.trim().toUpperCase();
+        const appliedQueryFiltered = appliedQuery.trim().toUpperCase();
 
-        return name.includes(appliedQuery);
+        return name.includes(appliedQueryFiltered);
       });
-  }, [query, people]);
+  }, [appliedQuery, people]);
 
-  const applyQuery = useCallback(debounce(setQuery, FILTER_DELAY), []);
+  const applyQuery = debounce(setAppliedQuery, FILTER_DELAY);
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
+    setQuery(event.target.value);
     applyQuery(event.target.value);
+  };
+
+  const handlePersonClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    const buttonText = event.currentTarget.textContent || '';
+
+    setQuery(buttonText);
+    applyQuery(buttonText);
   };
 
   return (
@@ -48,12 +59,15 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
             onChange={handleInputChange}
             onFocus={() => {
               setFocus(true);
             }}
             onBlur={() => {
-              setFocus(false);
+              setTimeout(() => {
+                setFocus(false);
+              }, 100);
             }}
           />
         </div>
@@ -66,7 +80,17 @@ export const App: React.FC = () => {
 
                 return (
                   <div className="dropdown-item" key={slug}>
-                    <p className="has-text-link">{name}</p>
+                    <button
+                      style={{
+                        border: 'none',
+                        background: 'none',
+                      }}
+                      className="has-text-link"
+                      type="button"
+                      onClick={handlePersonClick}
+                    >
+                      {name}
+                    </button>
                   </div>
                 );
               })}
