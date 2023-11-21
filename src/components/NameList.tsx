@@ -50,9 +50,7 @@ export const Namelist: React.FC<Props>
   };
 
   const handleBlur = () => {
-    if (query === '') {
-      setIsFocused(false);
-    }
+    setIsFocused(false);
   };
 
   const currentPeople = useMemo(() => {
