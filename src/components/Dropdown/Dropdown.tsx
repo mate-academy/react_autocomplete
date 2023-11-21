@@ -13,16 +13,6 @@ const normalizeInputQuery = (query: string) => {
   return query.trim().toLowerCase();
 };
 
-// function debounce(f: Function, delay: number) {
-//   let timerId = 0;
-
-//   return (...args: any) => {
-//     window.clearTimeout(timerId);
-
-//     timerId = window.setTimeout(() => f(args), delay);
-//   };
-// }
-
 export const Dropdown: React.FC<Props> = ({
   onSelected,
   delay,
@@ -71,14 +61,11 @@ export const Dropdown: React.FC<Props> = ({
       setQuery('');
       setAppliedQuery(event.target.value);
       applyQuery('');
-      setTimeout(() => {
-        setIsShownList(false);
-      }, 200);
-    } else {
-      setTimeout(() => {
-        setIsShownList(false);
-      }, 200);
     }
+
+    setTimeout(() => {
+      setIsShownList(false);
+    }, 200);
   };
 
   return (
