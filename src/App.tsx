@@ -3,13 +3,13 @@ import './App.scss';
 import { PostList } from './components/PostList';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 
 function debounce(callback: any, delay: number) {
   let timerId = 0;
 
   return (...args: any) => {
     window.clearTimeout(timerId);
-
     timerId = window.setTimeout(() => {
       callback(...args);
     }, delay);
@@ -17,52 +17,38 @@ function debounce(callback: any, delay: number) {
 }
 
 interface FilterParams {
-  selectedPerson: Person | null;
-  targetValue: string;
-  isListVisible: boolean;
   appliedQuery: string;
 }
 
 function getPreparedPeople(
   people: Person[],
   {
-    selectedPerson, targetValue, isListVisible, appliedQuery,
+    appliedQuery,
   }: FilterParams,
 ) {
   let preparedPosts = [...people];
 
-  if (!isListVisible) {
-    return [];
-  }
+  const filt = (item: string) => item.toLowerCase().includes(appliedQuery);
 
-  if (targetValue) {
-    const filt = (item: string) => item.toLowerCase().includes(appliedQuery);
-
-    preparedPosts = preparedPosts.filter(person => filt(person.name));
-  }
-
-  if (selectedPerson) {
-    const x = (item: string | string[]) => item.includes(selectedPerson.name);
-    const y = (item: string) => x(item.toLowerCase());
-    const filt2 = (item: string) => y(item);
-
-    preparedPosts = preparedPosts.filter(person => filt2(person.name));
-  }
+  preparedPosts = preparedPosts.filter(person => filt(person.name));
 
   return preparedPosts;
 }
 
 export const App: React.FC = () => {
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [targetValue, setTargetValue] = useState('');
-  const [titleWithPerson, setTitleWithPerson] = useState('');
-  const [isListVisible, setIsListVisible] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [isListVisible, setIsListVisible] = useState(false);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, 1000),
     [],
   );
+
+  const title = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : 'no selected person';
 
   const onSelected = (person: Person) => {
     const curPerson = peopleFromServer.find(body => body.name === person.name)
@@ -70,28 +56,22 @@ export const App: React.FC = () => {
 
     setTargetValue(curPerson?.name || '');
     setSelectedPerson(curPerson);
-
-    curPerson
-      ? setTitleWithPerson(`${curPerson.name} ${curPerson.born} - ${curPerson.died}`)
-      : setTitleWithPerson('No matching suggestions');
+    setIsListVisible(false);
   };
 
   const handler = (value: string) => {
     setTargetValue(value);
-    applyQuery(value);
+    applyQuery(value.toLowerCase());
   };
 
-  const visiblePeople = getPreparedPeople(peopleFromServer, {
-    selectedPerson,
-    targetValue,
-    isListVisible,
-    appliedQuery,
-  });
+  const visiblePeople = appliedQuery
+    ? getPreparedPeople(peopleFromServer, { appliedQuery })
+    : peopleFromServer;
 
   return (
     <main className="section">
       <h1 className="title">
-        {titleWithPerson}
+        {title}
       </h1>
 
       <div className="dropdown is-active">
@@ -103,12 +83,13 @@ export const App: React.FC = () => {
             className="input"
             value={targetValue}
             onChange={event => handler(event.target.value)}
-            onClick={() => setIsListVisible(true)}
+            onFocus={() => setIsListVisible(true)}
           />
         </div>
 
         <div className="dropdown-menu" role="menu">
-          <PostList people={visiblePeople} selectedBody={onSelected} />
+          {isListVisible
+            && <PostList people={visiblePeople} selectedBody={onSelected} />}
         </div>
       </div>
     </main>

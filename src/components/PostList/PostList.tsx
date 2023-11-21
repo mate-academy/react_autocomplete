@@ -20,6 +20,8 @@ export const PostList:React.FC<Props> = React.memo(({
           selectedPerson={selectedBody}
         />
       ))}
+      {people.length === 0
+      && <p>No matching suggestions</p>}
     </div>
   );
 });

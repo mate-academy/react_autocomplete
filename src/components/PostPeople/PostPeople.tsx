@@ -9,14 +9,15 @@ export const PostPeople:React.FC<Props> = ({ person, selectedPerson }) => {
   return (
     <>
       <div className="dropdown-item">
-        <p
+        <button
+          type="button"
           className="has-text-link"
           onClick={() => {
             selectedPerson(person);
           }}
         >
           {person.name}
-        </p>
+        </button>
       </div>
     </>
   );
