@@ -1,5 +1,4 @@
-export const debounce = (callback: (state: string) =>
-  void, delay: number) => {
+export const debounce = (callback: (state: string) => void, delay: number) => {
   let timeOutId: number;
 
   return (...args: string[]) => {
