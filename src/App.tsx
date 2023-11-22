@@ -1,57 +1,83 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { Dropdown } from './Dropdown';
+import { useDebounce } from './hooks/Debounce';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+interface AppProps {
+  debounceDelay?: number;
+}
+
+export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
+  const [inputValue, setInputValue] = useState<string>('');
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(true);
+
+  const debouncedInputValue = useDebounce(inputValue, debounceDelay);
+
+  const handleInputBlur = () => {
+    setTimeout(() => {
+      setIsFocused(false);
+    }, 200);
+  };
+
+  const handleInputFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+    setSelectedPerson(null);
+
+    if (!event.target.value) {
+      setShowSuggestions(true);
+    }
+
+    setShowSuggestions(false);
+  };
+
+  useEffect(() => {
+    setShowSuggestions(true);
+  }, [debouncedInputValue]);
+
+  const handleSuggestionClick = (person: Person) => {
+    setInputValue(person.name);
+    setSelectedPerson(person);
+    setIsFocused(false);
+    setShowSuggestions(false);
+  };
+
+  const filteredPeople = useMemo(() => {
+    if (!inputValue) {
+      return peopleFromServer;
+    }
+
+    return peopleFromServer.filter((person) => {
+      return person.name.toLowerCase()
+        .includes(debouncedInputValue.toLowerCase());
+    });
+  }, [debouncedInputValue, inputValue]);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
 
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Dropdown
+        isFocused={isFocused}
+        inputValue={inputValue}
+        filteredPeople={filteredPeople}
+        showSuggestions={showSuggestions}
+        handleInputChange={handleInputChange}
+        handleInputFocus={handleInputFocus}
+        handleInputBlur={handleInputBlur}
+        handleSuggestionClick={handleSuggestionClick}
+      />
     </main>
   );
 };
