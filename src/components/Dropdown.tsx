@@ -19,15 +19,24 @@ export const Dropdown: React.FC<Props> = ({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isDropdownShown, setIsDropdownShown] = useState(false);
+  const [isPeopleEmpty, setIsPeopleEmpty] = useState(false);
 
   const filteredPeople: Person[] = useMemo(() => {
-    return people
+    const peopleFiltered = people
       .filter((person: Person) => {
         const name = person.name.trim().toUpperCase();
         const appliedQueryFiltered = appliedQuery.trim().toUpperCase();
 
         return name.includes(appliedQueryFiltered);
       });
+
+    if (!peopleFiltered.length) {
+      setIsPeopleEmpty(true);
+    } else {
+      setIsPeopleEmpty(false);
+    }
+
+    return peopleFiltered;
   }, [appliedQuery, people]);
 
   const applyQuery = useMemo(() => debounce(
@@ -39,7 +48,7 @@ export const Dropdown: React.FC<Props> = ({
   ) => {
     const { value } = event.target;
 
-    if (!value) {
+    if (!value || !isPeopleEmpty) {
       onSelected(null);
     }
 
@@ -86,7 +95,7 @@ export const Dropdown: React.FC<Props> = ({
         />
       </div>
 
-      {filteredPeople.length > 0 && (
+      {!isPeopleEmpty && (
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
             {filteredPeople.map(person => {
