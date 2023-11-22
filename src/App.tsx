@@ -15,7 +15,10 @@ export const App: React.FC = () => {
           : 'No matching suggestions'}
       </h1>
 
-      <Dropdown onSelected={setSelectedPerson} persons={peopleFromServer} />
+      <Dropdown
+        onSelected={setSelectedPerson}
+        persons={peopleFromServer}
+      />
     </main>
   );
 };

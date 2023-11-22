@@ -1,11 +1,11 @@
 import debounce from 'lodash.debounce';
 import cn from 'classnames';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Person } from '../types/Person';
 
 type Props = {
-  onSelected?: (person: Person) => void | undefined,
+  onSelected?: (person: Person | null) => void,
   persons: Person[],
 };
 
@@ -30,14 +30,22 @@ export const Dropdown: React.FC<Props> = ({
       });
   }, [appliedQuery, people]);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, FILTER_DELAY), []);
+  const applyQuery = useMemo(() => debounce(
+    setAppliedQuery, FILTER_DELAY,
+  ), []);
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
+    const { value } = event.target;
+
+    if (!value) {
+      onSelected(null);
+    }
+
     setIsDropdownShown(true);
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
+    setQuery(value);
+    applyQuery(value);
   };
 
   const handlePersonClick = (
@@ -89,7 +97,6 @@ export const Dropdown: React.FC<Props> = ({
                   <a
                     href="/"
                     className="has-text-link"
-                    type="button"
                     onMouseDown={handlePersonClick}
                   >
                     {name}
