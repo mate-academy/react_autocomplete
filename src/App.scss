@@ -1,3 +1,14 @@
 iframe {
   display: none;
 }
+
+#dropdown-text:hover {
+  transform: scale(1.2) ;
+  transition: all 450ms;
+}
+
+#dropdown-item:focus {
+  transform: scale(1.2);
+  transition: all 450ms;
+  outline: none;
+}
