@@ -15,7 +15,7 @@ export const App: React.FC = React.memo((() => {
 
   const applyValue = useCallback(
     debounce((value: string) => setAppliedValue(value), 1000),
-    [],
+    [setAppliedValue],
   );
 
   const filteredPeople = useMemo(() => {
