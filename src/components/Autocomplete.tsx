@@ -15,7 +15,7 @@ const trimValue = (value: string) => {
 
 export const Autocomplete: React.FC<Props> = ({
   people,
-  setSelectedPerson = () => { },
+  setSelectedPerson = () => {},
 }) => {
   const [value, setValue] = useState('');
   const [appliedValue, setAppliedValue] = useState('');
@@ -27,7 +27,7 @@ export const Autocomplete: React.FC<Props> = ({
     }
   };
 
-  const filtredPeple: Person[] | undefined = useMemo(() => {
+  const filtredPeople: Person[] | undefined = useMemo(() => {
     return people.filter((person: Person) => {
       return person.name.toLowerCase().includes(trimValue(appliedValue));
     });
@@ -56,14 +56,11 @@ export const Autocomplete: React.FC<Props> = ({
       setValue('');
       setAppliedValue(event.target.value);
       applyValue('');
-      setTimeout(() => {
-        setIsShownList(false);
-      }, 200);
-    } else {
-      setTimeout(() => {
-        setIsShownList(false);
-      }, 200);
     }
+
+    setTimeout(() => {
+      setIsShownList(false);
+    }, 200);
   };
 
   return (
@@ -82,12 +79,12 @@ export const Autocomplete: React.FC<Props> = ({
       {isShownList && (
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {!filtredPeple.length ? (
+            {!filtredPeople.length ? (
               <div className="dropdown-item">
                 No matching suggestions
               </div>
             ) : (
-              filtredPeple.map(person => (
+              filtredPeople.map(person => (
                 <a
                   key={person.name}
                   href="/"
