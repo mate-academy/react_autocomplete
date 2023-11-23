@@ -9,9 +9,9 @@ type Props = {
 
 export const DropdownList: React.FC<Props> = ({
   people,
-  onHover = () => { },
-  onSelect = () => { },
-  onPersonSelect = () => { },
+  onHover,
+  onSelect = () => {},
+  onPersonSelect = () => {},
 }) => {
   const handleClick = (person: Person, event: React.MouseEvent) => {
     event.preventDefault();
