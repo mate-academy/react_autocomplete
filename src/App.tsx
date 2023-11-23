@@ -14,7 +14,9 @@ export const App: React.FC = React.memo((() => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const applyValue = useCallback(
-    debounce((value: string) => setAppliedValue(value), 1000),
+    (value: string) => {
+      debounce(() => setAppliedValue(value), 1000);
+    },
     [],
   );
 
@@ -39,7 +41,7 @@ export const App: React.FC = React.memo((() => {
     setInputValue(person.name);
     setAppliedValue(person.name);
     setActiveDropdown(false);
-  }, [setSelectedPerson, setInputValue, setActiveDropdown]);
+  }, [setSelectedPerson, setInputValue, setAppliedValue, setActiveDropdown]);
 
   return (
     <main className="section">
