@@ -11,7 +11,7 @@ that will suggest people matching an entered text.
 - show the list of all people when input is focused but empty ([Check this](https://mui.com/material-ui/react-autocomplete/#combo-box) to see how it can work)
 - show `No matching suggestions` message if there are no people containing the entered text;
 - don't run filtering again if the text has not changed (pause in typing happened when the text was the same as before)
-- hide suggestions on text change;
+- hide suggestions t;
 - save selected suggestion text to the input on click and close the list;
 - pass selected person to the `onSelected` callback passed via props;
 - add an `h1` to the `App` showing `Name (born - died)` of the selected person or `No selected person`.
@@ -20,4 +20,4 @@ that will suggest people matching an entered text.
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_autocomplete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://irahos.github.io/react_autocomplete/) and add it to the PR description.
