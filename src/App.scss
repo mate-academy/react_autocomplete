@@ -1,3 +1,24 @@
 iframe {
   display: none;
 }
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.clearInput {
+  position: absolute;
+  right: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.person {
+  cursor: pointer;
+  &:hover {
+    background-color: #bdbbbb40;
+  }
+}
