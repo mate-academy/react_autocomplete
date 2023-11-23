@@ -7,18 +7,16 @@ type Props = {
 
 export const PostPeople:React.FC<Props> = ({ person, selectedPerson }) => {
   return (
-    <>
-      <div className="dropdown-item">
-        <button
-          type="button"
-          className="has-text-link"
-          onClick={() => {
-            selectedPerson(person);
-          }}
-        >
-          {person.name}
-        </button>
-      </div>
-    </>
+    <div className="dropdown-item">
+      <button
+        type="button"
+        className="has-text-link"
+        onClick={() => {
+          selectedPerson(person);
+        }}
+      >
+        {person.name}
+      </button>
+    </div>
   );
 };
