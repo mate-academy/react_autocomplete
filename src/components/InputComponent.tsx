@@ -46,7 +46,10 @@ export const IntputComponent: React.FC<Props> = React.memo((({
 
     setActiveDropdown(false);
     setInputValue(value);
-    applyValue(value);
+    // if (value !== appliedValue) {
+      applyValue(value);
+    // }
+    // applyValue(value);
   };
 
   const handleClickPerson = useCallback((person: Person) => {
