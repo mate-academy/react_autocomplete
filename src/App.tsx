@@ -37,6 +37,7 @@ export const App: React.FC = React.memo((() => {
   const handleClickPerson = useCallback((person: Person) => {
     setSelectedPerson(person);
     setInputValue(person.name);
+    setAppliedValue(person.name);
     setActiveDropdown(false);
   }, [setSelectedPerson, setInputValue, setActiveDropdown]);
 
