@@ -9,11 +9,12 @@ type Props = {
 
 export const DropdownList: React.FC<Props> = ({
   people,
-  onHover = () => {},
-  onSelect = () => {},
-  onPersonSelect = () => {},
+  onHover = () => { },
+  onSelect = () => { },
+  onPersonSelect = () => { },
 }) => {
-  const handleClick = (person: Person) => {
+  const handleClick = (person: Person, event: React.MouseEvent) => {
+    event.preventDefault();
     onSelect(person);
     onPersonSelect(person.name);
   };
@@ -24,12 +25,12 @@ export const DropdownList: React.FC<Props> = ({
         {people.length !== 0
           ? (people.map(person => (
             <a
-              href="/#"
+              href="/"
               key={person.slug}
               className="dropdown-item"
               onMouseEnter={() => onHover(true)}
               onMouseLeave={() => onHover(false)}
-              onClick={() => handleClick(person)}
+              onClick={(event) => handleClick(person, event)}
             >
               <p className="has-text-link">{person.name}</p>
             </a>
