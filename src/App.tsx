@@ -1,57 +1,71 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
+import debounce from 'lodash.debounce';
+import cn from 'classnames';
 import { peopleFromServer } from './data/people';
+import { UserList } from './components/UserList';
+import { Person } from './types/Person';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+export const App: React.FC = React.memo((() => {
+  const [people] = useState<Person[]>(peopleFromServer);
+  const [activeDropdown, setActiveDropdown] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState('');
+  const [appliedValue, setAppliedValue] = useState<string>('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const applyValue = useCallback(
+    debounce((value: string) => setAppliedValue(value), 1000),
+    [],
+  );
+
+  const filteredPeople = useMemo(() => {
+    return people.filter(
+      person => person.name.toLowerCase().includes(appliedValue.toLowerCase()),
+    );
+  }, [appliedValue, people]);
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target;
+
+      setInputValue(value);
+      applyValue(value);
+    },
+    [applyValue],
+  );
+
+  const handleClickPerson = useCallback((person: Person) => {
+    setSelectedPerson(person);
+    setInputValue(person.name);
+    setActiveDropdown(false);
+  }, [setSelectedPerson, setInputValue, setActiveDropdown]);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson && `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
       </h1>
 
-      <div className="dropdown is-active">
+      <div
+        className={cn('dropdown', { 'is-active': activeDropdown })}
+      >
         <div className="dropdown-trigger">
           <input
             type="text"
+            value={inputValue}
             placeholder="Enter a part of the name"
             className="input"
+            onChange={(e) => handleInputChange(e)}
+            onFocus={() => setActiveDropdown(true)}
+            autoComplete="off"
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        <UserList
+          people={filteredPeople}
+          handleClickPerson={handleClickPerson}
+        />
       </div>
     </main>
   );
-};
+}));
