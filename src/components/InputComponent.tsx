@@ -15,10 +15,9 @@ export const IntputComponent: React.FC<Props> = React.memo((({
   setSelectedPerson,
 
 }) => {
-  // console.log('IntputComponent');
-  const [appliedValue, setAppliedValue] = useState<string>('');
   const [activeDropdown, setActiveDropdown] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState('');
+  const [appliedValue, setAppliedValue] = useState<string>('');
 
   const filteredPeople = useMemo(() => {
     return people.filter(
@@ -28,16 +27,22 @@ export const IntputComponent: React.FC<Props> = React.memo((({
     );
   }, [appliedValue, people]);
 
-  const test = (value: string): void => {
-    if (value !== appliedValue) {
+  const applyValue = useCallback(debounce(
+    (value: string) => {
       setAppliedValue(value);
-      // console.log('render debounce');
+      setActiveDropdown(true);
+    }, delay,
+  ), []);
+
+  const test2 = useCallback((value: string) => {
+    if (value !== appliedValue) {
+      applyValue(value);
     }
 
-    setActiveDropdown(true);
-  };
-
-  const applyValue = useCallback(debounce(test, delay), []);
+    if (value === '') {
+      setActiveDropdown(true);
+    }
+  }, [appliedValue, applyValue]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -46,10 +51,7 @@ export const IntputComponent: React.FC<Props> = React.memo((({
 
     setActiveDropdown(false);
     setInputValue(value);
-    // if (value !== appliedValue) {
-      applyValue(value);
-    // }
-    // applyValue(value);
+    test2(value);
   };
 
   const handleClickPerson = useCallback((person: Person) => {
