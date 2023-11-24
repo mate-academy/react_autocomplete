@@ -45,10 +45,11 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            value={query}
+            value={selectedPerson ? selectedPerson.name : query}
             onChange={inputChangeHandler}
             onFocus={() => setIsInputFocused(true)}
             onBlur={() => setIsInputFocused(false)}
+            defaultValue={selectedPerson?.name}
           />
         </div>
 
@@ -57,7 +58,6 @@ export const App: React.FC = () => {
             people={people}
             setSelectedPerson={setSelectedPerson}
             selectedPerson={selectedPerson}
-
           />
         </div>
       </div>

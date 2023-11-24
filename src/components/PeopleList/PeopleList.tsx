@@ -13,9 +13,17 @@ export const PeopleList: React.FC<Props> = ({
   setSelectedPerson,
   selectedPerson,
 }) => {
+  const handleUserSelect = (person: Person) => {
+    if (selectedPerson && selectedPerson.slug === person.slug) {
+      return setSelectedPerson(null);
+    }
+
+    return setSelectedPerson(person);
+  };
+
   return (
     <div className="dropdown-content">
-      {people.length === 0 ? (
+      {!people.length ? (
         <p>No matching suggestions</p>
       ) : (
         people.map((person) => (
@@ -25,13 +33,7 @@ export const PeopleList: React.FC<Props> = ({
             className={cn('dropdown-item', {
               'is-active': selectedPerson?.slug === person.slug,
             })}
-            onMouseDown={() => {
-              if (selectedPerson && selectedPerson.slug === person.slug) {
-                return setSelectedPerson(null);
-              }
-
-              return setSelectedPerson(person);
-            }}
+            onMouseDown={() => handleUserSelect(person)}
           >
             <p>{person.name}</p>
           </a>
