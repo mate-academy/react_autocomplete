@@ -18,7 +18,7 @@ export const App: React.FC = React.memo((() => {
       <IntputComponent
         delay={1000}
         people={people}
-        setSelectedPerson={(v) => setSelectedPerson(v)}
+        onSelected={(v) => setSelectedPerson(v)}
       />
     </main>
   );

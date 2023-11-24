@@ -7,12 +7,12 @@ import { Person } from '../types/Person';
 type Props = {
   delay: number;
   people: Person[];
-  setSelectedPerson: (person: Person) => void;
+  onSelected: (person: Person) => void;
 };
 export const IntputComponent: React.FC<Props> = React.memo((({
   delay,
   people,
-  setSelectedPerson,
+  onSelected,
 
 }) => {
   const [activeDropdown, setActiveDropdown] = useState<boolean>(false);
@@ -45,11 +45,11 @@ export const IntputComponent: React.FC<Props> = React.memo((({
   };
 
   const handleClickPerson = useCallback((person: Person) => {
-    setSelectedPerson(person);
+    onSelected(person);
     setInputValue(person.name);
     setAppliedValue(person.name);
     setActiveDropdown(false);
-  }, [setSelectedPerson]);
+  }, [onSelected]);
 
   const onBlur = useCallback(debounce(
     () => setActiveDropdown(false), delay,
