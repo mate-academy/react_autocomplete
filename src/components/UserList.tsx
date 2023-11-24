@@ -11,8 +11,6 @@ export const UserList: React.FC<Props> = React.memo((({
   people,
   handleClickPerson,
 }) => {
-  // console.log('render UserList');
-
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
@@ -22,7 +20,7 @@ export const UserList: React.FC<Props> = React.memo((({
           <button
             type="button"
             key={person.name}
-            className="dropdown-item"
+            className="dropdown-item is-hovered"
             onClick={(event) => {
               event.preventDefault();
               handleClickPerson(person);

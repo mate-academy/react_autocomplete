@@ -52,7 +52,7 @@ export const IntputComponent: React.FC<Props> = React.memo((({
   }, [setSelectedPerson]);
 
   const onBlur = useCallback(debounce(
-    () => setActiveDropdown(false), 100,
+    () => setActiveDropdown(false), delay,
   ), []);
 
   return (
