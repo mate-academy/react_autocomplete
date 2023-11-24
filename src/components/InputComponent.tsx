@@ -13,7 +13,6 @@ export const IntputComponent: React.FC<Props> = React.memo((({
   delay,
   people,
   onSelected,
-
 }) => {
   const [activeDropdown, setActiveDropdown] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState('');

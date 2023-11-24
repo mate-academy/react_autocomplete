@@ -13,7 +13,7 @@ export const UserList: React.FC<Props> = React.memo((({
 }) => {
   return (
     <div className="dropdown-menu" role="menu">
-      <div className="dropdown-content">
+      <div className="dropdown-content hight">
         {!people.length
           && <span className="erorr">No matching suggestions</span>}
         {people.map(person => (

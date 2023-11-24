@@ -16,3 +16,9 @@ button {
 hr {
   margin: 0;
 }
+
+.hight {
+  overflow-y: auto;
+  z-index: 1;
+  max-height: 284px;
+}
