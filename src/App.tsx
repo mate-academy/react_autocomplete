@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 import cn from 'classnames';
 import './App.scss';
@@ -24,9 +24,11 @@ export const App: React.FC = () => {
     applyQuery(event.target.value);
   };
 
-  const people = peopleFromServer.filter((person) => {
-    return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
-  });
+  const people = useMemo(() => {
+    return (peopleFromServer.filter((person) => {
+      return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
+    }));
+  }, [appliedQuery]);
 
   return (
     <main className="section">
@@ -43,13 +45,18 @@ export const App: React.FC = () => {
         <div className="dropdown-trigger">
           <input
             type="text"
-            placeholder="Enter a part of the name"
+            placeholder={selectedPerson ? selectedPerson.name
+              : 'Enter a part of the name'}
             className="input"
-            value={selectedPerson ? selectedPerson.name : query}
+            value={query}
             onChange={inputChangeHandler}
             onFocus={() => setIsInputFocused(true)}
-            onBlur={() => setIsInputFocused(false)}
-            defaultValue={selectedPerson?.name}
+            onBlur={() => {
+              setIsInputFocused(false);
+              if (selectedPerson) {
+                setQuery(selectedPerson.name);
+              }
+            }}
           />
         </div>
 
