@@ -1,7 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
 import { Person } from '../../types/Person';
-import './PeopleList.scss';
 
 interface Props {
   people: Person[];
@@ -24,7 +23,7 @@ export const PeopleList: React.FC<Props> = ({
             href="/#"
             key={person.slug}
             className={cn('dropdown-item', {
-              active_item: selectedPerson?.slug === person.slug,
+              'is-active': selectedPerson?.slug === person.slug,
             })}
             onMouseDown={() => {
               if (selectedPerson && selectedPerson.slug === person.slug) {
@@ -34,7 +33,7 @@ export const PeopleList: React.FC<Props> = ({
               return setSelectedPerson(person);
             }}
           >
-            <p className="has-text-link">{person.name}</p>
+            <p>{person.name}</p>
           </a>
         ))
       )}
