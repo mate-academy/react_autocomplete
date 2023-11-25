@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
+import '../Autocomplete/Autocomplete.scss';
 
 interface Props {
   people: Person[];
@@ -32,6 +33,10 @@ export const Autocomplete: React.FC<Props> = ({
     setDropdownActive(false);
   };
 
+  const isDropdownActive = () => {
+    setDropdownActive(true);
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChoosePeople(e.target.value);
     applyQuery(e.target.value);
@@ -56,14 +61,13 @@ export const Autocomplete: React.FC<Props> = ({
           placeholder="Enter a part of the name"
           className="input"
           onChange={handleInputChange}
-          onFocus={() => setDropdownActive(true)}
+          onFocus={isDropdownActive}
         />
       </div>
 
       <div className="dropdown-menu" role="menu">
         <div
           className="dropdown-content"
-          style={{ overflow: 'auto', height: '300px' }}
         >
           { peopleFilter.length
             ? peopleFilter.map(person => (
