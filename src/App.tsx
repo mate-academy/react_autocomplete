@@ -5,9 +5,8 @@ import { Person } from './types/Person';
 import { Autocomplete } from './components/Autocomplete/Autocomplete';
 
 export const App: React.FC = () => {
-  // const { name, born, died } = peopleFromServer[0];
-
   const [person, setPerson] = useState<Person | null>();
+
   return (
     <main className="section">
       <h1 className="title">
@@ -18,7 +17,7 @@ export const App: React.FC = () => {
         }
       </h1>
 
-      <Autocomplete 
+      <Autocomplete
         people={peopleFromServer}
         setPerson={setPerson}
         delay={1000}

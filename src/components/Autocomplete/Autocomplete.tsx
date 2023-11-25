@@ -1,7 +1,7 @@
-import { useCallback, useMemo, useState } from "react";
-import { Person } from "../../types/Person";
-import classNames from "classnames";
-import debounce from "lodash.debounce"
+import { useMemo, useState } from 'react';
+import classNames from 'classnames';
+import debounce from 'lodash.debounce';
+import { Person } from '../../types/Person';
 
 interface Props {
   people: Person[];
@@ -14,38 +14,40 @@ export const Autocomplete: React.FC<Props> = ({
   setPerson = () => {},
   delay,
 }) => {
-
   const [dropdownActive, setDropdownActive] = useState(false);
-  const [applyedQury, setApplyedQury] = useState('');
+  const [query, setQuery] = useState('');
   const [choosePeople, setChoosePeople] = useState('');
-  
-  const applyQury = useMemo(
-    () => debounce(setApplyedQury, delay),
-    [],
+
+  const applyQuery = useMemo(
+    () => debounce(setQuery, delay), [delay],
   );
-  const selectPerson =(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, person: Person) => {
-    event.preventDefault(),
-    setChoosePeople(person.name)
+  const selectPerson = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    person: Person,
+  ) => {
+    event.preventDefault();
+
+    setChoosePeople(person.name);
     setPerson(person);
-    setDropdownActive(false)
-  }
+    setDropdownActive(false);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChoosePeople(e.target.value);
-    applyQury(e.target.value)
-    console.log('m')
-
-  }
+    applyQuery(e.target.value);
+  };
 
   const peopleFilter = useMemo(() => {
-    return people.filter(people => people.name.toLocaleLowerCase().includes(applyedQury.toLocaleLowerCase()))
-  },[applyedQury])
-
+    return people
+      .filter(person => person.name.toLocaleLowerCase()
+        .includes(query.toLocaleLowerCase()));
+  }, [query, people]);
 
   return (
     <div className={classNames('dropdown', {
-      " is-active": dropdownActive
-    })}>
+      ' is-active': dropdownActive,
+    })}
+    >
       <div className="dropdown-trigger ">
         <input
           type="text"
@@ -59,12 +61,14 @@ export const Autocomplete: React.FC<Props> = ({
       </div>
 
       <div className="dropdown-menu" role="menu">
-        <div className="dropdown-content"
-          style={{overflow:'auto', height:'300px'}}
+        <div
+          className="dropdown-content"
+          style={{ overflow: 'auto', height: '300px' }}
         >
-          { peopleFilter.length ?
-            peopleFilter.map(person => (
-              <a className="dropdown-item"
+          { peopleFilter.length
+            ? peopleFilter.map(person => (
+              <a
+                className="dropdown-item"
                 key={person.name}
                 href="/#"
                 onClick={event => selectPerson(event, person)}
@@ -76,15 +80,7 @@ export const Autocomplete: React.FC<Props> = ({
                 </p>
               </a>
             ))
-          :'No matching suggestions'
-        }
-          {/* <div className="dropdown-item">
-            <p className="has-text-danger">Petronella de Decker</p>
-          </div>
-
-          <div className="dropdown-item">
-            <p className="has-text-danger">Elisabeth Hercke</p>
-          </div> */}
+            : 'No matching suggestions'}
         </div>
       </div>
     </div>
