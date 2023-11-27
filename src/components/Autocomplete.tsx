@@ -1,110 +1,103 @@
-import React, {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 import { Person } from '../types/Person';
 
 type Props = {
   people: Person[],
-  delay?: number,
-  onSelect?: (person: Person) => void,
+  setSelectedPerson?: (person: Person) => void | undefined,
+};
+const trimValue = (value: string) => {
+  return value.trim().toLowerCase();
 };
 
-export const Autocomplete: React.FC<Props> = (
-  {
-    people,
-    delay = 1000,
-    onSelect = () => {},
-  },
-) => {
-  const refAutocomplete = useRef<HTMLDivElement>(null);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [query, setQuery] = useState('');
-  const [appliedQuery, setAppliedQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const applyQuery = useMemo(
-    () => debounce(setAppliedQuery, delay),
-    [delay],
-  );
-
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsLoading(true);
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
+export const Autocomplete: React.FC<Props> = ({
+  people,
+  setSelectedPerson = () => {},
+}) => {
+  const [value, setValue] = useState('');
+  const [appliedValue, setAppliedValue] = useState('');
+  const [isShownList, setIsShownList] = useState(false);
+  const getFullList = () => {
+    if (!value) {
+      setIsShownList(true);
+    }
   };
 
-  const handleSelectPerson = (
-    event: React.MouseEvent<HTMLAnchorElement>,
+  const filtredPeople: Person[] | undefined = useMemo(() => {
+    return people.filter((person: Person) => {
+      return person.name.toLowerCase().includes(trimValue(appliedValue));
+    });
+  }, [appliedValue, people]);
+
+  const applyValue = useCallback(debounce(setAppliedValue, 1000), []);
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+    applyValue(event.target.value);
+    setIsShownList(true);
+  };
+
+  const handleSelectedPerson = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
     person: Person,
   ) => {
     event.preventDefault();
-
-    onSelect(person);
-    setQuery(person.name);
-    setShowSuggestions(false);
+    setValue(person.name);
+    setSelectedPerson(person);
+    setIsShownList(false);
   };
 
-  const filteredPeople = useMemo(() => {
-    setIsLoading(false);
+  const handleOnBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (value) {
+      setValue('');
+      setAppliedValue(event.target.value);
+      applyValue('');
+    }
 
-    return people.filter(person => person.name.includes(appliedQuery));
-  }, [people, appliedQuery]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      setShowSuggestions(!(refAutocomplete.current
-        && !refAutocomplete.current.contains(event.target as Node)));
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+    setTimeout(() => {
+      setIsShownList(false);
+    }, 200);
+  };
 
   return (
-    <div
-      ref={refAutocomplete}
-      className={classNames('dropdown', { 'is-active': showSuggestions })}
-    >
+    <div className="dropdown is-active">
       <div className="dropdown-trigger">
-        <div className={classNames('control', { 'is-loading': isLoading })}>
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-            value={query}
-            onChange={handleQueryChange}
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Enter a part of the name"
+          className="input"
+          value={value}
+          onChange={handleQueryChange}
+          onFocus={getFullList}
+          onBlur={handleOnBlur}
+        />
       </div>
-
-      <div className="dropdown-menu" role="menu">
-        <div className="dropdown-content">
-          {filteredPeople.length
-            ? filteredPeople.map(person => (
-              <a
-                href="/#"
-                className="dropdown-item"
-                key={person.slug}
-                onClick={(event) => handleSelectPerson(event, person)}
-              >
-                <p className="has-text-link">{person.name}</p>
-              </a>
-            ))
-            : (
+      {isShownList && (
+        <div className="dropdown-menu" role="menu">
+          <div className="dropdown-content">
+            {!filtredPeople.length ? (
               <div className="dropdown-item">
-                <p>No matching suggestions</p>
+                No matching suggestions
               </div>
+            ) : (
+              filtredPeople.map(person => (
+                <a
+                  key={person.name}
+                  href="/"
+                  className={classNames('dropdown-item', {
+                    'has-text-link': person.sex === 'm',
+                    'has-text-danger': person.sex === 'f',
+                  })}
+                  onClick={(event) => handleSelectedPerson(event, person)}
+                >
+                  {person.name}
+                </a>
+              ))
             )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
