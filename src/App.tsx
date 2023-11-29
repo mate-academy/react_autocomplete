@@ -17,15 +17,15 @@ function debounce(callback: () => void, delay: number) {
 
 export const App: React.FC = () => {
   const [value, setValue] = useState('');
-  const [nameIs, setNameIs] = useState<string | undefined>('Carolus Haverbeke');
-  const [bornIs, setBornIs] = useState<number | undefined>(1832);
-  const [diedIs, setDiedIs] = useState<number | undefined>(1905);
+  const [name, setName] = useState<string | undefined>('Carolus Haverbeke');
+  const [born, setBorn] = useState<number | undefined>(1832);
+  const [died, setDied] = useState<number | undefined>(1905);
   const [valueApplied, setValueApplied] = useState('');
   const [focus, setFocus] = useState(false);
   const applyValue = useCallback(debounce(setValueApplied as () =>
   void, 1000), []);
 
-  const handlerInputChange = (e) => {
+  const handlerInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
     applyValue(e.target.value);
   };
@@ -34,9 +34,9 @@ export const App: React.FC = () => {
     const findPerson = peopleFromServer.find((p) => p.name === person);
 
     setValue(person);
-    setNameIs(findPerson?.name);
-    setBornIs(findPerson?.born);
-    setDiedIs(findPerson?.died);
+    setName(findPerson?.name);
+    setBorn(findPerson?.born);
+    setDied(findPerson?.died);
   };
 
   const filteredPosts = useMemo(() => {
@@ -49,7 +49,7 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {`${nameIs} (${bornIs} = ${diedIs})`}
+        {`${name} (${born} = ${died})`}
       </h1>
 
       <div className={cn('dropdown', {
