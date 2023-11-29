@@ -1,5 +1,10 @@
 import ReactDOM from 'react-dom';
-import 'bulma/css/bulma.css';
+import { PeopleProvider } from './contexts/PeopleContext';
 import { App } from './App';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+  <PeopleProvider>
+    <App />
+  </PeopleProvider>,
+  document.getElementById('root'),
+);
