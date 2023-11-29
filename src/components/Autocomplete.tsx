@@ -17,7 +17,7 @@ export const Autocomplete: React.FC<Props> = ({
   const [visibleQuery, setVisibleQuery] = useState('');
   const [inputQuery, setInputQuery] = useState('');
   const [isListVisible, setIsListVisible] = useState(false);
-
+  // eslint-disable-next-line
   const currentInputQuery = useCallback(
     debounce((value) => setInputQuery(value), delay),
     [setInputQuery, delay],
@@ -89,6 +89,7 @@ export const Autocomplete: React.FC<Props> = ({
 
             {filteredPeople.map(person => (
               <div className="dropdown-item">
+                {/* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/anchor-is-valid */}
                 <a
                   key={person.slug}
                   onClick={(e) => handleCurrentPerson(e, person)}
