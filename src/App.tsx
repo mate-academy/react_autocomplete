@@ -1,57 +1,75 @@
-import React from 'react';
+import React, {
+  ChangeEvent,
+  useState,
+} from 'react';
+
 import './App.scss';
+import { useDebounce } from './useDebounce';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { DropDown } from './components/DropDown';
+import { showSelectedPersonInfo } from './helpers/showSelectedPersonInfo';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [people, setPeople] = useState<Person[]>(peopleFromServer);
+
+  const [query, setQuery] = useState('');
+
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleSelectPerson = (newPerson: Person) => {
+    setSelectedPerson(newPerson);
+    setQuery('');
+    setIsFocused(false);
+    setPeople(peopleFromServer);
+  };
+
+  const filterPeople = () => {
+    setIsFocused(true);
+    if (!query) {
+      return;
+    }
+
+    const filteredPeople = peopleFromServer.filter((person) => {
+      const normaliziedQuery = query.toLowerCase().trim();
+      const normaliziedName = person.name.toLowerCase().trim();
+
+      return normaliziedName.includes(normaliziedQuery);
+    });
+
+    setPeople(filteredPeople);
+  };
+
+  const debouncedFilter = useDebounce(filterPeople, 1000);
+
+  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    setIsFocused(false);
+    debouncedFilter();
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {showSelectedPersonInfo(selectedPerson)}
       </h1>
-
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
+      {peopleFromServer.length ? (
+        <DropDown
+          people={people}
+          onSelected={handleSelectPerson}
+          isFocused={isFocused}
+          onSearch={handleSearch}
+          setIsFocused={setIsFocused}
+          query={query}
+        />
+      ) : (
+        <div className="dropdown-content">
+          <p className="dropdown-item">
+            There are no people to select
+          </p>
         </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
     </main>
   );
 };
