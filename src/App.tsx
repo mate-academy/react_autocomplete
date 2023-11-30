@@ -12,8 +12,7 @@ export const App: React.FC = () => {
       <h1 className="title">
         {selectedPerson
           ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-          : 'No selected person.'
-        }
+          : 'No selected person.'}
       </h1>
 
       <Autocomplete
