@@ -16,10 +16,10 @@ function debounce(callback: () => void, delay: number) {
 }
 
 export const App: React.FC = () => {
-  const [value, setValue] = useState('');
-  const [name, setName] = useState<string | undefined>('Carolus Haverbeke');
-  const [born, setBorn] = useState<number | undefined>(1832);
-  const [died, setDied] = useState<number | undefined>(1905);
+  const [value, setValue] = useState<string | undefined>('');
+  const [name, setName] = useState<string | undefined>(' ');
+  const [born, setBorn] = useState<number | undefined>();
+  const [died, setDied] = useState<number | undefined>();
   const [valueApplied, setValueApplied] = useState('');
   const [focus, setFocus] = useState(false);
   const applyValue = useCallback(debounce(setValueApplied as () =>
@@ -28,6 +28,7 @@ export const App: React.FC = () => {
   const handlerInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
     applyValue(e.target.value);
+    console.log(value);
   };
 
   const handlerItemChange = (person: string) => {
@@ -48,9 +49,13 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      {value.toLowerCase() === name.toLowerCase() ? (
+        <h1 className="title">
+          {`${name} (${born} = ${died})`}
+        </h1>
+      ) : (
+        <h1 className="title">No selected persons</h1>
+      )}
 
       <div className={cn('dropdown', {
         'is-active': focus === true
