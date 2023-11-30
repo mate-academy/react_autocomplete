@@ -25,6 +25,6 @@ export const App: React.FC = () => {
         onSelect={setSelectedPerson}
         delay={1000}
       />
-    </main >
+    </main>
   );
 };

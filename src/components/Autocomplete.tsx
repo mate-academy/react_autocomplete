@@ -17,6 +17,7 @@ export const Autocomplete: React.FC<Props> = ({
   const [isFocused, setIsFocused] = useState(false);
   const [inputQuery, setInputQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState('');
+  const [isListHovered, setIsListHovered] = useState(false);
 
   const applyQuery = useMemo(
     () => debounce(setInputQuery, delay), [delay],
@@ -31,6 +32,10 @@ export const Autocomplete: React.FC<Props> = ({
     onSelect(person);
     setIsFocused(false);
   };
+
+  const handleBlur = () => (
+    isListHovered ? setIsFocused(true) : setIsFocused(false)
+  );
 
   const isDropdownActive = () => {
     setIsFocused(true);
@@ -48,10 +53,7 @@ export const Autocomplete: React.FC<Props> = ({
   }, [inputQuery, personList]);
 
   return (
-    <div className={cn('dropdown', {
-      ' is-active': isFocused,
-    })}
-    >
+    <div className="dropdown is-active">
       <div className="dropdown-trigger ">
         <input
           type="text"
@@ -61,33 +63,38 @@ export const Autocomplete: React.FC<Props> = ({
           className="input"
           onChange={handleInputChange}
           onFocus={isDropdownActive}
+          onBlur={handleBlur}
         />
       </div>
-
-      <div className="dropdown-menu" role="menu">
-        <div
-          className="dropdown-content"
-        >
-          {peopleFilter.length
-            ? peopleFilter.map(person => (
-              <a
-                className="dropdown-item"
-                key={person.name}
-                href="/#"
-                onClick={event => selectPerson(event, person)}
-              >
-                <p className={cn({
-                  'has-text-link': person.sex === 'm',
-                  'has-text-danger': person.sex === 'f',
-                })}
+      {isFocused && (
+        <div className="dropdown-menu" role="menu">
+          <div
+            className="dropdown-content"
+          >
+            {peopleFilter.length
+              ? peopleFilter.map(person => (
+                <a
+                  className="dropdown-item"
+                  key={person.name}
+                  href="/#"
+                  onClick={event => selectPerson(event, person)}
+                  onMouseEnter={() => setIsListHovered(true)}
+                  onMouseLeave={() => setIsListHovered(false)}
                 >
-                  {person.name}
-                </p>
-              </a>
-            ))
-            : 'No matching suggestions'}
+                  <p className={cn({
+                    'has-text-link': person.sex === 'm',
+                    'has-text-danger': person.sex === 'f',
+                  })}
+                  >
+                    {person.name}
+                  </p>
+                </a>
+              ))
+              : 'No matching suggestions'}
+          </div>
         </div>
-      </div>
+      )}
+
     </div>
   );
 };
