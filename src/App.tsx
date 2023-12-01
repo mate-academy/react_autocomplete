@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import debounce from 'lodash.debounce'
+import debounce from 'lodash.debounce';
 import './App.scss';
 import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
@@ -11,7 +11,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [showDropDownMenu, setShowDropDownMenu] = useState(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+  const applyQuery = useCallback(debounce(setAppliedQuery, 500), []);
 
   const filteredPeople = useMemo(
     () => peopleFromServer.filter(
@@ -31,14 +31,17 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {selectedPerson && (
-        <h1 className="title">
-          {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
-        </h1>
-      )}
-      {/* <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1> */}
+      {selectedPerson
+        ? (
+          <h1 className="title">
+            {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
+          </h1>
+        )
+        : (
+          <h1 className="title">No selected person</h1>
+        )}
+
+      <br />
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
@@ -61,10 +64,10 @@ export const App: React.FC = () => {
                   <div className="dropdown-item" key={person.slug}>
                     <a
                       href={`#${person.slug}`}
-                      onClick={() => handleItemClick(person)}
+                      onMouseDown={() => handleItemClick(person)}
                       className={classNames(
                         { 'has-text-link': person.sex === 'm' },
-                        { 'has-text-danger': person.sex === 'f'}
+                        { 'has-text-danger': person.sex === 'f' },
                       )}
                     >
                       {person.name}
