@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import debounce from 'lodash.debounce';
+import debounce from 'lodash.debounce'
 import './App.scss';
+import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
@@ -57,12 +58,17 @@ export const App: React.FC = () => {
             <div className="dropdown-content">
               {filteredPeople.length
                 ? filteredPeople.map(person => (
-                  <div
-                    className="dropdown-item"
-                    key={person.slug}
-                    onClick={() => handleItemClick(person)}
-                  >
-                    <p className="has-text-link">{person.name}</p>
+                  <div className="dropdown-item" key={person.slug}>
+                    <a
+                      href={`#${person.slug}`}
+                      onClick={() => handleItemClick(person)}
+                      className={classNames(
+                        { 'has-text-link': person.sex === 'm' },
+                        { 'has-text-danger': person.sex === 'f'}
+                      )}
+                    >
+                      {person.name}
+                    </a>
                   </div>
                 ))
                 : (
