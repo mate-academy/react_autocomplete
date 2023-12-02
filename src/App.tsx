@@ -20,10 +20,12 @@ export const App: React.FC = () => {
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (appliedQuery.length === 0) {
+      setSelectedPerson(null);
+    }
+
     setQuery(event.target.value);
     applyQuery(event.target.value);
-
-    setShowDropDownMenu(false);
   };
 
   const handleItemClick = (person: Person) => {
