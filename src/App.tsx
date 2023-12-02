@@ -22,6 +22,8 @@ export const App: React.FC = () => {
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+
+    setShowDropDownMenu(false);
   };
 
   const handleItemClick = (person: Person) => {
@@ -84,22 +86,6 @@ export const App: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-
-            {suggestions.map(person => (
-              <div
-                className="dropdown-item"
-                key={person.slug}
-                onClick={() => handleItemClick(person)}
-              >
-                <p className="has-text-link">{person.name}</p>
-              </div>
-            ))}
-
-          </div>
-        </div> */}
       </div>
     </main>
   );
