@@ -1,6 +1,7 @@
 import cn from 'classnames';
 import React, { useMemo, useState } from 'react';
 import './App.scss';
+import { People } from './components/People/People';
 import { peopleFromServer } from './data/people';
 import { debounce } from './helpers';
 import { Person } from './types/Person';
@@ -63,28 +64,7 @@ export const App: React.FC = () => {
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {peopleToView.length === 0 ? (
-              <div className="dropdown-item">
-                <p>No matching suggestions</p>
-              </div>
-            ) : (
-              peopleToView.map((person: Person) => (
-                <div
-                  aria-hidden
-                  className="dropdown-item"
-                  key={person.slug}
-                  onClick={() => handlePersonClicked(person)}
-                >
-                  <p className={`${person.sex === 'm' ? 'has-text-link' : 'has-text-danger'}`}>
-                    {person.name}
-                  </p>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+        <People peopleToView={peopleToView} onSelected={handlePersonClicked} />
       </div>
     </main>
   );
