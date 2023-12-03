@@ -6,7 +6,7 @@ import './autocomplete.scss';
 
 type Props = {
   people: Person[];
-  setPerson?: (person: Person) => void;
+  setPerson?: (person: Person | null) => void;
   delay: number;
 };
 
@@ -66,6 +66,12 @@ export const Autocomplete: React.FC<Props> = ({
       }, delay);
 
       setTimeoutId(id);
+
+      if (!value) {
+        setQuery('');
+        setChoosePeople('');
+        setPerson(null);
+      }
     };
 
   const filteredPeople = useMemo(() => {
@@ -104,19 +110,18 @@ export const Autocomplete: React.FC<Props> = ({
         <input
           type="text"
           value={choosePeople}
-          aria-haspopup="true"
-          placeholder="Please enter your text"
-          className="input"
           onChange={handleInputChange}
           onFocus={isDropdownActive}
+          placeholder="Please enter your text"
+          className="input"
         />
       </div>
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          <div className="user-list">
+          <nav className="user-list">
             {content}
-          </div>
+          </nav>
         </div>
       </div>
     </div>
