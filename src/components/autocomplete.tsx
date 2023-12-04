@@ -5,11 +5,11 @@ import { Person } from '../types/Person';
 
 type Props = {
   people: Person[],
-  onSelected: (person: Person) => void;
+  onSelected?: (person: Person | string) => void;
 };
 export const Autocomplete: React.FC<Props> = ({
   people,
-  onSelected,
+  onSelected = () => {},
 }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -20,6 +20,10 @@ export const Autocomplete: React.FC<Props> = ({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    
+    if (event.target.value.length === 0) {
+        onSelected('');
+    }
   };
 
   const filteredPeople = useMemo(() => {

@@ -7,16 +7,20 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const onSelectedPerson = (person: Person) => {
-    setSelectedPerson(person);
+  const onSelectedPerson = (person: Person | string) => {
+    if (typeof person === 'string') {
+        setSelectedPerson(null);
+    } else {
+        setSelectedPerson(person);
+    }
   };
 
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson
+        {selectedPerson 
           ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
-          : 'No selected person'}
+          : 'No selected person'} 
       </h1>
       <Autocomplete
         people={peopleFromServer}
