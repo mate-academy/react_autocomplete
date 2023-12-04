@@ -4,12 +4,12 @@ import { Person } from '../types/Person';
 
 type DropDownProps = {
   people: Person[],
-  selectPerson?: (person: Person) => void
+  onSelected?: (person: Person) => void
 };
 
 export const DropDown: React.FC<DropDownProps> = ({
   people,
-  selectPerson = () => { },
+  onSelected = () => { },
 }) => {
   const [active, setActive] = useState(false);
   const [text, setText] = useState('');
@@ -29,10 +29,8 @@ export const DropDown: React.FC<DropDownProps> = ({
     );
   }, [value, people]);
 
-  const handlerPerson = (e: React.MouseEvent,
-    human: Person) => {
-    e.preventDefault();
-    selectPerson(human);
+  const handlerPerson = (human: Person) => {
+    onSelected(human);
     setText(human.name);
   };
 
@@ -47,6 +45,7 @@ export const DropDown: React.FC<DropDownProps> = ({
           onClick={() => handlerActive(!active)}
           onBlur={() => handlerActive(false)}
           onChange={(event) => {
+            setActive(true);
             setText(event.target.value);
             applyQuery(event.target.value);
           }}
@@ -59,19 +58,11 @@ export const DropDown: React.FC<DropDownProps> = ({
             <div
               className="dropdown-item"
               key={person.slug}
-              // role="menuitem"
-              // tabIndex={index}
-              // onClick={() => {
-              //   handlerPerson(person);
-              // }}
-              // onKeyDown={() => {
-              //   handlerPerson(person);
-              // }}
             >
               <a
                 href="/"
-                onClick={(e) => {
-                  handlerPerson(e, person);
+                onMouseDown={() => {
+                  handlerPerson(person);
                 }}
 
               >
@@ -81,6 +72,12 @@ export const DropDown: React.FC<DropDownProps> = ({
           ))}
         </div>
       </div>
+
+      {!filteredPeople.length && (
+        <div className="message">
+          No matching suggestions
+        </div>
+      )}
     </div>
   );
 };

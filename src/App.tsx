@@ -6,17 +6,16 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [select, setSelect] = useState<Person | null>(null);
-  // const { name, born, died } = peopleFromServer[0];
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${select?.name} (${select?.born} = ${select?.died})`}
+        {select ? `${select?.name} (${select?.born} = ${select?.died})` : 'No selected person'}
       </h1>
 
       <DropDown
         people={peopleFromServer}
-        selectPerson={setSelect}
+        onSelected={setSelect}
       />
     </main>
   );
