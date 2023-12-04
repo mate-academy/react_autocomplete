@@ -29,9 +29,10 @@ export const DropDown: React.FC<DropDownProps> = ({
     );
   }, [value, people]);
 
-  const handlerPerson = ((e: React.ChangeEvent<HTMLAnchorElement>, human: Person)) => {
+  const handlerPerson = (e: React.MouseEvent,
+    human: Person) => {
     e.preventDefault();
-    selectPerson(human);=
+    selectPerson(human);
     setText(human.name);
   };
 
