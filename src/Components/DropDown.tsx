@@ -29,8 +29,9 @@ export const DropDown: React.FC<DropDownProps> = ({
     );
   }, [value, people]);
 
-  const handlerPerson = (human: Person) => {
-    selectPerson(human);
+  const handlerPerson = ((e: React.ChangeEvent<HTMLAnchorElement>, human: Person)) => {
+    e.preventDefault();
+    selectPerson(human);=
     setText(human.name);
   };
 
@@ -68,8 +69,8 @@ export const DropDown: React.FC<DropDownProps> = ({
             >
               <a
                 href="/"
-                onClick={() => {
-                  handlerPerson(person);
+                onClick={(e) => {
+                  handlerPerson(e, person);
                 }}
 
               >
