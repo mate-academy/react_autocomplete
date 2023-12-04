@@ -2,33 +2,38 @@ import React, { useState, useMemo, useCallback } from 'react';
 import './App.scss';
 import cn from 'classnames';
 import { peopleFromServer } from './data/people';
-// import { Person } from './types/Person';
 
-function debounce(callback: () => void, delay: number) {
+function debounce(callback: () => void,
+  delay: number): (param: string) => void {
   const timerID = 0;
 
-  return (...args: any) => {
+  return () => {
     window.clearTimeout(timerID);
     window.setTimeout(() => {
-      callback(...args as []);
+      callback();
     }, delay);
   };
 }
 
 export const App: React.FC = () => {
-  const [value, setValue] = useState<string | undefined>('');
+  const [value, setValue] = useState<string>('');
   const [name, setName] = useState<string | undefined>(' ');
   const [born, setBorn] = useState<number | undefined>();
   const [died, setDied] = useState<number | undefined>();
   const [valueApplied, setValueApplied] = useState('');
   const [focus, setFocus] = useState(false);
-  const applyValue = useCallback(debounce(setValueApplied as () =>
-  void, 1000), []);
+  const applyValue = useCallback(
+    debounce(setValueApplied as () => void, 1000),
+    [valueApplied],
+  );
+
+  const onFocus = () => {
+    setFocus(true);
+  };
 
   const handlerInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
     applyValue(e.target.value);
-    console.log(value);
   };
 
   const handlerItemChange = (person: string) => {
@@ -44,12 +49,12 @@ export const App: React.FC = () => {
     return peopleFromServer
       .filter((person) => person.name.toLowerCase()
         .includes(valueApplied.toLowerCase()))
-      .map((person) => person.name);
+      .map((person) => person);
   }, [valueApplied]);
 
   return (
     <main className="section">
-      {value.toLowerCase() === name.toLowerCase() ? (
+      {name !== ' ' ? (
         <h1 className="title">
           {`${name} (${born} = ${died})`}
         </h1>
@@ -68,7 +73,7 @@ export const App: React.FC = () => {
             placeholder="Enter a part of the name"
             className="input"
             value={value}
-            onFocus={() => setFocus(true)}
+            onFocus={onFocus}
             onChange={handlerInputChange}
 
           />
@@ -79,13 +84,16 @@ export const App: React.FC = () => {
               <div className="dropdown-content">
                 {filteredPosts.length > 0 ? (
                   filteredPosts.map((person) => (
-                    <div className="dropdown-item">
+                    <div
+                      key={person.slug}
+                      className="dropdown-item"
+                    >
                       <button
                         type="button"
                         className="has-text-link"
-                        onClick={() => handlerItemChange(person)}
+                        onClick={() => handlerItemChange(person.name)}
                       >
-                        {person}
+                        {person.name}
                       </button>
                     </div>
                   ))
