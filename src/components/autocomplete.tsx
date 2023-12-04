@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import { Person } from '../types/Person';
@@ -73,6 +73,25 @@ export const Autocomplete: React.FC<Props> = ({
         setPerson(null);
       }
     };
+
+  const handleDocumentClick = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+
+    if (
+      target.closest('.dropdown-trigger') === null &&
+      target.closest('.user-list') === null
+    ) {
+      setDropdownActive(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleDocumentClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleDocumentClick);
+    };
+  }, []);
 
   const filteredPeople = useMemo(() => {
     return people.filter((person) => person.name
