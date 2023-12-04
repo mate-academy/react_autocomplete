@@ -4,17 +4,16 @@ import { Person } from '../types/Person';
 
 type DropDownProps = {
   people: Person[],
+  selectPerson?: (person: Person) => void
 };
 
 export const DropDown: React.FC<DropDownProps> = ({
   people,
+  selectPerson = () => { },
 }) => {
   const [active, setActive] = useState(false);
   const [text, setText] = useState('');
   const [value, setValue] = useState('');
-
-  console.log(text);
-  console.log(value);
 
   const handlerActive = (condition: boolean) => {
     setActive(condition);
@@ -26,9 +25,14 @@ export const DropDown: React.FC<DropDownProps> = ({
 
   const filteredPeople = useMemo(() => {
     return people.filter(
-      person => person.name.toLowerCase().includes(value),
+      person => person.name.toLowerCase().includes(value.toLowerCase()),
     );
   }, [value, people]);
+
+  const handlerPerson = (human: Person) => {
+    selectPerson(human);
+    setText(human.name);
+  };
 
   return (
     <div className="dropdown is-active">
@@ -49,16 +53,28 @@ export const DropDown: React.FC<DropDownProps> = ({
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {active && filteredPeople.map((person, index) => (
+          {active && filteredPeople.map((person) => (
             <div
               className="dropdown-item"
               key={person.slug}
-              role="menuitem"
-              tabIndex={index}
-              onClick={() => { }}
-              onKeyDown={() => { }}
+              // role="menuitem"
+              // tabIndex={index}
+              // onClick={() => {
+              //   handlerPerson(person);
+              // }}
+              // onKeyDown={() => {
+              //   handlerPerson(person);
+              // }}
             >
-              <p className="has-text-link">{person.name}</p>
+              <a
+                href="/"
+                onClick={() => {
+                  handlerPerson(person);
+                }}
+
+              >
+                <p className="has-text-link">{person.name}</p>
+              </a>
             </div>
           ))}
         </div>

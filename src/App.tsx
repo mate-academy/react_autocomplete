@@ -2,20 +2,21 @@ import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { DropDown } from './Components/DropDown';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
-  const [select, setSelect] = useState('');
+  const [select, setSelect] = useState<Person | null>(null);
+  // const { name, born, died } = peopleFromServer[0];
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {`${select?.name} (${select?.born} = ${select?.died})`}
       </h1>
 
       <DropDown
         people={peopleFromServer}
-
+        selectPerson={setSelect}
       />
     </main>
   );
