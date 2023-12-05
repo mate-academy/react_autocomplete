@@ -4,80 +4,101 @@ import debounce from 'lodash.debounce';
 import { Person } from '../types/Person';
 
 type Props = {
-  people: Person[],
-  onSelected?: (person: Person | string) => void;
+    people: Person[],
+    onSelected?: (person: Person | string) => void;
 };
 export const Autocomplete: React.FC<Props> = ({
-  people,
-  onSelected = () => {},
+    people,
+    onSelected = () => { },
 }) => {
-  const [query, setQuery] = useState('');
-  const [appliedQuery, setAppliedQuery] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
+    const [query, setQuery] = useState('');
+    const [appliedQuery, setAppliedQuery] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+    const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
 
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
-    
-    if (event.target.value.length === 0) {
-        onSelected('');
+    const filteredPeople = useMemo(() => {
+        return people.filter(({ name }) => {
+            return name.toLowerCase().includes(appliedQuery.toLowerCase().trim());
+        });
+    }, [appliedQuery, people]);
+
+    const handlePersonSelect = (
+        event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    ) => {
+        event.preventDefault();
+
+        const person = filteredPeople.find(personItem => {
+            return personItem.name === event.currentTarget.textContent || '';
+        });
+
+        if (person) {
+            onSelected(person);
+        }
+
+        setQuery(event.currentTarget.textContent || '');
+        applyQuery(event.currentTarget.textContent || '');
+
+        setShowDropdown(false);
     }
-  };
 
-  const filteredPeople = useMemo(() => {
-    return people.filter(({ name }) => {
-      return name.toLowerCase().includes(appliedQuery.toLowerCase().trim());
-    });
-  }, [appliedQuery, people]);
+    const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setQuery(event.target.value);
+        applyQuery(event.target.value);
 
-  return (
-    <div className="dropdown is-active">
-      <div className="dropdown-trigger">
-        <input
-          type="text"
-          placeholder="Enter a part of the name"
-          className="input"
-          value={query}
-          onChange={handleQueryChange}
-          onFocus={() => setShowDropdown(true)}
-          onBlur={() => setShowDropdown(false)}
-        />
-      </div>
+        if (event.target.value.length === 0) {
+            onSelected('');
+        }
+    };
 
-      {showDropdown && (
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {filteredPeople.length ? filteredPeople.map(person => (
-              <div
-                className="dropdown-item"
-                key={person.slug}
-              >
-                <a
-                  className={classNames({
-                    'has-text-link': person.sex === 'm',
-                    'has-text-danger': person.sex === 'f',
-                  })}
-                  href="/"
-                  onMouseDown={() => {
-                    onSelected(person);
-                    setAppliedQuery(person.name);
-                    setQuery(person.name);
-                  }}
-                >
-                  {person.name}
-                </a>
-              </div>
-            ))
-              : (
-                <div className="dropdown-item">
-                  <p>No matching suggestion</p>
+    return (
+        <div className="dropdown is-active">
+            <div className="dropdown-trigger">
+                <input
+                    type="text"
+                    placeholder="Enter a part of the name"
+                    className="input"
+                    value={query}
+                    onChange={handleQueryChange}
+                    onFocus={() => setShowDropdown(true)}
+                    onBlur={() => setShowDropdown(false)}
+                />
+            </div>
+
+            {showDropdown && (
+                <div className="dropdown-menu" role="menu">
+                    <div className="dropdown-content">
+                        {filteredPeople.length ? filteredPeople.map(person => {
+                            const { slug, name, sex } = person;
+                            const isWoman = sex === 'f';
+
+                            return (
+                                <div
+                                    className="dropdown-item"
+                                    key={slug}
+                                >
+                                    <a
+                                        className={classNames(
+                                            isWoman
+                                                ? 'has-text-danger'
+                                                : 'has-text-link',
+                                        )}
+                                        href="/"
+                                        onMouseDown={handlePersonSelect}
+                                    >
+                                        {name}
+                                    </a>
+                                </div>
+                            )
+                        })
+                            : (
+                                <div className="dropdown-item">
+                                    <p>No matching suggestion</p>
+                                </div>
+                            )}
+                    </div>
                 </div>
-              )}
-          </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
