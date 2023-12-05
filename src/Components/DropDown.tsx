@@ -4,19 +4,23 @@ import { Person } from '../types/Person';
 
 type DropDownProps = {
   people: Person[],
-  onSelected?: (person: Person) => void
+  onSelect: (person: Person) => void
 };
 
 export const DropDown: React.FC<DropDownProps> = ({
   people,
-  onSelected = () => { },
+  onSelect = () => { },
 }) => {
-  const [active, setActive] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   const [text, setText] = useState('');
   const [value, setValue] = useState('');
 
-  const handlerActive = (condition: boolean) => {
-    setActive(condition);
+  const handleIsActive = () => {
+    setIsActive(prev => !prev);
+  };
+
+  const handleIsBlur = () => {
+    setIsActive(false);
   };
 
   const applyQuery = useCallback(
@@ -29,9 +33,15 @@ export const DropDown: React.FC<DropDownProps> = ({
     );
   }, [value, people]);
 
-  const handlerPerson = (human: Person) => {
-    onSelected(human);
+  const handlePersonSelect = (human: Person) => {
+    onSelect(human);
     setText(human.name);
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsActive(true);
+    setText(event.target.value);
+    applyQuery(event.target.value);
   };
 
   return (
@@ -42,36 +52,28 @@ export const DropDown: React.FC<DropDownProps> = ({
           placeholder="Enter a part of the name"
           className="input"
           value={text}
-          onClick={() => handlerActive(!active)}
-          onBlur={() => handlerActive(false)}
-          onChange={(event) => {
-            setActive(true);
-            setText(event.target.value);
-            applyQuery(event.target.value);
-          }}
+          onClick={handleIsActive}
+          onBlur={handleIsBlur}
+          onChange={handleInputChange}
         />
       </div>
 
-      <div className="dropdown-menu" role="menu">
-        <div className="dropdown-content">
-          {active && filteredPeople.map((person) => (
-            <div
-              className="dropdown-item"
-              key={person.slug}
-            >
-              <a
-                href="/"
-                onMouseDown={() => {
-                  handlerPerson(person);
-                }}
-
+      {isActive && (
+        <div className="dropdown-menu" role="menu">
+          <div className="dropdown-content">
+            {isActive && filteredPeople.map((person) => (
+              <div
+                className="dropdown-item"
+                key={person.slug}
               >
-                <p className="has-text-link">{person.name}</p>
-              </a>
-            </div>
-          ))}
+                <a href="/" onMouseDown={() => handlePersonSelect(person)}>
+                  <p className="has-text-link">{person.name}</p>
+                </a>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {!filteredPeople.length && (
         <div className="message">

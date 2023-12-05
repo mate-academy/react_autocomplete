@@ -15,7 +15,7 @@ export const App: React.FC = () => {
 
       <DropDown
         people={peopleFromServer}
-        onSelected={setSelect}
+        onSelect={setSelect}
       />
     </main>
   );
