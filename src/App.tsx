@@ -1,10 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import cn from 'classnames';
 import debounce from 'lodash.debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-import { SEARCH_DEPLAY } from './utils';
+import { SEARCH_DELAY } from './utils';
 
 export const App: React.FC = () => {
   const [selectPerson, setSelectPerson] = useState<Person | null>(null);
@@ -22,7 +22,13 @@ export const App: React.FC = () => {
     return peopleFromServer;
   }, [appliedQuery]);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, SEARCH_DEPLAY), []);
+  const applyQuery = useMemo(
+    () => debounce((newQuery: string) => {
+      setAppliedQuery(newQuery);
+      setInputFocus(true);
+    }, SEARCH_DELAY),
+    [],
+  );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -62,11 +68,10 @@ export const App: React.FC = () => {
             <div className="dropdown-menu" role="menu">
               <div className="dropdown-content">
                 <div className="dropdown-item">
-                  {filteredPeople.length === 0
-                    ? (
-                      <p>No matching suggestions</p>
-                    )
-                    : (filteredPeople.map(person => (
+                  {filteredPeople.length === 0 ? (
+                    <p>No matching suggestions</p>
+                  ) : (
+                    filteredPeople.map(person => (
                       <p
                         className={cn({
                           'has-text-link': person.sex === 'm',

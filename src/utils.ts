@@ -1,1 +1,1 @@
-export const SEARCH_DEPLAY = 500;
+export const SEARCH_DELAY = 500;
