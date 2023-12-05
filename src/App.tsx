@@ -1,14 +1,35 @@
-import React from 'react';
+import React, {
+  useCallback, useMemo, useState,
+} from 'react';
+import debounce from 'lodash.debounce';
 import './App.scss';
+import { Person } from './types/Person';
 import { peopleFromServer } from './data/people';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>();
+
+  const visiblePerson = useMemo(() => {
+    return peopleFromServer.filter(person => person.name.toLowerCase()
+      .includes(appliedQuery.toLowerCase()));
+  }, [appliedQuery]);
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +38,50 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={handleQueryChange}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => {
+              setQuery('');
+              setIsFocused(false);
+            }}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
+        {isFocused && (
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              {visiblePerson.length === 0
+                ? (
+                  <div className="dropdown-item">
+                    <p className="has-text-danger">
+                      No matching suggestions
+                    </p>
+                  </div>
+                )
+                : (
+                  visiblePerson.map((person: Person) => (
+                    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+                    <div
+                      role="tooltip"
+                      className="dropdown-item"
+                      key={peopleFromServer.indexOf(person)}
+                      onMouseDown={() => {
+                        setQuery('');
+                        setSelectedPerson(person);
+                      }}
+                    >
+                      <p className={person.sex === 'm'
+                        ? 'has-text-link'
+                        : 'has-text-danger'}
+                      >
+                        {person.name}
+                      </p>
+                    </div>
+                  )))}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );
