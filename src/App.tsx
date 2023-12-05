@@ -3,23 +3,23 @@ import './App.scss';
 import cn from 'classnames';
 import { peopleFromServer } from './data/people';
 
-function debounce(callback: () => void,
+function debounce(callback: (param: string) => void,
   delay: number): (param: string) => void {
   const timerID = 0;
 
-  return () => {
+  return (...args) => {
     window.clearTimeout(timerID);
     window.setTimeout(() => {
-      callback();
+      callback(...args);
     }, delay);
   };
 }
 
 export const App: React.FC = () => {
   const [value, setValue] = useState<string>('');
-  const [name, setName] = useState<string | undefined>(' ');
-  const [born, setBorn] = useState<number | undefined>();
-  const [died, setDied] = useState<number | undefined>();
+  const [name, setName] = useState('');
+  const [born, setBorn] = useState(0);
+  const [died, setDied] = useState(0);
   const [valueApplied, setValueApplied] = useState('');
   const [focus, setFocus] = useState(false);
   const applyValue = useCallback(
@@ -31,18 +31,18 @@ export const App: React.FC = () => {
     setFocus(true);
   };
 
-  const handlerInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
     applyValue(e.target.value);
   };
 
-  const handlerItemChange = (person: string) => {
+  const handleItemChange = (person: string) => {
     const findPerson = peopleFromServer.find((p) => p.name === person);
 
     setValue(person);
-    setName(findPerson?.name);
-    setBorn(findPerson?.born);
-    setDied(findPerson?.died);
+    setName(findPerson?.name || '');
+    setBorn(findPerson?.born || 0);
+    setDied(findPerson?.died || 0);
   };
 
   const filteredPosts = useMemo(() => {
@@ -54,16 +54,12 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {name !== ' ' ? (
-        <h1 className="title">
-          {`${name} (${born} = ${died})`}
-        </h1>
-      ) : (
-        <h1 className="title">No selected persons</h1>
-      )}
+      <h1 className="title">
+        {!name ? `${name} (${born} = ${died})` : 'No selected person'}
+      </h1>
 
       <div className={cn('dropdown', {
-        'is-active': focus === true
+        'is-active': focus
           && value === valueApplied,
       })}
       >
@@ -74,12 +70,12 @@ export const App: React.FC = () => {
             className="input"
             value={value}
             onFocus={onFocus}
-            onChange={handlerInputChange}
+            onChange={handleInputChange}
 
           />
         </div>
         {
-          focus === true && (
+          focus && (
             <div className="dropdown-menu" role="menu">
               <div className="dropdown-content">
                 {filteredPosts.length > 0 ? (
@@ -91,7 +87,7 @@ export const App: React.FC = () => {
                       <button
                         type="button"
                         className="has-text-link"
-                        onClick={() => handlerItemChange(person.name)}
+                        onClick={() => handleItemChange(person.name)}
                       >
                         {person.name}
                       </button>
