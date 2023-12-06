@@ -16,7 +16,7 @@ export const People: React.FC<Props> = ({
       <div className="dropdown-content">
         {people.map(person => (
           <a
-            href={`/#${person.slug}`}
+            href={`#${person.slug}`}
             className={cn('dropdown-item', {
               'has-text-danger': person.sex === 'f',
               'has-text-link': person.sex === 'm',
