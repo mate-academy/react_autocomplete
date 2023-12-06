@@ -31,6 +31,7 @@ export const App: React.FC = () => {
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputFocus(false);
     setQuery(event.target.value);
     applyQuery(event.target.value);
   };
@@ -77,6 +78,7 @@ export const App: React.FC = () => {
                           'has-text-link': person.sex === 'm',
                           'has-text-danger': person.sex === 'f',
                         })}
+                        key={person.slug}
                         role="presentation"
                         onMouseDown={() => {
                           handlePersonSelect(person);
