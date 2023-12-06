@@ -24,6 +24,8 @@ export const App: React.FC = () => {
     applyQuery(event.target.value);
   };
 
+  const showList = (appliedQuery === query) && isFocused;
+
   return (
     <main className="section">
       <h1 className="title">
@@ -48,7 +50,7 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {isFocused && (
+        {showList && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {visiblePerson.length === 0
