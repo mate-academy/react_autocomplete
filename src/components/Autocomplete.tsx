@@ -4,6 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { peopleFromServer } from '../data/people';
 import { Person } from '../types/Person';
+import { Gender } from '../types/Gender';
 
 type Props = {
   onSelect: (person: Person) => void,
@@ -93,8 +94,9 @@ export const Autocomplete: React.FC<Props> = ({
                 <a
                   key={person.slug}
                   onClick={(e) => handleCurrentPerson(e, person)}
-                  className={cn('has-text-link', {
-                    'has-text-danger': person.sex === 'f',
+                  className={cn({
+                    'has-text-danger': person.sex === Gender.female,
+                    'has-text-link': person.sex === Gender.male,
                   })}
                 >
                   {person.name}
