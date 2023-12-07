@@ -16,7 +16,7 @@ export const App: React.FC = () => {
 
   const peopleToRender = useMemo(() => {
     const filteredPeople = people.filter(person => person.name.toLowerCase()
-      .includes(appliedQuery.toLowerCase()));
+      .includes(appliedQuery.toLowerCase().trim()));
 
     setSuggestion(false);
 
