@@ -42,6 +42,15 @@ export const Autocomplete: React.FC<Props> = ({
     }, delay);
   };
 
+  const handleItemOnKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    option: Person,
+  ) => {
+    if (event.key === 'Enter') {
+      handleDropdownItemClick(option);
+    }
+  };
+
   return (
     <div className="dropdown is-active">
       <div className="dropdown-trigger">
@@ -56,40 +65,31 @@ export const Autocomplete: React.FC<Props> = ({
         />
       </div>
 
-      <div
-        className="dropdown-menu"
-        role="menu"
-        style={{
-          display: dropdownShow ? 'block' : 'none',
-        }}
-      >
-        <div className="dropdown-content">
-          {preparedOptions.length > 0
-            ? preparedOptions.map((option: Person) => (
-              <div
-                className="dropdown-item"
-                onMouseDown={() => handleDropdownItemClick(option)}
-                key={option.name}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleDropdownItemClick(option);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-              >
-                <p
-                  className={Math.random() > 0.5
-                    ? 'has-text-link'
-                    : 'has-text-danger'}
+      {dropdownShow && (
+        <div
+          className="dropdown-menu"
+          role="menu"
+        >
+          <div className="dropdown-content">
+            {preparedOptions.length > 0
+              ? preparedOptions.map((option: Person) => (
+                <div
+                  className="dropdown-item"
+                  onMouseDown={() => handleDropdownItemClick(option)}
+                  key={option.name}
+                  onKeyDown={(event) => handleItemOnKeyDown(event, option)}
+                  role="button"
+                  tabIndex={0}
                 >
-                  {option.name}
-                </p>
-              </div>
-            ))
-            : ' No matching suggestions '}
+                  <p>
+                    {option.name}
+                  </p>
+                </div>
+              ))
+              : ' No matching suggestions '}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
