@@ -17,7 +17,7 @@ export const Autocomplete: React.FC<Props> = ({
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
-
+  const applyFocuse = useCallback(debounce(setShowDropdown, 1000), [appliedQuery]);
   const filteredPeople = useMemo(() => {
     return people.filter(({ name }) => {
       return name.toLowerCase().includes(appliedQuery.toLowerCase().trim());
@@ -39,17 +39,24 @@ export const Autocomplete: React.FC<Props> = ({
 
     setQuery(event.currentTarget.textContent || '');
     applyQuery(event.currentTarget.textContent || '');
-
     setShowDropdown(false);
   };
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setShowDropdown(false);
+    applyFocuse(true);
 
     if (event.target.value.length === 0) {
       onSelected('');
     }
+  };
+
+  const handleOnBlur = () => {
+    setTimeout(() => {
+      setShowDropdown(false);
+    }, 100);
   };
 
   return (
@@ -62,7 +69,7 @@ export const Autocomplete: React.FC<Props> = ({
           value={query}
           onChange={handleQueryChange}
           onFocus={() => setShowDropdown(true)}
-          onBlur={() => setShowDropdown(false)}
+          onBlur={handleOnBlur}
         />
       </div>
 
