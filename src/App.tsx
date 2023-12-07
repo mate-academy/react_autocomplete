@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 import './App.scss';
@@ -28,21 +29,29 @@ export const App: React.FC = () => {
     return filteredPeople;
   }, [appliedQuery, people]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+  const applyFocuse = useCallback(debounce(setIsFocused, 1000), [appliedQuery]);
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
     setSuggestion(false);
+    setIsFocused(false);
+    applyFocuse(true);
   };
 
   const handleOnClick = useCallback((person: Person) => {
-    setQuery('');
-    setAppliedQuery('');
+    setQuery(person.name);
+    setAppliedQuery(person.name);
     setSelectedPerson(person);
     setIsFocused(false);
   }, []);
+
+  const handleOnBlur = () => {
+    setTimeout(() => {
+      setIsFocused(false);
+    }, 100);
+  };
 
   return (
     <main className="section">
@@ -63,10 +72,11 @@ export const App: React.FC = () => {
             value={query}
             onChange={(event) => handleOnChange(event)}
             onFocus={() => setIsFocused(true)}
+            onBlur={handleOnBlur}
           />
         </div>
 
-        {((query && peopleToRender) || isFocued) && (
+        {((query && peopleToRender && isFocued) || isFocued) && (
           <People
             people={peopleToRender}
             onClick={handleOnClick}
@@ -82,7 +92,6 @@ export const App: React.FC = () => {
             </div>
           </div>
         )}
-
       </div>
     </main>
   );
