@@ -1,5 +1,5 @@
 import React, {
-  useCallback, useMemo, useState,
+  useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
 import debounce from 'lodash.debounce';
 import './App.scss';
@@ -24,7 +24,24 @@ export const App: React.FC = () => {
     applyQuery(event.target.value);
   };
 
-  const showList = (appliedQuery === query) && isFocused;
+  const inputField = useRef<HTMLInputElement>(null);
+
+  document.addEventListener('click', (event: MouseEvent) => {
+    if (event.target !== inputField.current) {
+      setQuery('');
+      setIsFocused(false);
+      inputField.current?.blur();
+    }
+  });
+
+  useEffect(() => {
+    if (inputField.current) {
+      inputField.current.focus();
+    }
+  }, [query]);
+
+  const showSugesstion = (appliedQuery === query) && isFocused;
+  const showDelete = (selectedPerson?.name === query) && isFocused;
 
   return (
     <main className="section">
@@ -38,19 +55,33 @@ export const App: React.FC = () => {
         <div className="dropdown-trigger">
           <input
             type="text"
+            id="input"
+            ref={inputField}
             placeholder="Enter a part of the name"
             className="input"
             value={query}
             onChange={handleQueryChange}
             onFocus={() => setIsFocused(true)}
             onBlur={() => {
-              setQuery('');
-              setIsFocused(false);
+              // setQuery('');
+              // setIsFocused(false);
             }}
           />
         </div>
 
-        {showList && (
+        {showDelete && (
+          <button
+            aria-label="delete"
+            className="delete"
+            type="button"
+            onClick={() => {
+              setQuery('');
+              setAppliedQuery('');
+            }}
+          />
+        )}
+
+        {showSugesstion && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {visiblePerson.length === 0
@@ -69,7 +100,7 @@ export const App: React.FC = () => {
                       className="dropdown-item"
                       key={peopleFromServer.indexOf(person)}
                       onMouseDown={() => {
-                        setQuery('');
+                        setQuery(person.name);
                         setSelectedPerson(person);
                       }}
                     >
