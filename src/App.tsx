@@ -1,31 +1,31 @@
-import React, { useState } from 'react';
 import './App.scss';
+
+import { FC, useState } from 'react';
 import { Dropdown } from './components/Dropdown';
-import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
-const TIMER_FILTER_DELAY = 1000;
-
-export const App: React.FC = () => {
+export const App: FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const { name, born, died } = selectedPerson || {};
+
+  const getSelectedPerson = (person: Person) => (
+    setSelectedPerson(person)
+  );
 
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson
-          ? (
-            <p>
-              {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
-            </p>
-          )
-          : <p>No selected person.</p>}
+        {selectedPerson ? (
+          `${name} (${born}) - (${died})`
+        ) : 'No selected person'}
       </h1>
 
       <Dropdown
-        onSelect={setSelectedPerson}
-        people={peopleFromServer}
-        delay={TIMER_FILTER_DELAY}
+        onSelected={getSelectedPerson}
+        delay={1000}
       />
+
     </main>
   );
 };
