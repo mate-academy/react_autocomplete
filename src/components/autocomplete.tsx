@@ -17,7 +17,9 @@ export const Autocomplete: React.FC<Props> = ({
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
-  const applyFocuse = useCallback(debounce(setShowDropdown, 1000), [appliedQuery]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const applyFocuse = useCallback(debounce(setShowDropdown, 1000),
+    [appliedQuery]);
   const filteredPeople = useMemo(() => {
     return people.filter(({ name }) => {
       return name.toLowerCase().includes(appliedQuery.toLowerCase().trim());
@@ -56,7 +58,7 @@ export const Autocomplete: React.FC<Props> = ({
   const handleOnBlur = () => {
     setTimeout(() => {
       setShowDropdown(false);
-    }, 100);
+    }, 1000);
   };
 
   return (
