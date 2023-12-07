@@ -17,24 +17,20 @@ export const Autocomplete: React.FC<Props> = ({
   const [query, setQuery] = useState('');
   const [dropdownShow, setDropdownShow] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
-
-  const ignoreBlurRef = useRef(false);
+  const timerId = useRef(0);
 
   const preparedOptions = useMemo(
     () => options.filter(option => (
-      option.name.toLowerCase().includes(appliedQuery.toLowerCase()))),
+      option.name.toLowerCase().includes(appliedQuery.toLowerCase())
+    )),
     [options, appliedQuery],
   );
 
   const handleDropdownItemClick = (option: Person) => {
-    ignoreBlurRef.current = true;
     setQuery(option.name);
     setActiveOption(option);
     setDropdownShow(false);
-    ignoreBlurRef.current = false;
   };
-
-  const timerId = useRef(0);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -44,12 +40,6 @@ export const Autocomplete: React.FC<Props> = ({
     timerId.current = window.setTimeout(() => {
       setAppliedQuery(event.target.value);
     }, delay);
-  };
-
-  const handleInputBlur = () => {
-    if (!ignoreBlurRef.current) {
-      setDropdownShow(false);
-    }
   };
 
   return (
@@ -62,7 +52,7 @@ export const Autocomplete: React.FC<Props> = ({
           value={query}
           onChange={handleInputChange}
           onFocus={() => setDropdownShow(true)}
-          onBlur={handleInputBlur}
+          // onBlur={handleInputBlur}
         />
       </div>
 
