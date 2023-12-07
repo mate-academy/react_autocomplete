@@ -52,7 +52,7 @@ export const Autocomplete: React.FC<Props> = ({
           value={query}
           onChange={handleInputChange}
           onFocus={() => setDropdownShow(true)}
-          // onBlur={handleInputBlur}
+          onBlur={() => setDropdownShow(false)}
         />
       </div>
 
@@ -68,7 +68,7 @@ export const Autocomplete: React.FC<Props> = ({
             ? preparedOptions.map((option: Person) => (
               <div
                 className="dropdown-item"
-                onClick={() => handleDropdownItemClick(option)}
+                onMouseDown={() => handleDropdownItemClick(option)}
                 key={option.name}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
