@@ -11,17 +11,17 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [suggestion, setSuggestion] = useState(false);
+  const [isNoMatch, setIsNoMatch] = useState(false);
   const [isFocued, setIsFocused] = useState(false);
 
   const peopleToRender = useMemo(() => {
     const filteredPeople = people.filter(person => person.name.toLowerCase()
       .includes(appliedQuery.toLowerCase().trim()));
 
-    setSuggestion(false);
+    setIsNoMatch(false);
 
     if (!filteredPeople.length) {
-      setSuggestion(true);
+      setIsNoMatch(true);
 
       return [];
     }
@@ -35,7 +35,7 @@ export const App: React.FC = () => {
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
-    setSuggestion(false);
+    setIsNoMatch(false);
     setIsFocused(false);
     applyFocuse(true);
   };
@@ -83,7 +83,7 @@ export const App: React.FC = () => {
           />
         )}
 
-        {(suggestion) && (
+        {(isNoMatch) && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               <div className="dropdown-item">
