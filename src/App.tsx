@@ -26,22 +26,7 @@ export const App: React.FC = () => {
 
   const inputField = useRef<HTMLInputElement>(null);
 
-  document.addEventListener('click', (event: MouseEvent) => {
-    if (event.target !== inputField.current) {
-      setQuery('');
-      setIsFocused(false);
-      inputField.current?.blur();
-    }
-  });
-
-  useEffect(() => {
-    if (inputField.current) {
-      inputField.current.focus();
-    }
-  }, [query]);
-
   const showSugesstion = (appliedQuery === query) && isFocused;
-  const showDelete = (selectedPerson?.name === query) && isFocused;
 
   return (
     <main className="section">
@@ -62,24 +47,9 @@ export const App: React.FC = () => {
             value={query}
             onChange={handleQueryChange}
             onFocus={() => setIsFocused(true)}
-            onBlur={() => {
-              // setQuery('');
-              // setIsFocused(false);
-            }}
+            onBlur={() => setIsFocused(false)}
           />
         </div>
-
-        {showDelete && (
-          <button
-            aria-label="delete"
-            className="delete"
-            type="button"
-            onClick={() => {
-              setQuery('');
-              setAppliedQuery('');
-            }}
-          />
-        )}
 
         {showSugesstion && (
           <div className="dropdown-menu" role="menu">
