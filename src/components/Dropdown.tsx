@@ -9,11 +9,10 @@ type Props = {
   delay: number,
 };
 
-function debounce(callback: (...args: string[]) => void, delay: number) {
-
+function debounce(callback: (...args: any) => void, delay: number) {
   let timerId = 0;
 
-  const queryChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  return ([...args]: any) => {
     window.clearTimeout(timerId);
 
     timerId = window.setTimeout(() => {
@@ -27,7 +26,7 @@ export const Dropdown: React.FC<Props> = ({ people, onSelect, delay }) => {
   const [focusedInput, setFocusedInput] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), [debounce, delay, setAppliedQuery]);
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
   const queryChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
