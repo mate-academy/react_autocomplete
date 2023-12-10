@@ -23,17 +23,15 @@ export const Autocomplete: React.FC<Props> = ({
   );
 
   const filteredPeoples = useMemo(() => {
-    let newArr = [...peopleFromServer];
-
     if (query !== '') {
-      newArr = peopleFromServer.filter(
+      return peopleFromServer.filter(
         (person: Person) => person.name
           .toLowerCase()
           .includes(query.toLowerCase()),
       );
     }
 
-    return newArr;
+    return peopleFromServer;
   }, [peopleFromServer, query]);
 
   const chosenPerson = (
