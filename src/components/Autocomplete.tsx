@@ -23,15 +23,15 @@ export const Autocomplete: React.FC<Props> = ({
   );
 
   const filteredPeoples = useMemo(() => {
-    if (query !== '') {
-      return peopleFromServer.filter(
-        (person: Person) => person.name
-          .toLowerCase()
-          .includes(query.toLowerCase()),
-      );
+    if (!query) {
+      return peopleFromServer;
     }
 
-    return peopleFromServer;
+    return peopleFromServer.filter(
+      (person: Person) => person.name
+        .toLowerCase()
+        .includes(query.toLowerCase()),
+    );
   }, [peopleFromServer, query]);
 
   const chosenPerson = (
@@ -44,14 +44,22 @@ export const Autocomplete: React.FC<Props> = ({
 
   const handleChangeQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChosePerson(e.target.value);
-
     applyQuery(e.target.value);
+  };
+
+  const handleFocus = () => {
+    setSelect(true);
+  };
+
+  const handleBlur = () => {
+    setSelect(false);
+    setQuery('');
   };
 
   return (
     <div
       className={cn('dropdown', {
-        'is-active': select && chosePerson === query,
+        'is-active': select && (chosePerson === query || query === ''),
       })}
     >
       <div className="dropdown-trigger">
@@ -61,11 +69,8 @@ export const Autocomplete: React.FC<Props> = ({
           className="input"
           value={chosePerson}
           onChange={handleChangeQuery}
-          onFocus={() => setSelect(true)}
-          onBlur={() => {
-            setSelect(false);
-            setQuery('');
-          }}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
       </div>
 
