@@ -44,13 +44,14 @@ export const Autocomplete: React.FC<Props> = ({
 
   const handleChangeQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChosePerson(e.target.value);
+
     applyQuery(e.target.value);
   };
 
   return (
     <div
       className={cn('dropdown', {
-        'is-active': select,
+        'is-active': select && chosePerson === query,
       })}
     >
       <div className="dropdown-trigger">
