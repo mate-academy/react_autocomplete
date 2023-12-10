@@ -9,10 +9,10 @@ type Props = {
   delay: number,
 };
 
-function debounce(callback: (...args: any) => void, delay: number) {
+function debounce(callback: Function, delay: number) {
   let timerId = 0;
 
-  return ([...args]: any) => {
+   return (...args: any) => {
     window.clearTimeout(timerId);
 
     timerId = window.setTimeout(() => {
