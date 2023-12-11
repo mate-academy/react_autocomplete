@@ -9,11 +9,11 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {person && (
-        <h1 className="title">
-          {`${person.name} (${person.born} - ${person.died})`}
-        </h1>
-      )}
+      <h1 className="title">
+        {person
+          ? `${person.name} (${person.born} - ${person.died})`
+          : 'No selected person'}
+      </h1>
 
       <Autocomplete
         options={peopleFromServer}

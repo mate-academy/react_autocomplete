@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import cn from 'classnames';
 import { debounce } from '../../helper';
 import { Person } from '../../types/Person';
@@ -25,6 +25,12 @@ export const Autocomplete: FC<Props> = ({ options, getValue }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const currentOptions = getCurrentOptions(options, searchQuery);
 
+  useEffect(() => {
+    getValue(currentOptions.find(({ name }) => {
+      return name === currentValue;
+    }) as Person);
+  }, [currentValue]);
+
   const debouncedSearchQuery = debounce<string>((arg) => {
     setSearchQuery(arg);
   }, 1000);
@@ -43,10 +49,6 @@ export const Autocomplete: FC<Props> = ({ options, getValue }) => {
   const handleSelectedValue = (value: string) => {
     setCurrentValue(value);
 
-    getValue(currentOptions.find(({ name }) => {
-      return name === value;
-    }) as Person);
-
     setShowMenu(false);
   };
 
@@ -55,7 +57,7 @@ export const Autocomplete: FC<Props> = ({ options, getValue }) => {
       <div className="dropdown-trigger">
         <input
           type="search"
-          placeholder="Enter a part of the name"
+          placeholder="Enter the name"
           className="input"
           value={currentValue}
           onChange={handleInputOnChange}
@@ -88,7 +90,7 @@ export const Autocomplete: FC<Props> = ({ options, getValue }) => {
 
             {currentOptions.length === 0 && (
               <p className="has-text-grey dropdown-item">
-                No options
+                No matching suggestions
               </p>
             )}
           </div>
