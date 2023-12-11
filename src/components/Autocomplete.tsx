@@ -5,9 +5,14 @@ import { Person } from '../types/Person';
 
 export type Props = {
   peopleFromServer: Person[],
-  setMyPerson: (person: Person) => void,
+  setMyPerson: (person: Person | null) => void,
   delay: number,
 };
+
+enum Sex {
+  Male = 'm',
+  Female = 'f',
+}
 
 export const Autocomplete: React.FC<Props> = ({
   peopleFromServer,
@@ -43,6 +48,10 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   const handleChangeQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === '') {
+      setMyPerson(null);
+    }
+
     setChosePerson(e.target.value);
     applyQuery(e.target.value);
   };
@@ -85,10 +94,11 @@ export const Autocomplete: React.FC<Props> = ({
                 onMouseDown={() => chosenPerson(person)}
               >
                 <p
-                  className={cn({
-                    'has-text-link': person.sex === 'm',
-                    'has-text-danger': person.sex === 'f',
-                  })}
+                  className={cn(
+                    person.sex === Sex.Male
+                      ? 'has-text-link'
+                      : 'has-text-danger',
+                  )}
                 >
                   {person.name}
                 </p>
