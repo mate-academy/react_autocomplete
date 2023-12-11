@@ -1,3 +1,13 @@
 iframe {
   display: none;
 }
+
+.btn {
+  all: unset;
+  outline: revert;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding-left: 10px;
+  width: 200px;
+}
+
