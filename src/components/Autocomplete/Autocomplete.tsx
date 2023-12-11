@@ -9,10 +9,10 @@ type Props = {
   getValue: (value: Person) => void;
 };
 
-const getCurrentOptions = (options: Person[], qwery: string): Person[] | [] => {
-  if (qwery) {
+const getCurrentOptions = (options: Person[], query: string): Person[] | [] => {
+  if (query) {
     return options.filter(({ name }) => {
-      return name.toLowerCase().includes(qwery.toLowerCase());
+      return name.toLowerCase().includes(query.toLowerCase());
     });
   }
 
@@ -22,11 +22,11 @@ const getCurrentOptions = (options: Person[], qwery: string): Person[] | [] => {
 export const Autocomplete: FC<Props> = ({ options, getValue }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [currentValue, setCurrentValue] = useState('');
-  const [searchQwery, setSearchQwery] = useState('');
-  const currentOptions = getCurrentOptions(options, searchQwery);
+  const [searchQuery, setSearchQuery] = useState('');
+  const currentOptions = getCurrentOptions(options, searchQuery);
 
   const debouncedSearchQuery = debounce<string>((arg) => {
-    setSearchQwery(arg);
+    setSearchQuery(arg);
   }, 1000);
 
   const handleInputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +68,7 @@ export const Autocomplete: FC<Props> = ({ options, getValue }) => {
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content scroll-container">
             {currentOptions.length > 0
-              && currentOptions.map(({ name, sex }) => (
+              && currentOptions.map(({ name }) => (
                 <button
                   type="button"
                   className="dropdown-item button is-white"
@@ -77,8 +77,8 @@ export const Autocomplete: FC<Props> = ({ options, getValue }) => {
                 >
                   <p
                     className={cn({
-                      'has-text-link': sex === 'm',
-                      'has-text-danger': sex === 'f',
+                      'has-text-link': currentValue !== name,
+                      'has-text-danger': currentValue === name,
                     })}
                   >
                     {name}
