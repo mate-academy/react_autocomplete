@@ -28,6 +28,10 @@ export const Autocomplete: React.FC<Props> = ({
     setIsFocesed(true);
   };
 
+  const handleBlur = () => {
+    setIsFocesed(false);
+  };
+
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
@@ -57,6 +61,7 @@ export const Autocomplete: React.FC<Props> = ({
           value={query}
           onChange={handleQueryChange}
           onFocus={handleFocus}
+          onBlur={handleBlur}
         />
       </div>
 
