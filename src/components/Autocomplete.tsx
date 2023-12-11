@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import React, { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 
@@ -9,10 +10,15 @@ type Props = {
   delay: number;
 };
 
+enum Sex {
+  MALE = 'm',
+  FEMALE = 'f',
+}
+
 function debounce(callback: Function, delay: number) {
   let timerId = 0;
 
-  return (...args: any) => {
+  return (...args: string[]) => {
     window.clearTimeout(timerId);
 
     timerId = window.setTimeout(() => {
@@ -52,6 +58,10 @@ export const Autocomplete: React.FC<Props> = (
     person: Person | undefined,
   ) => {
     event.preventDefault();
+    if (person) {
+      setQuery(person?.name);
+    }
+
     onSelect(person);
     setIsFocused(false);
   };
@@ -82,7 +92,9 @@ export const Autocomplete: React.FC<Props> = (
                 >
                   <p
                     className={classNames(
-                      person.sex === 'm' ? 'has-text-link' : 'has-text-danger',
+                      person.sex === Sex.MALE
+                        ? 'has-text-link'
+                        : 'has-text-danger',
                     )}
                   >
                     {person.name}
