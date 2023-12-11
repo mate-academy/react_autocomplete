@@ -5,15 +5,15 @@ import { Person } from '../types/Person';
 interface Props {
   filteredPeople: Person[];
   onSubmit: (person: Person) => void;
-  focus: boolean;
+  isFocused: boolean;
   selectedPerson: Person | null;
-
 }
+
 export const DropdownMenu: React.FC<Props> = React.memo((props) => {
   const {
     filteredPeople,
     onSubmit,
-    focus,
+    isFocused,
     selectedPerson,
   } = props;
 
@@ -22,16 +22,14 @@ export const DropdownMenu: React.FC<Props> = React.memo((props) => {
       className="dropdown-menu"
       role="menu"
     >
-      {focus && (
+      {isFocused && (
         <div className="dropdown-content">
           {filteredPeople.length
             ? (filteredPeople.map(person => (
               <button
                 type="button"
                 key={person.slug}
-                onClick={() => {
-                  onSubmit(person);
-                }}
+                onClick={() => onSubmit(person)}
                 className={cn('btn dropdown-item has-text-link', {
                   'has-text-danger': selectedPerson?.name === person.name,
                 })}
@@ -47,7 +45,6 @@ export const DropdownMenu: React.FC<Props> = React.memo((props) => {
             )}
         </div>
       )}
-
     </div>
   );
 });

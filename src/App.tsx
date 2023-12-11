@@ -7,8 +7,8 @@ import { DropdownMenu } from './DropdownMenu/DropdownMenu';
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
-  const [focus, setFocus] = useState(false);
-  const [apliedQuery, setApliedQuery] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [appliedQuery, setAppliedQuery] = useState('');
 
   const timerId = useRef(0);
 
@@ -17,18 +17,18 @@ export const App: React.FC = () => {
 
     window.clearTimeout(timerId.current);
     timerId.current = window.setTimeout(() => {
-      setApliedQuery(event.target.value);
+      setAppliedQuery(event.target.value);
     }, 500);
   };
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person => {
-      const readyQuery = apliedQuery.toLowerCase().trim();
+      const readyQuery = appliedQuery.toLowerCase().trim();
       const personName = person.name.toLocaleLowerCase();
 
       return personName.includes(readyQuery);
     });
-  }, [apliedQuery]);
+  }, [appliedQuery]);
 
   const onSubmit = useMemo(() => {
     return (person:Person) => {
@@ -36,7 +36,7 @@ export const App: React.FC = () => {
 
       setQuery(name);
       setSelectedPerson(person);
-      setFocus(false);
+      setIsFocused(false);
     };
   }, []);
 
@@ -45,13 +45,15 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {isSelectedPerson && (`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`)}
+        {isSelectedPerson
+          ? (`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`)
+          : ('No selected person')}
       </h1>
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
           <input
-            onFocus={() => setFocus(true)}
+            onFocus={() => setIsFocused(true)}
             type="text"
             placeholder="Enter a part of the name"
             className="input"
@@ -62,7 +64,7 @@ export const App: React.FC = () => {
         <DropdownMenu
           filteredPeople={filteredPeople}
           onSubmit={onSubmit}
-          focus={focus}
+          isFocused={isFocused}
           selectedPerson={selectedPerson}
         />
       </div>
