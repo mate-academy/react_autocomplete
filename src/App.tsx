@@ -10,6 +10,8 @@ export const App: React.FC = () => {
     undefined,
   );
 
+  const delaySelected = 1000;
+
   return (
     <main className="section">
       <h1 className="title">
@@ -20,7 +22,7 @@ export const App: React.FC = () => {
       <Autocomplete
         peopleList={peopleFromServer}
         onSelect={setSelectedPerson}
-        delay={1000}
+        delay={delaySelected}
       />
     </main>
   );
