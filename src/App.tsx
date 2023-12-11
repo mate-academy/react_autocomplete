@@ -1,14 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.scss';
+import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [text, setText] = useState('');
+  const [person, setPerson] = useState<Person | null>();
+  const [isSearch, setIsSearch] = useState(false);
+  const [same, setSame] = useState<Person[]>([]);
+
+  const searchMethod = (value: string) => {
+    setIsSearch(false);
+    setTimeout(() => {
+      const filtered = peopleFromServer
+        .filter((item) => {
+          const itemName = item.name.toLowerCase();
+
+          return (
+            itemName.includes(value.toLowerCase())
+          );
+        });
+
+      setSame(filtered);
+      if (filtered.length > 1) {
+        setIsSearch(true);
+      }
+    }, 1000);
+  };
+
+  useEffect(() => {
+    if (text) {
+      searchMethod(text);
+    } else {
+      setSame([]);
+      setPerson(null);
+    }
+  }, [text]);
+
+  const setValues = (value: Person) => {
+    setPerson(value);
+    setIsSearch(false);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        { person
+          ? `${person.name} (${person.born} = ${person.died})`
+          : 'No matching suggestions'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,39 +57,37 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            onChange={(e) => setText(e.target.value)}
           />
         </div>
 
         <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
+          { isSearch && (
+            <div className="dropdown-content">
+              {
+                same.map((pers) => {
+                  return (
+                    <div
+                      className="dropdown-item"
+                      style={{ cursor: 'pointer' }}
+                      key={pers.name}
+                      aria-hidden="true"
+                      onClick={() => setValues(pers)}
+                    >
+                      <p
+                        className={classNames(
+                          { 'has-text-danger': pers === person },
+                          { 'has-text-link': pers !== person },
+                        )}
+                      >
+                        {pers.name}
+                      </p>
+                    </div>
+                  );
+                })
+              }
             </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </main>
