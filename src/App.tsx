@@ -1,15 +1,42 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { DropItems } from './dropdown_items/drop-items';
+import { setAutocompleteList } from './helpers/helpers';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [searchQuery, setSearchQuery] = useState('');
+  const [hasFocus, setHasFocus] = useState(false);
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState<Person | null>(null);
+
+  const applyQuery = useMemo(
+    () => debounce((value: string) => setAppliedQuery(value), 1000),
+    [],
+  );
+
+  const autocompleteList = useMemo(() => {
+    return setAutocompleteList(
+      peopleFromServer,
+      appliedQuery,
+    );
+  }, [appliedQuery]);
+
+  const handleQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    applyQuery(e.target.value);
+  };
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      {selectedUser
+        && (
+          <h1 className="title">
+            {`${selectedUser.name} (${selectedUser.born} = ${selectedUser.died})`}
+          </h1>
+        )}
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
@@ -17,40 +44,26 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={searchQuery}
+            onChange={handleQuery}
+            onBlur={() => setHasFocus(false)}
+            onFocus={() => setHasFocus(true)}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
+        {hasFocus
+        && (
+          <div className="dropdown-menu" role="menu">
+            {autocompleteList.length > 0
+              ? (
+                <DropItems
+                  users={autocompleteList}
+                  onSelected={setSelectedUser}
+                />
+              )
+              : (<p>No matching suggestions</p>)}
           </div>
-        </div>
+        )}
       </div>
     </main>
   );

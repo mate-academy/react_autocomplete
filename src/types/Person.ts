@@ -7,3 +7,7 @@ export interface Person {
   motherName: string | null,
   slug: string,
 }
+
+export type SetAutoComplList = (p: Person[], query: string) => Person[];
+
+export type OnSelected = (user: Person) => void;
