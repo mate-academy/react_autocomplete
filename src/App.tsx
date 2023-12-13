@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [people/* setPeople */] = useState(peopleFromServer);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        Selected Person
       </h1>
 
       <div className="dropdown is-active">
@@ -22,33 +22,11 @@ export const App: React.FC = () => {
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
+            {people.map(person => (
+              <div className="dropdown-item">
+                <p className={`${person.sex === 'm' ? 'has-text-link' : 'has-text-danger'}`}>{person.name}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
