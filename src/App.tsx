@@ -3,12 +3,26 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 
 export const App: React.FC = () => {
-  const [people/* setPeople */] = useState(peopleFromServer);
+  const [people, setPeople] = useState(peopleFromServer);
+  const [searchedPerson, setsearchedPerson] = useState('');
+
+  const handleSelectionChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setsearchedPerson(event.target.value);
+
+    const filteredPeople = people.filter(person => {
+      return (person.name)
+        .toLocaleLowerCase().includes(searchedPerson.toLocaleLowerCase());
+    });
+
+    setPeople(filteredPeople);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        Selected Person
+        Selected person
       </h1>
 
       <div className="dropdown is-active">
@@ -17,6 +31,8 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={searchedPerson}
+            onChange={(event) => handleSelectionChange(event)}
           />
         </div>
 
