@@ -1,14 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [people, setPeople] = useState(peopleFromServer);
+  const [searchedPerson, setsearchedPerson] = useState<string>('');
+  const [isSearched, setIsSearched] = useState<boolean>(true);
+  const [onSelected, setOnSelected] = useState<Person>({
+    name: '',
+    born: 0,
+    died: 0,
+    sex: 'm',
+    fatherName: null,
+    motherName: null,
+    slug: '',
+  });
+
+  const handleSelectionChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setsearchedPerson(event.target.value);
+    setIsSearched(false);
+  };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const filteredPeople = peopleFromServer.filter(person => {
+        return person.name.toLowerCase().includes(searchedPerson.toLowerCase());
+      });
+
+      setIsSearched(true);
+      setPeople(filteredPeople);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchedPerson]);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {onSelected && onSelected.name
+          ? `${onSelected.name} (${onSelected.born} - ${onSelected.died})`
+          : 'Select Person'}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,40 +51,29 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={searchedPerson}
+            onChange={(event) => handleSelectionChange(event)}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
+        {isSearched && (
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              {people.map(person => (
+                <div className="dropdown-item" key={person.slug}>
+                  { /* eslint-disable-next-line */}
+                  <p
+                    className={`${person.sex === 'm' ? 'has-text-link' : 'has-text-danger'} cursor`}
+                    onClick={() => setOnSelected(person)}
+                  >
+                    {person.name}
+                  </p>
+                </div>
+              ))}
+              {!people.length && 'No matching suggestions'}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );
