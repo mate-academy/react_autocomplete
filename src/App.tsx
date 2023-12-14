@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [people, setPeople] = useState(peopleFromServer);
-  const [searchedPerson, setsearchedPerson] = useState('');
-  const [isSearched, setIsSearched] = useState(true);
-  const [onSelected, setOnSelected] = useState({
+  const [searchedPerson, setsearchedPerson] = useState<string>('');
+  const [isSearched, setIsSearched] = useState<boolean>(true);
+  const [onSelected, setOnSelected] = useState<Person>({
     name: '',
-    born: '',
-    died: '',
+    born: 0,
+    died: 0,
+    sex: 'm',
+    fatherName: null,
+    motherName: null,
+    slug: '',
   });
 
   const handleSelectionChange = (
@@ -35,7 +40,7 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {onSelected.name
+        {onSelected && onSelected.name
           ? `${onSelected.name} (${onSelected.born} - ${onSelected.died})`
           : 'Select Person'}
       </h1>
@@ -55,7 +60,7 @@ export const App: React.FC = () => {
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
               {people.map(person => (
-                <div className="dropdown-item">
+                <div className="dropdown-item" key={person.slug}>
                   { /* eslint-disable-next-line */}
                   <p
                     className={`${person.sex === 'm' ? 'has-text-link' : 'has-text-danger'} cursor`}
