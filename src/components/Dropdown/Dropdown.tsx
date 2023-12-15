@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { Person } from '../../types/Person';
 
@@ -12,6 +12,7 @@ export const Dropdown = ({ people, onSelect, delay }: Props) => {
   const [query, setQuery] = useState('');
   const [peopleList, setPeopleList] = useState(people);
   const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -34,9 +35,14 @@ export const Dropdown = ({ people, onSelect, delay }: Props) => {
     person: Person,
   ) => {
     event.preventDefault();
+    event.stopPropagation();
     setQuery(person.name);
     setIsFocused(false);
     onSelect(person);
+
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
   };
 
   const handleOnFocus = () => {
@@ -52,6 +58,7 @@ export const Dropdown = ({ people, onSelect, delay }: Props) => {
           type="text"
           placeholder="Enter a part of the name"
           className="input"
+          ref={inputRef}
           value={query}
           onChange={handleChange}
           onFocus={handleOnFocus}
@@ -67,7 +74,7 @@ export const Dropdown = ({ people, onSelect, delay }: Props) => {
                 <a
                   href="/"
                   className={classNames(`has-text-${person.sex === 'm' ? 'link' : 'danger'}`)}
-                  onClick={(event) => handleClick(event, person)}
+                  onMouseDown={(event) => handleClick(event, person)}
                 >
                   {person.name}
                 </a>
