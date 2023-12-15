@@ -11,6 +11,7 @@ type Props = {
 export const Dropdown = ({ people, onSelect, delay }: Props) => {
   const [query, setQuery] = useState('');
   const [peopleList, setPeopleList] = useState(people);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -33,11 +34,19 @@ export const Dropdown = ({ people, onSelect, delay }: Props) => {
     person: Person,
   ) => {
     event.preventDefault();
+    setQuery(person.name);
+    setIsFocused(false);
     onSelect(person);
   };
 
+  const handleOnFocus = () => {
+    setQuery('');
+    setPeopleList(people);
+    setIsFocused(true);
+  };
+
   return (
-    <div className="dropdown is-active">
+    <div className={classNames('dropdown', { 'is-active': isFocused })}>
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -45,6 +54,8 @@ export const Dropdown = ({ people, onSelect, delay }: Props) => {
           className="input"
           value={query}
           onChange={handleChange}
+          onFocus={handleOnFocus}
+          onBlur={() => setIsFocused(false)}
         />
       </div>
 
