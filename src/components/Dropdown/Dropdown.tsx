@@ -5,9 +5,10 @@ import { Person } from '../../types/Person';
 type Props = {
   people: Person[]
   onSelect: (person: Person) => void;
+  delay: number;
 };
 
-export const Dropdown = ({ people, onSelect }: Props) => {
+export const Dropdown = ({ people, onSelect, delay }: Props) => {
   const [query, setQuery] = useState('');
   const [peopleList, setPeopleList] = useState(people);
 
@@ -22,10 +23,10 @@ export const Dropdown = ({ people, onSelect }: Props) => {
       });
 
       setPeopleList(filteredPeople);
-    }, 500);
+    }, delay);
 
     return () => clearTimeout(timeoutId);
-  }, [people, query]);
+  }, [people, query, delay]);
 
   const handleClick = (
     event: React.MouseEvent<HTMLAnchorElement>,
@@ -49,17 +50,25 @@ export const Dropdown = ({ people, onSelect }: Props) => {
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {peopleList.map(person => (
-            <div className="dropdown-item" key={person.slug}>
-              <a
-                href="/"
-                className={classNames(`has-text-${person.sex === 'm' ? 'link' : 'danger'}`)}
-                onClick={(event) => handleClick(event, person)}
-              >
-                {person.name}
-              </a>
-            </div>
-          ))}
+          {peopleList.length
+            ? peopleList.map(person => (
+              <div className="dropdown-item" key={person.slug}>
+                <a
+                  href="/"
+                  className={classNames(`has-text-${person.sex === 'm' ? 'link' : 'danger'}`)}
+                  onClick={(event) => handleClick(event, person)}
+                >
+                  {person.name}
+                </a>
+              </div>
+            ))
+            : (
+              <div className="dropdown-item">
+                <p>
+                  No matching suggestions
+                </p>
+              </div>
+            )}
         </div>
       </div>
     </div>
