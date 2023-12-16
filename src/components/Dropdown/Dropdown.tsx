@@ -46,8 +46,8 @@ export const Dropdown = ({ people, onSelect, delay }: Props) => {
   };
 
   const handleOnFocus = () => {
-    setQuery('');
-    setPeopleList(people);
+    // setQuery('');
+    // setPeopleList(people);
     setIsFocused(true);
   };
 
