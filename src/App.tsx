@@ -1,56 +1,108 @@
-import React from 'react';
+import cn from 'classnames';
+import React, { useCallback, useMemo, useState } from 'react';
+import debounce from 'lodash.debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+type Person = {
+  name: string,
+  sex: string,
+  born: number,
+  died: number,
+  fatherName: string | null,
+  motherName: string | null,
+  slug: string,
+};
+
+type Props = {
+  delay: number,
+};
+
+export const App: React.FC<Props> = ({ delay = 1000 }) => {
+  // const { name, born, died } = peopleFromServer[0];
+
+  const [query, setQuery] = useState('');
+
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const [isFocused, setIsFocused] = useState(false);
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, delay),
+    [],
+  );
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer
+      .filter(personFromServer => personFromServer
+        .name.toLowerCase().includes(appliedQuery.toLowerCase()));
+  }, [appliedQuery]);
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
-
-      <div className="dropdown is-active">
+      {selectedPerson ? (
+        <h1 className="title">
+          {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
+        </h1>
+      ) : (
+        <h1 className="title">
+          No selected person
+        </h1>
+      )}
+      <div className={cn('dropdown', {
+        'is-active': query !== selectedPerson?.name && isFocused,
+      })}
+      >
         <div className="dropdown-trigger">
           <input
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={handleQueryChange}
+            onFocus={() => setIsFocused(true)}
           />
         </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
+        { query && !appliedQuery ? (
+          <div />
+        ) : (
+          <div className="dropdown-menu" role="menu">
+            <div
+              className="dropdown-content"
+            >
+              {filteredPeople.length !== 0 ? (
+                filteredPeople.map((person) => (
+                  <div
+                    className="dropdown-item"
+                    key={person.name}
+                  >
+                    <button
+                      type="button"
+                      className="has-text-link"
+                      onClick={() => {
+                        setSelectedPerson(person);
+                        setQuery(person.name);
+                      }}
+                    >
+                      {person.name}
+                    </button>
+                  </div>
+                )))
+                : (
+                  <div className="dropdown-item">
+                    <p className="has-text-link">No matching suggestions</p>
+                  </div>
+                )}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );
