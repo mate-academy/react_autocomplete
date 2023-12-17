@@ -67,10 +67,10 @@ export const Dropdown = ({ people, onSelect, delay }: Props) => {
       </div>
 
       <div className="dropdown-menu" role="menu">
-        <div className="dropdown-content">
+        <ul className="dropdown-content">
           {peopleList.length
             ? peopleList.map(person => (
-              <div className="dropdown-item" key={person.slug}>
+              <li className="dropdown-item" key={person.slug}>
                 <a
                   href="/"
                   className={classNames(`has-text-${person.sex === 'm' ? 'link' : 'danger'}`)}
@@ -78,7 +78,7 @@ export const Dropdown = ({ people, onSelect, delay }: Props) => {
                 >
                   {person.name}
                 </a>
-              </div>
+              </li>
             ))
             : (
               <div className="dropdown-item">
@@ -87,7 +87,7 @@ export const Dropdown = ({ people, onSelect, delay }: Props) => {
                 </p>
               </div>
             )}
-        </div>
+        </ul>
       </div>
     </div>
   );
