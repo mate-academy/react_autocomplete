@@ -18,9 +18,7 @@ type Props = {
   delay: number,
 };
 
-export const App: React.FC<Props> = ({ delay = 1000 }) => {
-  // const { name, born, died } = peopleFromServer[0];
-
+export const App: React.FC<Props> = ({ delay }) => {
   const [query, setQuery] = useState('');
 
   const [appliedQuery, setAppliedQuery] = useState('');
