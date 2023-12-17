@@ -4,11 +4,17 @@ import { Person } from '../../types/Person';
 
 type Props = {
   people: Person[]
-  onSelect: (person: Person) => void;
+  selectedPerson: Person | null;
+  onSelect: (person: Person | null) => void;
   delay: number;
 };
 
-export const Dropdown = ({ people, onSelect, delay }: Props) => {
+export const Dropdown = ({
+  people,
+  selectedPerson,
+  onSelect,
+  delay,
+}: Props) => {
   const [query, setQuery] = useState('');
   const [peopleList, setPeopleList] = useState(people);
   const [isFocused, setIsFocused] = useState(false);
@@ -25,10 +31,14 @@ export const Dropdown = ({ people, onSelect, delay }: Props) => {
       });
 
       setPeopleList(filteredPeople);
+
+      if (selectedPerson && filteredPeople.length > 1) {
+        onSelect(null);
+      }
     }, delay);
 
     return () => clearTimeout(timeoutId);
-  }, [people, query, delay]);
+  }, [people, query, delay, selectedPerson, onSelect]);
 
   const handleClick = (
     event: React.MouseEvent<HTMLAnchorElement>,
@@ -54,6 +64,7 @@ export const Dropdown = ({ people, onSelect, delay }: Props) => {
       <div className="dropdown-trigger">
         <input
           type="text"
+          id="dropdownInput"
           placeholder="Enter a part of the name"
           className="input"
           ref={inputRef}
