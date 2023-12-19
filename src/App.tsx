@@ -37,6 +37,11 @@ export const App: React.FC<Props> = ({ delay }) => {
     applyQuery(event.target.value);
   };
 
+  const handleButtonClick = (person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+  };
+
   const filteredPeople = useMemo(() => {
     return peopleFromServer
       .filter(personFromServer => personFromServer
@@ -45,7 +50,7 @@ export const App: React.FC<Props> = ({ delay }) => {
 
   return (
     <main className="section">
-      {selectedPerson ? (
+      {selectedPerson && query === selectedPerson.name ? (
         <h1 className="title">
           {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
         </h1>
@@ -75,7 +80,7 @@ export const App: React.FC<Props> = ({ delay }) => {
             <div
               className="dropdown-content"
             >
-              {filteredPeople.length !== 0 ? (
+              {filteredPeople.length ? (
                 filteredPeople.map((person) => (
                   <div
                     className="dropdown-item"
@@ -84,10 +89,7 @@ export const App: React.FC<Props> = ({ delay }) => {
                     <button
                       type="button"
                       className="has-text-link"
-                      onClick={() => {
-                        setSelectedPerson(person);
-                        setQuery(person.name);
-                      }}
+                      onClick={() => handleButtonClick(person)}
                     >
                       {person.name}
                     </button>
