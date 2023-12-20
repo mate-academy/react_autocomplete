@@ -19,17 +19,16 @@ export const PersonSelect: React.FC<Props> = ({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(
     debounce((value: string) => setAppliedQuery(value), delay),
     [delay],
   );
 
   const filteredPeople = useMemo(() => {
-    const lowerCaseQuery = appliedQuery.toLowerCase();
+    const lowerCasedQuery = appliedQuery.toLowerCase();
 
     return people.filter(person => (
-      person.name.toLowerCase().includes(lowerCaseQuery)
+      person.name.toLowerCase().includes(lowerCasedQuery)
     ));
   }, [appliedQuery, people]);
 
