@@ -1,0 +1,24 @@
+.dropdown {
+  &-menu {
+    width: 100%;
+    height: 600px;
+    //overflow-y: scroll;
+  }
+
+  &-content {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  &-item {
+    transition: background-color .5s ease;
+
+    &--hover {
+      cursor: pointer;
+
+      &:hover {
+        background-color: #e7e7e7;
+      }
+    }
+  }
+}
