@@ -16,11 +16,12 @@ export const DropdownList: React.FC<Props> = ({
 }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const showDropdownList = () => setIsFocused(true);
-  const hideDropdownList = () => setTimeout(() => setIsFocused(false), 500);
+  const showDropdownList = () => setIsDropdownOpen(true);
+  const hideDropdownList = () => setTimeout(
+    () => setIsDropdownOpen(false), 500,
+  );
 
   const filteredPerson = useMemo(() => {
     return (peopleFromServer
@@ -30,16 +31,19 @@ export const DropdownList: React.FC<Props> = ({
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(
-    debounce((value: string) => setAppliedQuery(value), delay),
+    debounce((value: string) => {
+      setAppliedQuery(value);
+      setIsDropdownOpen(true);
+    }, delay),
     [setAppliedQuery, delay],
   );
 
   const handleQueryChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
+    setIsDropdownOpen(false);
     setQuery(event.target.value);
     applyQuery(event.target.value);
-    setIsDropdownOpen(true);
     onSelected(null);
   };
 
@@ -49,14 +53,14 @@ export const DropdownList: React.FC<Props> = ({
   ) => {
     event.preventDefault();
 
-    setIsFocused(true);
     setQuery(person.name);
     onSelected(person);
+    setIsDropdownOpen(false);
   };
 
   return (
     <div className={cn('dropdown', {
-      'is-active': isFocused && isDropdownOpen,
+      'is-active': isDropdownOpen,
     })}
     >
       <div className="dropdown-trigger">
