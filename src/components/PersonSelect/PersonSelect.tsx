@@ -21,7 +21,7 @@ export const PersonSelect: React.FC<Props> = ({
 
   const applyQuery = useCallback(
     debounce((value: string) => setAppliedQuery(value), delay),
-    [delay],
+    [delay, setAppliedQuery],
   );
 
   const filteredPeople = useMemo(() => {
