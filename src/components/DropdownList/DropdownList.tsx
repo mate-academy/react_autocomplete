@@ -6,7 +6,7 @@ import { Person } from '../../types/Person';
 import { peopleFromServer } from '../../data/people';
 
 type Props = {
-  onSelected: (person: Person) => void;
+  onSelected: (person: Person | null) => void;
   delay: number;
 };
 
@@ -40,6 +40,7 @@ export const DropdownList: React.FC<Props> = ({
     setQuery(event.target.value);
     applyQuery(event.target.value);
     setIsDropdownOpen(true);
+    onSelected(null);
   };
 
   const handleSelectPerson = (
