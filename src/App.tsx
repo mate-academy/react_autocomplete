@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-import { Autocomplete } from './Autocomplete';
+import { Autocomplete } from './components/Autocomplete';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);

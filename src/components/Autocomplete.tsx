@@ -8,9 +8,9 @@ import React, {
 } from 'react';
 // import debounce from 'lodash.debounce';
 
-import { Person } from './types/Person';
+import { Person } from '../types/Person';
 
-function debounce(callback: Function, delay: number) {
+function debounce(callback, delay: number) {
   let timerId = 0;
 
   return (...args: any) => {
