@@ -1,24 +1,56 @@
 import classNames from 'classnames';
-import React, { useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+// import debounce from 'lodash.debounce';
+
 import { Person } from './types/Person';
+
+function debounce(callback: Function, delay: number) {
+  let timerId = 0;
+
+  return (...args: any) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
 
 type Props = {
   people: Person[];
   onSelect?: (person: Person) => void;
-  // delay: number;
+  delay: number;
 };
 
 export const Autocomplete: React.FC<Props> = React.memo(
   ({
     people,
     onSelect = () => {},
-    // delay,
+    delay,
   }) => {
     const [query, setQuery] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [appliedQuery, setApliedQuery] = useState('');
+
+    const applyQuery = useCallback(debounce(setApliedQuery, delay), []);
+
+    const personField = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+      if (personField.current) {
+        personField.current.focus();
+      }
+    }, []);
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
+      applyQuery(event.target.value);
     };
 
     const filteredPeople = useMemo(() => {
@@ -28,10 +60,12 @@ export const Autocomplete: React.FC<Props> = React.memo(
 
       return people.filter(
         person => {
-          return person.name.toUpperCase().includes(query.trim().toUpperCase());
+          return person.name.toUpperCase().includes(
+            appliedQuery.trim().toUpperCase(),
+          );
         },
       );
-    }, [query, people]);
+    }, [appliedQuery, query, people]);
 
     return (
       <div className="dropdown is-active">
@@ -43,7 +77,6 @@ export const Autocomplete: React.FC<Props> = React.memo(
             value={query}
             onChange={handleQueryChange}
             onFocus={() => setIsDropdownOpen(true)}
-            onBlur={() => setIsDropdownOpen(false)}
           />
         </div>
 
@@ -55,14 +88,20 @@ export const Autocomplete: React.FC<Props> = React.memo(
                 <div
                   className="dropdown-item"
                   key={person.slug}
+                  onClick={() => {
+                    onSelect(person);
+                    setIsDropdownOpen(false);
+                  }}
+                  onKeyDown={() => {}}
+                  role="button"
+                  tabIndex={0}
+                  ref={personField}
                 >
                   <p
                     className={classNames({
                       'has-text-link': person.sex === 'f',
                       'has-text-danger': person.sex === 'm',
                     })}
-
-                    onClick={() => onSelect(person)}
                   >
                     {person.name}
                   </p>
@@ -79,33 +118,3 @@ export const Autocomplete: React.FC<Props> = React.memo(
     );
   },
 );
-
-/*
-          <div className="dropdown-item">
-            <p className="has-text-link">Pieter Haverbeke</p>
-          </div>
-
-          <div className="dropdown-item">
-            <p className="has-text-link">Pieter Bernard Haverbeke</p>
-          </div>
-
-          <div className="dropdown-item">
-            <p className="has-text-link">Pieter Antone Haverbeke</p>
-          </div>
-
-          <div className="dropdown-item">
-            <p className="has-text-danger">Elisabeth Haverbeke</p>
-          </div>
-
-          <div className="dropdown-item">
-            <p className="has-text-link">Pieter de Decker</p>
-          </div>
-
-          <div className="dropdown-item">
-            <p className="has-text-danger">Petronella de Decker</p>
-          </div>
-
-          <div className="dropdown-item">
-            <p className="has-text-danger">Elisabeth Hercke</p>
-          </div>
-*/
