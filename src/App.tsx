@@ -10,14 +10,14 @@ export const App: React.FC = () => {
 
   const { name, born, died } = selectedPerson || {};
 
+  const selectedPersonInfo = selectedPerson
+    ? `${name} (${born} - ${died})`
+    : MESSAGES.noSelectedPerson;
+
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson ? (
-          `${name} (${born} - ${died})`
-        ) : (
-          MESSAGES.noSelectedPerson
-        )}
+        {selectedPersonInfo}
       </h1>
       <PersonSelect
         people={peopleFromServer}
