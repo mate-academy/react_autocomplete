@@ -3,6 +3,7 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import { PersonSelect } from './components/PersonSelect/PersonSelect';
 import { Person } from './types/Person';
+import { MESSAGES } from './enums';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -15,7 +16,7 @@ export const App: React.FC = () => {
         {selectedPerson ? (
           `${name} (${born} - ${died})`
         ) : (
-          'No selected person'
+          MESSAGES.noSelectedPerson
         )}
       </h1>
       <PersonSelect

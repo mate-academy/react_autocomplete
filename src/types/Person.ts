@@ -1,6 +1,8 @@
+import { SEX } from '../enums';
+
 export interface Person {
   name: string,
-  sex: 'm' | 'f',
+  sex: SEX,
   born: number,
   died: number,
   fatherName: string | null,

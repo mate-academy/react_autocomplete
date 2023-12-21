@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
 import { DropDownMenu } from './DropDownMenu/DropDownMenu';
+import { MESSAGES } from '../../enums';
 
 type Props = {
   people: Person[];
@@ -65,8 +66,8 @@ export const PersonSelect: React.FC<Props> = ({
       <div className="dropdown-trigger">
         <input
           type="text"
-          placeholder="Enter a part of the name"
           className="input"
+          placeholder={MESSAGES.personSelectInputPlaceholder}
           value={query}
           onChange={handleQueryChange}
           onFocus={handleFocus}

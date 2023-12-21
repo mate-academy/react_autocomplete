@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { Person } from '../../../types/Person';
 import './DropDownMenu.scss';
+import { MESSAGES, KEYS, SEX } from '../../../enums';
 
 type Props = {
   people: Person[];
@@ -16,20 +17,20 @@ export const DropDownMenu: React.FC<Props> = ({
   };
 
   const onKeyPressHandler = (
-    event: React.KeyboardEvent<HTMLDivElement>,
+    event: React.KeyboardEvent<HTMLLIElement>,
     person: Person,
   ) => {
-    if (event.key === 'Enter') {
+    if (event.key === KEYS.enter) {
       onSelect(person);
     }
   };
 
   return (
     <div className="dropdown-menu" role="menu">
-      <div className="dropdown-content">
+      <ul className="dropdown-content">
         {people.length ? (
           people.map((person) => (
-            <div
+            <li
               key={person.slug}
               className="dropdown-item dropdown-item--hover"
               onClick={() => onClickHandler(person)}
@@ -39,20 +40,20 @@ export const DropDownMenu: React.FC<Props> = ({
             >
               <p
                 className={classNames({
-                  'has-text-link': person.sex === 'm',
-                  'has-text-danger': person.sex === 'f',
+                  'has-text-link': person.sex === SEX.male,
+                  'has-text-danger': person.sex === SEX.female,
                 })}
               >
                 {person.name}
               </p>
-            </div>
+            </li>
           ))
         ) : (
-          <div className="dropdown-item">
-            <p>No matching suggestions</p>
-          </div>
+          <li className="dropdown-item">
+            <p>{ MESSAGES.noMatchingSuggestions }</p>
+          </li>
         )}
-      </div>
+      </ul>
     </div>
   );
 };
