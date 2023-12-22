@@ -6,21 +6,20 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import debounce from 'lodash.debounce';
 
 import { Person } from '../types/Person';
 
-// function debounce(callback, delay: number) {
-//   let timerId = 0;
+function debounce(callback: Function, delay: number) {
+  let timerId = 0;
 
-//   return (...args: any) => {
-//     window.clearTimeout(timerId);
+  return (...args: any) => {
+    window.clearTimeout(timerId);
 
-//     timerId = window.setTimeout(() => {
-//       callback(...args);
-//     }, delay);
-//   };
-// }
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
 
 type Props = {
   people: Person[];
