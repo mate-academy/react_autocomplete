@@ -7,19 +7,20 @@ import { Person } from './types/Person';
 import { Dropdown } from './component/Dropdown';
 
 export const App: React.FC = () => {
-  const [person, setPerson] = useState('No selected person');
-
-  const handlePerson = (currentPerson: Person) => {
-    setPerson(`${currentPerson.name} (${currentPerson.born} = ${currentPerson.died})`);
-  };
+  const [currentPerson, setCurrentPerson] = useState<Person | null>(null);
 
   return (
     <main className="section">
       <h1 className="title">
-        {person}
+        {currentPerson
+          ? `${currentPerson.name} ${currentPerson.born} - ${currentPerson.died}`
+          : 'No person selected'}
       </h1>
 
-      <Dropdown people={peopleFromServer} onSort={handlePerson} />
+      <Dropdown
+        people={peopleFromServer}
+        setPerson={setCurrentPerson}
+      />
     </main>
   );
 };

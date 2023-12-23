@@ -1,31 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Person } from '../../types/Person';
-import { DropdownItem } from '../DropdownItem';
+import { DropdownList } from '../DropdownList/DropdownList';
 
 interface Props {
   people: Person[],
-  onSort: (value: Person) => void;
+  setPerson: React.Dispatch<React.SetStateAction<Person | null>>;
 }
 
-export const Dropdown: React.FC<Props> = ({ people, onSort }) => {
-  const [input, setInput] = useState('');
-  const [peopleList, setPeopleList] = useState(people);
+export const Dropdown: React.FC<Props> = ({ people, setPerson }) => {
+  const [query, setQuery] = useState('');
 
-  const sortPeople = (p: string) => {
-    const sortedPerson = [...people];
+  const [searchedPerson, setSearchedPerson] = useState<Person[]>([]);
 
-    sortedPerson.filter(person => {
-      return person.name.includes(p);
-    });
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const filteredPeople = people.filter((person) => person
+        .name.toLowerCase().includes(query.toLowerCase()));
 
-    setPeopleList(sortedPerson);
-  };
+      setSearchedPerson(filteredPeople);
+    }, 1000);
 
-  const handleInputChange = (value: string) => {
-    setInput(value);
-    sortPeople(value);
-  };
+    // Clear the timeout on component unmount or when the query changes
+    return () => clearTimeout(timeoutId);
+  }, [query, people]);
 
   return (
     <div className="dropdown is-active">
@@ -34,16 +32,12 @@ export const Dropdown: React.FC<Props> = ({ people, onSort }) => {
           type="text"
           placeholder="Enter a part of the name"
           className="input"
-          onChange={e => handleInputChange(e.target.value)}
+          onChange={e => setQuery(e.target.value)}
         />
       </div>
 
       <div className="dropdown-menu" role="menu">
-        <div className="dropdown-content">
-          {peopleList.map(person => (
-            <DropdownItem name={person.name} key={person.name} />
-          ))}
-        </div>
+        <DropdownList people={searchedPerson} setPerson={setPerson} />
       </div>
     </div>
   );
