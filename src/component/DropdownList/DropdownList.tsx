@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable @typescript-eslint/indent */
 import React from 'react';
 import classNames from 'classnames';
 
@@ -29,14 +31,15 @@ export const DropdownList: React.FC<Props> = ({ people, setPerson }) => {
             </p>
           </li>
         ))
-        /* eslint-disable-next-line */
+        // eslint-disable-next-line react/jsx-wrap-multilines, jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
         : <li
+            // eslint-disable-next-line @typescript-eslint/indent
             onClick={() => setPerson(null)}
             className="dropdown-item"
             key="no-suggestions"
-          >
-            No matching suggestions
-          </li>}
+        >
+          No matching suggestions
+        </li>}
     </ul>
   );
 };
