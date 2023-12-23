@@ -3,19 +3,16 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
-interface AppProps {
-  debounceDelay: number;
-}
-
-export const App: React.FC<AppProps> = ({ debounceDelay }) => {
+export const App: React.FC = () => {
   const [searched, setSearched] = useState<string>('');
   const [people, setPeople] = useState<Person[]>(peopleFromServer);
   const [onSelected, setOnSelected] = useState<Person | null>(null);
   const [focus, setFocus] = useState<boolean>(false);
+  const [debounceDelay] = useState<number>(200);
 
   const search = () => {
     const tmp = peopleFromServer.filter((person) => (
-      person.name.toLowerCase().includes(searched.trim())
+      person.name.toLowerCase().includes(searched.trim().toLocaleLowerCase())
     ));
 
     setPeople(tmp);
@@ -46,6 +43,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
     }
 
     setSearched(newText);
+    setOnSelected(null);
 
     // Show the list of all people when input is focused but empty
     if (!newText) {
@@ -88,22 +86,22 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
 
         { focus && (
           <div className="dropdown-menu" role="menu">
-            <div className="dropdown-content">
+            <ul className="dropdown-content">
               {people.length === 0 ? (
                 <div className="dropdown-item">No matching suggestions</div>
               ) : (
                 people.map((person) => (
                   /* eslint-disable-next-line */
-                  <div
+                  <li
                     className="dropdown-item"
                     key={person.name}
                     onClick={() => handleItemClick(person)}
                   >
                     <p className="has-text-link">{person.name}</p>
-                  </div>
+                  </li>
                 ))
               )}
-            </div>
+            </ul>
           </div>
         )}
       </div>
