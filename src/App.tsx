@@ -75,12 +75,12 @@ export const App: React.FC = () => {
         <div className="dropdown-trigger">
           <input
             type="text"
-            placeholder="Enter a part of the name"
+            placeholder="Enter a name"
             className="input"
             value={searched}
             onChange={handleInput}
             onFocus={() => setFocus(true)}
-
+            onBlur={() => setFocus(false)}
           />
         </div>
 
