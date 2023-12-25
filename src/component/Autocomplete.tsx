@@ -26,12 +26,13 @@ export const Autocomplete: React.FC<Props> = ({ people, onSelected }) => {
   const [appliedQuery, setAppliedQuery] = useState('');
 
   // eslint-disable-next-line
-  const applyQuery = useCallback(
-    debounce(setAppliedQuery, 1000),
-    [],
-  );
+  const applyQuery = useCallback(debounce((str: string) => {
+    setAppliedQuery(str);
+    setIsActive(true);
+  }, 1000), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsActive(false);
     setQuery(event.target.value);
     applyQuery(event.target.value);
   };
