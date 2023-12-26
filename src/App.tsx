@@ -24,7 +24,7 @@ export const App: React.FC = () => {
 
       <Autocomplete
         people={filteredPeople}
-        dalay={1000}
+        dalay={500}
         setSelectedPerson={setSelectedPerson}
         queryChange={setAppliedQuery}
       />
