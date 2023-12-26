@@ -14,15 +14,20 @@ export const Dropdown: React.FC<Props> = ({
   onSelected,
   delay,
 }) => {
+  const [isActive, setIsActive] = useState(true);
   const [isDropdown, setIsDropdown] = useState(false);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+  const applyQuery = useCallback(debounce((str: string) => {
+    setAppliedQuery(str);
+    setIsActive(true);
+  }, delay), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const textQuery = event.target.value;
 
+    setIsActive(false);
     setQuery(textQuery);
     applyQuery(textQuery);
   };
@@ -35,7 +40,7 @@ export const Dropdown: React.FC<Props> = ({
 
   return (
     <div className={cn('dropdown', {
-      'is-active': isDropdown,
+      'is-active': isDropdown && isActive,
     })}
     >
       <div className="dropdown-trigger">
