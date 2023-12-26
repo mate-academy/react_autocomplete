@@ -24,17 +24,18 @@ export const Autocomplete: React.FC<Props> = ({ people, onSelected }) => {
   const [query, setQuery] = useState('');
   const [isActive, setIsActive] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [userTyping, setUserTyping] = useState(false);
 
   // eslint-disable-next-line
   const applyQuery = useCallback(debounce((str: string) => {
     setAppliedQuery(str);
-    setIsActive(true);
+    setUserTyping(false);
   }, 1000), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsActive(false);
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setUserTyping(true);
   };
 
   const filteredPeople = useMemo(() => {
@@ -44,7 +45,7 @@ export const Autocomplete: React.FC<Props> = ({ people, onSelected }) => {
 
   return (
     <div className={classNames('dropdown', {
-      'is-active': isActive,
+      'is-active': isActive && !userTyping,
     })}
     >
       <div className="dropdown-trigger">
