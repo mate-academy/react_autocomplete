@@ -1,5 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import debounce from 'lodash.debounce';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Autocomplete } from './components/Autocomplete';
@@ -7,7 +6,6 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>();
-  const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
   const filteredPeople = useMemo(() => {
@@ -15,22 +13,6 @@ export const App: React.FC = () => {
       .filter(el => el.name.toLowerCase()
         .includes(appliedQuery.trim().toLowerCase()));
   }, [appliedQuery]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const applyQuery = useCallback(
-    debounce(setAppliedQuery, 1000),
-    [],
-  );
-
-  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-    applyQuery(e.target.value);
-  };
-
-  const resetField = () => {
-    setQuery('');
-    applyQuery('');
-  };
 
   return (
     <main className="section">
@@ -42,10 +24,9 @@ export const App: React.FC = () => {
 
       <Autocomplete
         people={filteredPeople}
-        query={query}
+        dalay={1000}
         setSelectedPerson={setSelectedPerson}
-        queryChange={handleQueryChange}
-        resetField={resetField}
+        queryChange={setAppliedQuery}
       />
     </main>
   );

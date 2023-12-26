@@ -1,25 +1,37 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import debounce from 'lodash.debounce';
 import cn from 'classnames';
 import { Person } from '../../types/Person';
 
 type Props = {
   people: Person[];
-  query: string;
-  queryChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  dalay: number;
+  queryChange: (query: string) => void;
   setSelectedPerson: (human: Person) => void;
-  resetField: () => void;
 };
 
 export const Autocomplete: React.FC<Props> = ({
   people,
-  query,
+  dalay,
   setSelectedPerson,
   queryChange,
-  resetField,
 }) => {
-  // console.log('render Autocomplete');
-
   const [focused, setFocused] = useState(false);
+  const [query, setQuery] = useState('');
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const applyQuery = useCallback(debounce(queryChange, dalay), []);
+
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    applyQuery(e.target.value);
+  };
+
+  const onMouseDownHandler = (person: Person) => () => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+    queryChange(person.name);
+  };
 
   return (
     <div className="dropdown is-active">
@@ -29,12 +41,9 @@ export const Autocomplete: React.FC<Props> = ({
           placeholder="Enter a part of the name"
           className="input"
           value={query}
-          onChange={queryChange}
+          onChange={handleQueryChange}
           onFocus={() => setFocused(true)}
-          onBlur={() => {
-            setFocused(false);
-            resetField();
-          }}
+          onBlur={() => setFocused(false)}
         />
       </div>
 
@@ -43,15 +52,13 @@ export const Autocomplete: React.FC<Props> = ({
           <div className="dropdown-content">
             {people.length ? (
               people.map(person => (
-                <div
+                <a
+                  href="/"
                   role="menu"
                   tabIndex={0}
                   key={person.slug}
                   className="dropdown-item"
-                  onMouseDown={() => {
-                    setSelectedPerson(person);
-                    resetField();
-                  }}
+                  onMouseDown={onMouseDownHandler(person)}
                 >
                   <p className={cn('has-text-link', {
                     'has-text-danger': person.sex === 'f',
@@ -59,7 +66,7 @@ export const Autocomplete: React.FC<Props> = ({
                   >
                     {person.name}
                   </p>
-                </div>
+                </a>
               ))
             ) : (
               <div className="dropdown-item">
