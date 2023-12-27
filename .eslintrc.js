@@ -9,4 +9,10 @@ module.exports = {
       assert: "either",
     }],
   },
+  "rules": {
+    "import/no-extraneous-dependencies": [
+      "error",
+      { "devDependencies": true }
+    ]
+  },
 };
