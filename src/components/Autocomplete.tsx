@@ -23,7 +23,7 @@ function debounce(callback: any, delay: number) {
 
 type Props = {
   people: Person[];
-  onSelect?: (person: Person) => void;
+  onSelect?: (person: Person | null) => void;
   delay: number;
 };
 
@@ -52,6 +52,16 @@ export const Autocomplete: React.FC<Props> = React.memo(
       applyQuery(event.target.value);
     };
 
+    const handleOnBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+      const element = event.relatedTarget;
+
+      if (element && element.className === 'dropdown-item') {
+        return;
+      }
+
+      setIsDropdownOpen(false);
+    };
+
     const filteredPeople = useMemo(() => {
       if (!query) {
         return people;
@@ -76,6 +86,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
             value={query}
             onChange={handleQueryChange}
             onFocus={() => setIsDropdownOpen(true)}
+            onBlur={handleOnBlur}
           />
         </div>
 
@@ -89,6 +100,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
                   key={person.slug}
                   onClick={() => {
                     onSelect(person);
+                    setQuery(person.name);
                     setIsDropdownOpen(false);
                   }}
                   onKeyDown={() => {}}
