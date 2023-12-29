@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import React, {
-  useCallback,
   useMemo,
   useState,
 } from 'react';
@@ -38,13 +37,11 @@ export const Autocomplete: React.FC<Props> = React.memo(
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [appliedQuery, setAppliedQuery] = useState('');
 
-    const applyQuery = useCallback(() => debounce(
-      setAppliedQuery, delay,
-    ), [setAppliedQuery, delay]);
+    const applyQuery = debounce(setAppliedQuery, delay);
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
-      applyQuery()(event.target.value);
+      applyQuery(event.target.value);
     };
 
     const filteredPeople = useMemo(() => {
