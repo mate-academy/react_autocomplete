@@ -9,7 +9,8 @@ import React, {
 
 import { Person } from '../types/Person';
 
-function debounce(callback: any, delay: number) {
+// eslint-disable-next-line @typescript-eslint/ban-types
+function debounce(callback: Function, delay: number) {
   let timerId = 0;
 
   return (...args: any) => {
@@ -37,7 +38,13 @@ export const Autocomplete: React.FC<Props> = React.memo(
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [appliedQuery, setApliedQuery] = useState('');
 
-    const applyQuery = useCallback(debounce(setApliedQuery, delay), []);
+    const isLoading = query !== appliedQuery;
+
+    console.log(isLoading);
+
+    const applyQuery = useCallback(() => debounce(
+      setApliedQuery, delay,
+    ), [setApliedQuery, delay]);
 
     const personField = useRef<HTMLInputElement>(null);
 
@@ -49,7 +56,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
-      applyQuery(event.target.value);
+      applyQuery();
     };
 
     const handleOnBlur = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -90,7 +97,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
           />
         </div>
 
-        {isDropdownOpen && (
+    
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
 
