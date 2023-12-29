@@ -24,8 +24,10 @@ function debounce(callback: Function, delay: number) {
 
 type Props = {
   people: Person[];
-  onSelect?: (person: Person | null) => void;
+  // onSelect?: (person: Person | null) => void;
+  onSelect: React.Dispatch<React.SetStateAction<Person | null>>;
   delay: number;
+  selectedPerson: (person: Person | null) => void;
 };
 
 export const Autocomplete: React.FC<Props> = React.memo(
@@ -33,6 +35,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
     people,
     onSelect = () => {},
     delay,
+    selectedPerson,
   }) => {
     const [query, setQuery] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -56,21 +59,21 @@ export const Autocomplete: React.FC<Props> = React.memo(
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
-      applyQuery();
+      applyQuery()(event.target.value);
     };
 
-    const handleOnBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-      const element = event.relatedTarget;
+    // const handleOnBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    //   const element = event.relatedTarget;
 
-      if (element && element.className === 'dropdown-item') {
-        return;
-      }
+    //   if (element && element.className === 'dropdown-item') {
+    //     return;
+    //   }
 
-      setIsDropdownOpen(false);
-    };
+    //   setIsDropdownOpen(false);
+    // };
 
     const filteredPeople = useMemo(() => {
-      if (!query) {
+      if (!query || query === selectedPerson?.name) {
         return people;
       }
 
@@ -93,7 +96,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
             value={query}
             onChange={handleQueryChange}
             onFocus={() => setIsDropdownOpen(true)}
-            onBlur={handleOnBlur}
+            onBlur={() => setIsDropdownOpen(false)}
           />
         </div>
 
@@ -105,7 +108,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
                 <div
                   className="dropdown-item"
                   key={person.slug}
-                  onClick={() => {
+                  onMouseDown={() => {
                     onSelect(person);
                     setQuery(person.name);
                     setIsDropdownOpen(false);
