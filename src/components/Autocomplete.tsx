@@ -40,7 +40,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
 
     const isLoading = query !== appliedQuery;
 
-    console.log(isLoading);
+    // console.log(isLoading);
 
     const applyQuery = useCallback(() => debounce(
       setApliedQuery, delay,
