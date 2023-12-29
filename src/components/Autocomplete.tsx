@@ -97,7 +97,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
           />
         </div>
 
-    
+        {isDropdownOpen && !isLoading && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
 
