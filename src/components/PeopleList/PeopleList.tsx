@@ -6,7 +6,6 @@ import { PeopleInfo } from '../PeopleInfo/PeopleInfo';
 type Props = {
   people: Person[];
   onSelect: (
-    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
     person: Person
   ) => void;
 };

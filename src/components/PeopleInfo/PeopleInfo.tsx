@@ -5,8 +5,7 @@ import { Person } from '../../types/Person';
 
 type Props = {
   person: Person;
-  onSelect?: (
-    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  onSelect: (
     person: Person
   ) => void;
 };
@@ -22,7 +21,8 @@ export const PeopleInfo: React.FC<Props> = ({
       <a
         href="/"
         onClick={(event) => {
-          onSelect(event, person);
+          event.preventDefault();
+          onSelect(person);
         }}
       >
         <p className={cn(sex === 'm' ? 'has-text-link' : 'has-text-danger')}>

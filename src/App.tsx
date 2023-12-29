@@ -39,10 +39,8 @@ export const App: React.FC = () => {
 
   const handlePersonSelection = useCallback(
     (
-      event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
       person: Person,
     ) => {
-      event.preventDefault();
       setSelectedPerson(person);
       setQuery(person.name);
       setAppliedQuery(person.name);
