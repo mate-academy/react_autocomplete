@@ -1,9 +1,7 @@
 import classNames from 'classnames';
 import React, {
   useCallback,
-  useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 
@@ -24,10 +22,9 @@ function debounce(callback: Function, delay: number) {
 
 type Props = {
   people: Person[];
-  // onSelect?: (person: Person | null) => void;
-  onSelect: React.Dispatch<React.SetStateAction<Person | null>>;
+  onSelect?: React.Dispatch<React.SetStateAction<Person | null>>;
   delay: number;
-  selectedPerson: (person: Person | null) => void;
+  selectedPerson: Person | null;
 };
 
 export const Autocomplete: React.FC<Props> = React.memo(
@@ -39,38 +36,16 @@ export const Autocomplete: React.FC<Props> = React.memo(
   }) => {
     const [query, setQuery] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [appliedQuery, setApliedQuery] = useState('');
-
-    const isLoading = query !== appliedQuery;
-
-    // console.log(isLoading);
+    const [appliedQuery, setAppliedQuery] = useState('');
 
     const applyQuery = useCallback(() => debounce(
-      setApliedQuery, delay,
-    ), [setApliedQuery, delay]);
-
-    const personField = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-      if (personField.current) {
-        personField.current.focus();
-      }
-    }, []);
+      setAppliedQuery, delay,
+    ), [setAppliedQuery, delay]);
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
       applyQuery()(event.target.value);
     };
-
-    // const handleOnBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    //   const element = event.relatedTarget;
-
-    //   if (element && element.className === 'dropdown-item') {
-    //     return;
-    //   }
-
-    //   setIsDropdownOpen(false);
-    // };
 
     const filteredPeople = useMemo(() => {
       if (!query || query === selectedPerson?.name) {
@@ -84,7 +59,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
           );
         },
       );
-    }, [appliedQuery, query, people]);
+    }, [appliedQuery, query, people, selectedPerson?.name]);
 
     return (
       <div className="dropdown is-active">
@@ -100,7 +75,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
           />
         </div>
 
-        {isDropdownOpen && !isLoading && (
+        {isDropdownOpen && (
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
 
@@ -116,7 +91,6 @@ export const Autocomplete: React.FC<Props> = React.memo(
                   onKeyDown={() => {}}
                   role="button"
                   tabIndex={0}
-                  ref={personField}
                 >
                   <p
                     className={classNames({
