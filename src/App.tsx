@@ -5,7 +5,7 @@ import { Dropdown } from './components/Dropdown';
 import { peopleFromServer } from './data/people';
 
 interface AppProps {
-  debounceDelay: number;
+  debounceDelay?: number;
 }
 
 export const App: React.FC<AppProps> = ({ debounceDelay = 1000 }) => {
