@@ -13,7 +13,6 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 1000 }) => {
 
   const handleSelectedPerson = (selectedPerson: Person) => {
     setActivePerson(selectedPerson);
-    // Additional logic if needed when a person is selected
   };
 
   return (

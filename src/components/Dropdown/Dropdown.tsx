@@ -64,7 +64,10 @@ export const Dropdown: React.FC<DropdownProps> = ({
           placeholder="Enter a part of the name"
           className="input"
           value={query}
-          onChange={handleQueryChange}
+          onChange={(event) => {
+            handleQueryChange(event);
+            handleInputFocus();
+          }}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
         />
