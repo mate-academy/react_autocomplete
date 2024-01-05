@@ -33,16 +33,10 @@ export const Autocomplete: React.FC<AutocompleteProps> = React.memo((
   );
 
   const queryPerson = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchName = event.target.value;
+    const searchName = event.currentTarget.value;
 
     setName(searchName);
     debouncedFilterPeople(searchName);
-    setCallDropdown(false);
-  };
-
-  const onCut = () => {
-    setName('');
-    debouncedFilterPeople('');
     setCallDropdown(false);
   };
 
@@ -85,7 +79,6 @@ export const Autocomplete: React.FC<AutocompleteProps> = React.memo((
           onKeyDown={() => {}}
           onChange={queryPerson}
           onClick={handleDropdown}
-          onCut={onCut}
         />
       </div>
 
