@@ -1,0 +1,14 @@
+.dropdown {
+  &-menu {
+    width: 100%;
+  }
+
+  &-content {
+    max-height: 300px;
+    overflow: auto;
+  }
+
+  &-item {
+    cursor: pointer;
+  }
+}
