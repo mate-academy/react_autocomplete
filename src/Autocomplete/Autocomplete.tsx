@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import cn from 'classnames';
 import './Autocomplete.scss';
 
@@ -8,14 +8,19 @@ import { Person } from '../types/Person';
 type Props = {
   query: string;
   isFocus: boolean,
-  onSelect: (name: string) => void
+  onSelect: (person: Person) => void
 };
 
 export const Autocomplete: React.FC<Props> = React.memo(({
-  // query,
+  query,
   isFocus,
   onSelect,
 }) => {
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer
+      .filter((el: Person) => el.name.includes(query));
+  }, [query]);
+
   return (
     <div className={cn('dropdown', {
       'is-active': isFocus,
@@ -27,14 +32,14 @@ export const Autocomplete: React.FC<Props> = React.memo(({
         role="menu"
       >
         <div className="dropdown-content">
-          {peopleFromServer.map((el: Person) => (
+          {filteredPeople.map((person: Person) => (
             <button
               type="button"
               className="dropdown-item"
-              key={el.slug}
-              onClick={() => onSelect(el.name)}
+              key={person.slug}
+              onClick={() => onSelect(person)}
             >
-              {el.name}
+              {person.name}
             </button>
           ))}
         </div>
