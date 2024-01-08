@@ -12,7 +12,7 @@ import { peopleFromServer } from '../data/people';
 import { Person } from '../types/Person';
 
 type Props = {
-  onSelect: (person: Person) => void,
+  onSelect: (person: Person | null) => void,
   delay: number,
 };
 
@@ -24,6 +24,7 @@ export const Autocomplete: React.FC<Props> = React.memo(({
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isFocus, setIsFocus] = useState(false);
   const [isSuggestion, setIsSuggestion] = useState(true);
+
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
   const filteredPeople = useMemo(() => {
@@ -47,6 +48,7 @@ export const Autocomplete: React.FC<Props> = React.memo(({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    onSelect(null);
   };
 
   useEffect(() => {

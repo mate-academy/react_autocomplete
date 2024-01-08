@@ -8,13 +8,13 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {person ? (
-        <h1 className="title">
-          {`${person.name} (${person.born} = ${person.died})`}
-        </h1>
-      ) : (
-        <p className="title">No selected person</p>
-      )}
+      <h1 className="title">
+        {
+          person
+            ? `${person.name} (${person.born} = ${person.died})`
+            : <p className="title">No selected person</p>
+        }
+      </h1>
 
       <Autocomplete
         delay={1000}
