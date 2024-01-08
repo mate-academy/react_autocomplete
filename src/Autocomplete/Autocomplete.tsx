@@ -29,13 +29,12 @@ export const Autocomplete: React.FC<Props> = React.memo(({
 
   const filteredPeople = useMemo(() => {
     const list = peopleFromServer
-      .filter((el: Person) => el.name.includes(appliedQuery));
+      .filter((el: Person) => {
+        return el.name.toLocaleLowerCase().includes(appliedQuery.toLowerCase());
+      });
 
     setIsSuggestion(!!list.length);
-
-    if (!isSuggestion) {
-      setIsFocus(false);
-    }
+    setIsFocus(isSuggestion);
 
     return list;
   }, [appliedQuery, isSuggestion]);
@@ -48,7 +47,6 @@ export const Autocomplete: React.FC<Props> = React.memo(({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
-    onSelect(null);
   };
 
   useEffect(() => {
