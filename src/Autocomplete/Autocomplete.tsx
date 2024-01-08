@@ -32,8 +32,12 @@ export const Autocomplete: React.FC<Props> = React.memo(({
 
     setIsSuggestion(!!list.length);
 
+    if (!isSuggestion) {
+      setIsFocus(false);
+    }
+
     return list;
-  }, [appliedQuery]);
+  }, [appliedQuery, isSuggestion]);
 
   const handleSelectPerson = useCallback((selectedPerson: Person) => {
     onSelect(selectedPerson);
