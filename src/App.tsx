@@ -11,7 +11,7 @@ export const App: React.FC = () => {
     setSelectedPerson(person);
   };
 
-  const HeaderText = selectedPerson
+  const headerText = selectedPerson
     ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
     : 'No selected person';
 
@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {HeaderText}
+        {headerText}
       </h1>
 
       <Autocomplete
