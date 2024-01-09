@@ -22,7 +22,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const applyQuery = useMemo(() => debounce(setAppliedQuery, 1000), []);
 
   const initialPerson: Person[] = peopleFromServer.map((person, index) => ({
@@ -33,7 +33,9 @@ export const App: React.FC = () => {
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
-    setIsVisible(false);
+    if (event.target.value.length === 0) {
+      setIsVisible(false);
+    }
   };
 
   const handleSelectSuggestion = (selectedName: string) => {
@@ -60,10 +62,13 @@ export const App: React.FC = () => {
     );
   }, [query, appliedQuery, initialPerson]);
 
-  const titleText = (selectedPerson === null && !appliedQuery)
-    || filteredPeople.length === 0
+  const titleText = (!appliedQuery)
     ? 'No selected person'
     : `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`;
+
+  const handleInputFocus = () => {
+    setIsVisible(false);
+  };
 
   return (
     <main className="section">
@@ -77,6 +82,7 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            onFocus={handleInputFocus}
             onChange={handleQueryChange}
             value={query}
           />
@@ -86,11 +92,12 @@ export const App: React.FC = () => {
         </div>
 
         <div className="dropdown-menu" role="menu">
-          {filteredPeople.length === 0 && query ? null : (
+          {filteredPeople.length === 0 && !query ? null : (
             <div className={`dropdown-content ${isVisible ? 'visible' : ''}`}>
               <PeopleList
                 people={filteredPeople}
                 onSelect={handleSelectSuggestion}
+                visible={isVisible}
               />
             </div>
           )}
