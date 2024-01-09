@@ -1,21 +1,28 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
+import classNames from 'classnames';
 
 import { peopleFromServer } from './data/people';
 
 import './App.scss';
-// import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [change, setChange] = useState('');
-
-  const { name, born, died } = peopleFromServer[0];
   const [appliedValue, setAppliedValue] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState({
+    name: '',
+    born: '',
+    died: '',
+  });
   const [isDropdownActive, setIsDropdownActive] = useState(false);
+  const { name, born, died } = selectedPerson || {};
 
-  const handleDebouncedChange = useCallback(debounce((inputValue: string) => {
-    setAppliedValue(inputValue);
-  }, 1000), []);
+  const handleDebouncedChange = useCallback(
+    debounce((inputValue: string) => {
+      setAppliedValue(inputValue);
+    }, 1000),
+    [],
+  );
 
   const handleInputFocus = () => {
     setIsDropdownActive(true);
@@ -34,21 +41,28 @@ export const App: React.FC = () => {
 
   const filterPerson = useMemo(() => {
     return peopleFromServer.filter(perso => perso.name
-      .toLowerCase().includes(appliedValue.toLowerCase()));
+      .toLowerCase().includes(appliedValue.toLowerCase().trim()));
   }, [appliedValue]);
 
-  const handleClick = useCallback((persName: string) => {
-    setChange(persName);
+  const handleClick = useCallback((persName) => {
+    setChange(persName.name);
+    setSelectedPerson(persName);
     setIsDropdownActive(false);
   }, []);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {name ? (
+          `${name} (${born} = ${died})`
+        ) : (
+          'No selected person'
+        )}
       </h1>
 
-      <div className={`dropdown ${isDropdownActive ? 'is-active' : ''}`}>
+      <div className={classNames('dropdown', {
+        'is-active': isDropdownActive,
+      })}>
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -66,23 +80,24 @@ export const App: React.FC = () => {
             {filterPerson.length ? (
               filterPerson.map(pers => (
                 <div
-                  style={{ cursor: 'pointer' }}
                   className="dropdown-item"
                   key={pers.name}
-                  role="button"
-                  onClick={() => handleClick(pers.name)}
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleClick(pers.name);
-                    }
-                  }}
                 >
-                  <p
-                    className="has-text-link"
+                  <button
+                    style={{
+                      border: 'none',
+                      backgroundColor: 'white',
+                      cursor: 'pointer',
+                    }}
+                    type="button"
+                    onMouseDown={() => handleClick(pers)}
                   >
-                    {pers.name}
-                  </p>
+                    <p
+                      className="has-text-link"
+                    >
+                      {pers.name}
+                    </p>
+                  </button>
                 </div>
               ))
             ) : (
@@ -93,6 +108,6 @@ export const App: React.FC = () => {
           </div>
         </div>
       </div>
-    </main>
+    </main >
   );
 };
