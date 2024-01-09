@@ -11,8 +11,12 @@ export const App: React.FC = () => {
     setSelectedPerson(person);
   };
 
+  const HeaderText = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+    : 'No selected person';
+
   useEffect(() => {
-    if (selectedPerson === null) {
+    if (!selectedPerson) {
       handleSelectedPerson(null);
     }
   }, [selectedPerson]);
@@ -20,11 +24,7 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson ? (
-          `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
-        ) : (
-          'No selected person'
-        )}
+        {HeaderText}
       </h1>
 
       <Autocomplete

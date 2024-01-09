@@ -71,7 +71,7 @@ export const Autocomplete: React.FC<Props> = ({
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {filteredPeople.length >= 1 ? (
+          {filteredPeople.length ? (
             filteredPeople.map(person => (
               <a
                 className="dropdown-item"
