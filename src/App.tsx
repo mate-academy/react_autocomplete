@@ -1,57 +1,54 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
+import debounce from 'lodash/debounce';
 import { peopleFromServer } from './data/people';
+import { AppContext } from './AppContext';
+import { People } from './components/People';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [, setPeople] = useState(peopleFromServer);
+  const [personName, setPersonName] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState('No Person is selected');
+
+  const [applyQuery, setApplyQuery] = useState('');
+
+  const appliedQuery = useCallback(
+    (value) => debounce(setApplyQuery, 1000)(value),
+    [],
+  );
+
+  const filterPeople = useMemo(() => {
+    return peopleFromServer.filter(
+      person => person.name.toLowerCase().includes(applyQuery.trim()
+        .toLowerCase()),
+    );
+  }, [applyQuery]);
+
+  const handleClick = useCallback(
+    (person: string) => {
+      setPeople([]);
+      setPersonName('');
+      setSelectedPerson(person);
+    }, [],
+  );
+
+  const context = {
+    personName,
+    setPersonName,
+    appliedQuery,
+    filterPeople,
+    handleClick,
+  };
 
   return (
-    <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+    <AppContext.Provider value={context}>
+      <main className="section">
+        <h1 className="title">
+          {selectedPerson}
+        </h1>
 
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
+        <People />
+      </main>
+    </AppContext.Provider>
   );
 };
