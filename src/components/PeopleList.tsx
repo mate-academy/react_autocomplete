@@ -3,24 +3,24 @@ import React from 'react';
 import { Person } from '../types/Person';
 
 type Props = {
-  posts: Person[];
+  people: Person[];
   onSelect: (selectedName: string) => void;
 };
 
 export const PeopleList: React.FC<Props> = React.memo(
-  ({ posts, onSelect }) => {
+  ({ people, onSelect }) => {
     return (
       <div className="dropdown-item">
         <ul>
-          {posts.map(post => (
+          {people.map(person => (
             <li
-              key={post.id}
+              key={person.id}
               className="has-text-link"
               onClick={() => {
-                onSelect(post.name);
+                onSelect(person.name);
               }}
             >
-              {post.name}
+              {person.name}
             </li>
           ))}
         </ul>

@@ -51,22 +51,19 @@ export const App: React.FC = () => {
 
   const filteredPeople = useMemo(() => {
     if (!query) {
-      return peopleFromServer;
+      return initialPerson;
     }
 
-    return peopleFromServer.filter(
+    return initialPerson.filter(
       (person) => person.name.toLowerCase()
         .includes(appliedQuery.toLowerCase()),
     );
-  }, [query, appliedQuery]);
+  }, [query, appliedQuery, initialPerson]);
 
-  let titleText = '';
-
-  if (selectedPerson === null && !appliedQuery) {
-    titleText = 'No selected person';
-  } else if (selectedPerson) {
-    titleText = `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`;
-  }
+  const titleText = (selectedPerson === null && !appliedQuery)
+    || filteredPeople.length === 0
+    ? 'No selected person'
+    : `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`;
 
   return (
     <main className="section">
@@ -92,7 +89,7 @@ export const App: React.FC = () => {
           {filteredPeople.length === 0 && query ? null : (
             <div className={`dropdown-content ${isVisible ? 'visible' : ''}`}>
               <PeopleList
-                posts={initialPerson}
+                people={filteredPeople}
                 onSelect={handleSelectSuggestion}
               />
             </div>
