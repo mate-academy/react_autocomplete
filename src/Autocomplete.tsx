@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import cn from 'classnames';
 import debounce from 'lodash.debounce';
 
@@ -9,17 +8,20 @@ interface Props {
   people: Person[]
   delay?: number
   onSelected: (value: Person | null) => void
+  clearSelected: boolean;
 }
 
 export const Autocomplete: React.FC<Props> = ({
   people,
   delay,
   onSelected,
+  clearSelected,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce((value: string) => {
     setAppliedQuery(value);
     setIsDropdownOpen(true);
@@ -45,6 +47,10 @@ export const Autocomplete: React.FC<Props> = ({
     applyQuery(event.target.value);
     onSelected(null);
   };
+
+  if (clearSelected) {
+    onSelected(null);
+  }
 
   return (
     <div className={cn('dropdown', {
