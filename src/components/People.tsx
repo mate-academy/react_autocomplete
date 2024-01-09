@@ -12,8 +12,8 @@ export const People = React.memo(
       handleClick,
     } = useContext(AppContext);
 
-    const handleInputChange = (event: { target: { value: string; }; }) => {
-      const trimmedValue = event.target.value.trim();
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const trimmedValue = event.target.value;
 
       setPersonName(trimmedValue);
       appliedQuery(trimmedValue);
