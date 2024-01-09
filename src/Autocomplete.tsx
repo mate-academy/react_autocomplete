@@ -8,14 +8,12 @@ interface Props {
   people: Person[]
   delay?: number
   onSelected: (value: Person | null) => void
-  clearSelected: boolean;
 }
 
 export const Autocomplete: React.FC<Props> = ({
   people,
   delay,
   onSelected,
-  clearSelected,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -47,10 +45,6 @@ export const Autocomplete: React.FC<Props> = ({
     applyQuery(event.target.value);
     onSelected(null);
   };
-
-  if (clearSelected) {
-    onSelected(null);
-  }
 
   return (
     <div className={cn('dropdown', {

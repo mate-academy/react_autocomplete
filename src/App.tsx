@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Autocomplete } from './Autocomplete';
@@ -15,12 +15,6 @@ export const App: React.FC = () => {
     ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
     : 'No selected person';
 
-  useEffect(() => {
-    if (!selectedPerson) {
-      handleSelectedPerson(null);
-    }
-  }, [selectedPerson]);
-
   return (
     <main className="section">
       <h1 className="title">
@@ -31,7 +25,6 @@ export const App: React.FC = () => {
         people={peopleFromServer}
         delay={1000}
         onSelected={handleSelectedPerson}
-        clearSelected={false}
       />
     </main>
   );
