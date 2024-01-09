@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import debounce from 'lodash.debounce';
 import cn from 'classnames';
-
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
