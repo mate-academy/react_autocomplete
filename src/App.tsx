@@ -12,6 +12,7 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isfocused, setIsfocused] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person>();
+  const [isListVisible, setIsListVisible] = useState(true);
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer
@@ -21,10 +22,15 @@ export const App: React.FC = () => {
   }, [appliedQuery]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+  const applyQuery = useCallback(debounce((value) => {
+    setAppliedQuery(value);
+    setIsListVisible(true);
+  }, 1000),
+  []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
+    setIsListVisible(false);
     applyQuery(event.target.value);
   };
 
@@ -69,24 +75,26 @@ export const App: React.FC = () => {
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {filteredPeople.length > 0
-              ? (filteredPeople.map(person => (
-                <div
-                  className="dropdown-item"
-                  key={person.name}
-                  onMouseDown={() => handleClick(person.name)}
-                  onKeyDown={(event) => handleMouseDown(event, person.name)}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <p className="has-text-link">{person.name}</p>
-                </div>
-              )))
-              : (
-                <div className="dropdown-item">
-                  <p>No matching suggestions</p>
-                </div>
-              )}
+
+            {isListVisible && (
+              filteredPeople.length > 0
+                ? (filteredPeople.map(person => (
+                  <div
+                    className="dropdown-item"
+                    key={person.name}
+                    onMouseDown={() => handleClick(person.name)}
+                    onKeyDown={(event) => handleMouseDown(event, person.name)}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <p className="has-text-link">{person.name}</p>
+                  </div>
+                )))
+                : (
+                  <div className="dropdown-item">
+                    <p>No matching suggestions</p>
+                  </div>
+                ))}
           </div>
         </div>
       </div>
