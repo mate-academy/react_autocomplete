@@ -35,6 +35,7 @@ export const App: React.FC = () => {
 
   const handleClick = (name: string) => {
     setQuery('');
+    setAppliedQuery('');
 
     const filterdPerson: Person | undefined
       = peopleFromServer.find(person => person.name === name);
