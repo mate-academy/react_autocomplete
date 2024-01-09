@@ -7,7 +7,6 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  // const { name, born, died } = peopleFromServer[0];
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isfocused, setIsfocused] = useState(false);
@@ -35,7 +34,7 @@ export const App: React.FC = () => {
   };
 
   const handleClick = (name: string) => {
-    setQuery(name);
+    setQuery('');
 
     const filterdPerson: Person | undefined
       = peopleFromServer.find(person => person.name === name);
@@ -52,14 +51,11 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {selectedPerson
-        ? (
-          <h1 className="title">
-            {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
-          </h1>
-        )
-        : (<h1 className="title">No selected person</h1>)}
-
+      <h1 className="title">
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+          : 'No selected person'}
+      </h1>
       <div className={cn('dropdown', { 'is-active': isfocused })}>
         <div className="dropdown-trigger">
           <input
@@ -74,28 +70,31 @@ export const App: React.FC = () => {
         </div>
 
         <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
+          <ul className="dropdown-content">
 
             {isListVisible && (
               filteredPeople.length > 0
                 ? (filteredPeople.map(person => (
-                  <div
+                  <li
                     className="dropdown-item"
                     key={person.name}
-                    onMouseDown={() => handleClick(person.name)}
-                    onKeyDown={(event) => handleMouseDown(event, person.name)}
-                    role="button"
-                    tabIndex={0}
                   >
-                    <p className="has-text-link">{person.name}</p>
-                  </div>
+                    <div
+                      onMouseDown={() => handleClick(person.name)}
+                      onKeyDown={(event) => handleMouseDown(event, person.name)}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <p className="has-text-link">{person.name}</p>
+                    </div>
+                  </li>
                 )))
                 : (
-                  <div className="dropdown-item">
+                  <li className="dropdown-item">
                     <p>No matching suggestions</p>
-                  </div>
+                  </li>
                 ))}
-          </div>
+          </ul>
         </div>
       </div>
     </main>
