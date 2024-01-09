@@ -12,6 +12,13 @@ export const People = React.memo(
       handleClick,
     } = useContext(AppContext);
 
+    const handleInputChange = (event: { target: { value: string; }; }) => {
+      const trimmedValue = event.target.value.trim();
+
+      setPersonName(trimmedValue);
+      appliedQuery(trimmedValue);
+    };
+
     return (
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
@@ -20,10 +27,7 @@ export const People = React.memo(
             placeholder="Enter a part of the name"
             className="input"
             value={personName}
-            onChange={(event) => {
-              setPersonName(event.target.value);
-              appliedQuery(event.target.value);
-            }}
+            onChange={handleInputChange}
           />
         </div>
 

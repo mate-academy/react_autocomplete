@@ -6,7 +6,7 @@ import { AppContext } from './AppContext';
 import { People } from './components/People';
 
 export const App: React.FC = () => {
-  const [people, setPeople] = useState(peopleFromServer);
+  const [, setPeople] = useState(peopleFromServer);
   const [personName, setPersonName] = useState('');
   const [selectedPerson, setSelectedPerson] = useState('No Person is selected');
 
@@ -21,7 +21,7 @@ export const App: React.FC = () => {
     return peopleFromServer.filter(
       person => person.name.toLowerCase().includes(applyQuery.toLowerCase()),
     );
-  }, [people, applyQuery]);
+  }, [applyQuery]);
 
   const handleClick = useCallback(
     (person: string) => {
