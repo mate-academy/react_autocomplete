@@ -48,7 +48,7 @@ export const App: React.FC = () => {
     setAppliedQuery(selectedName);
     setTimeout(() => {
       setIsVisible(true);
-    }, 1000);
+    }, 400);
   };
 
   const filteredPeople = useMemo(() => {
