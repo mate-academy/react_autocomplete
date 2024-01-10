@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './App.scss';
 import { Person } from './types/Person';
 import { peopleFromServer } from './data/people';
@@ -22,27 +22,28 @@ function debounce(setAppliedQuerry: any,
 }
 
 export const App: React.FC = () => {
-  const [people] = useState(peopleWithId);
+  const [people, setPeople] = useState(peopleWithId);
   const [querry, setQuery] = useState('');
   const [message, setMessage] = useState(false);
   const [appliedQuerry, setAppliedQuerry] = useState('');
   const [appliedMessage, setAppliedMessage] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const filteredPeople = useMemo(() => {
-    return people.filter(person => person.name
-      .includes(appliedQuerry) && appliedQuerry);
-  }, [appliedQuerry, appliedMessage, people]);
+  useEffect(() => {
+    setPeople(peopleWithId.filter(person => person.name
+      .includes(appliedQuerry)));
+  }, [appliedQuerry]);
 
   const applyQuerry = useCallback(debounce(setAppliedQuerry,
     setAppliedMessage, 1000), []);
 
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAppliedQuerry('');
-    setAppliedMessage(false);
-    setMessage(filteredPeople.length === 0);
-    setQuery(e.target.value);
-    applyQuerry(querry, message);
+    const newQuerry = e.target.value;
+
+    setMessage(people.length === 0);
+    setQuery(newQuerry);
+    applyQuerry(newQuerry, message);
   };
 
   const handleSelectedPerson = (e: React.MouseEvent<HTMLAnchorElement>,
@@ -50,6 +51,10 @@ export const App: React.FC = () => {
     e.preventDefault();
     setQuery(person.name);
     setSelectedPerson(person);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => setIsFocused(false), 200);
   };
 
   return (
@@ -61,38 +66,25 @@ export const App: React.FC = () => {
       </h1>
 
       <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-            value={querry}
-            onChange={handleQuery}
-          />
-        </div>
-      </div>
-
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger">
-
-          <button
-            type="button"
-            className="button"
-            aria-haspopup="true"
-            aria-controls="dropdown-menu"
-          >
-            <span>Dropdown button</span>
-            <span className="icon is-small">
-              <i className="fas fa-angle-down" aria-hidden="true" />
-            </span>
-          </button>
+        <div className="dropdown is-active">
+          <div className="dropdown-trigger">
+            <input
+              type="text"
+              placeholder="Enter a part of the name"
+              className="input"
+              value={querry}
+              onChange={handleQuery}
+              onFocus={() => setIsFocused(true)}
+              onBlur={handleBlur}
+            />
+          </div>
         </div>
 
         <div className="dropdown-menu" id="dropdown-menu" role="menu">
           <div className="dropdown-content">
             {appliedMessage && <div> No matching suggestions </div>}
-            {querry && appliedQuerry && !appliedMessage
-              && filteredPeople.map((person) => (
+            {!appliedMessage && isFocused
+              && people.map((person) => (
                 <a
                   href="#select"
                   className="dropdown-item"
