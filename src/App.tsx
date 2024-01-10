@@ -36,6 +36,11 @@ export const App: React.FC = () => {
     const inputValue = event.target.value;
 
     setChange(inputValue);
+    setSelectedPerson({
+      name: '',
+      born: '',
+      died: '',
+    });
     handleDebouncedChange(inputValue);
   };
 
@@ -62,7 +67,8 @@ export const App: React.FC = () => {
 
       <div className={classNames('dropdown', {
         'is-active': isDropdownActive,
-      })}>
+      })}
+      >
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -108,6 +114,6 @@ export const App: React.FC = () => {
           </div>
         </div>
       </div>
-    </main >
+    </main>
   );
 };
