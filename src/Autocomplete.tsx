@@ -67,30 +67,31 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
           onClick={() => setSuggestionsList(peopleFromServer)}
         />
       </div>
-
-      <div className="dropdown-menu" role="menu">
-        <div className="dropdown-content">
-          {query && !filteredInputs ? (
-            <div className="dropdown-item">No matching suggestions</div>
-          ) : (
-            filteredInputs.map((person) => (
-              <div
-                role="button"
-                tabIndex={0}
-                className="dropdown-item"
-                key={person.name}
-                onClick={() => handlePersonSelect(person)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handlePersonSelect(person);
-                  }
-                }}
-              >
-                <p className="has-text-link">{person.name}</p>
-              </div>
-            )))}
+      {suggestionsList.length > 0 && (
+        <div className="dropdown-menu" role="menu">
+          <div className="dropdown-content">
+            {query && !filteredInputs ? (
+              <div className="dropdown-item">No matching suggestions</div>
+            ) : (
+              filteredInputs.map((person) => (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="dropdown-item"
+                  key={person.name}
+                  onClick={() => handlePersonSelect(person)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handlePersonSelect(person);
+                    }
+                  }}
+                >
+                  <p className="has-text-link">{person.name}</p>
+                </div>
+              )))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
