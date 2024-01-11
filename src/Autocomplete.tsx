@@ -22,6 +22,7 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [suggestionsList, setSuggestionsList] = useState<Person[]>([]);
+  const [dropdownActive, setDropdownActive] = useState(false);
   /* eslint-disable-next-line */
   const suggestList = useCallback(
     debounce((value: string) => {
@@ -33,6 +34,8 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
           .filter((person) => person.name.toLowerCase()
             .includes(value.toLowerCase())));
       }
+
+      setDropdownActive(true);
     }, delay), [delay, setAppliedQuery, setSuggestionsList],
   );
 
@@ -42,19 +45,26 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
     );
   }, [appliedQuery, suggestionsList]);
 
+  const handleInputBlur = () => {
+    setTimeout(() => {
+      setDropdownActive(false);
+    }, 200);
+  };
+
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
+    setDropdownActive(false);
     suggestList(event.target.value);
   };
 
   const handlePersonSelect = (selectedPerson: Person) => {
     setQuery(selectedPerson.name);
     onSelected(selectedPerson);
-    setSuggestionsList([]);
+    setDropdownActive(false);
   };
 
   return (
-    <div className="dropdown is-active">
+    <div className={`dropdown ${dropdownActive ? 'is-active' : ''}`}>
       <div className="dropdown-trigger">
         <label htmlFor="people-list"> </label>
         <input
@@ -64,10 +74,16 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelected }) => {
           className="input"
           value={query}
           onChange={handleQueryChange}
-          onClick={() => setSuggestionsList(peopleFromServer)}
+          onClick={() => {
+            setSuggestionsList(peopleFromServer);
+          }}
+          onFocus={() => {
+            setDropdownActive(true);
+          }}
+          onBlur={handleInputBlur}
         />
       </div>
-      {suggestionsList.length > 0 && (
+      {dropdownActive && suggestionsList.length > 0 && (
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
             {query && !filteredInputs ? (
