@@ -62,7 +62,7 @@ export const App: React.FC = () => {
     );
   }, [query, appliedQuery, initialPerson]);
 
-  const titleText = (!appliedQuery)
+  const titleText = (!selectedPerson)
     ? 'No selected person'
     : `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`;
 

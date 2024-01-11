@@ -1,6 +1,6 @@
 import React from 'react';
-import { Person } from '../types/Person';
 import cn from 'classnames';
+import { Person } from '../types/Person';
 
 type Props = {
   people: Person[];
@@ -26,7 +26,7 @@ export const PeopleList: React.FC<Props> = React.memo(
               onClick={() => {
                 onSelect(person.name);
               }}
-              role='presentation'
+              role="presentation"
             >
               {person.name}
             </li>
