@@ -1,12 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback, useEffect, useMemo, useRef, useState,
+} from 'react';
 import './App.scss';
+
 import { Person } from './types/Person';
 import { peopleFromServer } from './data/people';
-
-const peopleWithId = peopleFromServer.map((person, id) => ({
-  ...person,
-  id,
-}));
 
 function debounce(setAppliedQuerry: any,
   setAppliedMessage: any, delay: number) {
@@ -22,6 +20,12 @@ function debounce(setAppliedQuerry: any,
 }
 
 export const App: React.FC = () => {
+  const peopleWithId = useMemo(() => {
+    return peopleFromServer.map((person, id) => {
+      return { ...person, id };
+    });
+  }, [peopleFromServer]);
+
   const [people, setPeople] = useState(peopleWithId);
   const [querry, setQuery] = useState('');
   const [message, setMessage] = useState(false);
@@ -30,7 +34,16 @@ export const App: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
+  const firstRender = useRef(true);
+
   useEffect(() => {
+    if (!firstRender.current) {
+      setPeople([]);
+    }
+  }, [querry]);
+
+  useEffect(() => {
+    firstRender.current = false;
     setPeople(peopleWithId.filter(person => person.name
       .includes(appliedQuerry)));
 
