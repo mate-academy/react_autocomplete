@@ -33,6 +33,10 @@ export const App: React.FC = () => {
   useEffect(() => {
     setPeople(peopleWithId.filter(person => person.name
       .includes(appliedQuerry)));
+
+    if (!querry) {
+      setSelectedPerson(null);
+    }
   }, [appliedQuerry]);
 
   const applyQuerry = useCallback(debounce(setAppliedQuerry,
