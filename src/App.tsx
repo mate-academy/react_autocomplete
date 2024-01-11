@@ -1,66 +1,41 @@
-import React, {
-  useCallback, useEffect, useMemo, useRef, useState,
-} from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
-
 import { Person } from './types/Person';
 import { peopleFromServer } from './data/people';
 
-function debounce(setAppliedQuerry: any,
-  setAppliedMessage: any, delay: number) {
+const peopleWithId = peopleFromServer.map((person, id) => {
+  return { ...person, id };
+});
+
+function debounce(setAppliedQuerry: any, delay: number) {
   let timerId = 0;
 
-  return (querry: string, message: boolean) => {
+  return (querry: string) => {
     window.clearInterval(timerId);
     timerId = window.setTimeout(() => {
       setAppliedQuerry(querry);
-      setAppliedMessage(message);
     }, delay);
   };
 }
 
 export const App: React.FC = () => {
-  const peopleWithId = useMemo(() => {
-    return peopleFromServer.map((person, id) => {
-      return { ...person, id };
-    });
-  }, [peopleFromServer]);
-
-  const [people, setPeople] = useState(peopleWithId);
   const [querry, setQuery] = useState('');
-  const [message, setMessage] = useState(false);
   const [appliedQuerry, setAppliedQuerry] = useState('');
-  const [appliedMessage, setAppliedMessage] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const firstRender = useRef(true);
-
-  useEffect(() => {
-    if (!firstRender.current) {
-      setPeople([]);
-    }
-  }, [querry]);
-
-  useEffect(() => {
-    firstRender.current = false;
-    setPeople(peopleWithId.filter(person => person.name
-      .includes(appliedQuerry)));
-
-    if (!querry) {
-      setSelectedPerson(null);
-    }
+  const people = useMemo(() => {
+    return peopleWithId.filter(person => person.name.toLowerCase()
+      .includes(appliedQuerry.toLowerCase()));
   }, [appliedQuerry]);
 
-  const applyQuerry = useCallback(debounce(setAppliedQuerry,
-    setAppliedMessage, 1000), []);
+  const applyQuerry = useCallback(debounce(setAppliedQuerry, 1000), []);
 
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuerry = e.target.value;
 
-    setMessage(people.length === 0);
     setQuery(newQuerry);
-    applyQuerry(newQuerry, message);
+    applyQuerry(newQuerry);
   };
 
   const handleSelectedPerson = (e: React.MouseEvent<HTMLAnchorElement>,
@@ -99,8 +74,9 @@ export const App: React.FC = () => {
 
         <div className="dropdown-menu" id="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {appliedMessage && <div> No matching suggestions </div>}
-            {!appliedMessage && isFocused
+            {isFocused && people.length === 0
+              && <div> No matching suggestions </div>}
+            {isFocused && people.length > 0
               && people.map((person) => (
                 <a
                   href="#select"
