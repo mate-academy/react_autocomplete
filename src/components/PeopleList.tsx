@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from 'react';
 import { Person } from '../types/Person';
 import cn from 'classnames';
@@ -27,6 +26,7 @@ export const PeopleList: React.FC<Props> = React.memo(
               onClick={() => {
                 onSelect(person.name);
               }}
+              role='presentation'
             >
               {person.name}
             </li>
