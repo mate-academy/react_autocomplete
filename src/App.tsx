@@ -62,12 +62,20 @@ export const App: React.FC = () => {
     );
   }, [query, appliedQuery, initialPerson]);
 
-  const titleText = (!selectedPerson)
+  const titleText = (!selectedPerson
+    || (isVisible && !appliedQuery)
+    || !appliedQuery)
     ? 'No selected person'
     : `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`;
 
   const handleInputFocus = () => {
     setIsVisible(false);
+  };
+
+  const handleInputBlur = () => {
+    setTimeout(() => {
+      setIsVisible(true);
+    }, 150);
   };
 
   return (
@@ -83,6 +91,7 @@ export const App: React.FC = () => {
             placeholder="Enter a part of the name"
             className="input"
             onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
             onChange={handleQueryChange}
             value={query}
           />
