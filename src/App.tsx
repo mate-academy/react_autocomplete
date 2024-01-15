@@ -48,63 +48,49 @@ export const App: React.FC = () => {
   ) => {
     setPersonPicked(personName);
     setHeader(`${personName} (${dateBorn} - ${dateDied})`);
-    setPersonPicked('');
     setDropdownActive(false);
   };
 
   const onChange = (event:React.ChangeEvent<HTMLInputElement>) => {
-    setPersonPicked(event.target.value);
     applyQuery(event.target.value);
   };
 
   return (
     <main className="section">
-      <h1 className="title">
-        {header}
-      </h1>
+    <h1 className="title">{header}</h1>
 
-      <div className={cn('dropdown', { 'is-active': dropdownActive })}>
-        <div className="dropdown-trigger">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-            value={personPicked}
-            onFocus={() => setDropdownActive(!dropdownActive)}
-            onChange={onChange}
-            onBlur={() => setDropdownActive(false)}
-          />
-        </div>
+    <div className={cn('dropdown', { 'is-active': dropdownActive })}>
+      <div className="dropdown-trigger">
+        <input
+          type="text"
+          placeholder="Enter a part of the name"
+          className="input"
+          value={personPicked}
+          onFocus={() => setDropdownActive(true)}
+          onChange={onChange}
+          onBlur={() => setDropdownActive(false)}
+        />
+      </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-
-            {visiblePeople.map((person) => (
-              <div
-                key={person.name}
-                className={cn('dropdown-item',
-                  { 'has-background-light': hoverActive === person.name })}
-                onMouseEnter={() => setHoverActive(person.name)}
-                onMouseDown={() => onSelected(person.name,
-                  person.born,
-                  person.died)}
-
-                /* eslint-disable */
-
-                aria-hidden="true"
-              >
-                <p className="has-text-link">{person.name}</p>
-              </div>
-            ))}
-
-            {!visiblePeople.length
-            /* eslint-disable */
-                && <p className="message has-text-link">
-                  No matching suggestions
-                   </p>}
-          </div>
+      <div className="dropdown-menu" role="menu">
+        <div className="dropdown-content">
+          {visiblePeople.map((person) => (
+            <div
+              key={person.name}
+              className={cn('dropdown-item', { 'has-background-light': hoverActive === person.name })}
+              onMouseEnter={() => setHoverActive(person.name)}
+              onMouseDown={() => onSelected(person.name, person.born, person.died)}
+              aria-hidden="true"
+            >
+              <p className="has-text-link">{person.name}</p>
+            </div>
+          ))}
+          {!visiblePeople.length && (
+            <p className="message has-text-link">No matching suggestions</p>
+          )}
         </div>
       </div>
-    </main>
-  );
+    </div>
+  </main>
+  )
 };
