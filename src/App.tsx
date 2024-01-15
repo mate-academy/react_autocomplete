@@ -1,55 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const peoples = peopleFromServer;
+  const [persons, setPersons] = useState('');
+
+  const handelChangePerson = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPersons(event.target.value);
+  };
+
+  const selectedPerson = peoples.find(people => people.name === persons);
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})` : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
           <input
+            value={persons}
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            list="select"
+            onChange={handelChangePerson}
           />
-        </div>
-
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
+          <datalist id="select">
+            {peoples.map((people) => (
+              // eslint-disable-next-line jsx-a11y/control-has-associated-label
+              <option key={people.name} value={people.name} />
+            ))}
+          </datalist>
         </div>
       </div>
     </main>
