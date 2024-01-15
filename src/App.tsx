@@ -46,7 +46,6 @@ export const App: React.FC = () => {
   ) => {
     setPersonPicked(personName);
     setHeader(`${personName} (${dateBorn} - ${dateDied})`);
-    setPersonPicked('');
     setDropdownActive(false);
   };
 
@@ -76,20 +75,24 @@ export const App: React.FC = () => {
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {visiblePeople.map((person) => (
-              <div
-                key={person.name}
-                className={cn('dropdown-item',
-                  { 'has-background-light': hoverActive === person.name })}
-                onMouseEnter={() => setHoverActive(person.name)}
-                onMouseDown={() => onSelected(person.name,
-                  person.born,
-                  person.died)}
-                aria-hidden="true"
-              >
-                <p className="has-text-link">{person.name}</p>
-              </div>
-            ))}
+            {visiblePeople.map((person) => {
+              const { name, born, died } = person;
+
+              return (
+                <li
+                  key={name}
+                  className={cn('dropdown-item',
+                    { 'has-background-light': hoverActive === name })}
+                  onMouseEnter={() => setHoverActive(name)}
+                  onMouseDown={() => onSelected(name,
+                    born,
+                    died)}
+                  aria-hidden="true"
+                >
+                  <p className="has-text-link">{name}</p>
+                </li>
+              );
+            })}
             {!visiblePeople.length
             && <p className="message has-text-link">No matching suggestions</p>}
           </div>
