@@ -63,10 +63,13 @@ export const Autocomplete: React.FC<AppProps> = React.memo(
       if (!inputText && !isDropdownVisible) {
         setSuggestions(peopleFromServer);
         setIsDropdownVisible(true);
+      } else {
+        setSuggestions(filteredSuggestions);
+        setIsDropdownVisible(true);
       }
 
       setFocused(true);
-    }, [inputText, isDropdownVisible]);
+    }, [filteredSuggestions, inputText, isDropdownVisible]);
 
     const handleItemClick = (person: Person) => {
       setInputText(person.name);
