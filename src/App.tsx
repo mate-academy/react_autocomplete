@@ -16,7 +16,6 @@ const Autocomplete: React.FC<AppProps> = React.memo(
   ({ onSelected, debounceDelay }) => {
     const [inputText, setInputText] = useState<string>('');
     const [suggestions, setSuggestions] = useState<Person[]>([]);
-    const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
     const filteredSuggestions = useMemo(() => {
@@ -42,11 +41,13 @@ const Autocomplete: React.FC<AppProps> = React.memo(
       const newText = event.target.value;
 
       setInputText(newText);
+      setSuggestions([]);
 
-      setIsDropdownVisible(newText === '' && selectedPerson !== null);
-
-      if (newText === '') {
-        setSelectedPerson(null);
+      if (!newText) {
+        setSuggestions(peopleFromServer);
+        setIsDropdownVisible(true);
+      } else {
+        setIsDropdownVisible(true);
       }
     };
 
@@ -58,7 +59,6 @@ const Autocomplete: React.FC<AppProps> = React.memo(
     }, [inputText]);
 
     const handleItemClick = (person: Person) => {
-      setSelectedPerson(person);
       setInputText(person.name);
       setSuggestions([]);
       onSelected(person);
