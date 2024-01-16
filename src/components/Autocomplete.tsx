@@ -60,13 +60,13 @@ export const Autocomplete: React.FC<AppProps> = React.memo(
     };
 
     const handleInputFocus = useCallback(() => {
-      if (!inputText) {
+      if (!inputText && !isDropdownVisible) {
         setSuggestions(peopleFromServer);
         setIsDropdownVisible(true);
       }
 
       setFocused(true);
-    }, [inputText]);
+    }, [inputText, isDropdownVisible]);
 
     const handleItemClick = (person: Person) => {
       setInputText(person.name);
@@ -79,10 +79,8 @@ export const Autocomplete: React.FC<AppProps> = React.memo(
       const debouncedFilter = debounce(() => {
         if (inputText === '') {
           setSuggestions(peopleFromServer);
-          setIsDropdownVisible(false);
         } else {
           setSuggestions(filteredSuggestions);
-          setIsDropdownVisible(true);
         }
       }, debounceDelay);
 
@@ -99,7 +97,10 @@ export const Autocomplete: React.FC<AppProps> = React.memo(
     };
 
     const handleInputBlur = useCallback(() => {
-      setFocused(false);
+      setTimeout(() => {
+        setFocused(false);
+        setIsDropdownVisible(false);
+      }, 200);
     }, []);
 
     return (
