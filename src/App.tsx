@@ -13,6 +13,13 @@ export const App: React.FC = () => {
   const [apliedQuery, setApliedQuery] = useState('');
   const BIGGER_DELAY_THAN_USESTATE = 100;
 
+  const handleReset = () => {
+    setQuery('');
+    setSelectedPerson(null);
+    setVisible(false);
+    setApliedQuery('');
+  };
+
   function setDelayForBlur(time: number) {
     setTimeout(() => setVisible(false), time);
   }
@@ -43,9 +50,22 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {selectedPerson && (
+      {selectedPerson ? (
+        <div className="section-person">
+          <h1 className="title">
+            {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
+          </h1>
+          <button
+            type="button"
+            className="delete ml-2 mt-3"
+            onClick={handleReset}
+          >
+            x
+          </button>
+        </div>
+      ) : (
         <h1 className="title">
-          {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
+          No selected person
         </h1>
       )}
 
