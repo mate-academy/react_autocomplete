@@ -15,8 +15,8 @@ export const App: React.FC = () => {
     const newText = event.target.value;
 
     setInputText(newText);
-
     setSelectedPerson(null);
+    setSuggestions([]);
   };
 
   const handleInputFocus = () => {
