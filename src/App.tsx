@@ -11,7 +11,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [visible, setVisible] = useState(false);
   const [apliedQuery, setApliedQuery] = useState('');
-  const BIGGER_DELAY_THAN_USESTATE = 74;
+  const BIGGER_DELAY_THAN_USESTATE = 100;
 
   function setDelayForBlur(time: number) {
     setTimeout(() => setVisible(false), time);
