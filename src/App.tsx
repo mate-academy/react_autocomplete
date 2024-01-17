@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import classNames from 'classnames';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -7,6 +8,7 @@ export const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [suggestions, setSuggestions] = useState<Person[]>([]);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [inputFocused, setInputFocused] = useState(false);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newText = event.target.value;
@@ -16,29 +18,50 @@ export const App: React.FC = () => {
     setSelectedPerson(null);
   };
 
-  useEffect(() => {
-    const debounceTimeout = setTimeout(() => {
-      const filteredSuggestions: Person[] = peopleFromServer.filter(
-        (person) => person.name.toLowerCase().includes(inputText.toLowerCase()),
-      );
+  const handleInputFocus = () => {
+    setInputFocused(true);
+    setSuggestions([]);
+  };
 
-      setSuggestions(filteredSuggestions);
-    }, 1000);
+  useEffect(() => {
+    let debounceTimeout: NodeJS.Timeout;
+
+    if (inputFocused) {
+      debounceTimeout = setTimeout(() => {
+        const filteredSuggestions: Person[] = peopleFromServer.filter(
+          (person) => person.name
+            .toLowerCase().includes(inputText.toLowerCase()),
+        );
+
+        setSuggestions(filteredSuggestions);
+      }, 1000);
+    }
 
     return () => clearTimeout(debounceTimeout);
-  }, [inputText]);
+  }, [inputText, inputFocused]);
 
   const handleSuggestionClick = (person: Person) => {
     setSelectedPerson(person);
     setInputText(person.name);
   };
 
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLDivElement>,
+    person: Person,
+  ) => {
+    if (e.key === 'Enter') {
+      handleSuggestionClick(person);
+    }
+  };
+
+  const selectedPersonData = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : 'No selected person';
+
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson
-          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-          : 'No selected person'}
+        {selectedPersonData}
       </h1>
 
       <div className="dropdown is-active" role="listbox">
@@ -49,17 +72,13 @@ export const App: React.FC = () => {
             className="input"
             value={inputText}
             onChange={handleInputChange}
+            onFocus={handleInputFocus}
           />
         </div>
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
-            {inputText === '' && (
-              <div className="dropdown-item">
-                <p className="has-text-link">Show all people</p>
-              </div>
-            )}
-            {suggestions.length === 0 && inputText !== '' && (
+            {!suggestions.length && inputText && (
               <div className="dropdown-item">
                 <p className="has-text-danger">No matching suggestions</p>
               </div>
@@ -68,20 +87,17 @@ export const App: React.FC = () => {
             {suggestions.map((person) => (
               <div
                 key={person.name}
-                className="dropdown-item"
+                className={classNames('dropdown-item', {
+                  'has-text-link': person === selectedPerson,
+                  'cursor-pointer': true,
+                })}
                 role="option"
                 aria-selected={person === selectedPerson ? 'true' : 'false'}
                 tabIndex={0}
                 onClick={() => handleSuggestionClick(person)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSuggestionClick(person);
-                  }
-                }}
+                onKeyDown={(e) => handleKeyDown(e, person)}
               >
-                <p className={person === selectedPerson ? 'has-text-link' : ''}>
-                  {person.name}
-                </p>
+                <p>{person.name}</p>
               </div>
             ))}
           </div>
