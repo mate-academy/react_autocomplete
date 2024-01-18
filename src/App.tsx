@@ -11,6 +11,7 @@ export const App: React.FC = () => {
   const [visible, setVisible] = useState(false);
   const [choosedperson, setChoosedperson] = useState<Person | null>(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const apllyQuery = useCallback(
     debounce((value: string) => setApliedQuery(value), 1000),
     [],
@@ -53,18 +54,9 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       {choosedperson ? (
-        <div className="section-person">
-          <h1 className="title">
-            {`${choosedperson.name} (${choosedperson.born} = ${choosedperson.died})`}
-          </h1>
-          <button
-            onClick={handleReset}
-            type="button"
-            className="delete ml-1 mt-2 is-medium"
-          >
-            x
-          </button>
-        </div>
+        <h1 className="title">
+          {`${choosedperson.name} (${choosedperson.born} = ${choosedperson.died})`}
+        </h1>
       ) : (
         <h1 className="title">
           No selected person
@@ -72,7 +64,7 @@ export const App: React.FC = () => {
       )}
 
       <div className="dropdown is-active">
-        <div className="dropdown-trigger">
+        <div className="dropdown-trigger control has-icons-right">
           <input
             onBlur={delayOnBlur}
             onFocus={() => setVisible(true)}
@@ -82,6 +74,17 @@ export const App: React.FC = () => {
             className="input"
             value={query}
           />
+          {choosedperson && (
+            <span className="icon is-small is-right">
+              <button
+                onClick={handleReset}
+                type="button"
+                className="delete is-small"
+              >
+                x
+              </button>
+            </span>
+          )}
         </div>
 
         <div
