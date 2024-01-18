@@ -9,7 +9,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [apliedQuery, setApliedQuery] = useState('');
   const [visible, setVisible] = useState(false);
-  const [choosedperson, setChoosedperson] = useState<Person | null>(null);
+  const [choosedPerson, setchoosedPerson] = useState<Person | null>(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const apllyQuery = useCallback(
@@ -24,7 +24,7 @@ export const App: React.FC = () => {
       setQuery(person.name);
       setApliedQuery(person.name);
       setVisible(false);
-      setChoosedperson(person);
+      setchoosedPerson(person);
     };
 
   const preparedList = (people: Person[], queryFilter: string) => {
@@ -39,7 +39,7 @@ export const App: React.FC = () => {
   };
 
   const handleReset = () => {
-    setChoosedperson(null);
+    setchoosedPerson(null);
     setApliedQuery('');
     setQuery('');
   };
@@ -53,9 +53,9 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {choosedperson ? (
+      {choosedPerson ? (
         <h1 className="title">
-          {`${choosedperson.name} (${choosedperson.born} = ${choosedperson.died})`}
+          {`${choosedPerson.name} (${choosedPerson.born} = ${choosedPerson.died})`}
         </h1>
       ) : (
         <h1 className="title">
@@ -74,7 +74,7 @@ export const App: React.FC = () => {
             className="input"
             value={query}
           />
-          {choosedperson && (
+          {choosedPerson && (
             <span className="icon is-small is-right">
               <button
                 onClick={handleReset}
