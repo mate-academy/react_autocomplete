@@ -5,7 +5,7 @@ import { Person } from './types/Person';
 
 type Props = {
   people: Person[];
-  onSelected?:(person:Person) => void;
+  onSelected?:(person:Person | null) => void;
   delay: number;
 };
 
@@ -36,6 +36,7 @@ export const Autocomplete: React.FC<Props> = ({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     applyQuery(event.target.value);
     setChoosePeople(event.target.value);
+    onSelected(null);
   };
 
   const dropActive = () => {
