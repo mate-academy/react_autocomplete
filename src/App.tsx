@@ -51,18 +51,9 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       {selectedPerson ? (
-        <div className="section-person">
-          <h1 className="title">
-            {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
-          </h1>
-          <button
-            type="button"
-            className="delete ml-2 mt-3"
-            onClick={handleReset}
-          >
-            x
-          </button>
-        </div>
+        <h1 className="title">
+          {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
+        </h1>
       ) : (
         <h1 className="title">
           No selected person
@@ -70,7 +61,7 @@ export const App: React.FC = () => {
       )}
 
       <div className="dropdown is-active">
-        <div className="dropdown-trigger">
+        <div className="dropdown-trigger control has-icons-right">
           <input
             type="text"
             placeholder="Enter a part of the name"
@@ -83,6 +74,17 @@ export const App: React.FC = () => {
               setQuery(event.target.value);
             }}
           />
+          {selectedPerson && (
+            <span className="icon is-small is-right">
+              <button
+                type="button"
+                className="delete is-small"
+                onClick={handleReset}
+              >
+                x
+              </button>
+            </span>
+          )}
         </div>
 
         <div
