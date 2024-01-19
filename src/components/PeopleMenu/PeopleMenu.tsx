@@ -1,4 +1,10 @@
-export const PeopleMenu = () => {
+import React from 'react';
+
+interface Props {
+  onSelected: (value: boolean) => void;
+}
+
+export const PeopleMenu: React.FC<Props> = ({ onSelected }) => {
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
