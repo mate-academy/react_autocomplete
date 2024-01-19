@@ -15,7 +15,6 @@ export const PeopleInfo: React.FC<Props> = ({
     selectedPerson: Person,
   ) => {
     event.preventDefault();
-
     onPersonSelected(selectedPerson);
   };
 

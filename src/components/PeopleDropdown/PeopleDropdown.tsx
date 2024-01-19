@@ -46,16 +46,6 @@ export const PeopleDropdown: React.FC<Props> = React.memo(
       [onQueryChange, delay],
     );
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const onInputBlur = useCallback(
-      debounce(setIsInputFocused, 100, () => {
-        onQueryChange('');
-        if (queryInput.current) {
-          queryInput.current.value = '';
-        }
-      }), [],
-    );
-
     return (
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
@@ -66,8 +56,16 @@ export const PeopleDropdown: React.FC<Props> = React.memo(
               setIsInputTextChanged(true);
               updateQuery(event.target.value, false);
             }}
-            onBlur={() => {
-              onInputBlur(false);
+            onBlur={(event) => {
+              if (!event.relatedTarget?.parentElement?.classList
+                .contains('dropdown-item')
+              ) {
+                setIsInputFocused(false);
+                onQueryChange('');
+                if (queryInput.current) {
+                  queryInput.current.value = '';
+                }
+              }
             }}
             type="text"
             placeholder="Enter a part of the name"
