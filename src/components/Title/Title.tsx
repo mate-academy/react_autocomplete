@@ -1,12 +1,12 @@
 import React from 'react';
-import { Person } from '../../types/Person';
+import { Date } from '../../types/Date';
 
 interface Props {
-  data: Person[];
+  data: Date[];
 }
 
 export const Title: React.FC<Props> = ({ data }) => {
-  const { name, born, died } = data;
+  const { name, born, died } = data[0];
 
   return (
     <h1 className="title">

@@ -7,9 +7,9 @@ import { Title } from './components/Title';
 export const App: React.FC = () => {
   return (
     <main className="section">
-      <Title />
+      <Title data={peopleFromServer} />
 
-      <Autocomplete data={peopleFromServer} />
+      <Autocomplete />
     </main>
   );
 };
