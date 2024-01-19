@@ -38,6 +38,7 @@ export const PeopleDropdown: React.FC<Props> = React.memo(
   }) => {
     const [isInputFocused, setIsInputFocused] = useState(false);
     const [isInputTextChanged, setIsInputTextChanged] = useState(false);
+    const queryInput = useRef<HTMLInputElement>(null);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const updateQuery = useCallback(
@@ -45,7 +46,15 @@ export const PeopleDropdown: React.FC<Props> = React.memo(
       [onQueryChange, delay],
     );
 
-    const queryInput = useRef<HTMLInputElement>(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const onInputBlur = useCallback(
+      debounce(setIsInputFocused, 100, () => {
+        onQueryChange('');
+        if (queryInput.current) {
+          queryInput.current.value = '';
+        }
+      }), [],
+    );
 
     return (
       <div className="dropdown is-active">
@@ -57,13 +66,16 @@ export const PeopleDropdown: React.FC<Props> = React.memo(
               setIsInputTextChanged(true);
               updateQuery(event.target.value, false);
             }}
+            onBlur={() => {
+              onInputBlur(false);
+            }}
             type="text"
             placeholder="Enter a part of the name"
             className="input"
           />
         </div>
 
-        {(isInputFocused || queryInput.current?.value) && !isInputTextChanged
+        {isInputFocused && !isInputTextChanged
           && (
             <PeopleList people={people} onPersonSelected={onPersonSelected} />
           )}
