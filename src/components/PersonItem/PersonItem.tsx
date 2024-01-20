@@ -5,12 +5,14 @@ interface Props {
   person: Person;
   selectedPerson: Person | null;
   onSelected: (value: Person) => void;
+  setIsHide: (value: boolean) => void;
 }
 
 export const PersonItem: React.FC<Props> = ({
   person,
   selectedPerson,
   onSelected,
+  setIsHide,
 }) => {
   const handleClick = (
     event: React.MouseEvent<HTMLAnchorElement>,
@@ -18,6 +20,7 @@ export const PersonItem: React.FC<Props> = ({
   ) => {
     event.preventDefault();
     onSelected(selectedItem);
+    setIsHide(false);
   };
 
   return (

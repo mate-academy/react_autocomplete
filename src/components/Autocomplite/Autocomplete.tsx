@@ -20,6 +20,7 @@ export const Autocomplete: React.FC<Props> = ({
     <div className="dropdown is-active">
       <PeopleDropdown
         isHide={isHide}
+        selectedPerson={selectedPerson}
         setIsHide={setIsHide}
       />
 
@@ -28,6 +29,7 @@ export const Autocomplete: React.FC<Props> = ({
           people={peopleFromServer}
           selectedPerson={selectedPerson}
           onSelected={onSelected}
+          setIsHide={setIsHide}
         />
       )}
     </div>
