@@ -34,11 +34,11 @@ export const Autocomplete: React.FC<Props> = ({
   );
 
   const dropActive = () => {
-    setDropdownActive(false);
+    setDropdownActive(true);
   };
 
   const blurActive = () => {
-    setDropdownActive(true);
+    setDropdownActive(false);
   };
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
