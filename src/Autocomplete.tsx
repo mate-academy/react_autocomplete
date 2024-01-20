@@ -37,10 +37,6 @@ export const Autocomplete: React.FC<Props> = ({
     setDropdownActive(true);
   };
 
-  const blurActive = () => {
-    setDropdownActive(false);
-  };
-
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     applyQuery(event.target.value);
     setChoosePeople(event.target.value);
@@ -68,7 +64,6 @@ export const Autocomplete: React.FC<Props> = ({
             className="input"
             value={choosePeople}
             onFocus={dropActive}
-            onBlur={blurActive}
             onChange={handleQueryChange}
           />
         </div>
