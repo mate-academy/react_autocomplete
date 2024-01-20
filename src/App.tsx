@@ -1,21 +1,20 @@
 import { useState } from 'react';
 import './App.scss';
-import { peopleFromServer } from './data/people';
 import { Autocomplete } from './components/Autocomplite';
 import { Title } from './components/Title';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line max-len
-  const [isSelectedPerson, setIsSelectedPerson] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   return (
     <main className="section">
       <Title
-        data={peopleFromServer}
-        isSelected={isSelectedPerson}
+        isSelected={selectedPerson}
       />
 
-      <Autocomplete onSelected={() => setIsSelectedPerson(true)} />
+      <Autocomplete onSelected={() => setSelectedPerson} />
     </main>
   );
 };

@@ -1,40 +1,23 @@
 import React from 'react';
+import { Person } from '../../types/Person';
+import { PersonItem } from '../PersonItem';
 
 interface Props {
-  onSelected: (value: boolean) => void;
+  people: Person[];
+  onSelected: (value: Person) => void;
 }
 
-export const PeopleMenu: React.FC<Props> = ({ onSelected }) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const PeopleMenu: React.FC<Props> = ({ people, onSelected }) => {
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
-        <div className="dropdown-item">
-          <p className="has-text-link">Pieter Haverbeke</p>
-        </div>
-
-        <div className="dropdown-item">
-          <p className="has-text-link">Pieter Bernard Haverbeke</p>
-        </div>
-
-        <div className="dropdown-item">
-          <p className="has-text-link">Pieter Antone Haverbeke</p>
-        </div>
-
-        <div className="dropdown-item">
-          <p className="has-text-danger">Elisabeth Haverbeke</p>
-        </div>
-
-        <div className="dropdown-item">
-          <p className="has-text-link">Pieter de Decker</p>
-        </div>
-
-        <div className="dropdown-item">
-          <p className="has-text-danger">Petronella de Decker</p>
-        </div>
-
-        <div className="dropdown-item">
-          <p className="has-text-danger">Elisabeth Hercke</p>
-        </div>
+        {people.map(person => (
+          <PersonItem
+            key={person.slug}
+            person={person}
+          />
+        ))}
       </div>
     </div>
   );

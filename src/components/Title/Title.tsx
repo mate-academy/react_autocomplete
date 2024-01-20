@@ -1,24 +1,17 @@
-import { Date } from '../../types/Date';
+import { Person } from '../../types/Person';
 
 interface Props {
-  data: Date[];
-  isSelected: boolean;
+  isSelected: Person | null;
 }
 
-export const Title: React.FC<Props> = ({ data, isSelected }) => {
-  const { name, born, died } = data[0];
-
+export const Title: React.FC<Props> = ({ isSelected }) => {
   return (
-    <>
+    <h1 className="title">
       {isSelected ? (
-        <h1 className="title">
-          {`${name} (${born} = ${died})`}
-        </h1>
+        `${isSelected.name} (${isSelected.born} = ${isSelected.died})`
       ) : (
-        <h1 className="title">
-          Enter & chose name
-        </h1>
+        'No selected person'
       )}
-    </>
+    </h1>
   );
 };

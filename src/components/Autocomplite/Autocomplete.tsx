@@ -1,9 +1,11 @@
 import React from 'react';
 import { PeopleDropdown } from '../PeopleDropdown';
 import { PeopleMenu } from '../PeopleMenu';
+import { Person } from '../../types/Person';
+import { peopleFromServer } from '../../data/people';
 
 interface Props {
-  onSelected: (value: boolean) => void;
+  onSelected: (value: Person) => void;
 }
 
 export const Autocomplete: React.FC<Props> = ({ onSelected }) => {
@@ -11,7 +13,10 @@ export const Autocomplete: React.FC<Props> = ({ onSelected }) => {
     <div className="dropdown is-active">
       <PeopleDropdown />
 
-      <PeopleMenu onSelected={onSelected} />
+      <PeopleMenu
+        onSelected={onSelected}
+        people={peopleFromServer}
+      />
     </div>
   );
 };
