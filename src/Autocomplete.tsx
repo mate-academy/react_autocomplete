@@ -33,14 +33,18 @@ export const Autocomplete: React.FC<Props> = ({
     () => debounce(setQuery, delay), [delay],
   );
 
+  const dropActive = () => {
+    setDropdownActive(false);
+  };
+
+  const blurActive = () => {
+    setDropdownActive(true);
+  };
+
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     applyQuery(event.target.value);
     setChoosePeople(event.target.value);
     onSelected(null);
-  };
-
-  const dropActive = () => {
-    setDropdownActive(true);
   };
 
   const filteredSuggestions: Person[]
@@ -63,8 +67,9 @@ export const Autocomplete: React.FC<Props> = ({
             placeholder="Enter a part of the name"
             className="input"
             value={choosePeople}
-            onChange={handleQueryChange}
             onFocus={dropActive}
+            onBlur={blurActive}
+            onChange={handleQueryChange}
           />
         </div>
 
