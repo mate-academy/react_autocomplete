@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import debounce from 'lodash.debounce';
 import { PeopleDropdown } from '../PeopleDropdown';
 import { PeopleMenu } from '../PeopleMenu';
 import { Person } from '../../types/Person';
@@ -16,15 +17,23 @@ export const Autocomplete: React.FC<Props> = ({
   const people = getPreparedPeople();
 
   const [query, setQuery] = useState('');
-  // const [appliedQuery, setAppliedQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
   const [isHide, setIsHide] = useState(false);
+
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 500),
+    [],
+  );
 
   const filteredPeople = useMemo(() => {
     return people
       .filter(person => {
-        return person.name.toLowerCase().includes(query.toLowerCase().trim());
+        const normalizedName = person.name.toLowerCase();
+        const normalizedQuery = appliedQuery.toLowerCase().trim();
+
+        return normalizedName.includes(normalizedQuery);
       });
-  }, [people, query]);
+  }, [appliedQuery, people]);
 
   return (
     <div className="dropdown is-active">
@@ -34,6 +43,7 @@ export const Autocomplete: React.FC<Props> = ({
         setIsHide={setIsHide}
         query={query}
         setQuery={setQuery}
+        applyQuery={applyQuery}
       />
 
       {isHide && (

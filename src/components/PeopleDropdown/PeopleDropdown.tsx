@@ -7,6 +7,7 @@ interface Props {
   selectedPerson: Person | null;
   setQuery: (value: string) => void;
   setIsHide: (value: boolean) => void;
+  applyQuery: (value: string) => void;
 }
 
 export const PeopleDropdown: React.FC<Props> = ({
@@ -15,6 +16,7 @@ export const PeopleDropdown: React.FC<Props> = ({
   selectedPerson,
   setIsHide,
   setQuery,
+  applyQuery,
 }) => {
   const handleClickHide = () => {
     return isHide ? setIsHide(false) : setIsHide(true);
@@ -22,6 +24,7 @@ export const PeopleDropdown: React.FC<Props> = ({
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
+    applyQuery(event.target.value);
   };
 
   return (

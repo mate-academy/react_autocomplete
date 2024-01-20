@@ -18,15 +18,19 @@ export const PeopleMenu: React.FC<Props> = ({
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
-        {people.map(person => (
-          <PersonItem
-            key={person.slug}
-            person={person}
-            selectedPerson={selectedPerson}
-            onSelected={onSelected}
-            setIsHide={setIsHide}
-          />
-        ))}
+        {people.length ? (
+          people.map(person => (
+            <PersonItem
+              key={person.slug}
+              person={person}
+              selectedPerson={selectedPerson}
+              onSelected={onSelected}
+              setIsHide={setIsHide}
+            />
+          ))
+        ) : (
+          <p>No matching suggestions</p>
+        )}
       </div>
     </div>
   );
