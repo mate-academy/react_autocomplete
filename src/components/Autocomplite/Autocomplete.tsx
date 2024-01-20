@@ -13,8 +13,16 @@ export const Autocomplete: React.FC<Props> = ({
   selectedPerson,
   onSelected,
 }) => {
-  // const [query, setQuery] = useState('');
+  const [query, setQuery] = useState('');
+  // const [appliedQuery, setAppliedQuery] = useState('');
   const [isHide, setIsHide] = useState(false);
+
+  const filteredPeople = () => {
+    return peopleFromServer
+      .filter(person => {
+        return person.name.toLowerCase().includes(query.toLowerCase().trim());
+      });
+  };
 
   return (
     <div className="dropdown is-active">
@@ -22,11 +30,13 @@ export const Autocomplete: React.FC<Props> = ({
         isHide={isHide}
         selectedPerson={selectedPerson}
         setIsHide={setIsHide}
+        query={query}
+        setQuery={setQuery}
       />
 
       {isHide && (
         <PeopleMenu
-          people={peopleFromServer}
+          people={filteredPeople()}
           selectedPerson={selectedPerson}
           onSelected={onSelected}
           setIsHide={setIsHide}
