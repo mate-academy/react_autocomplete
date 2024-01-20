@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { PeopleDropdown } from '../PeopleDropdown';
 import { PeopleMenu } from '../PeopleMenu';
 import { Person } from '../../types/Person';
-import { peopleFromServer } from '../../data/people';
+import { getPreparedPeople } from '../services/people';
 
 interface Props {
   selectedPerson: Person | null;
@@ -13,16 +13,18 @@ export const Autocomplete: React.FC<Props> = ({
   selectedPerson,
   onSelected,
 }) => {
+  const people = getPreparedPeople();
+
   const [query, setQuery] = useState('');
   // const [appliedQuery, setAppliedQuery] = useState('');
   const [isHide, setIsHide] = useState(false);
 
-  const filteredPeople = () => {
-    return peopleFromServer
+  const filteredPeople = useMemo(() => {
+    return people
       .filter(person => {
         return person.name.toLowerCase().includes(query.toLowerCase().trim());
       });
-  };
+  }, [people, query]);
 
   return (
     <div className="dropdown is-active">
@@ -36,7 +38,7 @@ export const Autocomplete: React.FC<Props> = ({
 
       {isHide && (
         <PeopleMenu
-          people={filteredPeople()}
+          people={filteredPeople}
           selectedPerson={selectedPerson}
           onSelected={onSelected}
           setIsHide={setIsHide}
