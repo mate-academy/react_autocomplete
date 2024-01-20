@@ -8,7 +8,7 @@ export const Title: React.FC<Props> = ({ isSelected }) => {
   return (
     <h1 className="title">
       {isSelected ? (
-        `${isSelected.name} (${isSelected.born} = ${isSelected.died})`
+        `${isSelected.name} (${isSelected.born} - ${isSelected.died} = ${isSelected.died - isSelected.born})`
       ) : (
         'No selected person'
       )}

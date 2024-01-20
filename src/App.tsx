@@ -5,7 +5,6 @@ import { Title } from './components/Title';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line max-len
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   return (
@@ -14,7 +13,10 @@ export const App: React.FC = () => {
         isSelected={selectedPerson}
       />
 
-      <Autocomplete onSelected={() => setSelectedPerson} />
+      <Autocomplete
+        selectedPerson={selectedPerson}
+        onSelected={setSelectedPerson}
+      />
     </main>
   );
 };

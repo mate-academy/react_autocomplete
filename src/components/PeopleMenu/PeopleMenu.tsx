@@ -4,11 +4,15 @@ import { PersonItem } from '../PersonItem';
 
 interface Props {
   people: Person[];
+  selectedPerson: Person | null;
   onSelected: (value: Person) => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const PeopleMenu: React.FC<Props> = ({ people, onSelected }) => {
+export const PeopleMenu: React.FC<Props> = ({
+  people,
+  selectedPerson,
+  onSelected,
+}) => {
   return (
     <div className="dropdown-menu" role="menu">
       <div className="dropdown-content">
@@ -16,6 +20,8 @@ export const PeopleMenu: React.FC<Props> = ({ people, onSelected }) => {
           <PersonItem
             key={person.slug}
             person={person}
+            selectedPerson={selectedPerson}
+            onSelected={onSelected}
           />
         ))}
       </div>
