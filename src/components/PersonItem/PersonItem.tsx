@@ -7,6 +7,7 @@ interface Props {
   onSelected: (value: Person) => void;
   setIsHide: (value: boolean) => void;
   setQuery: (value: string) => void;
+  setAppliedQuery: (value: string) => void;
 }
 
 export const PersonItem: React.FC<Props> = ({
@@ -15,6 +16,7 @@ export const PersonItem: React.FC<Props> = ({
   onSelected,
   setIsHide,
   setQuery,
+  setAppliedQuery,
 }) => {
   const handleClick = (
     event: React.MouseEvent<HTMLAnchorElement>,
@@ -22,6 +24,7 @@ export const PersonItem: React.FC<Props> = ({
   ) => {
     event.preventDefault();
     setQuery(person.name);
+    setAppliedQuery(person.name);
     onSelected(selectedItem);
     setIsHide(false);
   };

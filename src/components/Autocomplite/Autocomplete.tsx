@@ -57,6 +57,7 @@ export const Autocomplete: React.FC<Props> = ({
           onSelected={onSelected}
           setIsHide={setIsHide}
           setQuery={setQuery}
+          setAppliedQuery={setAppliedQuery}
         />
       )}
     </div>
