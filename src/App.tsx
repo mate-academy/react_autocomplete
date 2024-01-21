@@ -1,4 +1,9 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from 'react';
 import { debounce } from 'lodash';
 import './App.scss';
 import { peopleFromServer } from './data/people';
@@ -12,6 +17,14 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const { name, born, died } = selectedPerson || {};
 
+  const searchInput = useRef<HTMLInputElement>(null);
+
+  const handleFocus = () => {
+    if (searchInput.current) {
+      searchInput.current.blur(); // removing focus
+    }
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(
     debounce((value: string) => setAppliedQuery(value), 1000),
@@ -21,14 +34,6 @@ export const App: React.FC = () => {
   const onHandleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     applyQuery(event.target.value);
     setQuery(event.target.value);
-  };
-
-  const handleOnFocus = () => {
-    setIsVisible(true);
-  };
-
-  const handleOnBlur = () => {
-    setTimeout(() => setIsVisible(false), 1000);
   };
 
   const handlePersonSelect = useCallback((person: Person | null) => {
@@ -63,14 +68,14 @@ export const App: React.FC = () => {
       <div className="dropdown is-active">
         <div className="dropdown-trigger control has-icons-right">
           <input
+            ref={handleFocus}
             type="text"
             placeholder="Enter a part of the name"
             name="input"
             className="input"
             value={query}
             onChange={onHandleInputChange}
-            onFocus={handleOnFocus}
-            onBlur={handleOnBlur}
+            onFocus={() => setIsVisible(true)}
           />
 
           {selectedPerson && (
@@ -87,7 +92,10 @@ export const App: React.FC = () => {
         </div>
 
         {isVisible && (
-          <div className="dropdown-menu" role="menu">
+          <div
+            className="dropdown-menu"
+            role="menu"
+          >
             <PeopleList
               onSelect={handlePersonSelect}
               persons={filteredPeople}
