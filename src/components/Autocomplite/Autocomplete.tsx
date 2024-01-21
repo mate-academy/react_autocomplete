@@ -17,6 +17,7 @@ export const Autocomplete: React.FC<Props> = ({
   onSelected,
 }) => {
   const people = getPreparedPeople();
+  const delayBlur = 100;
 
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -40,6 +41,7 @@ export const Autocomplete: React.FC<Props> = ({
   return (
     <div className="dropdown is-active">
       <PeopleDropdown
+        delay={delayBlur}
         isHide={isHide}
         setIsHide={setIsHide}
         query={query}

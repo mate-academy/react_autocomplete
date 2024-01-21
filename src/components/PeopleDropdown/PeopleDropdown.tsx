@@ -1,8 +1,10 @@
-import React from 'react';
+import debounce from 'lodash.debounce';
+import React, { useCallback } from 'react';
 
 interface Props {
   query: string;
   isHide: boolean;
+  delay: number;
   setQuery: (value: string) => void;
   setIsHide: (value: boolean) => void;
   applyQuery: (value: string) => void;
@@ -11,6 +13,7 @@ interface Props {
 export const PeopleDropdown: React.FC<Props> = ({
   query,
   isHide,
+  delay,
   setIsHide,
   setQuery,
   applyQuery,
@@ -25,6 +28,11 @@ export const PeopleDropdown: React.FC<Props> = ({
     setIsHide(true);
   };
 
+  const handleBlur = useCallback(
+    debounce(setIsHide, delay),
+    [],
+  );
+
   return (
     <div className="dropdown-trigger">
       <input
@@ -34,6 +42,7 @@ export const PeopleDropdown: React.FC<Props> = ({
         value={query}
         onChange={handleQueryChange}
         onClick={handleClickHide}
+        onBlur={() => handleBlur(false)}
       />
     </div>
   );
