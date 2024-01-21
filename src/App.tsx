@@ -2,7 +2,6 @@ import React, {
   useState,
   useMemo,
   useCallback,
-  useRef,
 } from 'react';
 import { debounce } from 'lodash';
 import './App.scss';
@@ -17,19 +16,17 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const { name, born, died } = selectedPerson || {};
 
-  const searchInput = useRef<HTMLInputElement>(null);
-
-  const handleFocus = () => {
-    if (searchInput.current) {
-      searchInput.current.blur(); // removing focus
-    }
-  };
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(
     debounce((value: string) => setAppliedQuery(value), 1000),
     [],
   );
+
+  const handleOnBlur = () => {
+    setTimeout(() => {
+      setIsVisible(false);
+    }, 150);
+  };
 
   const onHandleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     applyQuery(event.target.value);
@@ -68,7 +65,6 @@ export const App: React.FC = () => {
       <div className="dropdown is-active">
         <div className="dropdown-trigger control has-icons-right">
           <input
-            ref={handleFocus}
             type="text"
             placeholder="Enter a part of the name"
             name="input"
@@ -76,6 +72,7 @@ export const App: React.FC = () => {
             value={query}
             onChange={onHandleInputChange}
             onFocus={() => setIsVisible(true)}
+            onBlur={handleOnBlur}
           />
 
           {selectedPerson && (
