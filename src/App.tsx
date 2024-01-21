@@ -45,6 +45,7 @@ export const App: React.FC = () => {
   const reset = () => {
     setSelectedPerson(null);
     setQuery('');
+    setAppliedQuery('');
     setIsVisible(false);
   };
 
