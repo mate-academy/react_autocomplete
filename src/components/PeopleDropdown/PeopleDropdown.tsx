@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 interface Props {
   query: string;
   isHide: boolean;
-  delay: number;
+  delay: number[];
   setQuery: (value: string) => void;
   setIsHide: (value: boolean) => void;
   applyQuery: (value: string) => void;
@@ -22,16 +22,23 @@ export const PeopleDropdown: React.FC<Props> = ({
     return isHide ? setIsHide(false) : setIsHide(true);
   };
 
+  const applyHide = useCallback(
+    debounce(setIsHide, delay[0]),
+    [],
+  );
+
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
-    setIsHide(true);
+    applyHide(true);
   };
 
-  const handleBlur = useCallback(
-    debounce(setIsHide, delay),
+  const applyBlur = useCallback(
+    debounce(setIsHide, delay[1]),
     [],
   );
+
+  const handleBlur = () => applyBlur(false);
 
   return (
     <div className="dropdown-trigger">
@@ -42,7 +49,7 @@ export const PeopleDropdown: React.FC<Props> = ({
         value={query}
         onChange={handleQueryChange}
         onClick={handleClickHide}
-        onBlur={() => handleBlur(false)}
+        onBlur={handleBlur}
       />
     </div>
   );

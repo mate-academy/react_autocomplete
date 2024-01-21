@@ -7,26 +7,27 @@ import { getPreparedPeople } from '../services/people';
 
 interface Props {
   selectedPerson: Person | null;
-  delay: number;
+  mainDelay: number;
   onSelected: (value: Person) => void;
 }
 
 export const Autocomplete: React.FC<Props> = ({
   selectedPerson,
-  delay,
+  mainDelay,
   onSelected,
 }) => {
-  const people = getPreparedPeople();
-  const delayBlur = 100;
+  const blurDelay = 100;
 
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isHide, setIsHide] = useState(false);
 
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay),
+    debounce(setAppliedQuery, mainDelay),
     [],
   );
+
+  const people = getPreparedPeople();
 
   const filteredPeople = useMemo(() => {
     return people
@@ -41,7 +42,7 @@ export const Autocomplete: React.FC<Props> = ({
   return (
     <div className="dropdown is-active">
       <PeopleDropdown
-        delay={delayBlur}
+        delay={[mainDelay, blurDelay]}
         isHide={isHide}
         setIsHide={setIsHide}
         query={query}
