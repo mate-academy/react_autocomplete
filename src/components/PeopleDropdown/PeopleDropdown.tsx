@@ -1,10 +1,8 @@
 import React from 'react';
-import { Person } from '../../types/Person';
 
 interface Props {
   query: string;
   isHide: boolean;
-  selectedPerson: Person | null;
   setQuery: (value: string) => void;
   setIsHide: (value: boolean) => void;
   applyQuery: (value: string) => void;
@@ -13,7 +11,6 @@ interface Props {
 export const PeopleDropdown: React.FC<Props> = ({
   query,
   isHide,
-  selectedPerson,
   setIsHide,
   setQuery,
   applyQuery,
@@ -25,6 +22,7 @@ export const PeopleDropdown: React.FC<Props> = ({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setIsHide(true);
   };
 
   return (
@@ -33,9 +31,8 @@ export const PeopleDropdown: React.FC<Props> = ({
         type="text"
         placeholder="Enter a part of the name"
         className="input"
-        value={query && selectedPerson?.name}
+        value={query}
         onChange={handleQueryChange}
-        // onFocus={handleClickHide}
         onClick={handleClickHide}
       />
     </div>

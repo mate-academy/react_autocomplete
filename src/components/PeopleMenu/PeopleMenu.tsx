@@ -7,6 +7,7 @@ interface Props {
   selectedPerson: Person | null;
   onSelected: (value: Person) => void;
   setIsHide: (value: boolean) => void;
+  setQuery: (value: string) => void;
 }
 
 export const PeopleMenu: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const PeopleMenu: React.FC<Props> = ({
   selectedPerson,
   onSelected,
   setIsHide,
+  setQuery,
 }) => {
   return (
     <div className="dropdown-menu" role="menu">
@@ -26,6 +28,7 @@ export const PeopleMenu: React.FC<Props> = ({
               selectedPerson={selectedPerson}
               onSelected={onSelected}
               setIsHide={setIsHide}
+              setQuery={setQuery}
             />
           ))
         ) : (

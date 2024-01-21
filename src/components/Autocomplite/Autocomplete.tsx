@@ -21,7 +21,7 @@ export const Autocomplete: React.FC<Props> = ({
   const [isHide, setIsHide] = useState(false);
 
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, 500),
+    debounce(setAppliedQuery, 700),
     [],
   );
 
@@ -39,7 +39,6 @@ export const Autocomplete: React.FC<Props> = ({
     <div className="dropdown is-active">
       <PeopleDropdown
         isHide={isHide}
-        selectedPerson={selectedPerson}
         setIsHide={setIsHide}
         query={query}
         setQuery={setQuery}
@@ -52,6 +51,7 @@ export const Autocomplete: React.FC<Props> = ({
           selectedPerson={selectedPerson}
           onSelected={onSelected}
           setIsHide={setIsHide}
+          setQuery={setQuery}
         />
       )}
     </div>
