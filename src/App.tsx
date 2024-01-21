@@ -1,56 +1,99 @@
-import React from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
+import { debounce } from 'lodash';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { PeopleList } from './components/PeopleList';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const { name, born, died } = selectedPerson || {};
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const applyQuery = useCallback(
+    debounce((value: string) => setAppliedQuery(value), 1000),
+    [],
+  );
+
+  const onHandleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    applyQuery(event.target.value);
+    setQuery(event.target.value);
+  };
+
+  const handleOnFocus = () => {
+    setIsVisible(true);
+  };
+
+  const handleOnBlur = () => {
+    setTimeout(() => setIsVisible(false), 1000);
+  };
+
+  const handlePersonSelect = useCallback((person: Person | null) => {
+    setSelectedPerson(person);
+
+    if (person) {
+      setQuery(person.name);
+      setIsVisible(false);
+    }
+  }, []);
+
+  const reset = () => {
+    setSelectedPerson(null);
+    setQuery('');
+    setIsVisible(false);
+  };
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer
+      .filter(person => person?.name?.toLowerCase()
+        .includes(appliedQuery.toLowerCase()));
+  }, [appliedQuery]);
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
+      <h1
+        className="title"
+      >
+        {selectedPerson ? `${name} (${born} - ${died})` : 'No selected person'}
       </h1>
 
       <div className="dropdown is-active">
-        <div className="dropdown-trigger">
+        <div className="dropdown-trigger control has-icons-right">
           <input
             type="text"
             placeholder="Enter a part of the name"
+            name="input"
             className="input"
+            value={query}
+            onChange={onHandleInputChange}
+            onFocus={handleOnFocus}
+            onBlur={handleOnBlur}
           />
+
+          {selectedPerson && (
+            <span className="icon is-small is-right">
+              <button
+                onClick={reset}
+                type="button"
+                className="delete is-small"
+              >
+                x
+              </button>
+            </span>
+          )}
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
+        {isVisible && (
+          <div className="dropdown-menu" role="menu">
+            <PeopleList
+              onSelect={handlePersonSelect}
+              persons={filteredPeople}
+            />
           </div>
-        </div>
+        )}
       </div>
     </main>
   );
