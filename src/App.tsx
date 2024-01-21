@@ -6,6 +6,7 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const delay = 700;
 
   return (
     <main className="section">
@@ -16,6 +17,7 @@ export const App: React.FC = () => {
       <Autocomplete
         selectedPerson={selectedPerson}
         onSelected={setSelectedPerson}
+        delay={delay}
       />
     </main>
   );

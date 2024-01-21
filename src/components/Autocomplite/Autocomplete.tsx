@@ -7,11 +7,13 @@ import { getPreparedPeople } from '../services/people';
 
 interface Props {
   selectedPerson: Person | null;
+  delay: number;
   onSelected: (value: Person) => void;
 }
 
 export const Autocomplete: React.FC<Props> = ({
   selectedPerson,
+  delay,
   onSelected,
 }) => {
   const people = getPreparedPeople();
@@ -21,7 +23,7 @@ export const Autocomplete: React.FC<Props> = ({
   const [isHide, setIsHide] = useState(false);
 
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, 700),
+    debounce(setAppliedQuery, delay),
     [],
   );
 
