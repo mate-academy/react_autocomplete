@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 import cn from 'classnames';
 
@@ -18,21 +18,22 @@ export const AutoSuggest: React.FC<Props> = ({
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
 
-  const searchPerson = query.trim().toLowerCase();
+  const searchPerson = appliedQuery.trim().toLowerCase();
+
+  const debouncedApplyQuery = useMemo(() => debounce(
+    setAppliedQuery, delay,
+  ),
+  [delay]);
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person => (
-      person.name.toLowerCase().includes(searchPerson)));
-  }, [peopleFromServer, appliedQuery]);
-
-  const applyQuery = useCallback(debounce((value: string) => {
-    setAppliedQuery(value);
-    setIsInputFocused(true);
-  }, delay), [delay]);
+      person.name.toLowerCase().includes(searchPerson)
+    ));
+  }, [searchPerson]);
 
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
-    applyQuery(e.target.value);
+    debouncedApplyQuery(e.target.value);
   };
 
   const handleSuggestionClick = (selectedPerson: Person) => {
