@@ -3,10 +3,12 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function debounce<T extends any[]>(func: (...args: T) => void, delay: number) {
   let timeoutId: NodeJS.Timeout;
 
-  return function(...args: T) {
+  // eslint-disable-next-line func-names
+  return function (...args: T) {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
       func(...args);
@@ -23,8 +25,8 @@ const Autocomplete: React.FC<{
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
     const debouncedSearch = debounce((text: string) => {
-      const filtered = peopleFromServer.filter((person)
-      => person.name.toLowerCase().includes(text.toLowerCase()));
+      // eslint-disable-next-line max-len
+      const filtered = peopleFromServer.filter((person) => person.name.toLowerCase().includes(text.toLowerCase()));
 
       setFilteredPeople(filtered);
     }, debounceDelay);
