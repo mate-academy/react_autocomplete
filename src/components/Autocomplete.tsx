@@ -20,8 +20,11 @@ export const Autocomplete: React.FC<Props> = ({
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay),
-    [delay, setAppliedQuery],
+    debounce((value: string) => {
+      setAppliedQuery(value);
+      setIsListShown(true);
+    }, delay),
+    [],
   );
 
   const filteredPeople = useMemo(() => {
@@ -34,12 +37,8 @@ export const Autocomplete: React.FC<Props> = ({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value.trim().toLowerCase();
 
-    if (!inputValue) {
-      setIsListShown(false);
-    } else {
-      setIsListShown(true);
-      applyQuery(inputValue);
-    }
+    setIsListShown(false);
+    applyQuery(inputValue);
 
     setQuery(event.target.value);
   };
