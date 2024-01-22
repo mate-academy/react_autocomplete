@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useCallback, useRef, useState } from 'react';
 import './App.scss';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import debounce from 'lodash.debounce';
 import cn from 'classnames';
 import { peopleFromServer } from './data/people';
@@ -29,7 +28,12 @@ export const App: React.FC = () => {
   // #endregion
 
   const filteredPeople = peopleFromServer.filter(
-    (person) => person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+    (person) => {
+      const normilizedNamePerson = person.name.toLowerCase().trim();
+      const normilizedQuery = appliedQuery.toLowerCase().trim();
+
+      return normilizedNamePerson.includes(normilizedQuery);
+    },
   );
 
   const handleBlur = () => {
@@ -103,6 +107,7 @@ export const App: React.FC = () => {
                   <div
                     key={person.slug}
                     className="dropdown-item"
+                    style={{ cursor: 'pointer' }}
                     onClick={() => {
                       handlePersonSelection(person);
                     }}
