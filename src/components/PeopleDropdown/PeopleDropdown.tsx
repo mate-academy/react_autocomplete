@@ -4,7 +4,10 @@ import React, { useCallback } from 'react';
 interface Props {
   query: string;
   isHide: boolean;
-  delay: number[];
+  delay: {
+    mainDelay: number,
+    blurDelay: number,
+  };
   setQuery: (value: string) => void;
   setIsHide: (value: boolean) => void;
   applyQuery: (value: string) => void;
@@ -22,8 +25,10 @@ export const PeopleDropdown: React.FC<Props> = ({
     return isHide ? setIsHide(false) : setIsHide(true);
   };
 
+  const { mainDelay, blurDelay } = delay;
+
   const applyHide = useCallback(
-    debounce(setIsHide, delay[0]),
+    debounce(setIsHide, mainDelay),
     [],
   );
 
@@ -34,7 +39,7 @@ export const PeopleDropdown: React.FC<Props> = ({
   };
 
   const applyBlur = useCallback(
-    debounce(setIsHide, delay[1]),
+    debounce(setIsHide, blurDelay),
     [],
   );
 

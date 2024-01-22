@@ -42,7 +42,7 @@ export const Autocomplete: React.FC<Props> = ({
   return (
     <div className="dropdown is-active">
       <PeopleDropdown
-        delay={[mainDelay, blurDelay]}
+        delay={{ mainDelay, blurDelay }}
         isHide={isHide}
         setIsHide={setIsHide}
         query={query}
