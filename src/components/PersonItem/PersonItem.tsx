@@ -5,7 +5,7 @@ interface Props {
   person: Person;
   selectedPerson: Person | null;
   onSelected: (value: Person) => void;
-  setIsHide: (value: boolean) => void;
+  setIsNotHide: (value: boolean) => void;
   setQuery: (value: string) => void;
   setAppliedQuery: (value: string) => void;
 }
@@ -14,7 +14,7 @@ export const PersonItem: React.FC<Props> = ({
   person,
   selectedPerson,
   onSelected,
-  setIsHide,
+  setIsNotHide,
   setQuery,
   setAppliedQuery,
 }) => {
@@ -26,7 +26,7 @@ export const PersonItem: React.FC<Props> = ({
     setQuery(person.name);
     setAppliedQuery(person.name);
     onSelected(selectedItem);
-    setIsHide(false);
+    setIsNotHide(false);
   };
 
   return (

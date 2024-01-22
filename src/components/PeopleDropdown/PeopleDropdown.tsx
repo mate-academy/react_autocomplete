@@ -3,26 +3,26 @@ import React, { useCallback } from 'react';
 
 interface Props {
   query: string;
-  isHide: boolean;
+  isNotHide: boolean;
   delay: {
     mainDelay: number,
     blurDelay: number,
   };
   setQuery: (value: string) => void;
-  setIsHide: (value: boolean) => void;
+  setIsNotHide: (value: boolean) => void;
   applyQuery: (value: string) => void;
 }
 
 export const PeopleDropdown: React.FC<Props> = ({
   query,
-  isHide,
+  isNotHide: isHide,
   delay,
-  setIsHide,
+  setIsNotHide: setIsHide,
   setQuery,
   applyQuery,
 }) => {
   const handleClickHide = () => {
-    return isHide ? setIsHide(false) : setIsHide(true);
+    setIsHide(!isHide);
   };
 
   const { mainDelay, blurDelay } = delay;

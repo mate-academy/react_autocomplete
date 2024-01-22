@@ -20,7 +20,7 @@ export const Autocomplete: React.FC<Props> = ({
 
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [isHide, setIsHide] = useState(false);
+  const [isNotHide, setIsNotHide] = useState(false);
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, mainDelay),
@@ -43,19 +43,19 @@ export const Autocomplete: React.FC<Props> = ({
     <div className="dropdown is-active">
       <PeopleDropdown
         delay={{ mainDelay, blurDelay }}
-        isHide={isHide}
-        setIsHide={setIsHide}
+        isNotHide={isNotHide}
+        setIsNotHide={setIsNotHide}
         query={query}
         setQuery={setQuery}
         applyQuery={applyQuery}
       />
 
-      {isHide && (
+      {isNotHide && (
         <PeopleMenu
           people={filteredPeople}
           selectedPerson={selectedPerson}
           onSelected={onSelected}
-          setIsHide={setIsHide}
+          setIsNotHide={setIsNotHide}
           setQuery={setQuery}
           setAppliedQuery={setAppliedQuery}
         />
