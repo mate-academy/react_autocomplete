@@ -23,7 +23,13 @@ export const DropdownList: React.FC<Props> = ({
 
   return (
     <div className="dropdown-menu" role="menu">
-      <div className="dropdown-content">
+      <div
+        className="dropdown-content"
+        style={{
+          maxHeight: 300,
+          overflowY: 'auto',
+        }}
+      >
         {people.length
           ? people.map((person) => (
             <div
