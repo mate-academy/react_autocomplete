@@ -1,54 +1,123 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import './App.scss';
+import cn from 'classnames';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [visible, setVisible] = useState(false);
+
+  // eslint-disable-next-line
+  const applyQuery = useCallback(
+    debounce((value: string) => setAppliedQuery(value), 1000),
+    [],
+  );
+
+  const handleOnClick = (eventOnClick: React.MouseEvent, person: Person) => {
+    eventOnClick.preventDefault();
+
+    setSelectedPerson(person);
+    setQuery(person.name);
+    setAppliedQuery(person.name);
+    setVisible(false);
+  };
+
+  const onBlurDelay = () => {
+    setTimeout(() => setVisible(false), 100);
+  };
+
+  const handleReset = () => {
+    setSelectedPerson(null);
+    setAppliedQuery('');
+    setQuery('');
+  };
+
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
+
+  const preparedPeople = (people: Person[], queryFilter: string) => {
+    const normalizedQuery = queryFilter.toLowerCase();
+
+    return people.filter(person => person.name
+      .toLowerCase()
+      .includes(normalizedQuery));
+  };
+
+  const preparedPeopleList = preparedPeople(peopleFromServer, appliedQuery);
 
   return (
     <main className="section">
-      <h1 className="title">
-        {`${name} (${born} = ${died})`}
-      </h1>
+      {selectedPerson ? (
+        <h1 className="title">
+          {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
+        </h1>
+      ) : (
+        <h1 className="title">
+          No selected person
+        </h1>
+      )}
 
       <div className="dropdown is-active">
-        <div className="dropdown-trigger">
+        <div className="dropdown-trigger control has-icons-right">
           <input
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={event => handleOnChange(event)}
+            onFocus={() => setVisible(true)}
+            onBlur={onBlurDelay}
           />
+          {selectedPerson && (
+            <span className="icon is-small is-right">
+              <button
+                onClick={handleReset}
+                type="button"
+                className="delete is-small"
+              >
+                x
+              </button>
+            </span>
+          )}
         </div>
 
-        <div className="dropdown-menu" role="menu">
+        <div
+          style={{
+            display: visible ? 'block' : 'none',
+          }}
+          className="dropdown-menu"
+          role="menu"
+        >
           <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
+            {!preparedPeopleList.length ? (
+              <div className="dropdown-item">
+                <p>No matching suggestions</p>
+              </div>
+            ) : (
+              preparedPeopleList.map(person => (
+                <a
+                  href="/"
+                  onClick={event => handleOnClick(event, person)}
+                  className="dropdown-item"
+                  key={person.slug}
+                >
+                  <p
+                    className={cn({
+                      'has-text-link': person.sex === 'm',
+                      'has-text-danger': person.sex === 'f',
+                    })}
+                  >
+                    {person.name}
+                  </p>
+                </a>
+              ))
+            )}
           </div>
         </div>
       </div>
