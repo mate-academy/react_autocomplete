@@ -21,7 +21,7 @@ export const Autocomplete: React.FC<Props> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(
     debounce(setAppliedQuery, delay),
-    [],
+    [delay, setAppliedQuery],
   );
 
   const filteredPeople = useMemo(() => {
@@ -32,26 +32,34 @@ export const Autocomplete: React.FC<Props> = ({
   }, [appliedQuery, people]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!appliedQuery.length) {
-      onSelected(null);
+    const inputValue = event.target.value.trim().toLowerCase();
+
+    if (!inputValue) {
+      setIsListShown(false);
+    } else {
+      setIsListShown(true);
+      applyQuery(inputValue);
     }
 
     setQuery(event.target.value);
-    applyQuery(event.target.value);
   };
 
-  const handleInputSelect = (person: Person) => {
-    setQuery(person.name);
-    onSelected(person);
+  const handleInputSelect = (selectedPerson: Person) => {
+    setQuery(selectedPerson.name);
+    onSelected(selectedPerson);
+    setIsListShown(false);
   };
 
   return (
-    <div className="dropdown is-active">
+    <div className={cn(`
+      dropdown
+      ${isListShown ? 'is-active' : ''}`)}
+    >
       <div className="dropdown-trigger">
         <input
           className="input"
-          placeholder="Enter a part of the name"
           type="text"
+          placeholder="Enter a part of the name"
           value={query}
           onChange={handleQueryChange}
           onFocus={() => setIsListShown(true)}
@@ -59,7 +67,7 @@ export const Autocomplete: React.FC<Props> = ({
         />
       </div>
 
-      {isListShown && (
+      {isListShown && people.length > 0 && (
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
             {!filteredPeople.length
@@ -72,10 +80,16 @@ export const Autocomplete: React.FC<Props> = ({
               )
               : filteredPeople.map(person => {
                 return (
-                  <div className="dropdown-item" key={person.slug}>
+                  <div
+                    className="dropdown-item"
+                    key={person.slug}
+                  >
                     <a
                       href="/"
-                      onMouseDown={() => handleInputSelect(person)}
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                        handleInputSelect(person);
+                      }}
                       className={cn(
                         { 'has-text-link': person.sex === 'm' },
                         { 'has-text-danger': person.sex === 'f' },

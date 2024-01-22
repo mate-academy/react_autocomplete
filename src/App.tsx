@@ -11,16 +11,14 @@ export const App: React.FC = () => {
     <main className="section">
       <h1 className="title">
         {selectedPerson
-          ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
           : 'No selected person'}
       </h1>
 
       <Autocomplete
         people={peopleFromServer}
-        delay={200}
-        onSelected={(person) => {
-          setSelectedPerson(person);
-        }}
+        delay={1000}
+        onSelected={setSelectedPerson}
       />
     </main>
   );
