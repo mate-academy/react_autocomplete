@@ -3,7 +3,7 @@ import debounce from 'lodash.debounce';
 import { PeopleDropdown } from '../PeopleDropdown';
 import { PeopleMenu } from '../PeopleMenu';
 import { Person } from '../../types/Person';
-import { getPreparedPeople } from '../services/people';
+import { getPreparedPeople } from '../../services/people';
 
 interface Props {
   selectedPerson: Person | null;
