@@ -52,9 +52,9 @@ export const App: React.FC = () => {
   };
 
   const handleClearPerson = () => {
+    setSelectedPerson(null);
     setAppliedQuery('');
     setQuery('');
-    // setSelectedPerson(null);
   };
 
   const handleBlur = () => {
