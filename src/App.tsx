@@ -24,12 +24,13 @@ export const App: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
 
   const filteredPeople = useMemo(() => {
-    return peopleFromServer.filter(person => {
-      return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
-    });
+    return peopleFromServer.filter(person => person.name.toLowerCase()
+      .includes(appliedQuery.toLowerCase().trim()));
   }, [appliedQuery]);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+  const applyQuery = useCallback((querry: string) => {
+    debounce(setAppliedQuery, 1000)(querry);
+  }, []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = event.target.value;
