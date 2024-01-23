@@ -1,0 +1,23 @@
+.dropdown-content {
+  max-height: 25em;
+  overflow: auto;
+}
+
+.searchSection {
+  display: flex;
+  gap: 5px;
+}
+
+.input-width {
+  width: 100px;
+}
+
+.field-input {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+a.dropdown-item, button.dropdown-item {
+  padding-right: 0;
+}
