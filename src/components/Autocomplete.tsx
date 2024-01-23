@@ -9,6 +9,11 @@ interface Props {
   onSelected: (person: Person | null) => void
 }
 
+enum Gender {
+  Male = 'm',
+  Female = 'f',
+}
+
 export const Autocomplete: React.FC<Props> = ({
   people,
   delay,
@@ -37,6 +42,10 @@ export const Autocomplete: React.FC<Props> = ({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value.trim().toLowerCase();
 
+    if (!inputValue) {
+      onSelected(null);
+    }
+
     setIsListShown(false);
     applyQuery(inputValue);
 
@@ -50,9 +59,10 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   return (
-    <div className={cn(`
-      dropdown
-      ${isListShown ? 'is-active' : ''}`)}
+    <div className={cn(
+      'dropdown',
+      { 'is-active': isListShown },
+    )}
     >
       <div className="dropdown-trigger">
         <input
@@ -66,7 +76,7 @@ export const Autocomplete: React.FC<Props> = ({
         />
       </div>
 
-      {isListShown && people.length > 0 && (
+      {isListShown && !!people.length && (
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
             {!filteredPeople.length
@@ -90,8 +100,8 @@ export const Autocomplete: React.FC<Props> = ({
                         handleInputSelect(person);
                       }}
                       className={cn(
-                        { 'has-text-link': person.sex === 'm' },
-                        { 'has-text-danger': person.sex === 'f' },
+                        { 'has-text-link': person.sex === Gender.Male },
+                        { 'has-text-danger': person.sex === Gender.Female },
                       )}
                     >
                       {person.name}
