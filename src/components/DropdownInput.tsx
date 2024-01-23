@@ -15,7 +15,7 @@ function debounce(callback: Function, delay = 1000) {
 }
 
 interface Props {
-  onSelect: (p: Person) => void;
+  onSelect : (p: Person) => void;
 }
 
 export const DropdownInput: React.FC<Props> = ({ onSelect }) => {
