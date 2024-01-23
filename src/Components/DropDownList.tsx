@@ -13,16 +13,13 @@ export const DropDownList: React.FC<Props> = ({ people, onClick }) => (
       people.map(person => (
         <div
           className="dropdown-item"
-          key={person.slug}
-          onKeyDown={() => { }}
-          role="button"
-          tabIndex={0}
           onClick={event => onClick(event, person)}
         >
           <p className={cn({
             'has-text-link': person.sex === 'm',
             'has-text-danger': person.sex === 'f',
           })}
+          style={{ cursor: 'pointer' }}
           >
             {person.name}
           </p>
