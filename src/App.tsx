@@ -58,7 +58,7 @@ export const App: React.FC = () => {
   };
 
   const handleBlur = () => {
-    setTimeout(() => setIsFocused(false), 100);
+    setTimeout(() => setIsFocused(false), 200);
   };
 
   return (
