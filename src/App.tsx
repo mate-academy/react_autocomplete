@@ -37,8 +37,10 @@ export const App: React.FC = () => {
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = event.target.value;
 
+    setIsFocused(false);
     setQuery(newQuery);
     applyQuery(newQuery);
+    setTimeout(() => setIsFocused(true), 2000);
   };
 
   const handleSelectedPerson = (
@@ -53,8 +55,8 @@ export const App: React.FC = () => {
 
   const handleClearPerson = () => {
     setSelectedPerson(null);
-    setAppliedQuery('');
     setQuery('');
+    setAppliedQuery('');
   };
 
   const handleBlur = () => {
@@ -64,7 +66,7 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {(selectedPerson && query === selectedPerson.name) ? (
+        {(selectedPerson && query.trim() === selectedPerson.name) ? (
           `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
         ) : (
           'No selected person'
