@@ -44,6 +44,16 @@ export const Autocomplete: React.FC<Props> = ({
     onSelected(person);
   };
 
+  const handleInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    const relatedTarget = event.relatedTarget as HTMLElement;
+
+    if (relatedTarget && relatedTarget.closest('.dropdown-content')) {
+      return;
+    }
+
+    setShowSuggestions(false);
+  };
+
   useEffect(() => {
     if (!showSuggestions) {
       setFilteredPeople([]);
@@ -59,6 +69,7 @@ export const Autocomplete: React.FC<Props> = ({
           className="input"
           value={inputText}
           onChange={handleInputChange}
+          onBlur={handleInputBlur}
         />
       </div>
 
