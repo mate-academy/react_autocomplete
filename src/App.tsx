@@ -47,6 +47,7 @@ export const App: React.FC = () => {
   ) => {
     event.preventDefault();
     setQuery(person.name);
+    setPeople(person.name);
     setSelectedPerson(person);
   };
 
