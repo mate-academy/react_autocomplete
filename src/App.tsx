@@ -3,17 +3,14 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
-type SetAppliedQueryFunction = (querry: string) => void;
-
 function debounce(
-  setAppliedQuerry: SetAppliedQueryFunction,
+  setAppliedQuerry: (querry: string) => void,
   delay: number,
 ) {
   let timerId = 0;
 
   return (querry: string) => {
     window.clearTimeout(timerId);
-
     timerId = window.setTimeout(() => {
       setAppliedQuerry(querry);
     }, delay);
@@ -23,16 +20,16 @@ function debounce(
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
-
-  const filteredPeople = useMemo<Person[]>(() => {
+  const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person => {
       return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
     });
   }, [appliedQuery]);
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = event.target.value;
@@ -49,18 +46,18 @@ export const App: React.FC = () => {
   ) => {
     event.preventDefault();
     setQuery(person.name);
-    applyQuery(person.name);
+    setAppliedQuery(person.name);
     setSelectedPerson(person);
   };
 
   const handleClearPerson = () => {
     setSelectedPerson(null);
-    setQuery('');
     setAppliedQuery('');
+    setQuery('');
   };
 
   const handleBlur = () => {
-    setTimeout(() => setIsFocused(false), 100);
+    setTimeout(() => setIsFocused(false), 200);
   };
 
   return (
@@ -88,10 +85,10 @@ export const App: React.FC = () => {
           {selectedPerson && query && (
             <button
               type="submit"
-              className="button is-danger is-outlined"
+              className="button is-danger is-outline"
               onClick={handleClearPerson}
             >
-              <span>Clear</span>
+              Clear
             </button>
           )}
         </div>
@@ -108,7 +105,7 @@ export const App: React.FC = () => {
                   key={person.slug}
                   href="#select"
                   className="dropdown-item"
-                  onClick={(event) => handleSelectedPerson(event, person)}
+                  onClick={(element) => handleSelectedPerson(element, person)}
                 >
                   {person.name}
                 </a>
