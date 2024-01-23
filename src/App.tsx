@@ -1,14 +1,74 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+
+type SetAppliedQueryFunction = (querry: string) => void;
+
+function debounce(
+  setAppliedQuerry: SetAppliedQueryFunction,
+  delay: number,
+) {
+  let timerId = 0;
+
+  return (querry: string) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      setAppliedQuerry(querry);
+    }, delay);
+  };
+}
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+
+  const filteredPeople = useMemo<Person[]>(() => {
+    return peopleFromServer.filter(person => {
+      return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
+    });
+  }, [appliedQuery]);
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuery = event.target.value;
+
+    setQuery(newQuery);
+    applyQuery(newQuery);
+  };
+
+  const handleSelectedPerson = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    person: Person,
+  ) => {
+    event.preventDefault();
+    setQuery(person.name);
+    applyQuery(person.name);
+    setSelectedPerson(person);
+  };
+
+  const handleClearPerson = () => {
+    setAppliedQuery('');
+    setQuery('');
+    // setSelectedPerson(null);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => setIsFocused(false), 100);
+  };
 
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {(selectedPerson && query === selectedPerson.name) ? (
+          `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+        ) : (
+          'No selected person'
+        )}
       </h1>
 
       <div className="dropdown is-active">
@@ -17,39 +77,50 @@ export const App: React.FC = () => {
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={query}
+            onChange={handleQueryChange}
+            onFocus={() => setIsFocused(true)}
+            onBlur={handleBlur}
           />
+
+          {selectedPerson && query && (
+            <button
+              type="submit"
+              className="button is-danger is-outlined"
+              onClick={handleClearPerson}
+            >
+              <span>Clear</span>
+            </button>
+          )}
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
+        <div
+          id="dropdown-menu"
+          className="dropdown-menu"
+          role="menu"
+        >
+          {isFocused && filteredPeople.length > 0 && (
+            <div className="dropdown-content">
+              {filteredPeople.map(person => (
+                <a
+                  key={person.slug}
+                  href="#select"
+                  className="dropdown-item"
+                  onClick={(event) => handleSelectedPerson(event, person)}
+                >
+                  {person.name}
+                </a>
+              ))}
             </div>
+          )}
 
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
+          {isFocused && filteredPeople.length === 0 && (
+            <div className="dropdown-content">
+              <div className="dropdown-item">
+                No matching suggestions
+              </div>
             </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </main>
