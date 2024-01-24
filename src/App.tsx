@@ -37,7 +37,7 @@ export const App: React.FC = () => {
   function handleBlur(event: HTMLFormElement) {
     event.stopPropagination();
     setQuery('');
-    setOnFocus(!onFocus);
+    setOnFocus(false);
   }
 
   // eslint-disable-next-line
@@ -90,7 +90,6 @@ export const App: React.FC = () => {
             preparedPeopleList={preparedPeopleList}
             // eslint-disable-next-line react/jsx-no-bind
             handleSelectPerson={handleSelectPerson}
-          // setAppliedQuery={setAppliedQuery}
           />
         )}
       </div>

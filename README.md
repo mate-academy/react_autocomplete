@@ -6,14 +6,14 @@ that will suggest people matching an entered text.
 
 > The task does not have tests or a working example
 
-- suggestions should appear after some `delay` in typing (`debounce`);
+DONE - suggestions should appear after some `delay` in typing (`debounce`);
 - the `delay` should be customizable via props;
 DONE - show the list of all people when input is focused but empty ([Check this](https://mui.com/material-ui/react-autocomplete/#combo-box) to see how it can work)
 DONE - show `No matching suggestions` message if there are no people containing the entered text;
-- don't run filtering again if the text has not changed (pause in typing happened when the text was the same as before)
+DONE - don't run filtering again if the text has not changed (pause in typing happened when the text was the same as before)
 DONE - hide suggestions on text change;
 DONE - save selected suggestion text to the input on click and close the list;
-- pass selected person to the `onSelected` callback passed via props;
+DONE - pass selected person to the `onSelected` callback passed via props;
 DONE - add an `h1` to the `App` showing `Name (born - died)` of the selected person or `No selected person`.
 
 ## Instructions

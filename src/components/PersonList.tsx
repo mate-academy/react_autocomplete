@@ -5,13 +5,11 @@ import { Person } from '../types/Person';
 interface Props {
   preparedPeopleList: Person[];
   handleSelectPerson: (person: Person) => void;
-  // setAppliedQuery: () => void;
 }
 
 export const PersonList: React.FC<Props> = ({
   preparedPeopleList,
   handleSelectPerson,
-  // setAppliedQuery,
 }) => {
   return (
     <div className="dropdown-menu" role="menu">
