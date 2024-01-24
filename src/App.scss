@@ -6,3 +6,8 @@ iframe {
   max-height: 13em;
   overflow: auto;
 }
+
+.has-text-link:hover, .has-text-danger:hover{
+  transition: font-weight 0.7;
+  font-weight: 700;
+}
