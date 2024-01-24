@@ -11,7 +11,8 @@ const filteredList = (partOfName: string) => {
 };
 
 export const App: React.FC = () => {
-  const [selectedPerson, setSelectedPerson] = useState(peopleFromServer[0]);
+  const [{ born, died, name }, setSelectedPerson]
+    = useState(peopleFromServer[0]);
   const [value, setValue] = useState('');
   const query = useDebounce(value, 500);
   const [isVisibleDropdown, setIsVisibleDropdown] = useState(false);
@@ -36,7 +37,7 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {`${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`}
+        {`${name} (${born} = ${died})`}
       </h1>
 
       <div className="dropdown is-active">
