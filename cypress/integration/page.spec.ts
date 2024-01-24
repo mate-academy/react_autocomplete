@@ -1,62 +1,61 @@
-/* eslint-disable cypress/no-unnecessary-waiting */
 /* eslint-disable max-len */
 import { faker } from '@faker-js/faker';
 import { peopleFromServer } from '../../src/data/people';
 import { Person } from '../../src/types/Person';
 
-enum DataQa {
-  Title = 'title',
-  SearchInput = 'search-input',
-  SuggestionsList = 'suggestions-list',
-  SuggestionItem = 'suggestion-item',
-  NoSuggestionsMessage = 'no-suggestions-message',
-}
-
-const getByDataQa = (id: DataQa) => cy.get(`[data-qa="${id}"]`);
-const getPageTitle = (person?: Person | null) => {
-  if (person) {
-    return `${person.name} (${person.born} - ${person.died})`;
-  }
-
-  return 'No selected person';
+const page = {
+  title: () => cy.getByDataCy('title'),
+  searchInput: () => cy.getByDataCy('search-input'),
+  suggestionsList: () => cy.getByDataCy('suggestions-list'),
+  suggestionItem: () => cy.getByDataCy('suggestion-item'),
+  noSuggestionsMessage: () => cy.getByDataCy('no-suggestions-message'),
+  debounce: (delay = 300) => {
+    cy.clock().then((clock) => {
+      clock.tick(delay);
+      clock.restore();
+    });
+  },
+  getPageTitle: (person: Person) => (
+    `${person.name} (${person.born} - ${person.died})`
+  ),
 };
 
-describe('Autocomplete page', () => {
+describe('Page', () => {
   beforeEach(() => {
     cy.visit('/');
   });
 
   it('should display the initial page title', () => {
-    getByDataQa(DataQa.Title)
-      .should('contain', getPageTitle());
+    page.title()
+      .should('contain', 'No selected person');
   });
 
   it('should display the input', () => {
-    getByDataQa(DataQa.SearchInput)
+    page.searchInput()
       .should('be.visible')
       .and('have.attr', 'placeholder', 'Enter a part of the name')
       .and('have.value', '');
   });
 
   it('should not render "No matching suggestions" notification for empty input', () => {
-    getByDataQa(DataQa.NoSuggestionsMessage)
+    page.noSuggestionsMessage()
       .should('not.exist');
   });
 
   it('should not display suggestions with empty focused input', () => {
-    getByDataQa(DataQa.SearchInput)
+    page.searchInput()
       .focus();
-    getByDataQa(DataQa.SuggestionsList)
+    page.suggestionsList()
       .should('not.be.visible');
   });
 
   it('should display "No matching suggestions" for non-matching input', () => {
-    getByDataQa(DataQa.SearchInput)
-      .type(faker.lorem.word());
+    page.searchInput()
+      .type('non-matching');
 
-    cy.wait(300);
+    page.debounce();
 
-    getByDataQa(DataQa.NoSuggestionsMessage)
+    page.noSuggestionsMessage()
       .should('be.visible')
       .and('contain', 'No matching suggestions');
   });
@@ -68,15 +67,15 @@ describe('Autocomplete page', () => {
       faker.number.int({ min: 1, max: 2 }),
     );
 
-    getByDataQa(DataQa.SearchInput)
+    page.searchInput()
       .type(typedName);
 
-    cy.wait(300);
+    page.debounce();
 
-    getByDataQa(DataQa.SuggestionsList)
+    page.suggestionsList()
       .should('be.visible');
 
-    getByDataQa(DataQa.SuggestionItem)
+    page.suggestionItem()
       .should('have.have.length.gte', 1)
       .and('contain', person.name);
   });
@@ -88,88 +87,89 @@ describe('Autocomplete page', () => {
       faker.number.int({ min: 1, max: 2 }),
     );
 
-    getByDataQa(DataQa.SearchInput)
+    page.searchInput()
       .type(typedName);
 
-    cy.wait(300);
+    page.debounce();
 
-    getByDataQa(DataQa.SuggestionsList)
+    page
+      .suggestionsList()
       .should('be.visible');
 
-    getByDataQa(DataQa.SearchInput)
+    page.searchInput()
       .clear();
 
-    getByDataQa(DataQa.SuggestionsList)
+    page.suggestionsList()
       .should('not.be.visible');
   });
 
   it('should update the title with selected person', () => {
     const person = faker.helpers.arrayElement(peopleFromServer);
 
-    getByDataQa(DataQa.SearchInput)
+    page.searchInput()
       .type(person.name);
 
-    cy.wait(300);
+    page.debounce();
 
-    getByDataQa(DataQa.SuggestionItem)
+    page.suggestionItem()
       .contains(person.name)
       .click();
 
-    getByDataQa(DataQa.Title)
-      .should('contain', getPageTitle(person));
+    page.title()
+      .should('contain', page.getPageTitle(person));
   });
 
   it('should update the title after another person is selected', () => {
     const person1 = faker.helpers.arrayElement(peopleFromServer.slice(0, 10));
     const person2 = faker.helpers.arrayElement(peopleFromServer.slice(10));
 
-    getByDataQa(DataQa.SearchInput)
+    page.searchInput()
       .type(person1.name);
 
-    cy.wait(300);
+    page.debounce();
 
-    getByDataQa(DataQa.SuggestionItem)
+    page.suggestionItem()
       .contains(person1.name)
       .click();
 
-    getByDataQa(DataQa.Title)
-      .should('contain', getPageTitle(person1));
+    page.title()
+      .should('contain', page.getPageTitle(person1));
 
-    getByDataQa(DataQa.SearchInput)
+    page.searchInput()
       .clear();
 
-    getByDataQa(DataQa.SearchInput)
+    page.searchInput()
       .type(person2.name);
 
-    cy.wait(300);
+    page.debounce();
 
-    getByDataQa(DataQa.SuggestionItem)
+    page.suggestionItem()
       .contains(person2.name)
       .click();
 
-    getByDataQa(DataQa.Title)
-      .should('contain', getPageTitle(person2));
+    page.title()
+      .should('contain', page.getPageTitle(person2));
   });
 
   it('should update the title after input is cleared', () => {
     const person = faker.helpers.arrayElement(peopleFromServer);
 
-    getByDataQa(DataQa.SearchInput)
+    page.searchInput()
       .type(person.name);
 
-    cy.wait(300);
+    page.debounce();
 
-    getByDataQa(DataQa.SuggestionItem)
+    page.suggestionItem()
       .contains(person.name)
       .click();
 
-    getByDataQa(DataQa.Title)
-      .should('contain', getPageTitle(person));
+    page.title()
+      .should('contain', page.getPageTitle(person));
 
-    getByDataQa(DataQa.SearchInput)
+    page.searchInput()
       .clear();
 
-    getByDataQa(DataQa.Title)
-      .should('contain', getPageTitle());
+    page.title()
+      .should('contain', 'No selected person');
   });
 });

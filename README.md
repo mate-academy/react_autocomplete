@@ -39,8 +39,8 @@ Then you probably have an incompatible version of Python installed.
 You can check it by running `python --version` command.
 If you have Python 3+, then you need to install Python 2.7, set it as default and try again.
 
-Alternative solution is to install `node-sass` separately:
+Alternative solution is to install `node-sass@npm:sass` version:
 
 ```bash
-  npm install node-sass@npm:sass
+  npm install node-sass@npm:sass --save-dev
 ```
