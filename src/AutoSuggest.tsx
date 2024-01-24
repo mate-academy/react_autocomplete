@@ -75,7 +75,6 @@ export const AutoSuggest: React.FC<Props> = ({
           </div>
         </div>
       )}
-
     </div>
   );
 };
