@@ -7,9 +7,9 @@ const page = {
   title: () => cy.getByDataCy('title'),
   searchInput: () => cy.getByDataCy('search-input'),
   suggestionsList: () => cy.getByDataCy('suggestions-list'),
-  suggestionItem: () => cy.getByDataCy('suggestion-item'),
+  suggestionItems: () => cy.getByDataCy('suggestion-item'),
   noSuggestionsMessage: () => cy.getByDataCy('no-suggestions-message'),
-  debounce: (delay = 300) => {
+  waitForDebounce: (delay = 300) => {
     cy.clock().then((clock) => {
       clock.tick(delay);
       clock.restore();
@@ -25,151 +25,135 @@ describe('Page', () => {
     cy.visit('/');
   });
 
-  it('should display the initial page title', () => {
-    page.title()
-      .should('contain', 'No selected person');
+  describe('initial state', () => {
+    it('should display the initial page title', () => {
+      page.title()
+        .should('contain', 'No selected person');
+    });
+
+    it('should display the input', () => {
+      page.searchInput()
+        .should('be.visible')
+        .and('have.attr', 'placeholder', 'Enter a part of the name')
+        .and('have.value', '');
+    });
+
+    it('should not render "No matching suggestions"', () => {
+      page.noSuggestionsMessage()
+        .should('not.exist');
+    });
   });
 
-  it('should display the input', () => {
-    page.searchInput()
-      .should('be.visible')
-      .and('have.attr', 'placeholder', 'Enter a part of the name')
-      .and('have.value', '');
-  });
+  describe('user interactions', () => {
+    it('should display the list of all people when input is focused but empty', () => {
+      page.searchInput()
+        .focus();
 
-  it('should not render "No matching suggestions" notification for empty input', () => {
-    page.noSuggestionsMessage()
-      .should('not.exist');
-  });
+      page.waitForDebounce();
 
-  it('should not display suggestions with empty focused input', () => {
-    page.searchInput()
-      .focus();
-    page.suggestionsList()
-      .should('not.be.visible');
-  });
+      page.suggestionsList()
+        .should('be.visible');
 
-  it('should display "No matching suggestions" for non-matching input', () => {
-    page.searchInput()
-      .type('non-matching');
+      page.suggestionItems()
+        .should('have.have.length', peopleFromServer.length);
+    });
 
-    page.debounce();
+    it('should display "No matching suggestions" for non-matching input', () => {
+      page.searchInput()
+        .type('non-matching');
 
-    page.noSuggestionsMessage()
-      .should('be.visible')
-      .and('contain', 'No matching suggestions');
-  });
+      page.waitForDebounce();
 
-  it('should display suggestions for matching input', () => {
-    const person = faker.helpers.arrayElement(peopleFromServer);
-    const typedName = person.name.substring(
-      0,
-      faker.number.int({ min: 1, max: 2 }),
-    );
+      page.noSuggestionsMessage()
+        .should('be.visible')
+        .and('contain', 'No matching suggestions');
+    });
 
-    page.searchInput()
-      .type(typedName);
+    it('should display suggestions for matching input', () => {
+      const person = faker.helpers.arrayElement(peopleFromServer);
+      const typedName = person.name.substring(
+        0,
+        faker.number.int({ min: 1, max: 2 }),
+      );
 
-    page.debounce();
+      page.searchInput()
+        .type(typedName);
 
-    page.suggestionsList()
-      .should('be.visible');
+      page.waitForDebounce();
 
-    page.suggestionItem()
-      .should('have.have.length.gte', 1)
-      .and('contain', person.name);
-  });
+      page.suggestionsList()
+        .should('be.visible');
 
-  it('should hide suggestions after input is cleared', () => {
-    const person = faker.helpers.arrayElement(peopleFromServer);
-    const typedName = person.name.substring(
-      0,
-      faker.number.int({ min: 1, max: 2 }),
-    );
+      page.suggestionItems()
+        .should('have.have.length.gte', 1)
+        .and('contain', person.name);
+    });
 
-    page.searchInput()
-      .type(typedName);
+    it('should update the title with selected person', () => {
+      const person = faker.helpers.arrayElement(peopleFromServer);
 
-    page.debounce();
+      page.searchInput()
+        .type(person.name);
 
-    page
-      .suggestionsList()
-      .should('be.visible');
+      page.waitForDebounce();
 
-    page.searchInput()
-      .clear();
+      page.suggestionItems()
+        .contains(person.name)
+        .click();
 
-    page.suggestionsList()
-      .should('not.be.visible');
-  });
+      page.title()
+        .should('contain', page.getPageTitle(person));
+    });
 
-  it('should update the title with selected person', () => {
-    const person = faker.helpers.arrayElement(peopleFromServer);
+    it('should update the title after another person is selected', () => {
+      const person1 = faker.helpers.arrayElement(peopleFromServer.slice(0, 10));
+      const person2 = faker.helpers.arrayElement(peopleFromServer.slice(10));
 
-    page.searchInput()
-      .type(person.name);
+      page.searchInput()
+        .type(person1.name);
 
-    page.debounce();
+      page.waitForDebounce();
 
-    page.suggestionItem()
-      .contains(person.name)
-      .click();
+      page.suggestionItems()
+        .contains(person1.name)
+        .click();
 
-    page.title()
-      .should('contain', page.getPageTitle(person));
-  });
+      page.searchInput()
+        .clear();
 
-  it('should update the title after another person is selected', () => {
-    const person1 = faker.helpers.arrayElement(peopleFromServer.slice(0, 10));
-    const person2 = faker.helpers.arrayElement(peopleFromServer.slice(10));
+      page.searchInput()
+        .type(person2.name);
 
-    page.searchInput()
-      .type(person1.name);
+      page.waitForDebounce();
 
-    page.debounce();
+      page.suggestionItems()
+        .contains(person2.name)
+        .click();
 
-    page.suggestionItem()
-      .contains(person1.name)
-      .click();
+      page.title()
+        .should('contain', page.getPageTitle(person2));
+    });
 
-    page.title()
-      .should('contain', page.getPageTitle(person1));
+    it('should set the title to "No selected person" after input is changed', () => {
+      const person = faker.helpers.arrayElement(peopleFromServer);
 
-    page.searchInput()
-      .clear();
+      page.searchInput()
+        .type(person.name);
 
-    page.searchInput()
-      .type(person2.name);
+      page.waitForDebounce();
 
-    page.debounce();
+      page.suggestionItems()
+        .contains(person.name)
+        .click();
 
-    page.suggestionItem()
-      .contains(person2.name)
-      .click();
+      page.title()
+        .should('contain', page.getPageTitle(person));
 
-    page.title()
-      .should('contain', page.getPageTitle(person2));
-  });
+      page.searchInput()
+        .type('{backspace}');
 
-  it('should update the title after input is cleared', () => {
-    const person = faker.helpers.arrayElement(peopleFromServer);
-
-    page.searchInput()
-      .type(person.name);
-
-    page.debounce();
-
-    page.suggestionItem()
-      .contains(person.name)
-      .click();
-
-    page.title()
-      .should('contain', page.getPageTitle(person));
-
-    page.searchInput()
-      .clear();
-
-    page.title()
-      .should('contain', 'No selected person');
+      page.title()
+        .should('contain', 'No selected person');
+    });
   });
 });

@@ -35,11 +35,16 @@ npm ERR! Failed at the node-sass@6.0.1 postinstall script.
 npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 ```
 
-Then you probably have an incompatible version of Python installed.
-You can check it by running `python --version` command.
-If you have Python 3+, then you need to install Python 2.7, set it as default and try again.
+Solutions:
 
-Alternative solution is to install `node-sass@npm:sass` version:
+- Install `sass` library instead of `node-sass`:
+
+```bash
+  npm uninstall node-sass
+  npm install sass --save-dev
+```
+
+- Alternative solution is to install `node-sass@npm:sass` version:
 
 ```bash
   npm install node-sass@npm:sass --save-dev
