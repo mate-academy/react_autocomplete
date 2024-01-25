@@ -10,12 +10,7 @@ import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
-interface Props {
-  onSelected: (person:Person | null) => void,
-  delay: number,
-}
-
-export const App: React.FC<Props> = ({ delay, onSelected }) => {
+export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -59,8 +54,7 @@ export const App: React.FC<Props> = ({ delay, onSelected }) => {
       setSelectedPerson(person);
       setQuery(person.name);
       setIsDropdownVisible(false);
-      onSelected(person);
-    }, [onSelected],
+    }, [],
   );
 
   const handleReset = () => {
@@ -71,10 +65,10 @@ export const App: React.FC<Props> = ({ delay, onSelected }) => {
   useEffect(() => {
     const timerId = setTimeout(() => {
       setIsDropdownVisible(query !== '' || isInputFocused);
-    }, delay);
+    }, 500);
 
     return () => clearTimeout(timerId);
-  }, [query, isInputFocused, delay, handleFocus, handleBlur]);
+  }, [query, isInputFocused, handleFocus, handleBlur]);
 
   return (
     <main className="section">
