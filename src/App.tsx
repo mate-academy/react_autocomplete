@@ -11,17 +11,23 @@ const filteredList = (partOfName: string) => {
 };
 
 export const App: React.FC = () => {
-  const [{ born, died, name }, setSelectedPerson]
-    = useState(peopleFromServer[0]);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [value, setValue] = useState('');
-  const query = useDebounce(value, 500);
   const [isVisibleDropdown, setIsVisibleDropdown] = useState(false);
   const [visiblePeople, setVisiblePeople] = useState(
     filteredList(''),
   );
 
+  const query = useDebounce(value, 500);
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      setIsVisibleDropdown(false);
+    }, 120);
   };
 
   const handleSelectMan = (man: Person) => () => {
@@ -37,10 +43,16 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selectedPerson
+          ? `${selectedPerson.name} (${selectedPerson.born} = ${selectedPerson.died})`
+          : 'No selected person'}
       </h1>
 
-      <div className="dropdown is-active">
+      {/* <div className="dropdown is-active"> */}
+      <div
+        className={classNames('dropdown',
+          { 'is-active': isVisibleDropdown })}
+      >
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -49,14 +61,18 @@ export const App: React.FC = () => {
             value={value}
             onChange={handleInputChange}
             onFocus={() => setIsVisibleDropdown(true)}
+            onBlur={handleBlur}
           />
         </div>
 
         {isVisibleDropdown && (
-          <div className="dropdown-menu" role="menu">
+          <div
+            className="dropdown-menu"
+            role="menu"
+          >
             <div className="dropdown-content">
-              {
-                visiblePeople.map(man => (
+              {visiblePeople.length > 0
+                ? visiblePeople.map(man => (
                   <div
                     className="dropdown-item"
                     key={man.name}
@@ -74,7 +90,11 @@ export const App: React.FC = () => {
                     </p>
                   </div>
                 ))
-              }
+                : (
+                  <div className="dropdown-item">
+                    <p className="has-text-link">No matching suggestions</p>
+                  </div>
+                )}
             </div>
           </div>
         )}
