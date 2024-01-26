@@ -111,7 +111,7 @@ export const App: React.FC = () => {
                   <p
                     className={classNames({
                       'has-text-link': person.sex === 'm',
-                      'has-text-danger': person.sex === 'f',
+                      'has-text-primary': person.sex === 'f',
                     })}
                   >
                     {person.name}
