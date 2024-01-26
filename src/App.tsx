@@ -13,7 +13,7 @@ export const App: React.FC = () => {
   const [showMenu, setShowMenu] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const addQuery = useCallback(debounce(setAppliedQuery, 500), []);
+  const applyQuery = useCallback(debounce(setAppliedQuery, 500), []);
 
   const filteredPeople = useMemo(
     () => peopleFromServer.filter(
@@ -27,7 +27,7 @@ export const App: React.FC = () => {
     }
 
     setQuery(event.target.value);
-    addQuery(event.target.value);
+    applyQuery(event.target.value);
   };
 
   const handleItemClick = (person: Person) => {
