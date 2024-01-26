@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+/* eslint-disable consistent-return */
+import React, { useEffect, useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 import cn from 'classnames';
 
@@ -32,15 +33,27 @@ export const AutoSuggest: React.FC<Props> = ({
   }, [searchPerson]);
 
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-    debounceApplyQuery(e.target.value);
+    const inputValue = e.target.value.trim();
+
+    setQuery(inputValue);
+    debounceApplyQuery(inputValue);
   };
 
   const handleSuggestionClick = (selectedPerson: Person) => {
     setQuery(selectedPerson.name);
     onSelected(selectedPerson);
     setAppliedQuer(selectedPerson.name);
+
+    setIsInputFocused(false);
   };
+
+  useEffect(() => {
+    if (query.trim() !== '') {
+      setIsInputFocused(true);
+    } else {
+      setIsInputFocused(false);
+    }
+  }, [query]);
 
   return (
     <div className={cn('dropdown', { 'is-active': isInputFocused })}>
@@ -51,8 +64,6 @@ export const AutoSuggest: React.FC<Props> = ({
           className="input"
           value={query}
           onChange={handleQueryChange}
-          onBlur={() => setIsInputFocused(false)}
-          onFocus={() => setIsInputFocused(true)}
         />
       </div>
 
