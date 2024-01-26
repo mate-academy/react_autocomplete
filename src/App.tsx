@@ -1,56 +1,93 @@
-import React from 'react';
+import React, {
+  useCallback, useEffect, useMemo, useRef, useState,
+} from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { List } from './List';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+function debounce(callback: any, delay: number) {
+  let timerId = 0;
+
+  return (...args: any) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
+
+interface AppProps {
+  delay: number
+}
+
+export const App: React.FC<AppProps> = ({ delay }) => {
+  const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState<Person | null>(null);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+
+  const appRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (appRef.current && !appRef.current.contains(event.target as Node)) {
+        setIsInputFocused(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [appRef]);
+
+  const handleFocus = () => {
+    setIsInputFocused(true);
+  };
+
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value;
+
+    setSelected(null);
+    setQuery(inputValue);
+    applyQuery(inputValue);
+  };
+
+  const listFilter = useMemo(() => {
+    return peopleFromServer.filter((people) => {
+      return people.name.toLowerCase()
+        .includes(appliedQuery.toLowerCase().trim());
+    });
+  }, [appliedQuery]);
 
   return (
-    <main className="section">
+    <main className="section" ref={appRef}>
       <h1 className="title">
-        {`${name} (${born} = ${died})`}
+        {selected ? `${selected.name} (${selected.born} = ${selected.died})` : 'No matching suggestions'}
       </h1>
-
       <div className="dropdown is-active">
         <div className="dropdown-trigger">
           <input
             type="text"
             placeholder="Enter a part of the name"
             className="input"
+            value={selected ? selected.name : query}
+            onChange={onChange}
+            onFocus={handleFocus}
           />
         </div>
 
-        <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Bernard Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter Antone Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Haverbeke</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-link">Pieter de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Petronella de Decker</p>
-            </div>
-
-            <div className="dropdown-item">
-              <p className="has-text-danger">Elisabeth Hercke</p>
-            </div>
-          </div>
-        </div>
+        {isInputFocused && !selected && (
+          <List
+            filteredList={listFilter}
+            onSelected={setSelected}
+          />
+        )}
       </div>
     </main>
   );
