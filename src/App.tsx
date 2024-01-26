@@ -82,7 +82,7 @@ export const App: React.FC<AppProps> = ({ delay }) => {
           />
         </div>
 
-        {isInputFocused && !selected && (
+        {isInputFocused && !selected && listFilter.length > 0 && (
           <List
             filteredList={listFilter}
             onSelected={setSelected}
