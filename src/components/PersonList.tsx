@@ -14,7 +14,6 @@ const PersonList: React.FC<Props> = ({
   setIsVisibleList,
   setInputValue,
 }) => {
-  // console.log('list')
   const selectPerson = (person:Person) => {
     setInputValue(person.name);
     setSelectedPerson(person);
