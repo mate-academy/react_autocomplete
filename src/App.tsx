@@ -1,99 +1,98 @@
-import React from 'react';
+import React, { useState, useMemo, MouseEvent } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { DropItems } from './components/DropdownItems';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [query, setQuery] = React.useState('');
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+  };
+
+  const handleFocus = () => {
+    setIsOpen(true);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => setIsOpen(false), 100);
+  };
+
+  const handleReset = () => {
+    setSelectedPerson(null);
+    setQuery('');
+  };
+
+  const handleDropItemClick = (event: MouseEvent, person: Person) => {
+    event.preventDefault();
+
+    setSelectedPerson(person);
+    setQuery(person.name);
+  };
+
+  const sortedPeoples = useMemo(() => {
+    return peopleFromServer.filter(person => {
+      return person.name.toLowerCase().includes(query.toLowerCase());
+    });
+  }, [query]);
 
   return (
-    <div className="container">
-      <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
-        </h1>
+    <main className="section">
+      <h1 className="title">
+        {selectedPerson ? (
+          `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+        ) : ('No one selected')}
+      </h1>
 
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-            />
-          </div>
+      <div className="dropdown is-active">
+        <div className="dropdown-trigger control has-icons-right">
+          <input
+            type="text"
+            placeholder="Enter a part of the name"
+            className="input"
+            value={query}
+            onChange={handleQueryChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+          />
+          {query && (
+            <span className="icon is-small is-right">
+              <button
+                onClick={handleReset}
+                type="button"
+                className="delete is-small"
+              >
+                x
+              </button>
+            </span>
+          )}
+        </div>
 
-          <div
-            className="dropdown-menu"
-            role="menu"
-            data-cy="suggestions-list"
-          >
+        {isOpen ? (
+          <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
+              {sortedPeoples.length ? (
+                sortedPeoples.map(person => (
+                  <DropItems
+                    person={person}
+                    key={person.slug}
+                    handleOnClick={handleDropItemClick}
+                  />
+                ))
+              ) : (
+                <div className="dropdown-item">
+                  <p>No matching suggestions</p>
+                </div>
+              )}
             </div>
           </div>
-        </div>
-
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
-      </main>
-    </div>
+        ) : ''}
+      </div>
+    </main>
   );
 };
