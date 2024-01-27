@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React, { useCallback, useState } from 'react';
 import { Person } from '../../types/Person';
+import { DropdownContent } from '../DropdownContent';
 
 type Props = {
   setPerson: (value: Person | null) => void;
@@ -39,6 +40,14 @@ export const Dropdown: React.FC<Props> = ({
     setIsActiv(false);
   };
 
+  const hendleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
+    if (e.relatedTarget) {
+      return;
+    }
+
+    setIsActiv(false);
+  };
+
   return (
     <div className={classNames('dropdown', {
       'is-active': isActiv,
@@ -53,6 +62,7 @@ export const Dropdown: React.FC<Props> = ({
           value={value}
           onChange={hendleInputChang}
           onFocus={() => setIsActiv(true)}
+          onBlur={hendleBlur}
         />
       </div>
 
@@ -61,19 +71,13 @@ export const Dropdown: React.FC<Props> = ({
         role="menu"
         data-cy="suggestions-list"
       >
-        <div className="dropdown-content">
-          {visiblPeople.map(human => (
-            <a
-              href="#title"
-              className="dropdown-item"
-              data-cy="suggestion-item"
-              key={human.name}
-              onClick={e => selectPerson(e, human)}
-            >
-              {human.name}
-            </a>
-          ))}
-        </div>
+        {visiblPeople.length === 0
+          || (
+            <DropdownContent
+              visiblPeople={visiblPeople}
+              selectPerson={selectPerson}
+            />
+          )}
       </div>
     </div>
   );
