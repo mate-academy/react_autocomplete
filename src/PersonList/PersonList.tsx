@@ -18,6 +18,8 @@ export const PersonList: React.FC<Props> = React.memo((({
     <>
       {peoples.map((person: Person) => (
         <div
+          role="button"
+          tabIndex={0}
           key={person.slug}
           onKeyDown={() => { }}
           className={classNames({
