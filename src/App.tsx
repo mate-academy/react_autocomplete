@@ -1,6 +1,4 @@
-import React, {
-  useCallback, useEffect, useRef, useState,
-} from 'react';
+import React, { useCallback, useState } from 'react';
 import './App.scss';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
@@ -45,14 +43,6 @@ export const App: React.FC = () => {
     setIsVisibleList(false);
   };
 
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!isVisibleList && inputRef.current) {
-      inputRef.current.blur();
-    }
-  }, [isVisibleList]);
-
   return (
     <main className="section">
       <h1 className="title">
@@ -63,7 +53,6 @@ export const App: React.FC = () => {
         <div className="dropdown-trigger">
           <input
             type="text"
-            ref={inputRef}
             placeholder="Enter a part of the name"
             className="input"
             value={inputValue}
@@ -77,6 +66,7 @@ export const App: React.FC = () => {
             filteredPeople={filteredPeople}
             setSelectedPerson={setSelectedPerson}
             setIsVisibleList={setIsVisibleList}
+            setInputValue={setInputValue}
           />
         )}
       </div>

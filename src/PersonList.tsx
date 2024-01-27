@@ -5,14 +5,18 @@ type Props = {
   filteredPeople:Person[],
   setSelectedPerson:React.Dispatch<React.SetStateAction<undefined | Person>>,
   setIsVisibleList:React.Dispatch<React.SetStateAction<boolean>>,
+  setInputValue:React.Dispatch<React.SetStateAction<string>>,
 };
 
 const PersonList: React.FC<Props> = ({
   filteredPeople,
   setSelectedPerson,
   setIsVisibleList,
+  setInputValue,
 }) => {
+  // console.log('list')
   const selectPerson = (person:Person) => {
+    setInputValue(person.name);
     setSelectedPerson(person);
     setIsVisibleList(false);
   };
@@ -28,7 +32,7 @@ const PersonList: React.FC<Props> = ({
                   type="button"
                   className="dropdown-item"
                   key={person.slug}
-                  onClick={() => selectPerson(person)}
+                  onMouseDown={() => selectPerson(person)}
                 >
                   <p className="has-text-link">{person.name}</p>
                 </button>
