@@ -12,7 +12,7 @@ const filterPeople = (people: Person[], qvery: string) => {
       .includes(qvery.toLowerCase())));
 };
 
-const debounce = (f: (str: string) => any, delay: number) => {
+const debounce = (f: (str: string) => void, delay: number) => {
   let timerId = 0;
 
   return (str: string) => {
@@ -52,7 +52,7 @@ export const App: React.FC = () => {
 
         <Dropdown
           setPerson={setPerson}
-          visiblPeople={visiblPeople}
+          visiblePeople={visiblPeople}
           setQuery={setQuery}
           applyQuery={applyQuery}
         />

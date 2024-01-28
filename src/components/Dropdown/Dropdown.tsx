@@ -6,26 +6,26 @@ import { DropdownContent } from '../DropdownContent';
 type Props = {
   setPerson: (value: Person | null) => void;
   setQuery: (value: string) => void;
-  visiblPeople: Person[];
+  visiblePeople: Person[];
   applyQuery: (value: string) => void;
 };
 
 export const Dropdown: React.FC<Props> = ({
   setPerson,
   setQuery,
-  visiblPeople,
+  visiblePeople,
   applyQuery,
 }) => {
   const [value, setValue] = useState('');
-  const [isActiv, setIsActiv] = useState(false);
+  const [isActive, setIsActive] = useState(false);
 
-  const hendleInputChang = useCallback((
+  const handleInputChang = useCallback((
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setValue(e.target.value);
     applyQuery(e.target.value);
     setPerson(null);
-  }, []);
+  }, [applyQuery, setPerson]);
 
   const selectPerson = (
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -37,20 +37,20 @@ export const Dropdown: React.FC<Props> = ({
     setValue(human.name);
     setPerson(human);
 
-    setIsActiv(false);
+    setIsActive(false);
   };
 
-  const hendleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
     if (e.relatedTarget) {
       return;
     }
 
-    setIsActiv(false);
+    setIsActive(false);
   };
 
   return (
     <div className={classNames('dropdown', {
-      'is-active': isActiv,
+      'is-active': isActive,
     })}
     >
       <div className="dropdown-trigger">
@@ -60,9 +60,9 @@ export const Dropdown: React.FC<Props> = ({
           className="input"
           data-cy="search-input"
           value={value}
-          onChange={hendleInputChang}
-          onFocus={() => setIsActiv(true)}
-          onBlur={hendleBlur}
+          onChange={handleInputChang}
+          onFocus={() => setIsActive(true)}
+          onBlur={handleBlur}
         />
       </div>
 
@@ -71,10 +71,10 @@ export const Dropdown: React.FC<Props> = ({
         role="menu"
         data-cy="suggestions-list"
       >
-        {visiblPeople.length === 0
+        {visiblePeople.length === 0
           || (
             <DropdownContent
-              visiblPeople={visiblPeople}
+              visiblPeople={visiblePeople}
               selectPerson={selectPerson}
             />
           )}
