@@ -1,98 +1,64 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
+import { Person } from './types/Person';
 import { peopleFromServer } from './data/people';
+import { Dropdown } from './components/Dropdown';
+import { NoMatching } from './components/NoMatching';
+
+const filterPeople = (people: Person[], qvery: string) => {
+  return people.filter(person => (
+    person.name
+      .toLowerCase()
+      .includes(qvery.toLowerCase())));
+};
+
+const debounce = (f: (str: string) => void, delay: number) => {
+  let timerId = 0;
+
+  return (str: string) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      f(str);
+    }, delay);
+  };
+};
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [person, setPerson] = useState<Person | null>();
+  const [query, setQuery] = useState('');
+
+  const visiblPeople = useMemo(() => {
+    return filterPeople(peopleFromServer, query);
+  }, [query]);
+
+  const applyQuery = useCallback(
+    debounce(setQuery, 300),
+    [],
+  );
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+        <h1
+          className="title"
+          data-cy="title"
+          id="title"
+        >
+          {person
+            ? `${person.name} (${person.born} - ${person.died})`
+            : 'No selected person'}
         </h1>
 
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-            />
-          </div>
+        <Dropdown
+          setPerson={setPerson}
+          visiblePeople={visiblPeople}
+          setQuery={setQuery}
+          applyQuery={applyQuery}
+        />
 
-          <div
-            className="dropdown-menu"
-            role="menu"
-            data-cy="suggestions-list"
-          >
-            <div className="dropdown-content">
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        {visiblPeople.length === 0
+          && <NoMatching />}
       </main>
     </div>
   );
