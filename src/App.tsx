@@ -17,7 +17,7 @@ export const App: React.FC = () => {
   const [isInputFocused, setIsInputFocused] = useState(false);
 
   const filteredPeople = useMemo(() => {
-    if (query === '' && isInputFocused) {
+    if (!query && isInputFocused) {
       return peopleFromServer;
     }
 
@@ -64,7 +64,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const timerId = setTimeout(() => {
-      setIsDropdownVisible(query !== '' || isInputFocused);
+      setIsDropdownVisible(!query || isInputFocused);
     }, 500);
 
     return () => clearTimeout(timerId);
@@ -79,7 +79,7 @@ export const App: React.FC = () => {
       </h1>
 
       <div className={`dropdown ${isDropdownVisible ? 'is-active' : ''}`}>
-        <div className="dropdown-trigger">
+        <div className="dropdown-trigger has-icons-right">
           <input
             type="text"
             placeholder="Enter a part of the name"
@@ -89,7 +89,7 @@ export const App: React.FC = () => {
             onBlur={handleBlur}
             onFocus={handleFocus}
           />
-          {query && (
+          {!!query && (
             <span className="icon is right">
               <button
                 className="delete is small"
@@ -104,6 +104,11 @@ export const App: React.FC = () => {
 
         <div className="dropdown-menu" role="menu">
           <div className="dropdown-content">
+            {filteredPeople.length === 0 && (
+              <div className="dropdown-item">
+                <p>No people found.</p>
+              </div>
+            )}
             {filteredPeople.map(person => (
               <div
                 key={person.name}
