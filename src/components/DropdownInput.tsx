@@ -3,16 +3,8 @@ import './DropdownInput.scss';
 import { peopleFromServer } from '../data/people';
 import { ListItem } from '../ListItem';
 import { Person } from '../types/Person';
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-function debounce(callback: Function, delay = 1000) {
-  let timerId = 0;
-
-  return (...args: any[]) => {
-    window.clearTimeout(timerId);
-    timerId = window.setTimeout(callback, delay, ...args);
-  };
-}
+import { debounce } from '../utils/debounce';
+import { filterPeople } from '../utils/filterPeople';
 
 interface Props {
   onSelect : (p: Person) => void;
@@ -26,19 +18,6 @@ export const DropdownInput: React.FC<Props> = ({ onSelect }) => {
   const showList = querry === delayedQerry;
 
   const handleQuerry = useCallback(debounce(setDelayedQerry, delay), [delay]);
-
-  function filterPeople(people: Person[], querryForFilter: string): Person[] {
-    let peopleCopy = [...people];
-    const normalizedQuerry = querryForFilter.toLowerCase().trim();
-
-    if (normalizedQuerry) {
-      peopleCopy = peopleCopy.filter(
-        person => person.name.toLowerCase().includes(normalizedQuerry),
-      );
-    }
-
-    return peopleCopy;
-  }
 
   const visiblePeople = useMemo(
     () => filterPeople(peopleFromServer, delayedQerry),

@@ -3,7 +3,7 @@ import { Person } from './types/Person';
 
 interface Props {
   person: Person;
-  onSelect: (p: Person) => void;
+  onSelect: (person: Person) => void;
 }
 
 export const ListItem = (props: Props) => {
