@@ -25,6 +25,7 @@ export const SearchField: React.FC<Props> = ({
 
   const handleSelect = (selectPerson: Person) => {
     onSelected(selectPerson);
+    setQuery(selectPerson.name);
   };
 
   const filteredPeople = useMemo(() => {
