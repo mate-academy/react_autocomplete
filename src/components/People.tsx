@@ -6,11 +6,6 @@ type Props = {
 };
 
 export const PeopleList: React.FC<Props> = ({ people, onSelect }) => {
-  // const handlePersonClick
-  //   = (event: React.MouseEvent<HTMLAnchorElement>, person: Person) => {
-  //     event.preventDefault();
-  //     onSelect(person);
-  //   };
   const handlePersonClick = (person: Person) => {
     onSelect(person);
   };
