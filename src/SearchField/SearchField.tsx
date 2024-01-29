@@ -30,7 +30,7 @@ export const SearchField: React.FC<Props> = ({
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person => (
-      person.name.toLocaleLowerCase().includes(appliedQuery)
+      person.name.toLocaleLowerCase().includes(appliedQuery.toLocaleLowerCase())
     ));
   }, [appliedQuery]);
 
