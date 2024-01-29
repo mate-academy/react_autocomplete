@@ -17,6 +17,7 @@ export const DropdownInput: React.FC<Props> = ({ onSelect }) => {
   const [delay, setDelay] = useState(500);
   const showList = querry === delayedQerry;
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleQuerry = useCallback(debounce(setDelayedQerry, delay), [delay]);
 
   const visiblePeople = useMemo(
