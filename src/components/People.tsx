@@ -6,11 +6,14 @@ type Props = {
 };
 
 export const PeopleList: React.FC<Props> = ({ people, onSelect }) => {
-  const handlePersonClick
-    = (event: React.MouseEvent<HTMLAnchorElement>, person: Person) => {
-      event.preventDefault();
-      onSelect(person);
-    };
+  // const handlePersonClick
+  //   = (event: React.MouseEvent<HTMLAnchorElement>, person: Person) => {
+  //     event.preventDefault();
+  //     onSelect(person);
+  //   };
+  const handlePersonClick = (person: Person) => {
+    onSelect(person);
+  };
 
   return (
     <div className="dropdown-content">
@@ -34,15 +37,17 @@ export const PeopleList: React.FC<Props> = ({ people, onSelect }) => {
             key={person.slug}
             className="dropdown-item"
             data-cy="suggestion-item"
+            role="button"
+            tabIndex={0}
+            onClick={() => handlePersonClick(person)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                handlePersonClick(person);
+              }
+            }}
+            style={{ cursor: 'pointer' }}
           >
-            <a
-              href="/"
-              onClick={(e) => handlePersonClick(e, person)}
-            >
-              <p className="has-text-link">
-                {person.name}
-              </p>
-            </a>
+            <p className="has-text-link">{person.name}</p>
           </div>
         ))
       )}
