@@ -21,15 +21,15 @@ export const App: React.FC = () => {
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
   ) => {
     event.preventDefault();
+
     setQuery(event.currentTarget.textContent || '');
     setSelectedPerson(event.currentTarget.textContent || '');
-    setIsInputFocused(true);
+    setIsInputFocused(false);
   };
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
-    setIsInputFocused(true);
   };
 
   const filteredPeople = useMemo(() => {
@@ -56,6 +56,7 @@ export const App: React.FC = () => {
           filteredPeople={filteredPeople}
           onSelected={handleQueryClick}
           focus={isInputFocused}
+          setIsInputFocused={setIsInputFocused}
         />
       </main>
     </div>

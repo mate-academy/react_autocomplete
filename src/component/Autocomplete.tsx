@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { Dispatch, SetStateAction } from 'react';
 import { Person } from '../types/Person';
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
     event : React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => void
   focus: boolean
+  setIsInputFocused: Dispatch<SetStateAction<boolean>>
 }
 
 export const Autocomplate: React.FC<Props> = ({
@@ -17,13 +19,22 @@ export const Autocomplate: React.FC<Props> = ({
   filteredPeople,
   onSelected,
   focus,
+  setIsInputFocused,
 }) => {
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
+    if (e.relatedTarget) {
+      return;
+    }
+
+    setIsInputFocused(false);
+  };
+
   return (
     <div className={cn(
       'dropdown',
       'is-flex-direction-column',
       'is-align-self-flex-start',
-      { 'is-hoverable': focus },
+      { 'is-active': focus },
     )}
     >
       <div className="dropdown-trigger">
@@ -34,7 +45,8 @@ export const Autocomplate: React.FC<Props> = ({
           data-cy="search-input"
           value={query}
           onChange={handleQueryChange}
-          onFocus={handleQueryChange}
+          onFocus={() => setIsInputFocused(true)}
+          onBlur={handleBlur}
         />
       </div>
 
