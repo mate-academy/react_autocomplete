@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { PersonList } from './components/PersonList';
 import { debounce } from './utils/debounce';
-// import { preparePersonList } from './utils/preparePersonList';
+import { preparePersonList } from './utils/prepList';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -13,29 +13,20 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  let preparedPeopleList: Person[] = [...peopleFromServer];
+  let timeoutId: ReturnType<typeof setTimeout>;
 
-  function preparePersonList(): void {
-    preparedPeopleList = preparedPeopleList.filter(
-      person => person.name.toLowerCase()
-        .includes(appliedQuery.toLowerCase().trim()),
-    );
-  }
+  const preparedPeopleList = preparePersonList(peopleFromServer, appliedQuery);
 
   function handleBlur() {
-    setTimeout(() => {
+    timeoutId = setTimeout(() => {
       setQuery('');
       setOnFocus(false);
     }, 100);
   }
 
-  // eslint-disable-next-line
-  const handleInput = useCallback(
-    debounce((value: string) => {
-      setAppliedQuery(value);
-    }, 1500),
-    [],
-  );
+  const handleInput = debounce((value: string) => {
+    setAppliedQuery(value);
+  }, 1500);
 
   function handleSelectPerson(person: Person): void {
     setSelectedPerson(person);
@@ -43,9 +34,13 @@ export const App: React.FC = () => {
     setQuery(person.name);
   }
 
-  if (query !== '' && query !== selectedPerson?.name) {
-    preparePersonList();
-  }
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeoutId);
+    };
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore: bug with assign timeout
+  }, [timeoutId]);
 
   return (
     <main className="section">
