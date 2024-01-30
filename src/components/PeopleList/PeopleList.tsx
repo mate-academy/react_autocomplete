@@ -7,13 +7,19 @@ interface Props {
   updateInputValue: (value: string) => void;
 }
 
-export const PeopleList: React.FC<Props> = ({ people, onSelectPerson, updateInputValue }) => {
-  const handlePersonClick = (event: React.MouseEvent<HTMLAnchorElement>, person: Person) => {
+export const PeopleList: React.FC<Props> = ({
+  people,
+  onSelectPerson,
+  updateInputValue,
+}) => {
+  const handlePersonClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    person: Person,
+  ) => {
     event.preventDefault();
     onSelectPerson(person);
     updateInputValue(person.name);
   };
-
 
   return (
     <div
@@ -25,6 +31,7 @@ export const PeopleList: React.FC<Props> = ({ people, onSelectPerson, updateInpu
       <div className="dropdown-content">
         {people.map((person) => (
           <a
+            href="/"
             key={person.slug}
             className="dropdown-item"
             data-cy="suggestion-item"

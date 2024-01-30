@@ -31,9 +31,7 @@ export const Autocomplete: React.FC<Props> = ({
     setAppliedQuery(event.target.value);
   };
 
-  const filteredPeople = items.filter((person) =>
-    person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
-  );
+  const filteredPeople = items.filter((person) => person.name.toLowerCase().includes(appliedQuery.toLowerCase())); // eslint-disable-line
 
   const dropdownActive = query !== '' || isInputFocused;
 
@@ -55,7 +53,9 @@ export const Autocomplete: React.FC<Props> = ({
     <div className={`dropdown ${dropdownActive ? 'is-active' : ''}`}>
       <div className="dropdown-trigger control has-icons-right">
         <input
-          onFocus={() => {setIsInputFocused(true);}}
+          onFocus={() => {
+            setIsInputFocused(true);
+          }}
           onBlur={onBlurTimeout}
           type="text"
           placeholder="Enter a part of the name"
