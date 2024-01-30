@@ -36,9 +36,7 @@ export const Autocomplete: React.FC<Props> = ({
   const dropdownActive = query !== '' || isInputFocused;
 
   const onBlurTimeout = () => {
-    if (!isInputFocused) {
-      setIsInputFocused(false);
-    }
+    setTimeout(() => setIsInputFocused(false), 300);
   };
 
   const reset = () => {
