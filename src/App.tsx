@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { debounce } from 'lodash';
@@ -31,16 +32,20 @@ export const App: React.FC = () => {
     }, [delayQuery],
   );
 
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
   const handleOnBlur = useCallback(() => {
     setTimeout(() => {
-      setIsVisible(false);
+      if (dropdownRef.current
+        && !dropdownRef.current.contains(document.activeElement as Node)) {
+        setIsVisible(false);
+      }
     }, 100);
   }, []);
 
   const handlePersonSelect = useCallback((person: Person | null) => {
     if (person) {
       setQuery(person.name);
-      // setIsVisible(false);
       setTitle(`${person.name} (${person.born} - ${person.died})`);
     } else {
       setQuery('');
@@ -68,7 +73,7 @@ export const App: React.FC = () => {
         {title}
       </h1>
 
-      <div className="dropdown is-active">
+      <div className="dropdown is-active" ref={dropdownRef}>
         <div className="dropdown-trigger">
           <input
             type="text"
