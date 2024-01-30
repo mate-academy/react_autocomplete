@@ -16,6 +16,7 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const [title, setTitle] = useState<string>('No selected person');
+  const [loading, setLoading] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const delayQuery = useMemo(() => debounce((value: string) => {
@@ -28,6 +29,7 @@ export const App: React.FC = () => {
 
       setQuery(value);
       setTitle('No selected person');
+      setLoading(true);
       delayQuery(value);
     }, [delayQuery],
   );
@@ -39,6 +41,7 @@ export const App: React.FC = () => {
       if (dropdownRef.current
         && !dropdownRef.current.contains(document.activeElement as Node)) {
         setIsVisible(false);
+        setLoading(false);
       }
     }, 100);
   }, []);
@@ -53,6 +56,7 @@ export const App: React.FC = () => {
     }
 
     setIsVisible(false);
+    setLoading(false);
   }, []);
 
   const filteredPeople = useMemo(() => {
@@ -66,6 +70,18 @@ export const App: React.FC = () => {
       delayQuery.cancel();
     };
   }, [delayQuery]);
+
+  useEffect(() => {
+    const fetchData = () => {
+      setAppliedQuery(query);
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    };
+
+    fetchData();
+  }, [query]);
 
   return (
     <main className="section is-flex is-flex-direction-column">
@@ -87,7 +103,7 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {isVisible && (
+        {isVisible && !loading && (
           <div
             className="dropdown-menu"
             role="menu"

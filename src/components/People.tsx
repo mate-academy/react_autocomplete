@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Person } from '../types/Person';
 
 type Props = {
@@ -6,6 +7,7 @@ type Props = {
 };
 
 export const PeopleList: React.FC<Props> = ({ people, onSelect }) => {
+  const [hoveredPerson, setHoveredPerson] = useState<Person | null>(null);
   const handlePersonClick
   = (person: Person) => {
     onSelect(person);
@@ -31,11 +33,13 @@ export const PeopleList: React.FC<Props> = ({ people, onSelect }) => {
         people.map((person) => (
           <div
             key={person.slug}
-            className="dropdown-item"
+            className={`dropdown-item ${person === hoveredPerson ? 'hovered' : ''}`}
             data-cy="suggestion-item"
             role="button"
             tabIndex={0}
             onClick={() => handlePersonClick(person)}
+            onMouseEnter={() => setHoveredPerson(person)}
+            onMouseLeave={() => setHoveredPerson(null)}
             onKeyDown={(event) => {
               if (event.key === 'Enter' || event.key === ' ') {
                 handlePersonClick(person);
