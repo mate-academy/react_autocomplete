@@ -3,6 +3,8 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { PersonList } from './components/PersonList';
+import { debounce } from './utils/debounce';
+// import { preparePersonList } from './utils/preparePersonList';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -10,22 +12,8 @@ export const App: React.FC = () => {
   const [onFocus, setOnFocus] = useState(false);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [hasListVisible, setHasListVisible] = useState(false);
 
   let preparedPeopleList: Person[] = [...peopleFromServer];
-
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  function debounce(callback: Function, delay: number) {
-    let timerId = 0;
-
-    return (args: string) => {
-      window.clearTimeout(timerId);
-
-      timerId = window.setTimeout(() => {
-        callback(args);
-      }, delay);
-    };
-  }
 
   function preparePersonList(): void {
     preparedPeopleList = preparedPeopleList.filter(
@@ -34,10 +22,11 @@ export const App: React.FC = () => {
     );
   }
 
-  function handleBlur(event: HTMLFormElement) {
-    event.stopPropagination();
-    setQuery('');
-    setOnFocus(false);
+  function handleBlur() {
+    setTimeout(() => {
+      setQuery('');
+      setOnFocus(false);
+    }, 100);
   }
 
   // eslint-disable-next-line
@@ -50,7 +39,6 @@ export const App: React.FC = () => {
 
   function handleSelectPerson(person: Person): void {
     setSelectedPerson(person);
-    setHasListVisible(false);
     setOnFocus(false);
     setQuery(person.name);
   }
@@ -76,8 +64,8 @@ export const App: React.FC = () => {
             placeholder="Enter a part of the name"
             className="input"
             value={query}
-            onFocus={() => setOnFocus(!onFocus)}
-            onBlur={() => handleBlur}
+            onFocus={() => setOnFocus(true)}
+            onBlur={handleBlur}
             onChange={event => {
               setQuery(event.target.value);
               handleInput(event.target.value);
@@ -85,7 +73,7 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {(hasListVisible || onFocus) && (
+        {onFocus && (
           <PersonList
             preparedPeopleList={preparedPeopleList}
             // eslint-disable-next-line react/jsx-no-bind

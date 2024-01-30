@@ -14,13 +14,7 @@ export const PersonList: React.FC<Props> = ({
   return (
     <div className="dropdown-menu" role="menu">
       {preparedPeopleList.length ? (
-        <div
-          className="dropdown-content"
-          style={{
-            maxHeight: 400,
-            overflowY: 'auto',
-          }}
-        >
+        <div className="dropdown-content">
           {preparedPeopleList.map(person => (
             <div
               className="dropdown-item"
