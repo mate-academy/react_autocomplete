@@ -5,7 +5,7 @@ import { Person } from '../../types/Person';
 type Props = {
   people: Person[];
   delay?: number;
-  onSelected?: (person: Person) => void;
+  onSelected?: (person: Person | null) => void;
 };
 
 export const Autocomplete: React.FC<Props> = React.memo((({
@@ -43,6 +43,7 @@ export const Autocomplete: React.FC<Props> = React.memo((({
   }, [people, appliedQuery]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onSelected(null);
     setIsFiltering(true);
     setQuery(e.target.value);
   };
@@ -89,7 +90,10 @@ export const Autocomplete: React.FC<Props> = React.memo((({
                     className="dropdown-item button is-white"
                     data-cy="suggestion-item"
                     key={slug}
-                    onClick={() => onSelected(person)}
+                    onClick={() => {
+                      onSelected(person);
+                      setQuery(name);
+                    }}
                   >
                     <p
                       className={classNames({

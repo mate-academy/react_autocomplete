@@ -8,7 +8,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const { name, born, died } = selectedPerson || {};
 
-  const onSelected = (person: Person) => {
+  const onSelected = (person: Person | null) => {
     setSelectedPerson(person);
   };
 
