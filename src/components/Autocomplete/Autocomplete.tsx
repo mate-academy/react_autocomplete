@@ -28,7 +28,6 @@ export const Autocomplete: React.FC<Props> = ({
   const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
-    setAppliedQuery(event.target.value);
   };
 
   const filteredPeople = items.filter((person) => person.name.toLowerCase().includes(appliedQuery.toLowerCase())); // eslint-disable-line
@@ -41,7 +40,7 @@ export const Autocomplete: React.FC<Props> = ({
 
   const reset = () => {
     setQuery('');
-    applyQuery('');
+    applyQuery.cancel();
     setAppliedQuery('');
     setIsInputFocused(false);
     onReset();
