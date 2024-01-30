@@ -28,6 +28,7 @@ export const Autocomplete: React.FC<Props> = ({
   const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    onReset();
   };
 
   const filteredPeople = items.filter((person) => person.name.toLowerCase().includes(appliedQuery.toLowerCase())); // eslint-disable-line
@@ -62,7 +63,7 @@ export const Autocomplete: React.FC<Props> = ({
           onChange={handleQueryChange}
         />
 
-        {query !== '' && (
+        {!!query && (
           <span className="icon is-small is-right">
             <button
               onClick={reset}
@@ -75,24 +76,28 @@ export const Autocomplete: React.FC<Props> = ({
         )}
       </div>
 
-      <PeopleList
-        people={filteredPeople}
-        onSelectPerson={onSelect}
-        updateInputValue={setQuery}
-      />
+      {isInputFocused && (
+        <>
+          <PeopleList
+            people={filteredPeople}
+            onSelectPerson={onSelect}
+            updateInputValue={setQuery}
+          />
 
-      {appliedQuery !== '' && filteredPeople.length === 0 && (
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+          {!!appliedQuery && !filteredPeople.length && (
+            <div
+              className="
+                notification
+                is-danger
+                is-light
+              "
+              role="alert"
+              data-cy="no-suggestions-message"
+            >
+              <p className="has-text-danger">No matching suggestions</p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
