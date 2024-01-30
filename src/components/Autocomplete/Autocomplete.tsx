@@ -53,26 +53,29 @@ export const Autocomplete: React.FC<Props> = ({
 
       <div className="dropdown-menu" role="menu">
         <div className="dropdown-content">
-          {filteredPeople.map(pers => (
-            <a
-              className="dropdown-item"
-              href="/"
-              key={pers.slug}
-              onMouseDown={() => {
-                setQwery(pers.name);
-                onSelectPerson(pers);
-              }}
-            >
-              <p
-                className={classNames({
-                  'has-text-link': pers.sex === 'm',
-                  'has-text-danger': pers.sex === 'f',
-                })}
+          {!filteredPeople.length ? (
+            <div className="dropdown-item">No matching suggestions</div>
+          ) : (
+            filteredPeople.map(pers => (
+              <a
+                className="dropdown-item"
+                href="/"
+                key={pers.slug}
+                onMouseDown={() => {
+                  setQwery(pers.name);
+                  onSelectPerson(pers);
+                }}
               >
-                {pers.name}
-              </p>
-            </a>
-          ))}
+                <p
+                  className={classNames({
+                    'has-text-link': pers.sex === 'm',
+                    'has-text-danger': pers.sex === 'f',
+                  })}
+                >
+                  {pers.name}
+                </p>
+              </a>
+            )))}
         </div>
       </div>
     </div>
