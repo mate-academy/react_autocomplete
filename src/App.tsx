@@ -1,99 +1,120 @@
-import React from 'react';
+import React, {
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+  useEffect,
+} from 'react';
+import { debounce } from 'lodash';
 import './App.scss';
+import { Person } from './types/Person';
+import { PeopleList } from './components/People';
 import { peopleFromServer } from './data/people';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
+  const [title, setTitle] = useState('No selected person');
+  const [loading, setLoading] = useState(false);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer
+      .filter(person => person?.name?.toLowerCase()
+        .includes(appliedQuery.toLowerCase()));
+  }, [appliedQuery]);
+
+  const delayQuery = useMemo(() => debounce((value: string) => {
+    setAppliedQuery(value.trim());
+  }, 1000), []);
+
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value.trim();
+
+      setQuery(value);
+      setTitle('No selected person');
+      setLoading(true);
+      delayQuery(value);
+    }, [delayQuery],
+  );
+
+  const handleOnBlur = useCallback(() => {
+    setTimeout(() => {
+      if (dropdownRef.current
+        && !dropdownRef.current.contains(document.activeElement as Node)) {
+        setIsVisible(false);
+        setLoading(false);
+      }
+    }, 100);
+  }, []);
+
+  const handlePersonSelect = useCallback((person: Person | null) => {
+    if (person) {
+      setQuery(person.name);
+      setTitle(`${person.name} (${person.born} - ${person.died})`);
+    } else {
+      setQuery('');
+      setTitle('No selected person');
+    }
+
+    setIsVisible(false);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      delayQuery.cancel();
+    };
+  }, [delayQuery]);
+
+  useEffect(() => {
+    const fetchData = () => {
+      setAppliedQuery(query);
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    };
+
+    fetchData();
+  }, [query]);
 
   return (
-    <div className="container">
-      <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
-        </h1>
+    <main className="section is-flex is-flex-direction-column">
+      <h1 className="title" data-cy="title">
+        {title}
+      </h1>
 
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-            />
-          </div>
+      <div className="dropdown is-active" ref={dropdownRef}>
+        <div className="dropdown-trigger">
+          <input
+            type="text"
+            placeholder="Enter a part of the name"
+            className="input"
+            data-cy="search-input"
+            value={query}
+            onChange={handleInputChange}
+            onFocus={() => setIsVisible(true)}
+            onBlur={handleOnBlur}
+          />
+        </div>
 
+        {isVisible && !loading && (
           <div
             className="dropdown-menu"
             role="menu"
             data-cy="suggestions-list"
           >
-            <div className="dropdown-content">
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
+            <PeopleList
+              onSelect={handlePersonSelect}
+              people={filteredPeople}
+            />
           </div>
-        </div>
-
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
-      </main>
-    </div>
+        )}
+      </div>
+    </main>
   );
 };
