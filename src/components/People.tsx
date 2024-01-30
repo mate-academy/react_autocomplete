@@ -6,7 +6,8 @@ type Props = {
 };
 
 export const PeopleList: React.FC<Props> = ({ people, onSelect }) => {
-  const handlePersonClick = (person: Person) => {
+  const handlePersonClick
+  = (person: Person) => {
     onSelect(person);
   };
 

@@ -40,13 +40,14 @@ export const App: React.FC = () => {
   const handlePersonSelect = useCallback((person: Person | null) => {
     if (person) {
       setQuery(person.name);
-      setIsVisible(false);
+      // setIsVisible(false);
       setTitle(`${person.name} (${person.born} - ${person.died})`);
     } else {
       setQuery('');
-      setIsVisible(false);
       setTitle('No selected person');
     }
+
+    setIsVisible(false);
   }, []);
 
   const filteredPeople = useMemo(() => {
