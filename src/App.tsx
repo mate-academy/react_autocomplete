@@ -1,15 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
+
+import cn from 'classnames';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [findPeople, setFindPeople] = useState<Person | null>(null);
+
+  const queryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+  };
+
+  const filterPeople = peopleFromServer
+    .filter(people => people.name.toLocaleLowerCase().includes(query));
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {findPeople
+            ? `${findPeople.name} (${findPeople.born} - ${findPeople.died})`
+            : 'No Selected Person'}
         </h1>
 
         <div className="dropdown is-active">
@@ -19,6 +32,7 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              onChange={queryChange}
             />
           </div>
 
@@ -28,71 +42,43 @@ export const App: React.FC = () => {
             data-cy="suggestions-list"
           >
             <div className="dropdown-content">
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
+              {filterPeople.map(people => (
+                <div
+                  key={people.slug}
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                >
+                  <button
+                    type="button"
+                    className={cn(
+                      'has-text-link',
+                      { 'has-text-danger': people.sex === 'f' },
+                    )}
+                    onClick={() => setFindPeople(people)}
+                  >
+                    {people.name}
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div
-          className="
+        {filterPeople.length === 0 && (
+          <div
+            className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
