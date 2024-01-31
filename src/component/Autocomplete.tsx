@@ -1,26 +1,52 @@
 import cn from 'classnames';
-import { Dispatch, SetStateAction } from 'react';
-import { Person } from '../types/Person';
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
+
+import { debounce } from '../utils/debounce';
+import { peopleFromServer } from '../data/people';
 
 interface Props {
-  query: string
-  handleQueryChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  filteredPeople: Person[]
-  onSelected: (
-    event : React.MouseEvent<HTMLAnchorElement, MouseEvent>
-  ) => void
-  focus: boolean
-  setIsInputFocused: Dispatch<SetStateAction<boolean>>
+  onSelected: Dispatch<SetStateAction<string>>
 }
 
 export const Autocomplate: React.FC<Props> = ({
-  query,
-  handleQueryChange,
-  filteredPeople,
   onSelected,
-  focus,
-  setIsInputFocused,
 }) => {
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isInputFocused, setIsInputFocused] = useState(false);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+
+  const handleQueryClick = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  ) => {
+    const content = event.currentTarget.textContent || '';
+
+    event.preventDefault();
+
+    setQuery(content);
+    onSelected(content);
+    setIsInputFocused(false);
+  };
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter(
+      person => person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+    );
+  }, [appliedQuery]);
+
   const handleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
     if (e.relatedTarget) {
       return;
@@ -34,7 +60,7 @@ export const Autocomplate: React.FC<Props> = ({
       'dropdown',
       'is-flex-direction-column',
       'is-align-self-flex-start',
-      { 'is-active': focus },
+      { 'is-active': isInputFocused },
     )}
     >
       <div className="dropdown-trigger">
@@ -78,7 +104,7 @@ export const Autocomplate: React.FC<Props> = ({
                   href="."
                   className="dropdown-item"
                   data-cy="suggestion-item"
-                  onClick={onSelected}
+                  onClick={handleQueryClick}
                 >
                   <p
                     className={cn({
