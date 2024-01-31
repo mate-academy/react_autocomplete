@@ -1,3 +1,12 @@
 iframe {
   display: none;
 }
+
+.dropdown-content {
+  overflow: auto;
+  max-height: 245px;
+}
+
+.has-text-link {
+  cursor: pointer;
+}
