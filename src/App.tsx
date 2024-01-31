@@ -6,11 +6,13 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
+  const { name, born, died } = selectedPerson || {};
+
   return (
     <main className="section">
       <h1 className="title">
         {selectedPerson
-          ? `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`
+          ? `${name} (${born} - ${died})`
           : 'Person is not selected' }
       </h1>
 

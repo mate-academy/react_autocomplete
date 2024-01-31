@@ -27,6 +27,7 @@ export const Autocomplete: React.FC<Props> = ({
   ): void => {
     setQwery(event.target.value);
     applyQuery(event.target.value);
+    onSelectPerson(null);
   };
 
   const filteredPeople = useMemo(() => {
@@ -38,7 +39,7 @@ export const Autocomplete: React.FC<Props> = ({
   }, [appliedQuery]);
 
   return (
-    <div className={classNames('dropdown', { 'is-active': isActive === true })}>
+    <div className={classNames('dropdown', { 'is-active': isActive })}>
       <div className="dropdown-trigger">
         <input
           type="text"
