@@ -9,13 +9,16 @@ import {
 
 import { debounce } from '../utils/debounce';
 import { peopleFromServer } from '../data/people';
+import { Person } from '../types/Person';
 
 interface Props {
   onSelected: Dispatch<SetStateAction<string>>
+  currentPerson: Person | undefined | string
 }
 
 export const Autocomplate: React.FC<Props> = ({
   onSelected,
+  currentPerson,
 }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -36,9 +39,19 @@ export const Autocomplate: React.FC<Props> = ({
     setIsInputFocused(false);
   };
 
+  const handleTitleChange = (newTitle: string) => {
+    if (newTitle.trim() === '' || currentPerson !== newTitle.trim()) {
+      onSelected('');
+    }
+  };
+
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
+    const newQuery = event.target.value;
+
+    setQuery(newQuery);
+    applyQuery(newQuery);
+
+    handleTitleChange(newQuery);
   };
 
   const filteredPeople = useMemo(() => {

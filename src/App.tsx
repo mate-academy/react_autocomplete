@@ -24,6 +24,7 @@ export const App: React.FC = () => {
 
         <Autocomplate
           onSelected={setSelectedPerson}
+          currentPerson={currentPerson}
         />
       </main>
     </div>
