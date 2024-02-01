@@ -16,7 +16,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({ onSelected }) => {
 
   const applyQuery = useCallback(
     debounce(setAppliedQuery, 1000),
-    [],
+    [setAppliedQuery, debounce],
   );
 
   const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
