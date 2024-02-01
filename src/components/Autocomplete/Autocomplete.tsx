@@ -46,7 +46,7 @@ export const Autocomplete: React.FC<Props> = ({
           placeholder="Enter a part of the name"
           className="input"
           value={qwery}
-          onFocus={() => setIsActive(true)}
+          // onFocus={() => setIsActive(true)}
           onBlur={() => setIsActive(false)}
           onChange={handleQweryChange}
         />
