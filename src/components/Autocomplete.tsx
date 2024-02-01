@@ -36,6 +36,12 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({ onSelected }) => {
     onSelected(person);
   };
 
+  const handleBlur = () => {
+    setTimeout(() => {
+      setShowSuggestions(false);
+    }, 200);
+  };
+
   return (
     <div className="dropdown is-active">
       <div className="dropdown-trigger">
@@ -46,6 +52,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({ onSelected }) => {
           value={query}
           onChange={handleQueryChange}
           onFocus={() => setShowSuggestions(true)}
+          onBlur={handleBlur}
         />
       </div>
 
