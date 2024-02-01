@@ -28,6 +28,7 @@ export const Autocomplete: React.FC<Props> = ({
     setQwery(event.target.value);
     applyQuery(event.target.value);
     onSelectPerson(null);
+    setIsActive(false);
   };
 
   const filteredPeople = useMemo(() => {
@@ -46,6 +47,7 @@ export const Autocomplete: React.FC<Props> = ({
           placeholder="Enter a part of the name"
           className="input"
           value={qwery}
+          onFocus={() => setIsActive(true)}
           onBlur={() => setIsActive(false)}
           onChange={handleQweryChange}
         />
