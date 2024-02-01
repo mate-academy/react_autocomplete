@@ -1,5 +1,5 @@
 import React, {
-  ChangeEvent, useCallback, useMemo, useState,
+  ChangeEvent, useMemo, useState,
 } from 'react';
 import debounce from 'lodash.debounce';
 import 'bulma';
@@ -14,9 +14,9 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({ onSelected }) => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const applyQuery = useCallback(
-    debounce(setAppliedQuery, 1000),
-    [setAppliedQuery, debounce],
+  const applyQuery = React.useMemo(
+    () => debounce(setAppliedQuery, 1000),
+    [],
   );
 
   const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
