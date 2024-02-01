@@ -7,21 +7,30 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
-  const [findPeople, setFindPeople] = useState<Person | null>(null);
+  const [selectPerson, setSelectPerson] = useState<Person | null>(null);
 
-  const queryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+  const { name, born, died } = selectPerson || {};
+
+  const handlePesonClick = (person: Person, namePerson: string) => {
+    setSelectPerson(person);
+    setQuery(namePerson);
   };
 
-  const filterPeople = peopleFromServer
-    .filter(people => people.name.toLocaleLowerCase().includes(query));
+  const queryInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    setSelectPerson(null);
+  };
+
+  const currentPerson = peopleFromServer
+    .filter(people => people.name.toLowerCase()
+      .includes(query.toLowerCase()));
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {findPeople
-            ? `${findPeople.name} (${findPeople.born} - ${findPeople.died})`
+          {selectPerson
+            ? `${name} (${born} - ${died})`
             : 'No Selected Person'}
         </h1>
 
@@ -32,7 +41,8 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
-              onChange={queryChange}
+              value={query}
+              onChange={queryInputChange}
             />
           </div>
 
@@ -41,30 +51,36 @@ export const App: React.FC = () => {
             role="menu"
             data-cy="suggestions-list"
           >
-            <div className="dropdown-content">
-              {filterPeople.map(people => (
-                <div
-                  key={people.slug}
-                  className="dropdown-item"
-                  data-cy="suggestion-item"
-                >
-                  <button
-                    type="button"
-                    className={cn(
-                      'has-text-link',
-                      { 'has-text-danger': people.sex === 'f' },
-                    )}
-                    onClick={() => setFindPeople(people)}
-                  >
-                    {people.name}
-                  </button>
-                </div>
-              ))}
-            </div>
+            {currentPerson.length > 0 && (
+              <div className="dropdown-content">
+                {currentPerson.map(person => {
+                  const { name: namePerson, sex, slug } = person;
+
+                  return (
+                    <button
+                      type="button"
+                      className="dropdown-item button is-white"
+                      data-cy="suggestion-item"
+                      key={slug}
+                      onClick={() => handlePesonClick(person, namePerson)}
+                    >
+                      <p
+                        className={cn(
+                          'has-text-link',
+                          { 'has-text-danger': sex === 'f' },
+                        )}
+                      >
+                        {namePerson}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
-        {filterPeople.length === 0 && (
+        {!currentPerson.length && (
           <div
             className="
             notification
