@@ -22,10 +22,11 @@ export const Autocomplate: React.FC<Props> = ({
 }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [delay] = useState(300);
   const [isInputFocused, setIsInputFocused] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
   const handleQueryClick = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -50,8 +51,11 @@ export const Autocomplate: React.FC<Props> = ({
 
     setQuery(newQuery);
     applyQuery(newQuery);
-
     handleTitleChange(newQuery);
+    setIsInputFocused(false);
+    setTimeout(() => {
+      setIsInputFocused(true);
+    }, 1000);
   };
 
   const filteredPeople = useMemo(() => {
