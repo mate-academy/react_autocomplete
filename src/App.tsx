@@ -10,11 +10,14 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [showList, setShowList] = useState(false);
+  const [title, setTitle] = useState('No selected person');
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(value => {
     setAppliedQuery(value);
     setShowList(true);
+    setSelectedPerson(null);
+    setTitle('No selected person');
   }, 1000), []);
 
   const filteredPeople = useMemo(() => peopleFromServer.filter(
@@ -23,11 +26,6 @@ export const App: React.FC = () => {
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowList(false);
-
-    if (appliedQuery.length === 0) {
-      setSelectedPerson(null);
-    }
-
     setQuery(event.target.value);
     applyQuery(event.target.value);
   };
@@ -35,14 +33,13 @@ export const App: React.FC = () => {
   const onSelected = (person: Person) => {
     setSelectedPerson(person);
     setQuery(person.name);
+    setTitle(`${person.name} (${person.born} - ${person.died})`);
   };
 
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson
-          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-          : 'No selected person'}
+        {title}
       </h1>
 
       <div className="dropdown is-active">
