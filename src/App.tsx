@@ -9,17 +9,21 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       {selectedPerson && (
-        peopleFromServer.map((person) => {
-          if (person.name === selectedPerson) {
+        (() => {
+          const foundPerson = peopleFromServer.find(
+            (person) => person.name === selectedPerson,
+          );
+
+          if (foundPerson) {
             return (
               <h1 className="title" key={selectedPerson}>
-                {`${person.name} (${person.born} - ${person.died})`}
+                {`${foundPerson.name} (${foundPerson.born} - ${foundPerson.died})`}
               </h1>
             );
           }
 
           return null;
-        })
+        })()
       )}
 
       {!selectedPerson && (

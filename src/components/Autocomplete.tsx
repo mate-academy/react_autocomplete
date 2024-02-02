@@ -19,9 +19,17 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({ onSelected }) => {
     [],
   );
 
+  const applyList = React.useMemo(
+    () => debounce(setShowSuggestions, 1100),
+    [],
+  );
+
   const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
+    const newQuery = event.target.value;
+
+    setQuery(newQuery);
+    applyQuery(newQuery);
+    applyList(!!newQuery);
   };
 
   const filterPeople = useMemo(() => {
@@ -51,7 +59,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({ onSelected }) => {
           className="input"
           value={query}
           onChange={handleQueryChange}
-          onFocus={() => setShowSuggestions(true)}
+          onFocus={() => setShowSuggestions(!!query)}
           onBlur={handleBlur}
         />
       </div>
@@ -81,5 +89,3 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({ onSelected }) => {
     </div>
   );
 };
-
-// export default Autocomplete;
