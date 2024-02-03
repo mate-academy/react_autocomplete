@@ -1,99 +1,111 @@
-import React from 'react';
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+import React, { ChangeEvent, useMemo, useState } from 'react';
 import './App.scss';
+import classNames from 'classnames';
+import { useDebouncedCallback } from 'use-debounce';
+import useOnClickOutside from 'use-onclickoutside';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+export const App:React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [inputValue, setInputValue] = useState('');
+  const [inputValueDeb, setInputValueDeb] = useState('');
+
+  const ref = React.useRef(null);
+
+  useOnClickOutside(ref, () => setIsOpen(false));
+
+  const { name, born, died } = selectedPerson || {};
+
+  const filteredPeople = useMemo(() => {
+    if (inputValueDeb) {
+      return peopleFromServer.filter(
+        person => person.name.toLocaleLowerCase().includes(
+          inputValueDeb.toLocaleLowerCase(),
+        ),
+      );
+    }
+
+    return peopleFromServer;
+  }, [inputValueDeb]);
+
+  const debounced = useDebouncedCallback(
+    (value) => {
+      setInputValueDeb(value);
+      setIsOpen(true);
+    },
+    500,
+  );
+
+  const selectedPersonText = selectedPerson
+    ? `${name} (${born} - ${died})`
+    : 'No selected person';
+
+  const handleSelectPerson = (person:Person) => {
+    setSelectedPerson(person);
+    setInputValue(person.name);
+    setIsOpen(false);
+  };
+
+  const handleChangeText = (e:ChangeEvent<HTMLInputElement>) => {
+    setSelectedPerson(null);
+    setIsOpen(false);
+    setInputValue(e.target.value);
+    debounced(e.target.value);
+  };
 
   return (
-    <div className="container">
-      <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
-        </h1>
+    <main className="section">
+      <h1 className="title">
+        {selectedPersonText}
+      </h1>
 
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-            />
-          </div>
-
-          <div
-            className="dropdown-menu"
-            role="menu"
-            data-cy="suggestions-list"
-          >
-            <div className="dropdown-content">
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
+      <div
+        className={classNames('dropdown', {
+          'is-active': isOpen,
+        })}
+      >
+        <div className="dropdown-trigger">
+          <input
+            type="text"
+            placeholder="Enter a part of the name"
+            className="input"
+            value={inputValue}
+            onChange={handleChangeText}
+            onFocus={() => setIsOpen(true)}
+          />
         </div>
 
         <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
+          className="dropdown-menu"
+          role="menu"
+          ref={ref}
         >
-          <p className="has-text-danger">No matching suggestions</p>
+          <div className="dropdown-content">
+            {filteredPeople.map(person => (
+              <div
+                className="dropdown-item"
+                key={person.slug}
+              >
+                <p
+                  className="has-text-link"
+                  onClick={() => handleSelectPerson(person)}
+                >
+                  {person.name}
+                </p>
+              </div>
+            ))}
+            {!filteredPeople.length && (
+              <div className="dropdown-item">
+                No matching suggestions
+              </div>
+            )}
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 };
