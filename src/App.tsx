@@ -1,4 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  useCallback, useMemo, useState,
+} from 'react';
 import './App.scss';
 import debounce from 'lodash.debounce';
 import cn from 'classnames';
@@ -11,6 +13,12 @@ export const App: React.FC = () => {
   const [isfocused, setIsfocused] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person>();
   const [isListVisible, setIsListVisible] = useState(true);
+
+  const title = useMemo(() => {
+    return selectedPerson
+      ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+      : 'No selected person';
+  }, [selectedPerson]);
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer
@@ -33,7 +41,7 @@ export const App: React.FC = () => {
   };
 
   const handleClick = (name: string) => {
-    setQuery('');
+    setQuery(name);
     setAppliedQuery('');
 
     const filterdPerson: Person | undefined
@@ -52,9 +60,7 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson
-          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-          : 'No selected person'}
+        {title}
       </h1>
       <div className={cn('dropdown', { 'is-active': isfocused })}>
         <div className="dropdown-trigger">
@@ -73,7 +79,7 @@ export const App: React.FC = () => {
           <ul className="dropdown-content">
 
             {isListVisible && (
-              filteredPeople.length > 0
+              filteredPeople.length
                 ? (filteredPeople.map(person => (
                   <li
                     className="dropdown-item"
