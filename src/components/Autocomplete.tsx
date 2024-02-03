@@ -45,9 +45,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({ onSelected }) => {
   };
 
   const handleBlur = () => {
-    setTimeout(() => {
       setShowSuggestions(false);
-    }, 200);
   };
 
   return (
