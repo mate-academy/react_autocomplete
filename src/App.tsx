@@ -60,7 +60,10 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {title}
+        {query && (
+          title
+        )}
+
       </h1>
       <div className={cn('dropdown', { 'is-active': isfocused })}>
         <div className="dropdown-trigger">
