@@ -60,9 +60,9 @@ export const App: React.FC = () => {
   return (
     <main className="section">
       <h1 className="title">
-        {query && (
-          title
-        )}
+        {query
+          ? title
+          : 'No selected person'}
 
       </h1>
       <div className={cn('dropdown', { 'is-active': isfocused })}>
