@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import cn from 'classnames';
 import './App.scss';
 import { peopleFromServer } from './data/people';
@@ -10,20 +10,13 @@ export const App: React.FC = () => {
   const [persons, setPersons] = useState<Person[]>(peopleFromServer);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const timerId = useRef(0);
   const [focus, setFocus] = useState(false);
   const delay = 1000;
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value.trim());
-    setFocus(true);
+    setQuery(event.target.value);
+    setAppliedQuery(event.target.value);
     setPersons(peopleFromServer);
-
-    window.clearTimeout(timerId.current);
-
-    timerId.current = window.setTimeout(() => {
-      setAppliedQuery(event.target.value);
-    }, delay);
   };
 
   const filteredPersons = useMemo(() => {
@@ -52,6 +45,8 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={handleQueryChange}
+            onFocus={() => setFocus(true)}
+            // onBlur={() => setFocus(false)}
           />
         </div>
 
@@ -60,6 +55,10 @@ export const App: React.FC = () => {
             <PersonList
               persons={filteredPersons}
               onSelect={setSelectedPerson}
+              delay={delay}
+              setFocus={setFocus}
+              // setAppliedQuery={setAppliedQuery}
+              setQuery={setQuery}
             />
           </div>
         </div>
