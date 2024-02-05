@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
-import { ListUser } from './component/components';
+import { ListUser } from './component/ListUser';
 import { Person } from './types/Person';
 
 function debounce(callback: any, delay:number) {
