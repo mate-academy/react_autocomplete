@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { ListUser } from './component/ListUser';
-import { Person } from './types/Person';
+// import { Person } from './types/Person';
 
 function debounce(callback: any, delay:number) {
   let timerId = 0;
@@ -21,7 +21,6 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('No selected person');
   const [active, setActive] = useState(false);
   const [appQuery, setAppQuery] = useState('');
-  const [selectPerson, setSelectPerson] = useState<Person | undefined>();
 
   const applyQuery = useCallback(debounce(setAppQuery, 1000), []);
 
@@ -73,7 +72,6 @@ export const App: React.FC = () => {
             {active && (
               <ListUser
                 PersonList={filterName}
-                setSelect={setSelectPerson}
                 setActive={setActive}
                 setQueryData={setQuery}
                 setTitle={setTitle}
@@ -81,22 +79,6 @@ export const App: React.FC = () => {
             )}
           </div>
         </div>
-
-        {!selectPerson && (
-          <div
-            className="
-              notification
-              is-danger
-              is-light
-              mt-3
-              is-align-self-flex-start
-            "
-            role="alert"
-            data-cy="no-suggestions-message"
-          >
-            <p className="has-text-danger">No matching suggestions</p>
-          </div>
-        )}
       </main>
     </div>
   );

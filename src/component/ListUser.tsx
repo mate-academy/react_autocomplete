@@ -3,7 +3,6 @@ import { Person } from '../types/Person';
 
 type Props = {
   PersonList : Person[],
-  setSelect:React.Dispatch<React.SetStateAction<Person | undefined>>,
   setActive:React.Dispatch<React.SetStateAction<boolean>>,
   setQueryData: React.Dispatch<React.SetStateAction<string>>,
   setTitle: React.Dispatch<React.SetStateAction<string>>
@@ -11,7 +10,6 @@ type Props = {
 
 export const ListUser: React.FC<Props> = ({
   PersonList,
-  setSelect,
   setActive,
   setQueryData,
   setTitle,
@@ -20,8 +18,6 @@ export const ListUser: React.FC<Props> = ({
   const selecteOn = (e: React.MouseEvent<HTMLButtonElement>,
     person: Person) => {
     e.preventDefault();
-
-    setSelect(person);
     setActive(true);
     setQueryData(person?.name);
     setTitle(`${person?.name} (${person?.born} - ${person?.died})`);
@@ -29,7 +25,7 @@ export const ListUser: React.FC<Props> = ({
 
   return (
     <div className="dropdown-content">
-      {PersonList.map(person => (
+      {PersonList.length > 0 ? PersonList.map(person => (
         <button
           type="button"
           key={person.slug}
@@ -43,7 +39,11 @@ export const ListUser: React.FC<Props> = ({
             {person.name}
           </p>
         </button>
-      ))}
+      )) : (
+        <div className="dropdown-item">
+          <p className="has-text-danger">No matching suggestions</p>
+        </div>
+      )}
     </div>
   );
 };
