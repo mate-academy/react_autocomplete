@@ -4,10 +4,10 @@ import { peopleFromServer } from './data/people';
 import { ListUser } from './component/components';
 import { Person } from './types/Person';
 
-function debounce(callback:any, delay:number) {
+function debounce(callback: any, delay:number) {
   let timerId = 0;
 
-  return (...args:any) => {
+  return (...args: string[]) => {
     window.clearTimeout(timerId);
 
     timerId = window.setTimeout(() => {

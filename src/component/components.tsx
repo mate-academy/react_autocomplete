@@ -5,8 +5,8 @@ type Props = {
   PersonList : Person[],
   setSelect:React.Dispatch<React.SetStateAction<Person | undefined>>,
   setActive:React.Dispatch<React.SetStateAction<boolean>>,
-  setQueryData?: any,
-  setTitle?: any
+  setQueryData: React.Dispatch<React.SetStateAction<string>>,
+  setTitle: React.Dispatch<React.SetStateAction<string>>
 };
 
 export const ListUser: React.FC<Props> = ({
