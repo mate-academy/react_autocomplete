@@ -18,6 +18,7 @@ function debounce(callback:any, delay:number) {
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
+  const [title, setTitle] = useState('No selected person');
   const [active, setActive] = useState(false);
   const [appQuery, setAppQuery] = useState('');
   const [selectPerson, setSelectPerson] = useState<Person | undefined>();
@@ -27,6 +28,7 @@ export const App: React.FC = () => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newQuerry = event.target.value;
 
+    setTitle('No selected person');
     setQuery(newQuerry);
     applyQuery(newQuerry);
   };
@@ -36,10 +38,9 @@ export const App: React.FC = () => {
   };
 
   const filterName = useMemo(() => {
-    const newArr = [...peopleFromServer];
     const queryTrim = appQuery.toLowerCase().trim();
 
-    return newArr
+    return peopleFromServer
       .filter(people => people.name.toLowerCase().includes(queryTrim));
   }, [appQuery]);
 
@@ -48,8 +49,7 @@ export const App: React.FC = () => {
       <main className="section is-flex is-flex-direction-column">
 
         <h1 className="title" data-cy="title">
-          {query ? `${selectPerson?.name} (${selectPerson?.born} - ${selectPerson?.died})`
-            : 'No selected person'}
+          {title}
         </h1>
 
         <div className="dropdown is-active">
@@ -76,12 +76,13 @@ export const App: React.FC = () => {
                 setSelect={setSelectPerson}
                 setActive={setActive}
                 setQueryData={setQuery}
+                setTitle={setTitle}
               />
             )}
           </div>
         </div>
 
-        {!query && (
+        {!selectPerson && (
           <div
             className="
               notification

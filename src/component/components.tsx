@@ -5,7 +5,8 @@ type Props = {
   PersonList : Person[],
   setSelect:React.Dispatch<React.SetStateAction<Person | undefined>>,
   setActive:React.Dispatch<React.SetStateAction<boolean>>,
-  setQueryData?: any
+  setQueryData?: any,
+  setTitle?: any
 };
 
 export const ListUser: React.FC<Props> = ({
@@ -13,6 +14,7 @@ export const ListUser: React.FC<Props> = ({
   setSelect,
   setActive,
   setQueryData,
+  setTitle,
 
 }) => {
   const selecteOn = (e: React.MouseEvent<HTMLButtonElement>,
@@ -22,6 +24,7 @@ export const ListUser: React.FC<Props> = ({
     setSelect(person);
     setActive(true);
     setQueryData(person?.name);
+    setTitle(`${person?.name} (${person?.born} - ${person?.died})`);
   };
 
   return (
