@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import debounce from 'lodash.debounce';
 import './App.scss';
 
 import cn from 'classnames';
@@ -7,7 +8,9 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
   const [selectPerson, setSelectPerson] = useState<Person | null>(null);
+  const [isInputFocus, setIsInputFocus] = useState(false);
 
   const { name, born, died } = selectPerson || {};
 
@@ -16,14 +19,30 @@ export const App: React.FC = () => {
     setQuery(namePerson);
   };
 
+  const applyQuery = useCallback(
+    debounce(setAppliedQuery, 300),
+    [],
+  );
+
   const queryInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
+    applyQuery(event.target.value);
     setSelectPerson(null);
   };
 
-  const currentPerson = peopleFromServer
-    .filter(people => people.name.toLowerCase()
-      .includes(query.toLowerCase()));
+  const handleInputFocus = () => {
+    setIsInputFocus(true);
+  };
+
+  const handleInputBlur = () => {
+    debounce(() => setIsInputFocus(false), 100)();
+  };
+
+  const currentPerson = useMemo(() => {
+    return peopleFromServer
+      .filter(people => people.name.toLowerCase()
+        .includes(appliedQuery.toLowerCase()));
+  }, [appliedQuery]);
 
   return (
     <div className="container">
@@ -31,7 +50,7 @@ export const App: React.FC = () => {
         <h1 className="title" data-cy="title">
           {selectPerson
             ? `${name} (${born} - ${died})`
-            : 'No Selected Person'}
+            : 'No selected person'}
         </h1>
 
         <div className="dropdown is-active">
@@ -43,6 +62,8 @@ export const App: React.FC = () => {
               data-cy="search-input"
               value={query}
               onChange={queryInputChange}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
             />
           </div>
 
@@ -51,7 +72,7 @@ export const App: React.FC = () => {
             role="menu"
             data-cy="suggestions-list"
           >
-            {currentPerson.length > 0 && (
+            {!selectPerson && isInputFocus && (
               <div className="dropdown-content">
                 {currentPerson.map(person => {
                   const { name: namePerson, sex, slug } = person;
