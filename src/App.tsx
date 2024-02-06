@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 import './App.scss';
 
@@ -32,6 +32,7 @@ export const App: React.FC = () => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
     setSelectPerson(null);
+    setIsInputFocus(true);
   };
 
   const handleInputFocus = () => {
@@ -47,11 +48,6 @@ export const App: React.FC = () => {
       .filter(people => people.name.toLowerCase()
         .includes(appliedQuery.toLowerCase()));
   }, [appliedQuery]);
-
-  useEffect(() => {
-    applyQuery.cancel();
-    setAppliedQuery(query);
-  }, [query, applyQuery]);
 
   return (
     <div className="container">
