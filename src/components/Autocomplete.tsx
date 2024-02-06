@@ -1,4 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  KeyboardEvent,
+} from 'react';
 import debounce from 'lodash/debounce';
 import { Person } from '../types/Person';
 
@@ -17,31 +21,48 @@ export const Autocomplete: React.FC<Props> = ({
   const [filteredPeople, setFilteredPeople] = useState<Person[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const delayedFilter = useCallback(
-    debounce((text: string) => {
-      const filtered = people.filter(
-        (person) => person.name.toLowerCase().includes(text.toLowerCase())
-          || person.slug.toLowerCase().includes(text.toLowerCase()),
-      );
+  const delayedFilter = debounce((text: string) => {
+    const filtered = people.filter(
+      (person) => person.name.toLowerCase().includes(text.toLowerCase())
+        || person.slug.toLowerCase().includes(text.toLowerCase()),
+    );
 
-      setFilteredPeople(filtered);
-      setShowSuggestions(true);
-    }, delay),
-    [people, delay],
-  );
+    setFilteredPeople(filtered);
+    setShowSuggestions(true);
+  }, delay);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newText = event.target.value;
 
     setInputText(newText);
-    setShowSuggestions(newText === '');
-    delayedFilter(newText);
+    if (newText === '') {
+      setShowSuggestions(false);
+      setFilteredPeople([]);
+      onSelected(null);
+    } else {
+      setShowSuggestions(true);
+      delayedFilter(newText.trim());
+    }
   };
 
   const handleSuggestionClick = (person: Person) => {
     setInputText(person.name);
     setShowSuggestions(false);
     onSelected(person);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>, person: Person) => {
+    if (e.key === 'Enter') {
+      handleSuggestionClick(person);
+    }
+  };
+
+  const handleInputFocus = () => {
+    setShowSuggestions(true);
+    if (inputText.trim() !== ''
+     || inputText.trim() === '') {
+      delayedFilter(inputText.trim());
+    }
   };
 
   const handleInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -69,30 +90,33 @@ export const Autocomplete: React.FC<Props> = ({
           className="input"
           value={inputText}
           onChange={handleInputChange}
+          onFocus={handleInputFocus}
           onBlur={handleInputBlur}
         />
       </div>
 
       {showSuggestions && (
         <div className="dropdown-menu" role="menu">
-          <div className="dropdown-content">
+          <ul className="dropdown-content">
             {filteredPeople.length === 0 ? (
               <div className="dropdown-item">
                 <p className="has-text-danger">No matching suggestions</p>
               </div>
             ) : (
               filteredPeople.map((person) => (
-                <button
-                  type="button"
+                <div
                   className="dropdown-item"
+                  role="button"
                   key={person.slug}
                   onClick={() => handleSuggestionClick(person)}
+                  onKeyDown={(e) => handleKeyDown(e, person)}
+                  tabIndex={0}
                 >
                   <p className="has-text-link">{person.name}</p>
-                </button>
+                </div>
               ))
             )}
-          </div>
+          </ul>
         </div>
       )}
     </div>
