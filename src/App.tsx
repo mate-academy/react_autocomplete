@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 import './App.scss';
 
@@ -14,13 +14,17 @@ export const App: React.FC = () => {
 
   const { name, born, died } = selectPerson || {};
 
+  const selectedPersonInfo = selectPerson
+    ? `${name} (${born} - ${died})`
+    : 'No selected person';
+
   const handlePesonClick = (person: Person, namePerson: string) => {
     setSelectPerson(person);
     setQuery(namePerson);
   };
 
-  const applyQuery = useCallback(
-    debounce(setAppliedQuery, 300),
+  const applyQuery = useMemo(
+    () => debounce(setAppliedQuery, 300),
     [],
   );
 
@@ -48,9 +52,7 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectPerson
-            ? `${name} (${born} - ${died})`
-            : 'No selected person'}
+          {selectedPersonInfo}
         </h1>
 
         <div className="dropdown is-active">
