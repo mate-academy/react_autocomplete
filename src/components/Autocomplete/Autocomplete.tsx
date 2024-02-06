@@ -10,7 +10,6 @@ type Props = {
 
 export const PeopleList: React.FC<Props> = ({ people, onSelect }) => {
   const [hoveredPerson, setHoveredPerson] = useState<Person | null>(null);
-  const hover =
 
   const handlePersonClick = (person: Person) => {
     onSelect(person);
