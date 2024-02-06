@@ -1,3 +1,10 @@
 iframe {
   display: none;
 }
+
+.app {
+  &__input {
+    max-width: fit-content;
+    margin-bottom: 20px;
+  }
+}
