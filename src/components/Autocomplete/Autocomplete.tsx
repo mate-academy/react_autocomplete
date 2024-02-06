@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Person } from '../types/Person';
+import clsx from 'clsx';
+import './Autocomplete.scss';
+import { Person } from '../../types/Person';
 
 type Props = {
   people: Person[];
@@ -8,6 +10,7 @@ type Props = {
 
 export const PeopleList: React.FC<Props> = ({ people, onSelect }) => {
   const [hoveredPerson, setHoveredPerson] = useState<Person | null>(null);
+  const hover =
 
   const handlePersonClick = (person: Person) => {
     onSelect(person);
@@ -33,7 +36,9 @@ export const PeopleList: React.FC<Props> = ({ people, onSelect }) => {
         people.map((person) => (
           <div
             key={person.slug}
-            className={`dropdown-item ${person === hoveredPerson ? 'hovered' : ''}`}
+            className={clsx('dropdown-item', {
+              'hovered': hoveredPerson === person,
+            })}
             data-cy="suggestion-item"
             role="button"
             tabIndex={0}
@@ -45,7 +50,6 @@ export const PeopleList: React.FC<Props> = ({ people, onSelect }) => {
                 handlePersonClick(person);
               }
             }}
-            style={{ cursor: 'pointer' }}
           >
             <p className="has-text-link">{person.name}</p>
           </div>

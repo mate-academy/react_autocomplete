@@ -8,7 +8,7 @@ import React, {
 import { debounce } from 'lodash';
 import './App.scss';
 import { Person } from './types/Person';
-import { PeopleList } from './components/People';
+import { PeopleList } from './components/Autocomplete/Autocomplete';
 import { peopleFromServer } from './data/people';
 
 export const App: React.FC = () => {
