@@ -30,15 +30,15 @@ export const ListUser: React.FC<Props> = ({
         <button
           type="button"
           key={person.slug}
-          className={classNames(
-            'dropdown-item',
-            { 'has-text-danger': person.sex === 'f' },
-          )}
+          className="dropdown-item"
           data-cy="suggestion-item"
           onClick={(e) => selecteOn(e, person)}
         >
           <p
-            className="has-text-link"
+            className={classNames({
+              'has-text-link': person.sex === 'm',
+              'has-text-danger': person.sex === 'f',
+            })}
           >
             {person.name}
           </p>
