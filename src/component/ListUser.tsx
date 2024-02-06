@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { Person } from '../types/Person';
 
 type Props = {
@@ -29,7 +30,10 @@ export const ListUser: React.FC<Props> = ({
         <button
           type="button"
           key={person.slug}
-          className="dropdown-item"
+          className={classNames(
+            'dropdown-item',
+            { 'has-text-danger': person.sex === 'f' },
+          )}
           data-cy="suggestion-item"
           onClick={(e) => selecteOn(e, person)}
         >

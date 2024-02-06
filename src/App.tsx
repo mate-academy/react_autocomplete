@@ -1,20 +1,8 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import './App.scss';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
 import { ListUser } from './component/ListUser';
-// import { Person } from './types/Person';
-
-function debounce(callback: any, delay:number) {
-  let timerId = 0;
-
-  return (...args: string[]) => {
-    window.clearTimeout(timerId);
-
-    timerId = window.setTimeout(() => {
-      callback(...args);
-    }, delay);
-  };
-}
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -22,14 +10,18 @@ export const App: React.FC = () => {
   const [active, setActive] = useState(false);
   const [appQuery, setAppQuery] = useState('');
 
-  const applyQuery = useCallback(debounce(setAppQuery, 1000), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const applyQuery = useCallback(debounce(value => {
+    setAppQuery(value);
+    setTitle('No selected person');
+  }, 1000), []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuerry = event.target.value;
+    const newQuery = event.target.value;
 
     setTitle('No selected person');
-    setQuery(newQuerry);
-    applyQuery(newQuerry);
+    setQuery(newQuery);
+    applyQuery(newQuery);
   };
 
   const handleBlur = () => {
