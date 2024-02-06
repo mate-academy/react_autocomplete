@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
+import { setTimeout } from 'timers';
 import './App.scss';
 
 import cn from 'classnames';
@@ -24,7 +25,10 @@ export const App: React.FC = () => {
   };
 
   const applyQuery = useMemo(
-    () => debounce(setAppliedQuery, 300),
+    () => debounce((value: string) => {
+      setAppliedQuery(value);
+      setIsInputFocus(true);
+    }, 300),
     [],
   );
 
@@ -32,7 +36,7 @@ export const App: React.FC = () => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
     setSelectPerson(null);
-    setIsInputFocus(true);
+    setIsInputFocus(false);
   };
 
   const handleInputFocus = () => {
@@ -40,7 +44,7 @@ export const App: React.FC = () => {
   };
 
   const handleInputBlur = () => {
-    debounce(() => setIsInputFocus(false), 100)();
+    setTimeout(() => setIsInputFocus(false), 100);
   };
 
   const currentPerson = useMemo(() => {
