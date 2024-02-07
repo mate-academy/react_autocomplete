@@ -1,15 +1,48 @@
-import React from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import './App.scss';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
+import { ListUser } from './component/ListUser';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [title, setTitle] = useState('No selected person');
+  const [active, setActive] = useState(false);
+  const [appQuery, setAppQuery] = useState('');
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const applyQuery = useCallback(debounce(value => {
+    setAppQuery(value);
+    setActive(true);
+    setTitle('No selected person');
+  }, 1000), []);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuery = event.target.value;
+
+    setActive(false);
+    setTitle('No selected person');
+    setQuery(newQuery);
+    applyQuery(newQuery);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => setActive(false), 200);
+  };
+
+  const filterName = useMemo(() => {
+    const queryTrim = appQuery.toLowerCase().trim();
+
+    return peopleFromServer
+      .filter(people => people.name.toLowerCase().includes(queryTrim));
+  }, [appQuery]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
+
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {title}
         </h1>
 
         <div className="dropdown is-active">
@@ -18,80 +51,27 @@ export const App: React.FC = () => {
               type="text"
               placeholder="Enter a part of the name"
               className="input"
+              value={query}
+              onFocus={() => setActive(true)}
               data-cy="search-input"
+              onChange={handleChange}
+              onBlur={handleBlur}
             />
           </div>
-
           <div
             className="dropdown-menu"
             role="menu"
             data-cy="suggestions-list"
           >
-            <div className="dropdown-content">
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
+            {active && (
+              <ListUser
+                PersonList={filterName}
+                setActive={setActive}
+                setQueryData={setQuery}
+                setTitle={setTitle}
+              />
+            )}
           </div>
-        </div>
-
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
         </div>
       </main>
     </div>
