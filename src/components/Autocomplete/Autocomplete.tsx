@@ -109,21 +109,21 @@ export const Autocomplete: React.FC<Props> = ({ people, delay }) => {
         </div>
 
         {isVisible && !loading && (
-          <div
+          <ul
             className="dropdown-menu"
             role="menu"
             data-cy="suggestions-list"
           >
             <div className="dropdown-content">
-              {filteredPeople.length === 0 ? (
+              {!filteredPeople.length ? (
                 <div
                   className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
+                    notification
+                    is-danger
+                    is-light
+                    mt-3
+                    is-align-self-flex-start
+                  "
                   role="alert"
                   data-cy="no-suggestions-message"
                 >
@@ -153,7 +153,7 @@ export const Autocomplete: React.FC<Props> = ({ people, delay }) => {
                 ))
               )}
             </div>
-          </div>
+          </ul>
         )}
       </div>
     </>

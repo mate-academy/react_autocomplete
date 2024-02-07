@@ -1,11 +1,6 @@
 {
   "extends": "@mate-academy/students-ts-config",
-  "compilerOptions": {
-    "types": ["cypress"]
-  },
   "include": [
-    "src",
-    ".eslintrc.js",
-    "./cypress/**/*.ts"
+    "src"
   ]
 }
