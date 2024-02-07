@@ -13,12 +13,14 @@ export const App: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(value => {
     setAppQuery(value);
+    setActive(true);
     setTitle('No selected person');
   }, 1000), []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = event.target.value;
 
+    setActive(false);
     setTitle('No selected person');
     setQuery(newQuery);
     applyQuery(newQuery);
