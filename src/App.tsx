@@ -29,7 +29,7 @@ export const App: React.FC = () => {
     () => debounce((value: string) => {
       setAppliedQuery(value);
       setIsInputFocus(true);
-    }, 1000),
+    }, 900),
     [],
   );
 
