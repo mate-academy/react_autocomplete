@@ -22,13 +22,14 @@ export const App: React.FC = () => {
   const handlePesonClick = (person: Person, namePerson: string) => {
     setSelectPerson(person);
     setQuery(namePerson);
+    setIsInputFocus(false);
   };
 
   const applyQuery = useMemo(
     () => debounce((value: string) => {
       setAppliedQuery(value);
       setIsInputFocus(true);
-    }, 300),
+    }, 1000),
     [],
   );
 
