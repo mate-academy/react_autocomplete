@@ -1,15 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
+import cn from 'classnames';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+
+const getPreparedPeople = (people: Person[], query?: string) => {
+  if (query) {
+    return people
+      .filter(person => person
+        .name.toLocaleUpperCase().includes(query.toLocaleUpperCase()));
+  }
+
+  return people;
+};
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [title, setTitle] = useState('No matching suggestions');
+  const [query, setQuery] = useState('');
+  const [visbleList, setVisibleList] = useState(false);
+
+  const listNamesPeople = getPreparedPeople(peopleFromServer, query);
+
+  const handleQueryCgange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+  };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {title}
         </h1>
 
         <div className="dropdown is-active">
@@ -19,81 +39,73 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              value={query}
+              onChange={handleQueryCgange}
+              onFocus={() => setVisibleList(true)}
+              onBlur={() => setVisibleList(false)}
             />
           </div>
 
           <div
-            className="dropdown-menu"
+            className={cn(
+              'dropdown-menu',
+              { 'is-hidden': listNamesPeople.length === 0 },
+            )}
             role="menu"
             data-cy="suggestions-list"
           >
-            <div className="dropdown-content">
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
+            {visbleList && (
+              <ul className="dropdown-content">
+                {listNamesPeople.map(person => {
+                  const {
+                    name,
+                    slug,
+                    born,
+                    died,
+                  } = person;
 
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
+                  return (
+                    <li
+                      key={slug}
+                      className="dropdown-item"
+                      data-cy="suggestion-item"
+                    >
+                      <button
+                        type="button"
+                        className="button is-link is-light"
+                        onClick={() => {
+                          setQuery(name);
+                          setTitle(`${name} (${born} ${died})`);
+                        }}
+                      >
+                        {name}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
 
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div
-          className="
+        {listNamesPeople.length === 0 && (
+          <div
+            className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
+
   );
 };
