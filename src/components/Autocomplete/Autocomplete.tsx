@@ -66,11 +66,6 @@ export const Autocomplete: React.FC<Props> = ({
                 setShowAutocomplete(false);
               }
             }}
-            // onBlur={() => {
-            //   window.setTimeout(
-            //     () => (setShowAutocomplete(false)), 200,
-            //   );
-            // }}
           />
         </div>
 
