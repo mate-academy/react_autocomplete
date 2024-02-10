@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import cn from 'classnames';
 import './App.scss';
-import { PeopleList } from './Components/PeopleList/PeopleList';
 import { peopleFromServer } from './data/people';
 // import { debounce } from 'cypress/types/lodash';
 
@@ -31,9 +31,12 @@ export const App: React.FC = () => {
     debounce(setQuery, 300), [],
   );
 
-  const handleQueryChange = (personName: string) => {
-    applyQuery(personName);
-    setInputValue(personName);
+  const handleQueryChange = (event: string) => {
+    applyQuery(event);
+    setInputValue(event);
+    if (isSelected) {
+      setIsSelected(false);
+    }
   };
 
   const machedPeople = useMemo(() => {
@@ -58,10 +61,7 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
-              onChange={(event) => {
-                handleQueryChange(event.target.value);
-                setIsSelected(false);
-              }}
+              onChange={(event) => handleQueryChange(event.target.value)}
               onFocus={() => {
                 setShowList(true);
               }}
@@ -75,11 +75,39 @@ export const App: React.FC = () => {
           </div>
 
           {showList && machedPeople.length > 0 ? (
-            <PeopleList
-              setSelectedPerson={setSelectedPerson}
-              setInputValue={setInputValue}
-              setIsSelected={setIsSelected}
-            />
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
+              {machedPeople.map((person) => {
+                return (
+                  <div className="dropdown-content">
+                    <div
+                      className="dropdown-item"
+                      data-cy="suggestion-item"
+                    >
+                      <a
+                        className={cn({
+                          'has-text-link': person.sex === 'm',
+                          'has-text-danger': person.sex === 'f',
+                        })}
+                        href={person.name}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          setSelectedPerson(person);
+                          handleQueryChange(person.name);
+                          setIsSelected(true);
+                        }}
+                      >
+                        {person.name}
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+
+            </div>
           ) : ''}
         </div>
 
