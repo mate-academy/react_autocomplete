@@ -7,12 +7,12 @@ import { debounce } from '../../utils/debounce';
 import { filterPeopleList } from '../../utils/filterList';
 
 type Props = {
-  changeSelectedPerson: (person: Person | null) => void;
+  onSelected: (person: Person | null) => void;
   autocompleteDelay?: number;
 };
 
 export const Autocomplete: React.FC<Props> = ({
-  changeSelectedPerson,
+  onSelected,
   autocompleteDelay = 300,
 }) => {
   const [searchPerson, setSearchPerson] = useState('');
@@ -24,14 +24,20 @@ export const Autocomplete: React.FC<Props> = ({
     [appliedSearchPerson],
   );
 
+  const handleAppliedSearch = (str: string) => {
+    setAppliedSearchPerson(str);
+    setShowAutocomplete(true);
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applySearch = useCallback(
-    debounce(setAppliedSearchPerson, autocompleteDelay),
+    debounce(handleAppliedSearch, autocompleteDelay),
     [],
   );
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    changeSelectedPerson(null);
+    setShowAutocomplete(false);
+    onSelected(null);
     setSearchPerson(event.target.value);
     applySearch(event.target.value);
   };
@@ -43,7 +49,7 @@ export const Autocomplete: React.FC<Props> = ({
       return;
     }
 
-    changeSelectedPerson(chosenPerson);
+    onSelected(chosenPerson);
     setSearchPerson(chosenPerson.name);
     setAppliedSearchPerson(chosenPerson?.name);
     setShowAutocomplete(false);
