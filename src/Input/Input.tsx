@@ -24,11 +24,17 @@ export const Input: React.FC<Props> = ({
   setQuery = () => {},
 }) => {
   const handleSelectedPerson = () => {
-    if (selectedPerson === null) {
+    if (!selectedPerson) {
       return query;
     }
 
     return selectedPerson.name;
+  };
+
+  const handleDeleteQuery = () => {
+    setAppliedQuery('');
+    setQuery('');
+    setSelectedPerson(null);
   };
 
   return (
@@ -41,16 +47,13 @@ export const Input: React.FC<Props> = ({
         onClick={() => setShowPeople(showPeople)}
         onChange={handleQueryChange}
       />
+
       {(appliedQuery.length > 0 || selectedPerson) && (
         <span className="icon is-small is-right">
           <button
             type="button"
             className="delete is-small"
-            onClick={() => {
-              setAppliedQuery('');
-              setQuery('');
-              setSelectedPerson(null);
-            }}
+            onClick={handleDeleteQuery}
           >
             x
           </button>

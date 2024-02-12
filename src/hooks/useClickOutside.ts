@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useEffect } from 'react';
 
-const useClickOutside = (ref: React.MutableRefObject<HTMLElement
-| null>, handler: (arg0: any) => void) => {
+const useClickOutside = (
+  ref: React.MutableRefObject<HTMLElement | null>,
+  handler: (arg0: any) => void,
+) => {
   const clickListener = useCallback(
     (event: any) => {
       if (!ref?.current || ref?.current?.contains(event.target)) {

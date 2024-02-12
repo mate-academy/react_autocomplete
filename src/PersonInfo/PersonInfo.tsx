@@ -7,18 +7,15 @@ type Props = {
 
 export const PersonInfo: React.FC<Props> = ({
   person,
-
-}) => {
-  return (
-    <div className="dropdown-item">
-      <p
-        className={classNames({
-          'has-text-link': person.sex === 'm',
-          'has-text-danger': person.sex === 'f',
-        })}
-      >
-        {person.name}
-      </p>
-    </div>
-  );
-};
+}) => (
+  <div className="dropdown-item">
+    <p
+      className={classNames({
+        'has-text-link': person.sex === 'm',
+        'has-text-danger': person.sex === 'f',
+      })}
+    >
+      {person.name}
+    </p>
+  </div>
+);
