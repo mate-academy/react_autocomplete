@@ -53,6 +53,11 @@ export const Autocomplete: React.FC<Props> = React.memo((({
     }, 100);
   };
 
+  const handleDropdownOption = (person: Person) => {
+    onSelected(person);
+    setQuery(person.name);
+  };
+
   return (
     <div>
       <div className="dropdown is-active">
@@ -85,10 +90,7 @@ export const Autocomplete: React.FC<Props> = React.memo((({
                     className="dropdown-item button is-white"
                     data-cy="suggestion-item"
                     key={slug}
-                    onClick={() => {
-                      onSelected(person);
-                      setQuery(name);
-                    }}
+                    onClick={() => handleDropdownOption(person)}
                   >
                     <p
                       className={classNames({
