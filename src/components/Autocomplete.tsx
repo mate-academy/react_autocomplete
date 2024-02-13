@@ -12,7 +12,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
   const [showAllPeople, setShowAllPeople] = useState(false);
 
   const applyQuery = useCallback(
-    debounce(() => setShowAllPeople(false), 300),
+    debounce(() => setShowAllPeople(true), 300),
     [],
   );
 
@@ -63,6 +63,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
             {filteredPersons.length > 0
               ? filteredPersons.map((currentPeople) => (
                 <div
+                  style={{ cursor: 'pointer' }}
                   key={currentPeople.name}
                   className="dropdown-item"
                   data-cy="suggestion-item"
