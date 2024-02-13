@@ -79,7 +79,7 @@ export const Autocomplete: React.FC<Props> = React.memo((({
           role="menu"
           data-cy="suggestions-list"
         >
-          {(isInputFocused && suggestions.length > 0) && (
+          {(isInputFocused && !!suggestions.length) && (
             <div className="dropdown-content">
               {suggestions.map((person) => {
                 const { name, slug, sex } = person;
