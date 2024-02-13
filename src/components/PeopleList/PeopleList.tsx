@@ -2,16 +2,16 @@ import React from 'react';
 import { Person } from '../../types/Person';
 import { PeopleInfo } from '../PeopleInfo';
 
-type Props = {
+interface Props {
   people: Person[],
   onPersonSelected: (selectedPerson: Person) => void,
-};
+}
 
 export const PeopleList: React.FC<Props> = ({ people, onPersonSelected }) => {
   return (
     <div className="dropdown-menu is-active" role="menu">
       <div className="dropdown-content">
-        {people.length > 0
+        {people.length
           ? (people.map(person => (
             <PeopleInfo
               onPersonSelected={onPersonSelected}

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Person } from '../../types/Person';
 
-type Props = {
+interface Props {
   person: Person;
   onPersonSelected: (selectedPerson: Person) => void,
-};
+}
 
 export const PeopleInfo: React.FC<Props> = ({
   person,
