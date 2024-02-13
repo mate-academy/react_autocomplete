@@ -18,7 +18,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
     setShowAllPeople(true);
   }, []);
 
-  const debouncedApplyQuery = debounce(applyQuery, 1000);
+  const debouncedApplyQuery = debounce(applyQuery, 300);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     debouncedApplyQuery();
