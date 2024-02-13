@@ -1,4 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  useCallback, useMemo, useRef, useState,
+} from 'react';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../data/people';
 import { Person } from '../types/Person';
@@ -10,16 +12,19 @@ interface AutoCompleteProps {
 export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
   const [inputValue, setInputValue] = useState('');
   const [showAllPeople, setShowAllPeople] = useState(false);
+  const dropdownRef = useRef(null);
 
-  const applyQuery = useCallback(
-    debounce(() => setShowAllPeople(true), 300),
-    [],
-  );
+  const applyQuery = useCallback(() => {
+    setShowAllPeople(true);
+  }, []);
+
+  const debouncedApplyQuery = debounce(applyQuery, 1000);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    applyQuery();
+    debouncedApplyQuery();
     setInputValue(e.target.value);
     setShowAllPeople(false);
+    onSelected(null);
   };
 
   const filteredPersons = useMemo(() => {
@@ -33,10 +38,16 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
     }
   };
 
-  const handleSuggestionClick = (selectedPerson: Person) => {
-    setInputValue(selectedPerson.name);
+  const handleInputBlur = () => {
+    if (inputValue === '') {
+      setShowAllPeople(false);
+    }
+  };
+
+  const handleSuggestionClick = (selectedPersonArg: Person) => {
+    setInputValue(selectedPersonArg.name);
     setShowAllPeople(false);
-    onSelected(selectedPerson);
+    onSelected(selectedPersonArg);
   };
 
   return (
@@ -44,12 +55,14 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
       <div className="dropdown-trigger">
         <input
           type="text"
+          ref={dropdownRef}
           placeholder="Enter a part of the name"
           className="input"
           data-cy="search-input"
           value={inputValue}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
         />
       </div>
 
