@@ -45,11 +45,11 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
     onSelected(selectedPersonArg);
   };
 
-  // const handleInputBlur = () => {
-  //   if (!handleInputFocus) {
-  //     setShowAllPeople(false);
-  //   }
-  // };
+  const handleInputBlur = () => {
+    setTimeout(() => {
+      setShowAllPeople(false);
+    }, 300);
+  };
 
   return (
     <div className="dropdown is-active">
@@ -63,7 +63,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
           value={inputValue}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
-          // onBlur={handleInputBlur}
+          onBlur={handleInputBlur}
         />
       </div>
 
