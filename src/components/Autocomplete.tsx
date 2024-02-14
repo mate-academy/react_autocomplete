@@ -38,12 +38,6 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
     }
   };
 
-  const handleInputBlur = () => {
-    if (inputValue === '') {
-      setShowAllPeople(false);
-    }
-  };
-
   const handleSuggestionClick = (selectedPersonArg: Person) => {
     setInputValue(selectedPersonArg.name);
     setShowAllPeople(false);
@@ -62,7 +56,6 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
           value={inputValue}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
         />
       </div>
 
@@ -73,7 +66,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
       >
         {showAllPeople && (
           <div className="dropdown-content">
-            {filteredPersons.length > 0
+            {filteredPersons.length
               ? filteredPersons.map((currentPeople) => (
                 <div
                   style={{ cursor: 'pointer' }}

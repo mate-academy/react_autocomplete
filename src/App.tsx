@@ -14,11 +14,13 @@ export const App: React.FC = () => {
     setSelectedPerson(person);
   };
 
+  const selectPerson = selectedPerson ? `${name} (${born} - ${died})` : 'No selected person';
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson ? `${name} (${born} - ${died})` : 'No selected person'}
+          {selectPerson}
         </h1>
 
         <AutoComplete
