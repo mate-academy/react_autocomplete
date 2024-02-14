@@ -1,44 +1,62 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import debounce from 'lodash.debounce';
 
 import { Person } from '../../types/Person';
 import { DropdownContent } from '../DropdownContent';
 import { peopleFromServer } from '../../data/people';
 import { DropdownInput } from '../DropdownInput';
 
-function getVisiblePeople(list: Person[], query: string): Person[] {
-  return [...list].filter(person => person
-    .name.toLowerCase().includes(query.trim().toLowerCase()));
+interface Props {
+  setSelectedPerson: (person: Person) => void;
+  delay: number,
 }
 
-type Props = {
-  setSelectedPerson: (person: Person) => void;
-};
-
-export const Dropdown: React.FC<Props> = React.memo(({ setSelectedPerson }) => {
+export const Dropdown: React.FC<Props> = React.memo(({
+  setSelectedPerson,
+  delay,
+}) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
-  const handleOnBlur = () => setTimeout(() => setIsFocused(false), 100);
-  const handleOnFocus = () => setIsFocused(true);
+  const handleOnBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
+    if (!e.relatedTarget?.classList.contains('dropdown-item')) {
+      setIsInputFocused(false);
+    }
+  };
 
   const visiblePeople = useMemo(() => {
-    return getVisiblePeople(peopleFromServer, appliedQuery);
+    const normalizedQuery = appliedQuery.trim().toLowerCase();
+
+    return peopleFromServer
+      .filter(person => person.name.toLowerCase().includes(normalizedQuery));
   }, [appliedQuery]);
-  const arePeopleToShow = visiblePeople.length > 0;
+
+  const handleItemClick = (person: Person) => {
+    setQuery(person.name);
+    setSelectedPerson(person);
+    setAppliedQuery(person.name);
+    setIsInputFocused(false);
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    applyQuery(event.target.value);
+    setQuery(event.target.value);
+  };
 
   return (
     <div className="dropdown is-active">
       <DropdownInput
-        delay={1000}
         query={query}
-        setQuery={setQuery}
-        setAppliedQuery={setAppliedQuery}
         handleOnBlur={handleOnBlur}
-        handleOnFocus={handleOnFocus}
+        setIsInputFocused={setIsInputFocused}
+        handleOnChange={handleOnChange}
       />
 
-      {isFocused && (
+      {isInputFocused && (
         <div
           className="dropdown-menu"
           role="menu"
@@ -47,15 +65,13 @@ export const Dropdown: React.FC<Props> = React.memo(({ setSelectedPerson }) => {
             overflow: 'auto',
           }}
         >
-          {arePeopleToShow ? (
+          {!visiblePeople.length ? (
+            <span>No matching suggestions</span>
+          ) : (
             <DropdownContent
               listOfPeople={visiblePeople}
-              setSelectedPerson={setSelectedPerson}
-              setQuery={setQuery}
-              setAppliedQuery={setAppliedQuery}
+              handleItemClick={handleItemClick}
             />
-          ) : (
-            <span>No matching suggestions</span>
           )}
         </div>
       )}

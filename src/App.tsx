@@ -12,7 +12,7 @@ export const App: React.FC = () => {
 
   return (
     <main className="section">
-      {selectedPerson === null ? (
+      {!selectedPerson ? (
         <h1 className="title">
           No selected person
         </h1>
@@ -20,7 +20,10 @@ export const App: React.FC = () => {
         <ChosenPerson person={selectedPerson} />
       )}
 
-      <Dropdown setSelectedPerson={setSelectedPerson} />
+      <Dropdown
+        setSelectedPerson={setSelectedPerson}
+        delay={1000}
+      />
     </main>
   );
 };

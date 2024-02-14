@@ -3,16 +3,12 @@ import { DropdownItem } from '../DropdownItem';
 
 type Props = {
   listOfPeople: Person[],
-  setSelectedPerson: (person: Person) => void,
-  setQuery: (param: string) => void,
-  setAppliedQuery: (param: string) => void,
+  handleItemClick: (person: Person) => void,
 };
 
 export const DropdownContent: React.FC<Props> = ({
   listOfPeople,
-  setSelectedPerson,
-  setQuery,
-  setAppliedQuery,
+  handleItemClick,
 }) => {
   return (
     <div className="dropdown-content">
@@ -20,9 +16,7 @@ export const DropdownContent: React.FC<Props> = ({
         <DropdownItem
           person={person}
           key={person.slug}
-          setSelectedPerson={setSelectedPerson}
-          setQuery={setQuery}
-          setAppliedQuery={setAppliedQuery}
+          handleItemClick={handleItemClick}
         />
       ))}
     </div>

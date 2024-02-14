@@ -1,31 +1,16 @@
-import debounce from 'lodash.debounce';
-import { useCallback } from 'react';
-
-type Props = {
-  delay: number;
-  query: string;
-  setQuery: (query: string) => void;
-  setAppliedQuery: (query: string) => void;
-  handleOnBlur: () => void;
-  handleOnFocus: () => void;
-};
+interface Props {
+  query: string,
+  handleOnBlur: (e: React.FocusEvent<HTMLInputElement, Element>) => void,
+  setIsInputFocused: (param: boolean) => void,
+  handleOnChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
+}
 
 export const DropdownInput: React.FC<Props> = ({
-  delay,
   query,
-  setQuery,
-  setAppliedQuery,
   handleOnBlur,
-  handleOnFocus,
+  setIsInputFocused,
+  handleOnChange,
 }) => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
-
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    applyQuery(event.target.value);
-    setQuery(event.target.value);
-  };
-
   return (
     <div className="dropdown-trigger">
       <input
@@ -35,7 +20,7 @@ export const DropdownInput: React.FC<Props> = ({
         value={query}
         onChange={handleOnChange}
         onBlur={handleOnBlur}
-        onFocus={handleOnFocus}
+        onFocus={() => setIsInputFocused(true)}
       />
     </div>
   );
