@@ -34,7 +34,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
   }, [inputValue]);
 
   const handleInputFocus = () => {
-    if (inputValue === '') {
+    if (!inputValue) {
       setShowAllPeople(true);
     }
   };
