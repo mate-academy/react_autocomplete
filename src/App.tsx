@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import cn from 'classnames';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 // import { debounce } from 'cypress/types/lodash';
 
 function debounce(
@@ -40,10 +41,18 @@ export const App: React.FC = () => {
   };
 
   const machedPeople = useMemo(() => {
-    return peopleFromServer.filter((person) => {
-      return person.name.includes(query);
-    });
+    return peopleFromServer.filter((person) => person.name.includes(query));
   }, [query]);
+
+  const handlerOnChose = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    person: Person,
+  ) => {
+    event.preventDefault();
+    setSelectedPerson(person);
+    handleQueryChange(person.name);
+    setIsSelected(true);
+  };
 
   return (
     <div className="container">
@@ -74,11 +83,12 @@ export const App: React.FC = () => {
             />
           </div>
 
-          {showList && machedPeople.length > 0 ? (
+          {showList && machedPeople.length > 0 && (
             <div
               className="dropdown-menu"
               role="menu"
               data-cy="suggestions-list"
+              style={{ maxHeight: '60vh', overflowY: 'auto' }}
             >
               {machedPeople.map((person) => {
                 return (
@@ -94,10 +104,7 @@ export const App: React.FC = () => {
                         })}
                         href={person.name}
                         onClick={(event) => {
-                          event.preventDefault();
-                          setSelectedPerson(person);
-                          handleQueryChange(person.name);
-                          setIsSelected(true);
+                          handlerOnChose(event, person);
                         }}
                       >
                         {person.name}
@@ -108,10 +115,10 @@ export const App: React.FC = () => {
               })}
 
             </div>
-          ) : ''}
+          )}
         </div>
 
-        {machedPeople.length === 0 ? (
+        {machedPeople.length === 0 && (
           <div
             className="
             notification
@@ -125,7 +132,7 @@ export const App: React.FC = () => {
           >
             <p className="has-text-danger">No matching suggestions</p>
           </div>
-        ) : ('')}
+        )}
       </main>
     </div>
   );
