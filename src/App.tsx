@@ -4,12 +4,13 @@ import cn from 'classnames';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { preparePeople } from './utils/preparePeople';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [visible, setVisible] = useState(false);
+  const [isListShown, setIsListShown] = useState(false);
 
   // eslint-disable-next-line
   const applyQuery = useCallback(
@@ -23,11 +24,11 @@ export const App: React.FC = () => {
     setSelectedPerson(person);
     setQuery(person.name);
     setAppliedQuery(person.name);
-    setVisible(false);
+    setIsListShown(false);
   };
 
   const onBlurDelay = () => {
-    setTimeout(() => setVisible(false), 100);
+    setTimeout(() => setIsListShown(false), 100);
   };
 
   const handleReset = () => {
@@ -41,15 +42,7 @@ export const App: React.FC = () => {
     applyQuery(event.target.value);
   };
 
-  const preparedPeople = (people: Person[], queryFilter: string) => {
-    const normalizedQuery = queryFilter.toLowerCase();
-
-    return people.filter(person => person.name
-      .toLowerCase()
-      .includes(normalizedQuery));
-  };
-
-  const preparedPeopleList = preparedPeople(peopleFromServer, appliedQuery);
+  const preparedPeopleList = preparePeople(peopleFromServer, appliedQuery);
 
   return (
     <main className="section">
@@ -71,7 +64,7 @@ export const App: React.FC = () => {
             className="input"
             value={query}
             onChange={event => handleOnChange(event)}
-            onFocus={() => setVisible(true)}
+            onFocus={() => setIsListShown(true)}
             onBlur={onBlurDelay}
           />
           {selectedPerson && (
@@ -89,7 +82,7 @@ export const App: React.FC = () => {
 
         <div
           style={{
-            display: visible ? 'block' : 'none',
+            display: isListShown ? 'block' : 'none',
           }}
           className="dropdown-menu"
           role="menu"
