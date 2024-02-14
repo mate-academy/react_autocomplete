@@ -5,10 +5,9 @@ import { AutoComplete } from './components/Autocomplete';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const initialPerson = peopleFromServer[0];
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const { name, born, died } = selectedPerson || initialPerson;
+  const { name, born, died } = selectedPerson || peopleFromServer[0];
 
   const handleSelectedPerson = (person: Person | null) => {
     setSelectedPerson(person);
