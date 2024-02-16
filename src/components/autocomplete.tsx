@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState, useCallback } from "react";
 import debounce from "lodash.debounce";
 import classNames from "classnames";
 import { Person } from "../types/Person";
@@ -14,36 +14,45 @@ export const Autocomplete: React.FC<Props> = ({
   onSelected,
   delay,
 }) => {
-  const [query, setQuery] = useState("");
-  const [appliedQuery, setAppliedQuery] = useState("");
-  const [showAllPeople, setShowAllPeople] = useState(false);
+  const [query, setQuery] = useState<string>("");
+  const [appliedQuery, setAppliedQuery] = useState<string>("");
+  const [showAllPeople, setShowAllPeople] = useState<boolean>(false);
 
+  // eslint-disable-next-line
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), [delay]);
 
-  const filteredPeople = people.filter((person) =>
+  const filteredPeople: Person[] = people.filter((person) =>
     person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
   );
 
-  const handleInputFocus = () => {
+  const handleInputFocus = useCallback(() => {
     if (!query) {
       setShowAllPeople(true);
     }
+  }, [query]);
 
-    onSelected(null);
-  };
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (!event.target.value) {
+        setShowAllPeople(true);
+      }
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
-    onSelected(null);
-  };
+      setQuery(event.target.value);
+      applyQuery(event.target.value);
+      onSelected(null);
+    },
+    [applyQuery, onSelected],
+  );
 
-  const handleClickPerson = (person: Person) => {
-    setQuery("");
-    setAppliedQuery("");
-    onSelected(person);
-    setShowAllPeople(false);
-  };
+  const handleClickPerson = useCallback(
+    (person: Person) => {
+      setQuery(person.name);
+      setAppliedQuery("");
+      onSelected(person);
+      setShowAllPeople(false);
+    },
+    [onSelected],
+  );
 
   return (
     <>
@@ -61,11 +70,10 @@ export const Autocomplete: React.FC<Props> = ({
           />
         </div>
 
-        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-          <div className="dropdown-content">
-            {/* eslint-disable-next-line */}
-            {showAllPeople &&
-              filteredPeople.map((person) => {
+        {showAllPeople && filteredPeople.length > 0 && (
+          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+            <div className="dropdown-content">
+              {filteredPeople.map((person) => {
                 const { name, sex, slug } = person;
 
                 return (
@@ -95,8 +103,9 @@ export const Autocomplete: React.FC<Props> = ({
                   </div>
                 );
               })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {!filteredPeople.length && (

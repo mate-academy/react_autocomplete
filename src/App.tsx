@@ -2,26 +2,12 @@ import React, { useState } from "react";
 import "./App.scss";
 import { peopleFromServer } from "./data/people";
 import { Person } from "./types/Person";
-import { Autocomplete } from "./components/autocomplete";
+import { Autocomplete } from "./components/Autocomplete";
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  let name = null;
-  let born = null;
-  let died = null;
-
-  if (selectedPerson) {
-    const {
-      name: namePerson,
-      born: bornPerson,
-      died: diedPerson,
-    } = selectedPerson;
-
-    name = namePerson;
-    born = bornPerson;
-    died = diedPerson;
-  }
+  const { name, born, died } = selectedPerson || {};
 
   return (
     <div className="container">
