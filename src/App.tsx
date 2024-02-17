@@ -1,97 +1,92 @@
-import React from 'react';
+import React, {
+  useState, useMemo, useEffect, useCallback,
+} from 'react';
+import classNames from 'classnames';
 import './App.scss';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
+import { PersonList } from './components/PersonList/PersonList';
+import { InputPeople } from './components/InputPeople/InputPeople';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [selectedPeople, setSelectedPeople] = useState<Person | null>(null);
+  const [showList, setShowList] = useState(false);
+  const [pageTitle, setPageTitle] = useState<string>('No selected person');
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputQuery = event.target.value;
+
+    setQuery(inputQuery);
+    applyQuery(inputQuery);
+  };
+
+  useEffect(() => {
+    if (!query) {
+      setSelectedPeople(null);
+    }
+  }, [query]);
+
+  useEffect(() => {
+    setPageTitle(() => {
+      return selectedPeople
+        ? `${selectedPeople.name} (${selectedPeople.born} - ${selectedPeople.died})`
+        : 'No selected person';
+    });
+  }, [selectedPeople]);
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter((person) => person.name
+      .toLowerCase().includes(appliedQuery.trim().toLowerCase()));
+  }, [appliedQuery]);
 
   return (
     <div className="container">
-      <main className="section is-flex is-flex-direction-column">
+      <main className="section">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {pageTitle}
+
         </h1>
 
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-            />
-          </div>
-
-          <div
-            className="dropdown-menu"
-            role="menu"
-            data-cy="suggestions-list"
-          >
-            <div className="dropdown-content">
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-              >
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
+          className={classNames('dropdown', { 'is-active': !selectedPeople })}
         >
-          <p className="has-text-danger">No matching suggestions</p>
+          <InputPeople
+            query={query}
+            appliedQuery={appliedQuery}
+            setAppliedQuery={setAppliedQuery}
+            handleQueryChange={handleQueryChange}
+            setQuery={setQuery}
+            selectedPeople={selectedPeople}
+            setSelectedPeople={setSelectedPeople}
+            // onFocus={() => setShowList(true)}
+            showList={showList}
+            setShowList={setShowList}
+            setPageTitle={setPageTitle}
+          />
+
+          <div className="dropdown-menu" role="menu">
+            {showList
+              && (filteredPeople.length ? (
+                <div className="dropdown-menu">
+                  <PersonList
+                    filteredPeople={filteredPeople}
+                    setSelectedPeople={setSelectedPeople}
+                  />
+                </div>
+              ) : (
+                <div
+                  className="dropdown-content notification is-danger is-light"
+                  data-cy="no-suggestions-message"
+                >
+                  No matching suggestions
+                </div>
+              ))}
+          </div>
         </div>
       </main>
     </div>
