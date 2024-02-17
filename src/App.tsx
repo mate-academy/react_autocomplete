@@ -16,7 +16,10 @@ export const App: React.FC = () => {
   const [showList, setShowList] = useState(false);
   const [pageTitle, setPageTitle] = useState<string>('No selected person');
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+  const applyQuery = useCallback(
+    debounce((inputQuery: string) => setAppliedQuery(inputQuery), 1000),
+    [setAppliedQuery],
+  );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputQuery = event.target.value;
@@ -63,7 +66,6 @@ export const App: React.FC = () => {
             setQuery={setQuery}
             selectedPeople={selectedPeople}
             setSelectedPeople={setSelectedPeople}
-            // onFocus={() => setShowList(true)}
             showList={showList}
             setShowList={setShowList}
             setPageTitle={setPageTitle}
