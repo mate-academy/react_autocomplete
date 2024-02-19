@@ -1,4 +1,4 @@
-- make sure that filter won't be called if user enred spaces only;
+- make sure that filter won't be called if user entered spaces only;
 - don't interact with DOM directly, use React as much as possible;
 - don't generate key on render ([here](https://medium.com/blackrock-engineering/5-common-mistakes-with-keys-in-react-b86e82020052) is why)
 - follow [these](https://medium.com/javascript-in-plain-english/handy-naming-conventions-for-event-handler-functions-props-in-react-fc1cbb791364) naming conventions for methods

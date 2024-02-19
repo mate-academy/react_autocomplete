@@ -41,7 +41,7 @@ Solutions:
 
 ```bash
   npm uninstall node-sass
-  npm install sass --save-dev
+  npm install sass --save-devnpm install sass --save-dev
 ```
 
 - Alternative solution is to install `node-sass@npm:sass` version:
