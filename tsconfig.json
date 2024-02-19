@@ -1,5 +1,12 @@
 {
+  "compilerOptions": {
+    "jsx": "react"
+  },
   "extends": "@mate-academy/students-ts-config",
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "jsx": "react"
+  },
   "include": [
     "src"
   ]
