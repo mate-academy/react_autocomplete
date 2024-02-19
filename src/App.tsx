@@ -1,7 +1,7 @@
 import React, {
   useCallback, useMemo, useRef, useState,
 } from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line
 import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 import './App.scss';
@@ -11,14 +11,14 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const initialPerson = peopleFromServer[0];
   const [query, setQuery] = useState('');
-  const [showPeopleList, setShowPersonList] = useState(false);
+  const [showPeopleList, setShowPeopleList] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const { name, born, died } = selectedPerson || initialPerson;
 
   const dropdownRef = useRef(null);
 
   const applyQuery = useCallback(() => {
-    setShowPersonList(true);
+    setShowPeopleList(true);
   }, []);
   const debouncedApplyQuery = debounce(applyQuery, 1000);
 
@@ -32,7 +32,7 @@ export const App: React.FC = () => {
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     debouncedApplyQuery();
     setSelectedPerson(null);
-    setShowPersonList(false);
+    setShowPeopleList(false);
     setQuery(event.target.value);
   };
 
@@ -43,13 +43,13 @@ export const App: React.FC = () => {
 
   const showList = () => {
     if (!query) {
-      setShowPersonList(true);
+      setShowPeopleList(true);
     }
   };
 
   const handleInputBlur = () => {
     setTimeout(() => {
-      setShowPersonList(false);
+      setShowPeopleList(false);
     }, 300);
   };
 
