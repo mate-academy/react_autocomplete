@@ -1,6 +1,4 @@
-import React, {
-  useState, useMemo, useEffect, useCallback,
-} from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import './App.scss';
 import debounce from 'lodash.debounce';
@@ -12,12 +10,12 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [selectedPeople, setSelectedPeople] = useState<Person | null>(null);
-  const [showList, setShowList] = useState(false);
+  const [selectedPeople, setSelectedPeople] = useState(null as Person | null);
+  const [isListShow, setIsListShow] = useState(false);
   const [pageTitle, setPageTitle] = useState<string>('No selected person');
 
-  const applyQuery = useCallback(
-    debounce((inputQuery: string) => setAppliedQuery(inputQuery), 1000),
+  const debounceQuery = useMemo(
+    () => debounce((inputQuery: string) => setAppliedQuery(inputQuery), 1000),
     [setAppliedQuery],
   );
 
@@ -25,7 +23,7 @@ export const App: React.FC = () => {
     const inputQuery = event.target.value;
 
     setQuery(inputQuery);
-    applyQuery(inputQuery);
+    debounceQuery(inputQuery);
   };
 
   useEffect(() => {
@@ -34,17 +32,12 @@ export const App: React.FC = () => {
     }
   }, [query]);
 
-  useEffect(() => {
-    setPageTitle(() => {
-      return selectedPeople
-        ? `${selectedPeople.name} (${selectedPeople.born} - ${selectedPeople.died})`
-        : 'No selected person';
-    });
-  }, [selectedPeople]);
-
   const filteredPeople = useMemo(() => {
-    return peopleFromServer.filter((person) => person.name
-      .toLowerCase().includes(appliedQuery.trim().toLowerCase()));
+    const lowerCaseQuery = appliedQuery.trim().toLowerCase();
+
+    return peopleFromServer.filter((person) => {
+      return person.name.toLowerCase().includes(lowerCaseQuery);
+    });
   }, [appliedQuery]);
 
   return (
@@ -52,7 +45,6 @@ export const App: React.FC = () => {
       <main className="section">
         <h1 className="title" data-cy="title">
           {pageTitle}
-
         </h1>
 
         <div
@@ -66,28 +58,30 @@ export const App: React.FC = () => {
             setQuery={setQuery}
             selectedPeople={selectedPeople}
             setSelectedPeople={setSelectedPeople}
-            showList={showList}
-            setShowList={setShowList}
+            isListShow={isListShow}
+            setIsListShow={setIsListShow}
             setPageTitle={setPageTitle}
           />
 
           <div className="dropdown-menu" role="menu">
-            {showList
-              && (filteredPeople.length ? (
-                <div className="dropdown-menu">
+            {isListShow && (
+              <>
+                {filteredPeople.length ? (
                   <PersonList
                     filteredPeople={filteredPeople}
                     setSelectedPeople={setSelectedPeople}
+                    setPageTitle={setPageTitle}
                   />
-                </div>
-              ) : (
-                <div
-                  className="dropdown-content notification is-danger is-light"
-                  data-cy="no-suggestions-message"
-                >
-                  No matching suggestions
-                </div>
-              ))}
+                ) : (
+                  <div
+                    className="dropdown-content notification is-danger is-light"
+                    data-cy="no-suggestions-message"
+                  >
+                    No matching suggestions
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </main>

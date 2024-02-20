@@ -4,29 +4,34 @@ import { Person } from '../../types/Person';
 interface Props {
   query: string;
   appliedQuery: string;
+  selectedPeople: Person | null;
+  isListShow: boolean;
   setAppliedQuery: (string: string) => void;
   handleQueryChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   setQuery: (string: string) => void;
-  selectedPeople: Person | null;
   setSelectedPeople: (person: Person | null) => void;
-  // onFocus: (event: React.FocusEvent<HTMLInputElement, Element>) => void;
-  showList: boolean;
-  setShowList: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsListShow: React.Dispatch<React.SetStateAction<boolean>>;
   setPageTitle: (string: string) => void;
 }
 
 export const InputPeople: React.FC<Props> = ({
   query,
   appliedQuery,
+  selectedPeople,
+  isListShow,
   handleQueryChange,
   setQuery,
   setAppliedQuery,
-  selectedPeople,
   setSelectedPeople,
-  showList,
-  setShowList,
+  setIsListShow,
   setPageTitle,
 }) => {
+  const handleClick = () => {
+    setIsListShow(isListShow);
+  };
+
+  const handleFocus = () => setIsListShow(true);
+
   const handleSelectedPeople = () => {
     return selectedPeople ? selectedPeople.name : query;
   };
@@ -50,29 +55,9 @@ export const InputPeople: React.FC<Props> = ({
     }
   };
 
-  useEffect(() => {
-    const inputElement = document.getElementById('search-input');
-
-    if (inputElement) {
-      inputElement.focus();
-    }
-  }, [query]);
-
-  return (
-    <div className="dropdown-trigger  control has-icons-right">
-      <input
-        type="text"
-        placeholder="Enter a part of the name"
-        className="input"
-        data-cy="search-input"
-        value={handleSelectedPeople()}
-        onChange={handleQueryChange}
-        onClick={() => setShowList(showList)}
-        onFocus={() => setShowList(true)}
-        onKeyDown={handleKeyDown}
-      />
-
-      {(appliedQuery.length > 0 || selectedPeople) && (
+  const renderClearButton = () => {
+    if (appliedQuery.length > 0 || selectedPeople) {
+      return (
         <span className="icon is-small is-right">
           <button
             type="button"
@@ -82,7 +67,35 @@ export const InputPeople: React.FC<Props> = ({
             ✖️
           </button>
         </span>
-      )}
+      );
+    }
+
+    return null;
+  };
+
+  useEffect(() => {
+    const inputElement = document.getElementById('search-input');
+
+    if (inputElement) {
+      inputElement.focus();
+    }
+  }, [query]);
+
+  return (
+    <div className="dropdown-trigger control has-icons-right">
+      <input
+        type="text"
+        placeholder="Enter a part of the name"
+        className="input"
+        data-cy="search-input"
+        value={handleSelectedPeople()}
+        onChange={handleQueryChange}
+        onClick={handleClick}
+        onFocus={handleFocus}
+        onKeyDown={handleKeyDown}
+      />
+
+      {renderClearButton()}
     </div>
   );
 };

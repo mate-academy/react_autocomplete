@@ -5,26 +5,46 @@ import { Person } from '../../types/Person';
 interface Props {
   filteredPeople: Person[];
   setSelectedPeople: (person: Person) => void;
+  setPageTitle: (string: string) => void;
 }
 
-export const PersonList: React.FC<Props> = React.memo(
-  ({ filteredPeople, setSelectedPeople }) => {
+export const PersonList: React.FC<Props> = (
+  ({ filteredPeople, setSelectedPeople, setPageTitle }) => {
+    const handlePersonSelect = (person: Person) => {
+      setSelectedPeople(person);
+
+      const newTitle = person
+        ? `${person.name} (${person.born} - ${person.died})`
+        : 'No selected person';
+
+      setPageTitle(newTitle);
+    };
+
+    const handleOnKeyDown = (event: React.KeyboardEvent, person: Person) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        handlePersonSelect(person);
+      }
+    };
+
+    const handleOnClick = (person: Person) => handlePersonSelect(person);
+
     return (
-      <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-        <div className="dropdown-content">
+      <div
+        className="dropdown-menu"
+        role="menu"
+        data-cy="suggestions-list"
+        style={{ maxHeight: '240px', overflowY: 'auto' }}
+      >
+        <ul className="dropdown-content">
           {filteredPeople.map((person: Person) => (
-            <div
+            <button
+              type="button"
               className="dropdown-item"
               data-cy="suggestion-item"
-              role="button"
               tabIndex={0}
               key={person.slug}
-              onClick={() => setSelectedPeople(person)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  setSelectedPeople(person);
-                }
-              }}
+              onClick={() => handleOnClick(person)}
+              onKeyDown={(e) => handleOnKeyDown(e, person)}
             >
               <p
                 className={classNames({
@@ -34,10 +54,10 @@ export const PersonList: React.FC<Props> = React.memo(
               >
                 {person.name}
               </p>
-            </div>
+            </button>
           ))}
-        </div>
+        </ul>
       </div>
     );
-  },
+  }
 );
