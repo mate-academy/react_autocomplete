@@ -1,98 +1,32 @@
-import React, { useState, useMemo, MouseEvent } from 'react';
+import React, { useState } from 'react';
 import './App.scss';
+import { AutoComplete } from './component/Autocomplete';
 import { peopleFromServer } from './data/people';
-import { DropItems } from './components/DropdownItems';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const [isOpen, setIsOpen] = useState(false);
+  const { name, born, died } = selectedPerson || peopleFromServer[0];
 
-  const [query, setQuery] = React.useState('');
-
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-  };
-
-  const handleFocus = () => {
-    setIsOpen(true);
-  };
-
-  const handleBlur = () => {
-    setTimeout(() => setIsOpen(false), 100);
-  };
-
-  const handleReset = () => {
-    setSelectedPerson(null);
-    setQuery('');
-  };
-
-  const handleDropItemClick = (event: MouseEvent, person: Person) => {
-    event.preventDefault();
-
+  const handleSelectedPerson = (person: Person | null) => {
     setSelectedPerson(person);
-    setQuery(person.name);
   };
 
-  const sortedPeoples = useMemo(() => {
-    return peopleFromServer.filter(person => {
-      return person.name.toLowerCase().includes(query.toLowerCase());
-    });
-  }, [query]);
+  const selectPerson = selectedPerson ? `${name} (${born} - ${died})` : 'No selected person';
 
   return (
-    <main className="section">
-      <h1 className="title">
-        {selectedPerson ? (
-          `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-        ) : ('No one selected')}
-      </h1>
+    <div className="container">
+      <main className="section is-flex is-flex-direction-column">
+        <h1 className="title" data-cy="title">
+          {selectPerson}
+        </h1>
 
-      <div className="dropdown is-active">
-        <div className="dropdown-trigger control has-icons-right">
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-            value={query}
-            onChange={handleQueryChange}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-          />
-          {query && (
-            <span className="icon is-small is-right">
-              <button
-                onClick={handleReset}
-                type="button"
-                className="delete is-small"
-              >
-                x
-              </button>
-            </span>
-          )}
-        </div>
+        <AutoComplete
+          onSelected={handleSelectedPerson}
+        />
+      </main>
+    </div>
 
-        {isOpen ? (
-          <div className="dropdown-menu" role="menu">
-            <div className="dropdown-content">
-              {sortedPeoples.length ? (
-                sortedPeoples.map(person => (
-                  <DropItems
-                    person={person}
-                    key={person.slug}
-                    handleOnClick={handleDropItemClick}
-                  />
-                ))
-              ) : (
-                <div className="dropdown-item">
-                  <p>No matching suggestions</p>
-                </div>
-              )}
-            </div>
-          </div>
-        ) : ''}
-      </div>
-    </main>
   );
 };
