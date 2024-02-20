@@ -1,7 +1,4 @@
-//  eslint-disable
-
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { AutoComplite } from './components/AutoComplite';
 import { Person } from './types/Person';
