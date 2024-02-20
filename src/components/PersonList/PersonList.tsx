@@ -10,6 +10,11 @@ interface Props {
 
 export const PersonList: React.FC<Props> = (
   ({ filteredPeople, setSelectedPeople, setPageTitle }) => {
+    const Gender = {
+      MALE: 'm',
+      FEMALE: 'f',
+    };
+
     const handlePersonSelect = (person: Person) => {
       setSelectedPeople(person);
 
@@ -48,8 +53,8 @@ export const PersonList: React.FC<Props> = (
             >
               <p
                 className={classNames({
-                  'has-text-link': person.sex === 'm',
-                  'has-text-danger': person.sex === 'f',
+                  'has-text-link': person.sex === Gender.MALE,
+                  'has-text-danger': person.sex === Gender.FEMALE,
                 })}
               >
                 {person.name}
