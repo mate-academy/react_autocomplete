@@ -2,11 +2,3 @@ iframe {
   display: none;
 }
 
-.autocomplete {
-  box-sizing:content-box;
-  width: 300px;
-}
-
-input:focus::placeholder {
-  opacity: 0;
-}
