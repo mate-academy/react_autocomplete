@@ -63,19 +63,18 @@ export const PeopleList: React.FC<Props> = React.memo(
           {!selectedPerson && filteredPeople.length !== 0 && (
             <div className="dropdown-content">
               {filteredPeople.map((person: Person) => (
-                <a
+                <button
+                  type="button"
                   key={person.slug}
-                  href="/#"
-                  className="dropdown-item"
+                  className="dropdown-item button is-white"
                   data-cy="suggestion-item"
                   onClick={() => setSelectedPerson(person)}
                   style={{
                     cursor: 'pointer',
                   }}
-                  tabIndex={0}
                 >
                   <p className="has-text-link">{person.name}</p>
-                </a>
+                </button>
               ))}
             </div>
           )}
