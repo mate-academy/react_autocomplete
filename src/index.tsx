@@ -1,6 +1,6 @@
-import { createRoot } from 'react-dom/client';
+import ReactDOM from 'react-dom';
 
 import 'bulma/css/bulma.css';
 import { App } from './App';
 
-createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);
+ReactDOM.render(<App />, document.getElementById('root'));
