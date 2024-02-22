@@ -6,9 +6,11 @@ import {
 } from 'react';
 import cn from 'classnames';
 import { Person } from '../types/Person';
+import '@fortawesome/fontawesome-free/css/all.css';
 
 interface Props {
   people: Person[],
+  selectedPerson: Person | null,
   onSelected?: (value: Person | null) => void,
 }
 
@@ -26,6 +28,7 @@ function debounce(callback: (query: string) => void, delay: number) {
 export const Dropdown: React.FC<Props> = ({
   people,
   onSelected = () => {},
+  selectedPerson,
 }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -72,12 +75,18 @@ export const Dropdown: React.FC<Props> = ({
     }, 300);
   };
 
+  const handleReset = () => {
+    onSelected(null);
+    setQuery('');
+    setAppliedQuery('');
+  };
+
   return (
     <div className={cn('dropdown', {
-      'is-active': hasFocus && !isTyping,
+      'is-active': hasFocus && !selectedPerson && !isTyping,
     })}
     >
-      <div className="dropdown-trigger">
+      <div className="dropdown-trigger" style={{ position: 'relative' }}>
         <input
           type="text"
           placeholder="Enter a part of the name"
@@ -87,6 +96,15 @@ export const Dropdown: React.FC<Props> = ({
           onBlur={handleBlur}
           onChange={(e) => handleChange(e)}
         />
+        {selectedPerson && (
+          <button
+            type='button'
+            className="close-button"
+            onClick={handleReset}
+          >
+            <i className="fa-solid fa-xmark" />
+          </button>
+        )}
       </div>
 
       <div className="dropdown-menu" role="menu">
