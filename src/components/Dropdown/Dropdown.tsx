@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
 
@@ -14,12 +14,16 @@ export const Dropdown: React.FC<Props> = React.memo(({ onSelected, delay }) => {
   const [appliedValue, setAppliedValue] = useState('');
   const [focus, setFocus] = useState(false);
 
-  const applyValue = useCallback(debounce(setAppliedValue, delay), []);
+  const applyValue = useMemo(() => debounce(setAppliedValue, delay), [delay]);
+
+  const openListAfterDelay = useMemo(() => debounce(setFocus, delay), [delay]);
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
     applyValue(event.target.value);
     onSelected(null);
+    setFocus(false);
+    openListAfterDelay(true);
   };
 
   const handleOnClick = (person: Person) => {
