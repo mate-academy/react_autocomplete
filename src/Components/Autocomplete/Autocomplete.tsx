@@ -77,7 +77,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
                   className="dropdown-item"
                   data-cy="suggestion-item"
                   onClick={() => handleSuggestionClick(currentPeople)}
-                  onKeyDown={(e) => {
+                  onKeyDown={e => {
                     if (e.key === 'Enter') {
                       handleSuggestionClick(currentPeople);
                     }
@@ -98,4 +98,4 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
       </div>
     </div>
   );
-}
+};
