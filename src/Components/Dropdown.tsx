@@ -67,6 +67,7 @@ export const Dropdown: React.FC<Props> = ({
     onSelected(person);
     setQuery(person.name);
     setAppliedQuery(person.name);
+    setHasFocus(false);
   };
 
   const handleBlur = () => {
@@ -98,7 +99,7 @@ export const Dropdown: React.FC<Props> = ({
         />
         {selectedPerson && (
           <button
-            type='button'
+            type="button"
             className="close-button"
             onClick={handleReset}
           >
