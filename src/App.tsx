@@ -6,7 +6,6 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-
   const { name, born, died } = selectedPerson || peopleFromServer[0];
 
   const selectPerson = selectedPerson
