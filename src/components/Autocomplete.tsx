@@ -1,16 +1,19 @@
-import React, {
-  useCallback, useMemo, useRef, useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 // eslint-disable-next-line
 import debounce from 'lodash.debounce';
-import { peopleFromServer } from '../data/people';
 import { Person } from '../types/Person';
 
 interface AutoCompleteProps {
   onSelected: (person: Person | null) => void;
+  people: Person[];
+  debounceTime: number;
 }
 
-export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
+export const AutoComplete: React.FC<AutoCompleteProps> = ({
+  onSelected,
+  people,
+  debounceTime,
+}) => {
   const [inputValue, setInputValue] = useState('');
   const [showAllPeople, setShowAllPeople] = useState(false);
   const dropdownRef = useRef(null);
@@ -19,7 +22,9 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
     setShowAllPeople(true);
   }, []);
 
-  const debouncedApplyQuery = debounce(applyQuery, 300);
+  const debouncedApplyQuery = useMemo(() => {
+    return debounce(applyQuery, debounceTime);
+  }, [applyQuery, debounceTime]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     debouncedApplyQuery();
@@ -29,9 +34,10 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
   };
 
   const filteredPersons = useMemo(() => {
-    return peopleFromServer.filter(person => person.name.toLowerCase()
-      .includes(inputValue.toLowerCase()));
-  }, [inputValue]);
+    return people.filter(person =>
+      person.name.toLowerCase().includes(inputValue.toLowerCase()),
+    );
+  }, [people, inputValue]);
 
   const handleInputFocus = () => {
     if (!inputValue) {
@@ -67,22 +73,18 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
         />
       </div>
 
-      <div
-        className="dropdown-menu"
-        role="menu"
-        data-cy="suggestions-list"
-      >
+      <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
         {showAllPeople && (
           <div className="dropdown-content">
-            {filteredPersons.length
-              ? filteredPersons.map((currentPeople) => (
+            {filteredPersons.length ? (
+              filteredPersons.map(currentPeople => (
                 <div
                   style={{ cursor: 'pointer' }}
                   key={currentPeople.name}
                   className="dropdown-item"
                   data-cy="suggestion-item"
                   onClick={() => handleSuggestionClick(currentPeople)}
-                  onKeyDown={(e) => {
+                  onKeyDown={e => {
                     if (e.key === 'Enter') {
                       handleSuggestionClick(currentPeople);
                     }
@@ -90,19 +92,14 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
                   role="button"
                   tabIndex={0}
                 >
-                  <p className="has-text-link">
-                    {currentPeople.name}
-                  </p>
+                  <p className="has-text-link">{currentPeople.name}</p>
                 </div>
               ))
-              : (
-                <div
-                  className="dropdown-item"
-                  data-cy="no-suggestions-message"
-                >
-                  <p className="has-text-danger">No matching suggestions</p>
-                </div>
-              )}
+            ) : (
+              <div className="dropdown-item" data-cy="no-suggestions-message">
+                <p className="has-text-danger">No matching suggestions</p>
+              </div>
+            )}
           </div>
         )}
       </div>

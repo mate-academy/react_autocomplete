@@ -13,7 +13,9 @@ export const App: React.FC = () => {
     setSelectedPerson(person);
   };
 
-  const selectPerson = selectedPerson ? `${name} (${born} - ${died})` : 'No selected person';
+  const selectPerson = selectedPerson
+    ? `${name} (${born} - ${died})`
+    : 'No selected person';
 
   return (
     <div className="container">
@@ -24,6 +26,8 @@ export const App: React.FC = () => {
 
         <AutoComplete
           onSelected={handleSelectedPerson}
+          people={peopleFromServer}
+          debounceTime={300}
         />
       </main>
     </div>
