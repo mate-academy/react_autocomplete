@@ -40,7 +40,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
   }, [people, inputValue]);
 
   const handleInputFocus = () => {
-    if (inputValue.trim() !== '') {
+    if (inputValue.trim() !== '' || !showAllPeople) {
       setShowAllPeople(true);
     }
   };
@@ -65,12 +65,31 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
           ref={dropdownRef}
           placeholder="Enter a part of the name"
           className="input"
+          style={{
+            display: 'flex',
+            position: 'relative',
+          }}
           data-cy="search-input"
           value={inputValue}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
         />
+        {inputValue && (
+          <button
+            type="button"
+            className="delete is-small"
+            onClick={() => setInputValue('')}
+            style={{
+              display: 'flex',
+              position: 'absolute',
+              left: '11rem',
+              top: '50%',
+              transform: 'translateY(-50%)',
+            }}
+            aria-label="Clear input" // Add aria-label for accessibility
+          />
+        )}
       </div>
 
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
