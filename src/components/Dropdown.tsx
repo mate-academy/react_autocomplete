@@ -19,6 +19,7 @@ export const Dropdown: React.FC<Props> = React.memo(({ onSelected, delay }) => {
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    onSelected(null);
     setHasFocus(false);
     dropdownDelay(true);
   };
@@ -60,7 +61,7 @@ export const Dropdown: React.FC<Props> = React.memo(({ onSelected, delay }) => {
                   data-cy="suggestion-item"
                   key={person.name}
                   style={{ cursor: 'pointer' }}
-                  onClick={() => handleOnSelected(person)}
+                  onMouseDown={() => handleOnSelected(person)}
                   role="button"
                   tabIndex={0}
                   onKeyDown={e => {

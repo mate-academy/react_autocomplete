@@ -10,11 +10,13 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         {selectedPerson ? (
-          <h1 className="title">
+          <h1 className="title" data-cy="title">
             {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
           </h1>
         ) : (
-          <h1 className="title">No selected person</h1>
+          <h1 className="title" data-cy="title">
+            No selected person
+          </h1>
         )}
 
         <Dropdown
