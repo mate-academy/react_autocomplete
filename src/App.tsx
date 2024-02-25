@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import './App.scss';
-import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import { Dropdown } from './components/Dropdown/Dropdown';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const { name, born, died } = selectedPerson || peopleFromServer[0];
+  const { name, born, died } = selectedPerson || {};
 
   const showMessage = selectedPerson
     ? `${name} (${born} - ${died})`
@@ -19,11 +18,7 @@ export const App: React.FC = () => {
           {showMessage}
         </h1>
 
-        <Dropdown
-          // key={selectedPerson?.slug}
-          onSelected={person => setSelectedPerson(person)}
-          delay={300}
-        />
+        <Dropdown onSelected={setSelectedPerson} delay={300} />
       </main>
     </div>
   );
