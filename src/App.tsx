@@ -23,12 +23,19 @@ export const App: React.FC = () => {
 
   const handleSelect = (item: Person) => {
     setSelectedPerson(item);
-    setQuery('');
+    setQuery(item.name);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent, item: Person) => {
     if (event.key === 'Enter' || event.key === ' ') {
       handleSelect(item);
+    }
+  };
+
+  const handleKeyPush = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      setAppliedQuery((event.target as HTMLInputElement).value);
+      setQuery((event.target as HTMLInputElement).value);
     }
   };
 
@@ -83,6 +90,9 @@ export const App: React.FC = () => {
               onFocus={handleFocused}
               onBlur={handleBlur}
               onChange={handleQueryChange}
+              onKeyDown={event => {
+                handleKeyPush(event);
+              }}
             />
           </div>
 
