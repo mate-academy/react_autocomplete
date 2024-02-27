@@ -33,9 +33,16 @@ export const App: React.FC = () => {
   };
 
   const handleKeyPush = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const currentElement = (event.target as HTMLInputElement).value;
     if (event.key === 'Enter') {
-      setAppliedQuery((event.target as HTMLInputElement).value);
-      setQuery((event.target as HTMLInputElement).value);
+      const currentPerson =
+        people.find(item => item.name.includes(currentElement),) !== undefined
+          ? people.find(item => item.name.includes(currentElement),)
+          : null;
+
+      setAppliedQuery(currentPerson?.name || '');
+      setQuery(currentPerson?.name || '');
+      setSelectedPerson(currentPerson || null);
     }
   };
 
@@ -54,6 +61,7 @@ export const App: React.FC = () => {
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setSelectedPerson(null);
   };
 
   const getFilteredPeople = (): Person[] => {
@@ -98,7 +106,7 @@ export const App: React.FC = () => {
 
           <div
             className={classNames('dropdown-menu', {
-              'is-hidden': !isFocused || preperedPeople.length === 0,
+              'is-hidden': !isFocused || selectedPerson !== null,
             })}
             role="menu"
             data-cy="suggestions-list"
@@ -112,7 +120,9 @@ export const App: React.FC = () => {
                 return (
                   <div
                     role="button"
-                    className="dropdown-item"
+                    className={classNames('dropdown-item', {
+                      selected: preperedPeople.length === 1,
+                    })}
                     data-cy="suggestion-item"
                     key={item.slug}
                     tabIndex={index}
@@ -122,6 +132,7 @@ export const App: React.FC = () => {
                     onClick={() => {
                       handleSelect(item);
                     }}
+                    onFocus={handleFocused}
                   >
                     <p
                       className={classNames('text', {

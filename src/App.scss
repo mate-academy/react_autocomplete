@@ -5,3 +5,13 @@ iframe {
 .text {
   cursor: pointer;
 }
+
+.dropdown-item {
+  &.selected {
+    background-color: lightblue;
+  }
+
+  &:hover {
+    background-color: lightblue;
+  }
+}
