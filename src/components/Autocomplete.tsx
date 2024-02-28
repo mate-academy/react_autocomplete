@@ -54,7 +54,7 @@ export const Autocomplete: React.FC<Props> = ({
         people.find(item =>
           item.name.toLowerCase().includes(currentElement.toLowerCase()),
         ) !== undefined
-          ? people.find(item =>
+          ? people.find((item): boolean =>
             item.name.toLowerCase().includes(currentElement.toLowerCase()),)
           : null;
 
