@@ -12,7 +12,7 @@ export const App: React.FC = () => {
 
   const getFilteredPeople = (): Person[] => {
     const filteredPeople: Person[] = people.filter(item => {
-      return item.name.includes(appliedQuery);
+      return item.name.toLowerCase().includes(appliedQuery.toLocaleLowerCase());
     });
 
     return filteredPeople;
@@ -20,18 +20,16 @@ export const App: React.FC = () => {
 
   const preperedPeople: Person[] = getFilteredPeople();
 
+  const isSelectedPerson = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : 'No selected person';
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        {selectedPerson ? (
-          <h1 className="title" data-cy="title">
-            {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
-          </h1>
-        ) : (
-          <h1 className="title" data-cy="title">
-            No selected person
-          </h1>
-        )}
+        <h1 className="title" data-cy="title">
+          {isSelectedPerson}
+        </h1>
 
         <Autocomplete
           delay={1000}
