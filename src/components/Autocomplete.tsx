@@ -47,16 +47,15 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   const handleKeyPush = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    const currentElement = (event.target as HTMLInputElement).value;
+    const currentElement = (
+      event.target as HTMLInputElement
+    ).value.toLocaleLowerCase();
 
     if (event.key === 'Enter') {
-      const currentPerson =
-        people.find(item =>
-          item.name.toLowerCase().includes(currentElement.toLowerCase()),
-        ) !== undefined
-          ? people.find((item): boolean =>
-            item.name.toLowerCase().includes(currentElement.toLowerCase()),)
-          : null;
+      const checkedPerson = people.find(item =>
+        item.name.toLowerCase().includes(currentElement),
+      );
+      const currentPerson = checkedPerson !== undefined ? checkedPerson : null;
 
       aplyQuery(currentPerson?.name || '');
       setQuery(currentPerson?.name || '');
