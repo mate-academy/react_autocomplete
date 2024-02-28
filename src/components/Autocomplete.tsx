@@ -55,8 +55,7 @@ export const Autocomplete: React.FC<Props> = ({
           item.name.toLowerCase().includes(currentElement.toLowerCase()),
         ) !== undefined
           ? people.find(
-              // eslint-disable-next-line
-            item => item.name.toLowerCase().includes(currentElement.toLowerCase()),)
+          item => item.name.toLowerCase().includes(currentElement.toLowerCase()),)
           : null;
 
       aplyQuery(currentPerson?.name || '');
