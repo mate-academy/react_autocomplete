@@ -1,68 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
+import classNames from 'classnames';
+import { Autocomplete } from './components/Autocomplete';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const people = [...peopleFromServer];
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  const getFilteredPeople = (): Person[] => {
+    const filteredPeople: Person[] = people.filter(item => {
+      return item.name.toLowerCase().includes(appliedQuery.toLocaleLowerCase());
+    });
+
+    return filteredPeople;
+  };
+
+  const preperedPeople: Person[] = getFilteredPeople();
+
+  const isSelectedPerson = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : 'No selected person';
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {isSelectedPerson}
         </h1>
 
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-            />
-          </div>
-
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Autocomplete
+          delay={1000}
+          people={preperedPeople}
+          selectedPerson={selectedPerson}
+          selectPerson={(currentPerson: Person | null) => {
+            setSelectedPerson(currentPerson);
+          }}
+          aplyQuery={(newQuery: string) => {
+            setAppliedQuery(newQuery);
+          }}
+        />
 
         <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
+          className={classNames(
+            'notification is-danger is-light mt-3 is-align-self-flex-start',
+            {
+              'is-hidden': preperedPeople.length !== 0,
+            },
+          )}
           role="alert"
           data-cy="no-suggestions-message"
         >
