@@ -11,17 +11,17 @@ export const App: React.FC = () => {
     setSelectedPerson(person);
   };
 
+  const selectPerson = selectedPerson ? (
+    `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+  ) : (
+    'No selected person'
+  );
+
   return (
     <main className="section">
-      {selectedPerson ? (
-        <h1 className="title" data-cy="title">
-          {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
-        </h1>
-      ) : (
-        <h1 className="title" data-cy="title">
-          No selected person
-        </h1>
-      )}
+      <h1 className="title" data-cy="title">
+        { selectPerson }
+      </h1>
 
       <AutoComplete
         onSelected={handleSelectedPerson}
