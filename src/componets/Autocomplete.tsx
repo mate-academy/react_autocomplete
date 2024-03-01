@@ -48,7 +48,7 @@ export const Autocomplete: React.FC<Props> = ({ onSelected }) => {
             className="input"
             value={inputValue}
             onChange={handleInputChange}
-            onClick={handleInputFocus}
+            onFocus={handleInputFocus}
             data-cy="search-input"
           />
         </div>
