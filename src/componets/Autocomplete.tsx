@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import debounce from 'lodash/debounce';
 import { peopleFromServer } from '../data/people';
 import { Person } from '../types/Person';
@@ -18,18 +12,7 @@ export const Autocomplete: React.FC<Props> = ({ onSelected }) => {
   const [inputValue, setInputValue] = useState('');
   const [applyedQuery, setApplyQuery] = useState('');
 
-  const handleShowPeople = useCallback(() => {
-    setShowPeople(!showPeople);
-  }, [showPeople]);
-
   const applyQuery = useCallback(debounce(setApplyQuery, 1000), []);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -37,11 +20,11 @@ export const Autocomplete: React.FC<Props> = ({ onSelected }) => {
     onSelected(null);
   };
 
-  const handleInputFocus = () => {
+  const handleInputFocus = useCallback(() => {
     if (!inputValue) {
-      setShowPeople(true);
+      setShowPeople(!showPeople);
     }
-  };
+  }, []);
 
   const handleSuggestionClick = (selectedPerson: Person) => {
     setShowPeople(false);
@@ -64,10 +47,8 @@ export const Autocomplete: React.FC<Props> = ({ onSelected }) => {
             placeholder="Enter a part of the name"
             className="input"
             value={inputValue}
-            onClick={handleShowPeople}
             onChange={handleInputChange}
-            onFocus={handleInputFocus}
-            ref={inputRef}
+            onClick={handleInputFocus}
             data-cy="search-input"
           />
         </div>
