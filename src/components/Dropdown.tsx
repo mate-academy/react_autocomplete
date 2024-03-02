@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from 'react';
 
-import { Person } from '../types/Person';
-
 import debounce from 'lodash.debounce';
+import { Person } from '../types/Person';
 
 interface Props {
   onSelected: (person: Person | null) => void;
