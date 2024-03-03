@@ -3,14 +3,13 @@ import React, { useCallback, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-import { PeoplesList } from './components/PeoplesList';
-
-let selectedPeople = 'No selected person';
+import { PeopleList } from './components/PeopleList';
 
 // eslint-disable-next-line
 const debounce = (callback: Function, delay: number) => {
   let timerId = 0;
 
+  // eslint-disable-next-line
   return (...args: any) => {
     window.clearTimeout(timerId);
 
@@ -21,17 +20,19 @@ const debounce = (callback: Function, delay: number) => {
 };
 
 export const App: React.FC = () => {
+  const [selectedPerson, setSelectedPerson] = useState('No selected person');
   const [query, setQuery] = useState('');
   const [applyedQuery, setApplyedQuery] = useState('');
-  const [initialPeaople] = useState(peopleFromServer);
+  const initialPeaople = peopleFromServer;
   const [isFocused, setIsFocused] = useState(true);
 
   const delay = 300;
 
+  // eslint-disable-next-line
   const applyQuery = useCallback(debounce(setApplyedQuery, delay), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    selectedPeople = 'No selected person';
+    setSelectedPerson('No selected person');
     setQuery(event.target.value);
     applyQuery(event.target.value);
   };
@@ -41,15 +42,16 @@ export const App: React.FC = () => {
   );
 
   const getChoosenPeople = useCallback((element: Person) => {
-    selectedPeople = `${element.name} (${element.born} - ${element.died})`;
+    setSelectedPerson(`${element.name} (${element.born} - ${element.died})`);
     setQuery(element.name);
+    setApplyedQuery(element.name);
   }, []);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPeople}
+          {selectedPerson}
         </h1>
 
         <div className="dropdown is-active">
@@ -70,7 +72,7 @@ export const App: React.FC = () => {
             />
           </div>
 
-          <PeoplesList
+          <PeopleList
             peoples={filteredPeople}
             isFocused={isFocused}
             onChange={getChoosenPeople}

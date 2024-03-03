@@ -2,7 +2,7 @@ import React from 'react';
 import cn from 'classnames';
 
 import { Person } from '../../types/Person';
-import { PeopleInfo } from '../PeopleInfo';
+import { PeopleInfo } from '../PersonInfo';
 
 type Props = {
   peoples: Person[];
@@ -10,7 +10,7 @@ type Props = {
   onChange: (people: Person) => void;
 };
 
-export const PeoplesList: React.FC<Props> = ({
+export const PeopleList: React.FC<Props> = ({
   peoples,
   isFocused,
   onChange,
@@ -23,8 +23,8 @@ export const PeoplesList: React.FC<Props> = ({
   return (
     <div className={classForDropdown} role="menu" data-cy="suggestions-list">
       <div className="dropdown-content">
-        {peoples.map(people => (
-          <PeopleInfo people={people} onClick={onChange} />
+        {peoples.map(person => (
+          <PeopleInfo person={person} onClick={onChange} />
         ))}
       </div>
     </div>
