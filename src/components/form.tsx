@@ -7,7 +7,7 @@ import { Person } from '../types/Person';
 type Props = {
   people: Person[];
   selectPerson: (person: Person | null) => void;
-  selectedPerson: Person;
+  selectedPerson: Person | null;
 };
 
 export const Form: React.FC<Props> = ({
