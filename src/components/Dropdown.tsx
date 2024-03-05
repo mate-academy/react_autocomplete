@@ -13,9 +13,13 @@ const Dropdown: React.FC<Props> = ({ people, onSelected, delay = 300 }) => {
   const [isDropdownActive, setIsDropdownActive] = useState(false);
 
   const filteredPeople = useMemo(() => {
-    return people.filter(person =>
-      person.name.toLowerCase().includes(query.toLowerCase()),
-    );
+    const normalisedQuery = query.toLowerCase().trim();
+
+    return people.filter(person => {
+      const normalisedPerson = person.name.toLowerCase();
+
+      return normalisedPerson.includes(normalisedQuery);
+    });
   }, [query, people]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
