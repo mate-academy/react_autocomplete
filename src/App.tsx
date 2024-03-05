@@ -9,12 +9,11 @@ export const App: React.FC = React.memo(() => {
   const [isDrobdoun, setIsDrobdoun] = useState(false);
   const [selectedName, setSelectedName] = useState('');
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFilter = useCallback(
     debounce((value: string) => {
       setInputValue(value);
     }, 300),
-    [inputValue],
+    [selectedName],
   );
 
   const handleName: (
