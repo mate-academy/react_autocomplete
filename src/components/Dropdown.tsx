@@ -12,9 +12,6 @@ const Dropdown: React.FC<Props> = ({ people, onSelected, delay = 300 }) => {
   const [query, setQuery] = useState('');
   const [isDropdownActive, setIsDropdownActive] = useState(false);
 
-  // eslint-disable-next-line no-console
-  console.log('render');
-
   const filteredPeople = useMemo(() => {
     return people.filter(person => person.name.includes(query));
   }, [query, people]);
