@@ -16,7 +16,11 @@ export const App: React.FC = () => {
             ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
             : `No selected person`}
         </h1>
-        <Form people={peopleFromServer} selectPerson={setSelectedPerson} />
+        <Form
+          people={peopleFromServer}
+          selectPerson={setSelectedPerson}
+          selectedPerson={selectedPerson}
+        />
       </main>
     </div>
   );

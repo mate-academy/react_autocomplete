@@ -1,5 +1,5 @@
 import debounce from 'lodash.debounce';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { List } from './list';
 import { Notifications } from './notification';
 import { Person } from '../types/Person';
@@ -7,14 +7,19 @@ import { Person } from '../types/Person';
 type Props = {
   people: Person[];
   selectPerson: (person: Person | null) => void;
+  selectedPerson: Person;
 };
 
-export const Form: React.FC<Props> = ({ people, selectPerson }) => {
+export const Form: React.FC<Props> = ({
+  people,
+  selectPerson,
+  selectedPerson,
+}) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [showAllPeople, setShowAllPeople] = useState(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
+  const applyQuery = debounce(setAppliedQuery, 300);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -32,10 +37,7 @@ export const Form: React.FC<Props> = ({ people, selectPerson }) => {
     setShowAllPeople(false);
   };
 
-  const delayedBlur = useCallback(
-    debounce(handleBlurFullListOfPeople, 300),
-    [],
-  );
+  const delayedBlur = debounce(handleBlurFullListOfPeople, 300);
 
   const onSelect = (person: Person) => {
     selectPerson(person);
@@ -50,6 +52,11 @@ export const Form: React.FC<Props> = ({ people, selectPerson }) => {
       person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
   }, [appliedQuery, people]);
+
+  const checkingForFullList =
+    (showAllPeople || appliedQuery) &&
+    filteredPeople.length > 0 &&
+    !selectedPerson;
 
   return (
     <>
@@ -66,7 +73,7 @@ export const Form: React.FC<Props> = ({ people, selectPerson }) => {
             onBlur={delayedBlur}
           />
         </div>
-        {(showAllPeople || appliedQuery) && filteredPeople.length > 0 && (
+        {checkingForFullList && (
           <List onSelect={onSelect} people={filteredPeople} />
         )}
       </div>
