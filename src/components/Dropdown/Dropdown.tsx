@@ -44,7 +44,7 @@ export const Dropdown: React.FC<Props> = ({
   const handleBlur = () => {
     setTimeout(() => {
       setIsFocused(false);
-    }, 300);
+    }, 100);
   };
 
   return (
