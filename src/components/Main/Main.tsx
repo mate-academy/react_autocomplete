@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Person } from '../../types/Person';
 import { Dropdown } from '../Dropdown';
+import debounce from 'lodash.debounce';
 
 type Props = {
   people: Person[];
@@ -8,7 +9,15 @@ type Props = {
 
 export const Main: React.FC<Props> = ({ people }) => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [isMatched, setIsMatched] = useState(true);
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
+
+  const filteredPeople = people.filter(({ name }) =>
+    name.toLowerCase().includes(appliedQuery.toLowerCase()),
+  );
+
+  const isMatched = filteredPeople.length > 0;
 
   return (
     <main className="section is-flex is-flex-direction-column">
@@ -19,20 +28,21 @@ export const Main: React.FC<Props> = ({ people }) => {
       </h1>
 
       <Dropdown
-        people={people}
         selectPerson={setSelectedPerson}
-        setIsMatched={setIsMatched}
+        applyQuery={applyQuery}
+        filteredPeople={filteredPeople}
+        isMatched={isMatched}
       />
 
       {!isMatched && (
         <div
           className="
-        notification
-        is-danger
-        is-light
-        mt-3
-        is-align-self-flex-start
-      "
+          notification
+          is-danger
+          is-light
+          mt-3
+          is-align-self-flex-start
+          "
           role="alert"
           data-cy="no-suggestions-message"
         >

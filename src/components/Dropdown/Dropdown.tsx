@@ -1,46 +1,27 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-  useRef,
-} from 'react';
-import debounce from 'lodash.debounce';
+import { Dispatch, SetStateAction, useState, useRef } from 'react';
 import { Person } from '../../types/Person';
 import './Dropdown.scss';
 
 type Props = {
-  people: Person[];
+  filteredPeople: Person[];
   selectPerson: Dispatch<SetStateAction<Person | null>>;
-  setIsMatched: Dispatch<SetStateAction<boolean>>;
+  applyQuery: Dispatch<React.SetStateAction<string>>;
+  isMatched: boolean;
 };
 
 export const Dropdown: React.FC<Props> = ({
-  people,
+  filteredPeople,
   selectPerson,
-  setIsMatched,
+  applyQuery,
+  isMatched,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useState('');
-  const [appliedQuery, setAppliedQuery] = useState('');
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
-
-  const filteredPeople = people.filter(({ name }) =>
-    name.toLowerCase().includes(appliedQuery.toLowerCase()),
-  );
-
-  const isMatched = filteredPeople.length > 0;
-
-  const handleSelectPerson = (name: string) => {
-    const selectedPerson = people.find(person => person.name === name);
-
-    if (selectedPerson) {
-      selectPerson(selectedPerson);
-      setIsFocused(false);
-    }
+  const handleSelectPerson = (person: Person) => {
+    selectPerson(person);
+    setIsFocused(false);
   };
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,26 +33,21 @@ export const Dropdown: React.FC<Props> = ({
     selectPerson(null);
   };
 
-  useEffect(() => {
-    setIsMatched(isMatched);
-  }, [isMatched, setIsMatched]);
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    person: Person,
+  ) => {
+    if (event.key === 'Enter') {
+      handleSelectPerson(person);
+    }
+    return;
+  };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsFocused(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const handleBlur = () => {
+    setTimeout(() => {
+      setIsFocused(false);
+    }, 300);
+  };
 
   return (
     <div className="dropdown is-active" ref={dropdownRef}>
@@ -80,6 +56,7 @@ export const Dropdown: React.FC<Props> = ({
           value={query}
           onChange={handleQueryChange}
           onFocus={() => setIsFocused(true)}
+          onBlur={handleBlur}
           type="text"
           placeholder="Enter a part of the name"
           className="input"
@@ -94,17 +71,17 @@ export const Dropdown: React.FC<Props> = ({
       >
         {isFocused && isMatched && (
           <div className="dropdown-content">
-            {filteredPeople.map(({ name, slug }) => (
+            {filteredPeople.map(person => (
               <div
-                onClick={() => handleSelectPerson(name)}
-                onKeyDown={e => e.key === 'Enter' && handleSelectPerson(name)}
+                onClick={() => handleSelectPerson(person)}
+                onKeyDown={event => handleKeyDown(event, person)}
                 tabIndex={0}
                 role="button"
                 className="dropdown-item dropdown-item--hover is-clickable"
                 data-cy="suggestion-item"
-                key={slug}
+                key={person.slug}
               >
-                <p className="has-text-link">{name}</p>
+                <p className="has-text-link">{person.name}</p>
               </div>
             ))}
           </div>
