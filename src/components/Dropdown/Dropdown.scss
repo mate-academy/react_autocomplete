@@ -1,15 +1,8 @@
-.dropdown-menu {
-  &--overflow {
-    overflow: auto;
-    max-height: 300px;
-  }
-
-}
-
 .dropdown-item {
   &--hover {
     &:hover {
       background-color: rgb(201, 201, 215);
     }
   }
+
 }

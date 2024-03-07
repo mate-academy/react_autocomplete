@@ -44,11 +44,11 @@ export const Dropdown: React.FC<Props> = ({
   const handleBlur = () => {
     setTimeout(() => {
       setIsFocused(false);
-    }, 100);
+    }, 150);
   };
 
   return (
-    <div className="dropdown is-active">
+    <div className="dropdown is-active dropdown--container">
       <div className="dropdown-trigger">
         <input
           value={query}
@@ -65,6 +65,7 @@ export const Dropdown: React.FC<Props> = ({
       <div
         className="dropdown-menu dropdown-menu--overflow"
         role="menu"
+        id="dropdown-menu"
         data-cy="suggestions-list"
       >
         {isFocused && isMatched && (
