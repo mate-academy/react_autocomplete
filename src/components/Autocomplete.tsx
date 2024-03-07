@@ -6,15 +6,17 @@ import { Person } from '../types/Person';
 type Props = {
   peopleFromServer: Person[];
   delay: number;
+  onSelectPerson: (selectedPerson: Person) => void;
 };
 
-export const Autocomplete: React.FC<Props> = ({ peopleFromServer, delay }) => {
-  const [peoples] = useState<Person[]>(peopleFromServer);
+export const Autocomplete: React.FC<Props> = ({
+  peopleFromServer,
+  delay,
+  onSelectPerson,
+}) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-
-  // console.log('query ->', query);
-  // console.log('applied query ->', appliedQuery);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
@@ -23,17 +25,23 @@ export const Autocomplete: React.FC<Props> = ({ peopleFromServer, delay }) => {
     applyQuery(event.target.value);
   };
 
-  const filteredPeoples = useMemo(() => {
-    return peoples.filter(people =>
-      people.name.toLowerCase().includes(appliedQuery.toLowerCase()),
-    );
-  }, [appliedQuery, peoples]);
+  const handlePersonClick = (person: Person) => {
+    onSelectPerson(person);
+    setQuery(person.name);
+    setIsInputFocused(false);
+  };
 
-  // console.log('filtered peoples ->', filteredPeoples);
+  const filteredPeoples = useMemo(() => {
+    return peopleFromServer.filter(person =>
+      person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+    );
+  }, [appliedQuery, peopleFromServer]);
+
+  const dropdownActive = query !== '' || isInputFocused;
 
   return (
     <>
-      <div className="dropdown is-active">
+      <div className={classNames('dropdown', { 'is-active': dropdownActive })}>
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -41,25 +49,33 @@ export const Autocomplete: React.FC<Props> = ({ peopleFromServer, delay }) => {
             className="input"
             data-cy="search-input"
             onChange={handleQueryChange}
+            onFocus={() => {
+              setIsInputFocused(true);
+            }}
+            onBlur={() => {
+              setIsInputFocused(false);
+            }}
             value={query}
           />
         </div>
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           <div className="dropdown-content">
-            {filteredPeoples.map(people => (
+            {filteredPeoples.map(person => (
               <div
                 className="dropdown-item"
                 data-cy="suggestion-item"
-                key={people.slug}
+                key={person.slug}
+                onClick={() => handlePersonClick(person)}
+                aria-hidden="true"
               >
                 <p
                   className={classNames({
-                    'has-text-link': people.sex === 'm',
-                    'has-text-danger': people.sex === 'f',
+                    'has-text-link': person.sex === 'm',
+                    'has-text-danger': person.sex === 'f',
                   })}
                 >
-                  {people.name}
+                  {person.name}
                 </p>
               </div>
             ))}
