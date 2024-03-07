@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
+import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
 import { Dropdown } from '../Dropdown';
-import debounce from 'lodash.debounce';
 
 type Props = {
   people: Person[];

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState, useRef } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Person } from '../../types/Person';
 import './Dropdown.scss';
 
@@ -15,7 +15,6 @@ export const Dropdown: React.FC<Props> = ({
   applyQuery,
   isMatched,
 }) => {
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useState('');
 
@@ -40,7 +39,6 @@ export const Dropdown: React.FC<Props> = ({
     if (event.key === 'Enter') {
       handleSelectPerson(person);
     }
-    return;
   };
 
   const handleBlur = () => {
@@ -50,7 +48,7 @@ export const Dropdown: React.FC<Props> = ({
   };
 
   return (
-    <div className="dropdown is-active" ref={dropdownRef}>
+    <div className="dropdown is-active">
       <div className="dropdown-trigger">
         <input
           value={query}
