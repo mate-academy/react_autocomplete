@@ -6,7 +6,7 @@ import { Person } from '../types/Person';
 type Props = {
   peopleFromServer: Person[];
   delay: number;
-  onSelectPerson: (selectedPerson: Person) => void;
+  onSelectPerson: (selectedPerson: Person | null) => void;
 };
 
 export const Autocomplete: React.FC<Props> = ({
@@ -23,6 +23,7 @@ export const Autocomplete: React.FC<Props> = ({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    onSelectPerson(null);
   };
 
   const handlePersonClick = (person: Person) => {
@@ -37,11 +38,9 @@ export const Autocomplete: React.FC<Props> = ({
     );
   }, [appliedQuery, peopleFromServer]);
 
-  const dropdownActive = query !== '' || isInputFocused;
-
   return (
     <>
-      <div className={classNames('dropdown', { 'is-active': dropdownActive })}>
+      <div className={classNames('dropdown', { 'is-active': isInputFocused })}>
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -66,7 +65,7 @@ export const Autocomplete: React.FC<Props> = ({
                 className="dropdown-item"
                 data-cy="suggestion-item"
                 key={person.slug}
-                onClick={() => handlePersonClick(person)}
+                onMouseDown={() => handlePersonClick(person)}
                 aria-hidden="true"
               >
                 <p

@@ -8,7 +8,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [delay] = useState(300);
 
-  const handlePersonSelect = (person: Person) => {
+  const handlePersonSelect = (person: Person | null) => {
     setSelectedPerson(person);
   };
 
