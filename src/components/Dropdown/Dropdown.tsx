@@ -63,7 +63,7 @@ export const Dropdown: React.FC<Props> = ({
       </div>
 
       <div
-        className="dropdown-menu dropdown-menu--overflow"
+        className="dropdown-menu"
         role="menu"
         id="dropdown-menu"
         data-cy="suggestions-list"
