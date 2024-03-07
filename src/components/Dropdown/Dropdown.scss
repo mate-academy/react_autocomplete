@@ -1,0 +1,13 @@
+.dropdown-content {
+  max-height: 300px;
+  overflow: auto;
+}
+
+.dropdown-item {
+  &--hover {
+    &:hover {
+      background-color: rgb(201, 201, 215);
+    }
+  }
+
+}
