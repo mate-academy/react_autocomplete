@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import debounce from 'lodash.debounce';
 import { useClickAway } from 'react-use';
 import { Person } from '../../types/Person';
@@ -29,15 +29,16 @@ export const Autocomplete: React.FC<Props> = React.memo(
       const newQuery = event.target.value;
 
       setQuery(newQuery);
+      setIsDropdownOpen(false);
       applyQuery(newQuery);
       onSelected(null);
+    };
 
-      if (newQuery.trim().length === 0) {
-        setIsDropdownOpen(false);
-      } else {
+    useEffect(() => {
+      if (appliedQuery.trim().length > 0) {
         setIsDropdownOpen(true);
       }
-    };
+    }, [appliedQuery]);
 
     const handleDropdown = (person: Person) => {
       onSelected(person);
