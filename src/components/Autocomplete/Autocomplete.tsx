@@ -26,10 +26,17 @@ export const Autocomplete: React.FC<Props> = React.memo(
     }, [appliedQuery, people]);
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(event.target.value);
-      applyQuery(event.target.value);
+      const newQuery = event.target.value;
+
+      setQuery(newQuery);
+      applyQuery(newQuery);
       onSelected(null);
-      setIsDropdownOpen(true);
+
+      if (newQuery.trim().length === 0) {
+        setIsDropdownOpen(false);
+      } else {
+        setIsDropdownOpen(true);
+      }
     };
 
     const handleDropdown = (person: Person) => {
