@@ -35,6 +35,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
     const handleDropdown = (person: Person) => {
       onSelected(person);
       setQuery(person.name);
+      setAppliedQuery(person.name);
       setIsDropdownOpen(false);
     };
 
