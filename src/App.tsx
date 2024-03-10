@@ -66,21 +66,19 @@ export const App: React.FC = () => {
               <div className="dropdown-content">
                 {filteredInputs.map(user => (
                   <div
+                    role="button"
                     className="dropdown-item"
                     data-cy="suggestion-item"
                     key={user.name}
+                    onClick={() => {
+                      handlerPointQuery(user);
+                    }}
+                    onKeyDown={() => {
+                      handlerPointQuery(user);
+                    }}
+                    tabIndex={0}
                   >
-                    <p
-                      className="has-text-link"
-                      onKeyDown={() => {
-                        handlerPointQuery(user);
-                      }}
-                      onClick={() => {
-                        handlerPointQuery(user);
-                      }}
-                    >
-                      {user.name}
-                    </p>
+                    <p className="has-text-link">{user.name}</p>
                   </div>
                 ))}
               </div>
