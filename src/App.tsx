@@ -22,6 +22,7 @@ export const App: React.FC = () => {
     peopleFromServer.find(p => p.name === people);
 
   const noMatching = filteredInputs.length === 0 && !title;
+
   const handlerQueryInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
     appliedQueryDebounce(e.target.value);
