@@ -5,12 +5,15 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const [person, setPerson] = useState<Person>();
+  const [title, setTitle] = useState<Person>();
+
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
+
   const [focused, setFocused] = useState(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const appliedQueryDebounce = useCallback(debaunce(setAppliedQuery, 300), []);
+
   const filteredInputs = peopleFromServer.filter(p =>
     p.name.toLowerCase().includes(appliedQuery.toLowerCase()),
   );
@@ -19,13 +22,14 @@ export const App: React.FC = () => {
     return peopleFromServer.find(p => p.name === people);
   };
 
-  const noMatching = filteredInputs.length === 0 && !person;
+  const noMatching = filteredInputs.length === 0 && !title;
   const handlerQueryInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
     appliedQueryDebounce(e.target.value);
     const chosenPeople = findPerson(e.target.value);
 
-    setPerson(chosenPeople);
+    setTitle(chosenPeople);
+    setFocused(false);
   };
 
   const handlerPointQuery = (user: Person) => {
@@ -33,19 +37,19 @@ export const App: React.FC = () => {
     appliedQueryDebounce(user.name);
     const chosenPeople = findPerson(user.name);
 
-    setPerson(chosenPeople);
+    setTitle(chosenPeople);
     setFocused(false);
   };
 
-  const title = !person
+  const titlePerson = !title
     ? 'No selected person'
-    : ` ${person?.name} (${person?.born} - ${person?.died})`;
+    : ` ${title?.name} (${title?.born} - ${title?.died})`;
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {title}
+          {titlePerson}
         </h1>
 
         <div className="dropdown is-active is-hoverable">
