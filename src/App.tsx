@@ -19,13 +19,17 @@ export const App: React.FC = () => {
     p.name.toLowerCase().includes(appliedQuery.toLowerCase()),
   );
 
+  const findPerson = (people: string) => {
+    return peopleFromServer.find(p => p.name === people);
+  };
+
   const noMatching = filteredInputs.length === 0 && !person;
   // #endregion
   // #region handlersEvents
   const handlerQueryInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
     appliedQueryDebounce(e.target.value);
-    const chosenPeople = peopleFromServer.find(p => p.name === e.target.value);
+    const chosenPeople = findPerson(e.target.value);
 
     setPerson(chosenPeople);
   };
@@ -33,7 +37,7 @@ export const App: React.FC = () => {
   const handlerPointQuery = (user: Person) => {
     setQuery(user.name);
     appliedQueryDebounce(user.name);
-    const chosenPeople = peopleFromServer.find(p => p.name === user.name);
+    const chosenPeople = findPerson(user.name);
 
     setPerson(chosenPeople);
     setFocused(false);
