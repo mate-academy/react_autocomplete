@@ -1,25 +1,30 @@
+// #region imports
 import React, { useCallback, useState } from 'react';
 import debaunce from 'lodash.debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-
+// #endregion
 export const App: React.FC = () => {
+  // #region hooks
   const [person, setPerson] = useState<Person>();
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [focused, setFocused] = useState(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const appliedQueryDebounce = useCallback(debaunce(setAppliedQuery, 300), []);
-
+  // #endregion
+  // #region filter tools
   const filteredInputs = peopleFromServer.filter(p => {
     return (
       p.name.toLowerCase().includes(appliedQuery.toLowerCase()) &&
       p.name.length !== appliedQuery.length
     );
   });
-  const noMatching = filteredInputs.length === 0;
 
+  const noMatching = filteredInputs.length === 0 && !person;
+  // #endregion
+  // #region handlersEvents
   const handlerQueryInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
     appliedQueryDebounce(e.target.value);
@@ -34,7 +39,9 @@ export const App: React.FC = () => {
     const chosenPeople = peopleFromServer.find(p => p.name === user.name);
 
     setPerson(chosenPeople);
+    setFocused(false);
   };
+  // #endregion
 
   return (
     <div className="container">
