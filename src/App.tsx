@@ -15,12 +15,9 @@ export const App: React.FC = () => {
   const appliedQueryDebounce = useCallback(debaunce(setAppliedQuery, 300), []);
   // #endregion
   // #region filter tools
-  const filteredInputs = peopleFromServer.filter(p => {
-    return (
-      p.name.toLowerCase().includes(appliedQuery.toLowerCase()) &&
-      p.name.length !== appliedQuery.length
-    );
-  });
+  const filteredInputs = peopleFromServer.filter(p =>
+    p.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+  );
 
   const noMatching = filteredInputs.length === 0 && !person;
   // #endregion
