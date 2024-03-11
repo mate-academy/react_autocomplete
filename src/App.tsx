@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -21,16 +21,28 @@ function debounce(callback: Function, delay: number) {
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person>();
   const [isFocused, setIsFocused] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
 
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setIsVisible(true);
+    }, 1000); // Час в мілісекундах (за потреби змініть)
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [query]);
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedPerson(undefined);
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setIsVisible(false);
   };
 
   const filteredPeople = useMemo(() => {
@@ -62,7 +74,7 @@ export const App: React.FC = () => {
             />
           </div>
 
-          {isFocused && (
+          {isFocused && isVisible && (
             <Dropdown people={filteredPeople} onSelected={setSelectedPerson} />
           )}
         </div>
