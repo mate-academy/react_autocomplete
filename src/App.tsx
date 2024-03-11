@@ -18,9 +18,8 @@ export const App: React.FC = () => {
     p.name.toLowerCase().includes(appliedQuery.toLowerCase()),
   );
 
-  const findPerson = (people: string) => {
-    return peopleFromServer.find(p => p.name === people);
-  };
+  const findPerson = (people: string) =>
+    peopleFromServer.find(p => p.name === people);
 
   const noMatching = filteredInputs.length === 0 && !title;
   const handlerQueryInput = (e: React.ChangeEvent<HTMLInputElement>) => {
