@@ -1,20 +1,16 @@
-// #region imports
 import React, { useCallback, useState } from 'react';
 import debaunce from 'lodash.debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-// #endregion
+
 export const App: React.FC = () => {
-  // #region hooks
   const [person, setPerson] = useState<Person>();
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [focused, setFocused] = useState(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const appliedQueryDebounce = useCallback(debaunce(setAppliedQuery, 300), []);
-  // #endregion
-  // #region filter tools
   const filteredInputs = peopleFromServer.filter(p =>
     p.name.toLowerCase().includes(appliedQuery.toLowerCase()),
   );
@@ -24,8 +20,6 @@ export const App: React.FC = () => {
   };
 
   const noMatching = filteredInputs.length === 0 && !person;
-  // #endregion
-  // #region handlersEvents
   const handlerQueryInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
     appliedQueryDebounce(e.target.value);
@@ -42,15 +36,16 @@ export const App: React.FC = () => {
     setPerson(chosenPeople);
     setFocused(false);
   };
-  // #endregion
+
+  const title = !person
+    ? 'No selected person'
+    : ` ${person?.name} (${person?.born} - ${person?.died})`;
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {!person
-            ? 'No selected person'
-            : ` ${person?.name} (${person?.born} - ${person?.died})`}
+          {title}
         </h1>
 
         <div className="dropdown is-active is-hoverable">
@@ -78,12 +73,8 @@ export const App: React.FC = () => {
                     className="dropdown-item"
                     data-cy="suggestion-item"
                     key={user.name}
-                    onClick={() => {
-                      handlerPointQuery(user);
-                    }}
-                    onKeyDown={() => {
-                      handlerPointQuery(user);
-                    }}
+                    onClick={() => handlerPointQuery(user)}
+                    onKeyDown={() => handlerPointQuery(user)}
                     tabIndex={0}
                   >
                     <p className="has-text-link">{user.name}</p>
