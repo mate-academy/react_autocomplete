@@ -1,41 +1,44 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { debounce } from './debounce';
 import { Person } from './types/Person';
 
 type Props = {
-  delay: number;
+  delay?: number;
   peopleList: Person[];
   onSelected: (person: Person | null) => void;
 };
 
-const Dropdown: React.FC<Props> = ({ delay, onSelected, peopleList }) => {
+const Dropdown: React.FC<Props> = ({ delay = 300, onSelected, peopleList }) => {
   const [query, setQuery] = useState('');
-  const [isInputFocused, setIsInputFocused] = useState(false);
-  const [appliedQuery, setAppliedQuery] = useState('');
+  const [hasInputShown, setHasInputShown] = useState(false);
 
   const closeDelay = 200;
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const applyName = useCallback(debounce(setAppliedQuery, delay), []);
+  const applyName = useMemo(
+    () => debounce(() => setHasInputShown(true), delay),
+    [delay],
+  );
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    applyName();
+
     setQuery(event.target.value);
-    applyName(event.target.value);
+    setHasInputShown(false);
     onSelected(null);
   };
 
   const filteredPeople = useMemo(() => {
     return peopleList.filter(person => {
-      const normalizedName = appliedQuery.toLowerCase().trim();
+      const normalizedName = query.toLowerCase().trim();
 
       return person.name.toLowerCase().includes(normalizedName);
     });
-  }, [appliedQuery, peopleList]);
+  }, [query, peopleList]);
 
   const handleBlurChange = () => {
     setTimeout(() => {
-      setIsInputFocused(false);
+      setHasInputShown(false);
     }, closeDelay);
   };
 
@@ -48,7 +51,7 @@ const Dropdown: React.FC<Props> = ({ delay, onSelected, peopleList }) => {
     <>
       <div
         className={classNames('dropdown', {
-          'is-active': isInputFocused,
+          'is-active': hasInputShown,
         })}
       >
         <div className="dropdown-trigger">
@@ -59,7 +62,7 @@ const Dropdown: React.FC<Props> = ({ delay, onSelected, peopleList }) => {
             data-cy="search-input"
             value={query}
             onChange={handleInputChange}
-            onFocus={() => setIsInputFocused(true)}
+            onFocus={() => setHasInputShown(true)}
             onBlur={handleBlurChange}
           />
         </div>
