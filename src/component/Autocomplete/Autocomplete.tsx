@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
 import { peopleFromServer } from '../../data/people';
@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const Autocomplete: React.FC<Props> = React.memo(
-  ({ people, onSelect = () => {}, delay = 3000 }) => {
+  ({ people, onSelect = () => {}, delay = 300 }) => {
     const [query, setQuery] = useState('');
     const [filteredPeople, setFilteredPeople] =
       useState<Person[]>(peopleFromServer);
@@ -23,21 +23,20 @@ export const Autocomplete: React.FC<Props> = React.memo(
       }
     }, []);
 
-    const filtered = useMemo(() => {
-      return people.filter(person =>
-        person.name.toLowerCase().includes(query.toLowerCase()),
-      );
-    }, [query, people]);
+    const debouncedFilterPeople = useRef(
+      debounce((value: string) => {
+        const filtered = people.filter(person =>
+          person.name.toLowerCase().includes(value.toLowerCase().trim()),
+        );
 
-    const debouncedFilterPeople = debounce(
-      () => setFilteredPeople(filtered),
-      delay,
-    );
+        setFilteredPeople(filtered);
+      }, delay),
+    ).current;
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
       onSelect(null);
-      debouncedFilterPeople();
+      debouncedFilterPeople(event.target.value);
     };
 
     const handlePersonChosen = (person: Person) => {
