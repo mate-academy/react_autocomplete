@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
+import { peopleFromServer } from '../../data/people';
 
 type Props = {
   people: Person[];
@@ -9,9 +10,11 @@ type Props = {
 };
 
 export const Autocomplete: React.FC<Props> = React.memo(
-  ({ people, onSelect = () => {}, delay = 300 }) => {
+  ({ people, onSelect = () => {}, delay = 3000 }) => {
     const [query, setQuery] = useState('');
-    const [focus, setFocus] = useState(false);
+    const [filteredPeople, setFilteredPeople] =
+      useState<Person[]>(peopleFromServer);
+    const [isFocused, setIsFocused] = useState(false);
     const titleField = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -20,27 +23,35 @@ export const Autocomplete: React.FC<Props> = React.memo(
       }
     }, []);
 
-    const filteredPeople = useMemo(() => {
+    const filtered = useMemo(() => {
       return people.filter(person =>
         person.name.toLowerCase().includes(query.toLowerCase()),
       );
     }, [query, people]);
 
-    const handleInputFocus = debounce(() => setFocus(true), delay);
+    const debouncedFilterPeople = debounce(
+      () => setFilteredPeople(filtered),
+      delay,
+    );
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
       onSelect(null);
+      debouncedFilterPeople();
     };
 
     const handlePersonChosen = (person: Person) => {
       setQuery(person.name);
       onSelect(person);
-      setFocus(false);
+      setIsFocused(false);
+    };
+
+    const handleInputFocus = () => {
+      setIsFocused(true);
     };
 
     return (
-      <div className={`dropdown ${focus && 'is-active'}`}>
+      <div className={`dropdown ${isFocused && 'is-active'}`}>
         <div className="dropdown-trigger">
           <input
             ref={titleField}
@@ -55,7 +66,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
         </div>
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-          {focus && (
+          {isFocused && (
             <div className="dropdown-content">
               {filteredPeople.map((person: Person) => {
                 return (
