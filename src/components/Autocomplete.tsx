@@ -4,34 +4,35 @@ import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../data/people';
 import { Person } from '../types/Person';
 
-export const Autocomplete = () => {
-  const notSelectedPerson: Person = {
-    name: '',
-    sex: 'm',
-    born: 0,
-    died: 0,
-    fatherName: '',
-    motherName: '',
-    slug: '',
-  };
-  const [onSelected, setOnSelected] = useState(notSelectedPerson);
+interface Delay {
+  delay: number;
+  onSelected: Person;
+  notSelectedPerson: Person;
+  rewriteOnSelected: (person: Person) => void;
+}
+
+export const Autocomplete: React.FC<Delay> = ({
+  delay,
+  onSelected,
+  notSelectedPerson,
+  rewriteOnSelected,
+}) => {
   const { name, born, died } = onSelected;
   const [isShowed, setIsShowed] = useState(false);
   const [currentInput, setCurrentInput] = useState('');
   const [instantInoutValue, setInstantInoutValue] = useState('');
-  const [delay] = useState(300);
 
   const applyCurrentInput = useCallback(debounce(setCurrentInput, delay), []);
 
   const handleInputValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     applyCurrentInput(event.target.value);
     setInstantInoutValue(event.target.value);
-    setOnSelected(notSelectedPerson);
+    rewriteOnSelected(notSelectedPerson);
   };
 
   const handleSelectedPerson = (person: Person) => {
     setInstantInoutValue(person.name);
-    setOnSelected(person);
+    rewriteOnSelected(person);
   };
 
   const filteredPeople = useMemo(() => {
