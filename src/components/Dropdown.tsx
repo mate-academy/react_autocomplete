@@ -86,13 +86,8 @@ export const Dropdown = React.memo(({ onSelected, delay = 300 }: Props) => {
       </div>
       {!filteredPeople.length && (
         <div
-          className="
-        notification
-        is-danger
-        is-light
-        mt-3
-        is-align-self-flex-start
-      "
+          // eslint-disable-next-line max-len
+          className="notification is-danger is-light mt-3 is-align-self-flex-start"
           role="alert"
           data-cy="no-suggestions-message"
         >
