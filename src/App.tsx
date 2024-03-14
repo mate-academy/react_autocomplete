@@ -57,7 +57,6 @@ export const App: React.FC = () => {
           )}
 
         </div>
-
         {isVisible && filteredPeople.length === 0 && (
           <div
             className="
