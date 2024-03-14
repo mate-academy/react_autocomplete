@@ -29,7 +29,7 @@ export const Autocomplete: React.FC<Props> = React.memo(
       if (!query) {
         setShowSuggestions(false);
       }
-    }, []);
+    }, [query]);
 
     const applyQuery = useCallback(() => {
       setShowSuggestions(true);
@@ -91,7 +91,11 @@ export const Autocomplete: React.FC<Props> = React.memo(
             <div className="dropdown-content">
               {filteredPeople.length ? (
                 filteredPeople.map((person: Person) => (
-                  <div className="dropdown-item" data-cy="suggestion-item">
+                  <div
+                    className="dropdown-item"
+                    data-cy="suggestion-item"
+                    key={person.slug}
+                  >
                     <p
                       // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
                       role="button"
