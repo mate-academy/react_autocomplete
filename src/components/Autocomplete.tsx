@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../data/people';
 import { Person } from '../types/Person';
+import 'bulma/css/bulma.css';
 
 interface Delay {
   delay: number;
@@ -28,6 +29,9 @@ export const Autocomplete: React.FC<Delay> = ({
     applyCurrentInput(event.target.value);
     setInstantInoutValue(event.target.value);
     rewriteOnSelected(notSelectedPerson);
+    setTimeout(() => {
+      setIsShowed(true);
+    }, delay);
   };
 
   const handleSelectedPerson = (person: Person) => {
@@ -41,6 +45,12 @@ export const Autocomplete: React.FC<Delay> = ({
     );
   }, [currentInput]);
 
+  const handleInputOnFocus = () => {
+    if (onSelected.name === '') {
+      setIsShowed(true);
+    }
+  };
+
   return (
     <>
       <h1 className="title" data-cy="title">
@@ -53,10 +63,13 @@ export const Autocomplete: React.FC<Delay> = ({
             value={instantInoutValue}
             type="text"
             placeholder="Enter a part of the name"
-            className="input"
+            className={classNames(
+              'input',
+              filteredPeople.length === 0 && 'is-danger',
+            )}
             data-cy="search-input"
             onChange={handleInputValue}
-            onFocus={() => setIsShowed(true)}
+            onFocus={handleInputOnFocus}
             onBlur={() => {
               setTimeout(() => {
                 setIsShowed(false);
@@ -78,9 +91,9 @@ export const Autocomplete: React.FC<Delay> = ({
                 style={{ cursor: 'pointer' }}
               >
                 <p
-                  className={
-                    person.sex === 'm' ? 'has-text-link' : 'has-text-danger'
-                  }
+                  className={classNames(
+                    person.sex === 'm' ? 'has-text-link' : 'has-text-danger',
+                  )}
                 >
                   {person.name}
                 </p>
