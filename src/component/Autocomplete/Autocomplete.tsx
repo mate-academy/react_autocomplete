@@ -1,20 +1,23 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
 import classNames from 'classnames';
-// import debounce from 'lodash.debounce';
+import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
 import { peopleFromServer } from '../../data/people';
 
 type Props = {
-  people: Person[];
   onSelect?: (person: Person | null) => void;
   delay?: number;
 };
 
 export const Autocomplete: React.FC<Props> = React.memo(
-  ({ people, onSelect = () => {} }) => {
+  ({ onSelect = () => {}, delay = 300 }) => {
     const [query, setQuery] = useState('');
-    const [filteredPeople, setFilteredPeople] =
-      useState<Person[]>(peopleFromServer);
     const [showSuggestions, setShowSuggestions] = useState(true);
     const titleField = useRef<HTMLInputElement>(null);
 
@@ -22,35 +25,31 @@ export const Autocomplete: React.FC<Props> = React.memo(
       if (titleField.current) {
         titleField.current.focus();
       }
+
+      if (!query) {
+        setShowSuggestions(false);
+      }
     }, []);
 
-    // const debouncedFilterPeople = useRef(
-    //   debounce((value: string) => {
-    //     const filtered = people.filter(person =>
-    //       person.name.toLowerCase().includes(value.toLowerCase().trim()),
-    //     );
+    const applyQuery = useCallback(() => {
+      setShowSuggestions(true);
+    }, []);
 
-    //     setFilteredPeople(filtered);
-    //   }, delay),
-    // ).current;
+    const debouncedApplyQuery = debounce(applyQuery, delay);
 
-    const filtered = useMemo(() => {
-      return people.filter((person: Person) =>
+    const filteredPeople = useMemo(() => {
+      return peopleFromServer.filter((person: Person) =>
         person.name.toLowerCase().includes(query.toLowerCase().trim()),
       );
-    }, [people, query]);
+    }, [query]);
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const text = event.target.value;
 
-      setQuery(text);
+      debouncedApplyQuery();
       onSelect(null);
-      setFilteredPeople(filtered);
-      if (text.trim() === '') {
-        setShowSuggestions(false);
-      } else {
-        setShowSuggestions(true);
-      }
+      setQuery(text);
+      setShowSuggestions(false);
     };
 
     const handlePersonChosen = (person: Person) => {
@@ -65,15 +64,11 @@ export const Autocomplete: React.FC<Props> = React.memo(
       }
     };
 
-    useEffect(() => {
-      if (!query) {
-        setFilteredPeople(peopleFromServer);
-
-        return;
-      }
-
-      setFilteredPeople(filtered);
-    }, [query, filtered]);
+    const handleInputBlur = () => {
+      setTimeout(() => {
+        setShowSuggestions(false);
+      }, delay);
+    };
 
     return (
       <div className={classNames('dropdown', { 'is-active': showSuggestions })}>
@@ -86,15 +81,16 @@ export const Autocomplete: React.FC<Props> = React.memo(
             className="input"
             data-cy="search-input"
             onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
             onChange={handleQueryChange}
           />
         </div>
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-          {showSuggestions &&
-            (filteredPeople.length > 0 ? (
-              <div className="dropdown-content">
-                {filteredPeople.map((person: Person) => (
+          {showSuggestions && (
+            <div className="dropdown-content">
+              {filteredPeople.length ? (
+                filteredPeople.map((person: Person) => (
                   <div className="dropdown-item" data-cy="suggestion-item">
                     <p
                       // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
@@ -111,23 +107,24 @@ export const Autocomplete: React.FC<Props> = React.memo(
                       {person.name}
                     </p>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div
-                className="
-                  notification
-                  is-danger
-                  is-light
-                  mt-3
-                  is-align-self-flex-start
-                "
-                role="alert"
-                data-cy="no-suggestions-message"
-              >
-                <p className="has-text-danger">No matching suggestions</p>
-              </div>
-            ))}
+                ))
+              ) : (
+                <div
+                  className="
+                    notification
+                    is-danger
+                    is-light
+                    mt-3
+                    is-align-self-flex-start
+                  "
+                  role="alert"
+                  data-cy="no-suggestions-message"
+                >
+                  <p className="has-text-danger">No matching suggestions</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     );
