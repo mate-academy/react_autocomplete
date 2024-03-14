@@ -18,7 +18,6 @@ export const Autocomplete: React.FC<Delay> = ({
   notSelectedPerson,
   rewriteOnSelected,
 }) => {
-  const { name, born, died } = onSelected;
   const [isShowed, setIsShowed] = useState(false);
   const [currentInput, setCurrentInput] = useState('');
   const [instantInoutValue, setInstantInoutValue] = useState('');
@@ -51,12 +50,16 @@ export const Autocomplete: React.FC<Delay> = ({
     }
   };
 
+  const notMatch = useMemo(() => {
+    if (filteredPeople.length === 0) {
+      return 'No matching suggestions';
+    }
+
+    return null;
+  }, [filteredPeople.length]);
+
   return (
     <>
-      <h1 className="title" data-cy="title">
-        {name === '' ? 'No selected person' : `${name} (${born} - ${died})`}
-      </h1>
-
       <div className={classNames('dropdown', isShowed && 'is-active')}>
         <div className="dropdown-trigger">
           <input
@@ -104,19 +107,14 @@ export const Autocomplete: React.FC<Delay> = ({
       </div>
 
       <div
-        className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
+        className={classNames(
+          filteredPeople.length === 0 &&
+            'notification is-danger is-light mt-3 is-align-self-flex-start',
+        )}
         role="alert"
         data-cy="no-suggestions-message"
       >
-        <p className="has-text-danger">
-          {filteredPeople.length === 0 && 'No matching suggestions'}
-        </p>
+        <p className="has-text-danger">{notMatch}</p>
       </div>
     </>
   );

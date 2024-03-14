@@ -14,14 +14,18 @@ export const App: React.FC = () => {
     motherName: '',
     slug: '',
   };
-  const [delay] = useState<number>(300);
+  const DELAY = 300;
   const [onSelected, setOnSelected] = useState(notSelectedPerson);
+  const { name, born, died } = onSelected;
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
+        <h1 className="title" data-cy="title">
+          {name === '' ? 'No selected person' : `${name} (${born} - ${died})`}
+        </h1>
         <Autocomplete
-          delay={delay}
+          delay={DELAY}
           onSelected={onSelected}
           notSelectedPerson={notSelectedPerson}
           rewriteOnSelected={setOnSelected}
