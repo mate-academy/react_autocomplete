@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import debounce from 'lodash.debounce';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import classNames from 'classnames';
+// import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
 import { peopleFromServer } from '../../data/people';
 
@@ -10,11 +11,11 @@ type Props = {
 };
 
 export const Autocomplete: React.FC<Props> = React.memo(
-  ({ people, onSelect = () => {}, delay = 300 }) => {
+  ({ people, onSelect = () => {} }) => {
     const [query, setQuery] = useState('');
     const [filteredPeople, setFilteredPeople] =
       useState<Person[]>(peopleFromServer);
-    const [isFocused, setIsFocused] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(true);
     const titleField = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -23,34 +24,59 @@ export const Autocomplete: React.FC<Props> = React.memo(
       }
     }, []);
 
-    const debouncedFilterPeople = useRef(
-      debounce((value: string) => {
-        const filtered = people.filter(person =>
-          person.name.toLowerCase().includes(value.toLowerCase().trim()),
-        );
+    // const debouncedFilterPeople = useRef(
+    //   debounce((value: string) => {
+    //     const filtered = people.filter(person =>
+    //       person.name.toLowerCase().includes(value.toLowerCase().trim()),
+    //     );
 
-        setFilteredPeople(filtered);
-      }, delay),
-    ).current;
+    //     setFilteredPeople(filtered);
+    //   }, delay),
+    // ).current;
+
+    const filtered = useMemo(() => {
+      return people.filter((person: Person) =>
+        person.name.toLowerCase().includes(query.toLowerCase().trim()),
+      );
+    }, [people, query]);
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(event.target.value);
+      const text = event.target.value;
+
+      setQuery(text);
       onSelect(null);
-      debouncedFilterPeople(event.target.value);
+      setFilteredPeople(filtered);
+      if (text.trim() === '') {
+        setShowSuggestions(false);
+      } else {
+        setShowSuggestions(true);
+      }
     };
 
     const handlePersonChosen = (person: Person) => {
       setQuery(person.name);
       onSelect(person);
-      setIsFocused(false);
+      setShowSuggestions(false);
     };
 
     const handleInputFocus = () => {
-      setIsFocused(true);
+      if (!query) {
+        setShowSuggestions(true);
+      }
     };
 
+    useEffect(() => {
+      if (!query) {
+        setFilteredPeople(peopleFromServer);
+
+        return;
+      }
+
+      setFilteredPeople(filtered);
+    }, [query, filtered]);
+
     return (
-      <div className={`dropdown ${isFocused && 'is-active'}`}>
+      <div className={classNames('dropdown', { 'is-active': showSuggestions })}>
         <div className="dropdown-trigger">
           <input
             ref={titleField}
@@ -65,18 +91,19 @@ export const Autocomplete: React.FC<Props> = React.memo(
         </div>
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-          {isFocused && (
-            <div className="dropdown-content">
-              {filteredPeople.map((person: Person) => {
-                return (
+          {showSuggestions &&
+            (filteredPeople.length > 0 ? (
+              <div className="dropdown-content">
+                {filteredPeople.map((person: Person) => (
                   <div className="dropdown-item" data-cy="suggestion-item">
                     <p
                       // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
                       role="button"
                       key={person.name}
-                      className={
-                        person.sex === 'm' ? 'has-text-link' : 'has-text-danger'
-                      }
+                      className={classNames({
+                        'has-text-link': person.sex === 'm',
+                        'has-text-danger': person.sex === 'f',
+                      })}
                       onClick={() => handlePersonChosen(person)}
                       onKeyDown={() => handlePersonChosen(person)}
                       tabIndex={0}
@@ -84,27 +111,24 @@ export const Autocomplete: React.FC<Props> = React.memo(
                       {person.name}
                     </p>
                   </div>
-                );
-              })}
-            </div>
-          )}
+                ))}
+              </div>
+            ) : (
+              <div
+                className="
+                  notification
+                  is-danger
+                  is-light
+                  mt-3
+                  is-align-self-flex-start
+                "
+                role="alert"
+                data-cy="no-suggestions-message"
+              >
+                <p className="has-text-danger">No matching suggestions</p>
+              </div>
+            ))}
         </div>
-
-        {!filteredPeople.length && (
-          <div
-            className="
-              notification
-              is-danger
-              is-light
-              mt-3
-              is-align-self-flex-start
-            "
-            role="alert"
-            data-cy="no-suggestions-message"
-          >
-            <p className="has-text-danger">No matching suggestions</p>
-          </div>
-        )}
       </div>
     );
   },
