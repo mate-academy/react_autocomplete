@@ -6,13 +6,13 @@ import { Person } from '../types/Person';
 
 type Props = {
   people: Person[];
-  onSelect?: (person: Person | null) => void;
+  onSelected?: (person: Person | null) => void;
   delay: number;
 };
 
 export const Autocomplete: React.FC<Props> = ({
   people,
-  onSelect = () => {},
+  onSelected = () => {},
   delay,
 }) => {
   const queryField = useRef<HTMLInputElement | null>(null);
@@ -24,7 +24,7 @@ export const Autocomplete: React.FC<Props> = ({
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onSelect(null);
+    onSelected(null);
     setQuery(event.target.value);
     applyQuery(event.target.value);
   };
@@ -35,12 +35,12 @@ export const Autocomplete: React.FC<Props> = ({
 
   const handlerSelectPerson = (person: Person) => {
     setQuery(person.name);
-    onSelect(person);
+    onSelected(person);
     setFocusInput(false);
   };
 
   const handlerClearQuery = () => {
-    onSelect(null);
+    onSelected(null);
     setQuery('');
     setAppliedQuery('');
     if (queryField.current) {
