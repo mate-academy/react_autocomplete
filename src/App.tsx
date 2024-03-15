@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { DropdownMenu } from './components/DropdownMenu';
 import { Person } from './types/Person';
-import { Dropdown } from './components/Dropdown';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-function debounce(callback: Function, delay: number) {
+const debounce = (callback: Function, delay: number) => {
   let timerId = 0;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -16,37 +16,28 @@ function debounce(callback: Function, delay: number) {
       callback(...args);
     }, delay);
   };
-}
+};
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person>();
-  const [isFocused, setIsFocused] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
+  const activateVisible = useCallback(debounce(setIsVisible, 300), []);
 
-  useEffect(() => {
-    const timerId = setTimeout(() => {
-      setIsVisible(true);
-    }, 1000); // Час в мілісекундах (за потреби змініть)
-
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [query]);
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedPerson(undefined);
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsVisible(false);
+    setQuery(event.target.value);
+    setSelectedPerson(undefined);
+    applyQuery(event.target.value);
+    activateVisible(true);
   };
 
   const filteredPeople = useMemo(() => {
-    return peopleFromServer.filter((person: Person) =>
+    return peopleFromServer.filter(person =>
       person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
   }, [appliedQuery]);
@@ -68,26 +59,29 @@ export const App: React.FC = () => {
               className="input"
               data-cy="search-input"
               value={selectedPerson?.name || query}
-              onChange={handleInputChange}
+              onChange={handleQueryChange}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
             />
           </div>
 
           {isFocused && isVisible && (
-            <Dropdown people={filteredPeople} onSelected={setSelectedPerson} />
+            <DropdownMenu
+              people={filteredPeople}
+              onSelected={setSelectedPerson}
+            />
           )}
         </div>
 
         {filteredPeople.length === 0 && (
           <div
             className="
-               notification
-               is-danger
-               is-light
-               mt-3
-               is-align-self-flex-start
-             "
+          notification
+          is-danger
+          is-light
+          mt-3
+          is-align-self-flex-start
+        "
             role="alert"
             data-cy="no-suggestions-message"
           >
