@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../data/people';
@@ -18,25 +18,11 @@ export const Autocomplete: React.FC<Delay> = ({
   notSelectedPerson,
   rewriteOnSelected,
 }) => {
+  const [firstRender, setFirstRender] = useState(true);
   const [isShowed, setIsShowed] = useState(false);
   const [currentInput, setCurrentInput] = useState('');
-  const [instantInoutValue, setInstantInoutValue] = useState('');
-
-  const applyCurrentInput = useCallback(debounce(setCurrentInput, delay), []);
-
-  const handleInputValue = (event: React.ChangeEvent<HTMLInputElement>) => {
-    applyCurrentInput(event.target.value);
-    setInstantInoutValue(event.target.value);
-    rewriteOnSelected(notSelectedPerson);
-    setTimeout(() => {
-      setIsShowed(true);
-    }, delay);
-  };
-
-  const handleSelectedPerson = (person: Person) => {
-    setInstantInoutValue(person.name);
-    rewriteOnSelected(person);
-  };
+  const [instantInputValue, setInstantInputValue] = useState('');
+  const [notMatch, setNotMatch] = useState(false);
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person =>
@@ -44,26 +30,52 @@ export const Autocomplete: React.FC<Delay> = ({
     );
   }, [currentInput]);
 
+  const applyCurrentInput = useCallback(debounce(setCurrentInput, delay), []);
+
+  const handleInputValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+    applyCurrentInput(event.target.value);
+    setInstantInputValue(event.target.value);
+    rewriteOnSelected(notSelectedPerson);
+    setIsShowed(false);
+  };
+
+  useEffect(() => {
+    if (firstRender) {
+      setFirstRender(false);
+
+      return;
+    }
+
+    if (filteredPeople.length === 0) {
+      setNotMatch(true);
+      setTimeout(() => {
+        setIsShowed(false);
+      });
+    } else {
+      setNotMatch(false);
+      setTimeout(() => {
+        setIsShowed(true);
+      });
+    }
+  }, [filteredPeople]);
+
+  const handleSelectedPerson = (person: Person) => {
+    setInstantInputValue(person.name);
+    rewriteOnSelected(person);
+  };
+
   const handleInputOnFocus = () => {
-    if (onSelected.name === '') {
+    if (onSelected.name === '' && notMatch === false) {
       setIsShowed(true);
     }
   };
-
-  const notMatch = useMemo(() => {
-    if (filteredPeople.length === 0) {
-      return 'No matching suggestions';
-    }
-
-    return null;
-  }, [filteredPeople.length]);
 
   return (
     <>
       <div className={classNames('dropdown', isShowed && 'is-active')}>
         <div className="dropdown-trigger">
           <input
-            value={instantInoutValue}
+            value={instantInputValue}
             type="text"
             placeholder="Enter a part of the name"
             className={classNames(
@@ -93,13 +105,7 @@ export const Autocomplete: React.FC<Delay> = ({
                 aria-hidden="true"
                 style={{ cursor: 'pointer' }}
               >
-                <p
-                  className={classNames(
-                    person.sex === 'm' ? 'has-text-link' : 'has-text-danger',
-                  )}
-                >
-                  {person.name}
-                </p>
+                <p className="has-text-link">{person.name}</p>
               </div>
             ))}
           </div>
@@ -108,13 +114,15 @@ export const Autocomplete: React.FC<Delay> = ({
 
       <div
         className={classNames(
-          filteredPeople.length === 0 &&
+          notMatch &&
             'notification is-danger is-light mt-3 is-align-self-flex-start',
         )}
         role="alert"
         data-cy="no-suggestions-message"
       >
-        <p className="has-text-danger">{notMatch}</p>
+        <p className="has-text-danger">
+          {notMatch && 'No matching suggestions'}
+        </p>
       </div>
     </>
   );
