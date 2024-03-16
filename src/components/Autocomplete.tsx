@@ -12,7 +12,7 @@ type Props = {
 
 export const Autocomplete: React.FC<Props> = ({
   people,
-  onSelected = () => { },
+  onSelected = () => {},
   delay,
 }) => {
   const queryField = useRef<HTMLInputElement | null>(null);
