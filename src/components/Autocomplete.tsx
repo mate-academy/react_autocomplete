@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import debounce from 'lodash.debounce';
 
 import './Autocomplete.scss';
@@ -12,7 +12,7 @@ type Props = {
 
 export const Autocomplete: React.FC<Props> = ({
   people,
-  onSelected = () => {},
+  onSelected = () => { },
   delay,
 }) => {
   const queryField = useRef<HTMLInputElement | null>(null);
@@ -29,9 +29,11 @@ export const Autocomplete: React.FC<Props> = ({
     applyQuery(event.target.value);
   };
 
-  const filteredPeople = people.filter(person => {
-    return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
-  });
+  const filteredPeople = useMemo(() => {
+    return people.filter(person => {
+      return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
+    });
+  }, [appliedQuery]);
 
   const handlerSelectPerson = (person: Person) => {
     setQuery(person.name);
@@ -75,7 +77,7 @@ export const Autocomplete: React.FC<Props> = ({
       {focusInput && (
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           <div className="dropdown-content">
-            {filteredPeople.length !== 0 ? (
+            {filteredPeople.length ? (
               filteredPeople.map((person: Person) => (
                 <div
                   role="button"
@@ -84,12 +86,6 @@ export const Autocomplete: React.FC<Props> = ({
                   className="dropdown-item"
                   data-cy="suggestion-item"
                   onClick={() => handlerSelectPerson(person)}
-                  onKeyDown={event => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      handlerSelectPerson(person);
-                    }
-                  }}
                 >
                   <p className="has-text-link">{person.name}</p>
                 </div>
