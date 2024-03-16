@@ -25,7 +25,9 @@ export const App: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
+  // eslint-disable-next-line
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
+  // eslint-disable-next-line
   const activateVisible = useCallback(debounce(setIsVisible, 300), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,13 +44,15 @@ export const App: React.FC = () => {
     );
   }, [appliedQuery]);
 
+  const title = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : 'No selected person';
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson
-            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-            : 'No selected person'}
+          {title}
         </h1>
 
         <div className="dropdown is-active">
@@ -73,15 +77,15 @@ export const App: React.FC = () => {
           )}
         </div>
 
-        {filteredPeople.length === 0 && (
+        {!filteredPeople.length && (
           <div
             className="
-          notification
-          is-danger
-          is-light
-          mt-3
-          is-align-self-flex-start
-        "
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
             role="alert"
             data-cy="no-suggestions-message"
           >

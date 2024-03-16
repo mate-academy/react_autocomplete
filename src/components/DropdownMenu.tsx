@@ -8,8 +8,6 @@ type Props = {
 
 export const DropdownMenu: React.FC<Props> = React.memo(
   ({ people, onSelected }) => {
-    // console.log('Rendering...');
-
     return (
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
         <div className="dropdown-content">
