@@ -3,4 +3,8 @@
   "include": [
     "src", "lodash.d.ts"
   ],
+  "compilerOptions": {
+    "sourceMap": false,
+    "types": ["node", "cypress"]
+  }
 }
