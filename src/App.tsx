@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { debounce } from 'lodash';
 import './App.scss';
 import { peopleFromServer } from './data/people';
@@ -6,25 +6,38 @@ import { Person } from './types/Person';
 import { Dropdown } from './components/Dropdown';
 
 export const App: React.FC = () => {
-  // const { name, born, died } = peopleFromServer[0];
   const [selectedPerson, setSelectedPerson] = useState<Person>();
   const [isVisible, setIsVisible] = useState(false);
   const [query, setQuery] = useState('');
+  const [filteredPeople, setIsFilteredPeople] = useState<Person[]>([]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const applyQuery = useCallback(debounce(setQuery, 300), []);
+  const fetchFilteredPeople = useCallback(
+    debounce((inputValue: string) => {
+      const filterPeople = peopleFromServer.filter((person: Person) => (
+        person.name.toLowerCase().includes(inputValue.toLowerCase())
+      ));
 
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsVisible(true);
-    setSelectedPerson(undefined);
-    applyQuery(event.target.value);
-  };
+      setIsFilteredPeople(filterPeople);
+    }, 300), [],
+  );
 
-  const filteredPeople = useMemo(() => {
-    return peopleFromServer.filter((person: Person) => (
-      person.name.toLowerCase().includes(query.toLowerCase())
-    ));
-  }, [query]);
+  const handleQueryChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = event.target.value;
+
+      setQuery(inputValue);
+      setIsVisible(true);
+      setSelectedPerson(undefined);
+
+      fetchFilteredPeople(inputValue);
+    }, [fetchFilteredPeople],
+  );
+
+  const handlePersonSelected = useCallback((person: Person) => {
+    setSelectedPerson(person);
+    setIsVisible(false);
+  }, []);
 
   return (
     <div className="container">
@@ -52,7 +65,7 @@ export const App: React.FC = () => {
           {isVisible && (
             <Dropdown
               people={filteredPeople}
-              onSelected={setSelectedPerson}
+              onSelected={handlePersonSelected}
             />
           )}
 
