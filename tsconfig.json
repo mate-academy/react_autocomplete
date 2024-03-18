@@ -1,6 +1,6 @@
 {
   "extends": "@mate-academy/students-ts-config",
   "include": [
-    "src", "lodash.d.ts"  ]
-  ]
+    "src", "lodash.d.ts"
+  ],
 }
