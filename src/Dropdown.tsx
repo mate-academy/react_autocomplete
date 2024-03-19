@@ -38,12 +38,6 @@ export const Dropdown: React.FC<DropdownType> = ({
     onSelected(null);
   };
 
-  const handleOnBlurChange = () => {
-    setTimeout(() => {
-      setIsInputShown(false);
-    }, delay);
-  };
-
   const handleSelectPerson = (person: Person) => {
     onSelected(person);
     setQuery(person.name);
@@ -65,7 +59,6 @@ export const Dropdown: React.FC<DropdownType> = ({
             value={query}
             onChange={handleOnChange}
             onFocus={() => setIsInputShown(true)}
-            onBlur={handleOnBlurChange}
           />
         </div>
 
