@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
+import './Dropdown.css';
 import { peopleFromServer } from '.././data/people';
 import { Person } from '../types/Person';
 import cn from 'classnames';
@@ -14,11 +15,13 @@ export const Dropdown: React.FC<Props> = React.memo(({ delay, onSelected }) => {
   const filteredPeople = peopleFromServer.filter(person =>
     person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
   );
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+  const applyQuery = useMemo(() => debounce(setAppliedQuery, delay), [delay]);
 
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPersonVal(e.target.value);
     applyQuery(e.target.value);
+    setShowDropDown(false);
+    setTimeout(() => setShowDropDown(true), delay);
     onSelected(null);
   };
 
@@ -53,14 +56,14 @@ export const Dropdown: React.FC<Props> = React.memo(({ delay, onSelected }) => {
         {filteredPeople.length ? (
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              {filteredPeople.map(e => (
+              {filteredPeople.map(people => (
                 <div
-                  onMouseDown={() => choiceHandler(e)}
-                  key={e.slug}
+                  onMouseDown={() => choiceHandler(people)}
+                  key={people.slug}
                   className="dropdown-item"
                   data-cy="suggestion-item"
                 >
-                  <p className="has-text-link">{e.name}</p>
+                  <p className="has-text-link">{people.name}</p>
                 </div>
               ))}
             </div>

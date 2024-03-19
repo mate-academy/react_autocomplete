@@ -1,0 +1,8 @@
+.dropdown-item {
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.dropdown-item:hover {
+  background-color: #f7fbff;
+}
