@@ -11,7 +11,7 @@ interface Props {
 
 export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
   const [query, setQuery] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [appliedQuery, setAppliedQuery] = useState('');
 
@@ -28,22 +28,22 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
   const onSelected = (person: Person) => {
     setSelectedPerson(person);
     setQuery(person.name);
-    setDropdownOpen(false);
+    setIsDropdownOpen(false);
   };
 
   const handleInputClick = () => {
-    setDropdownOpen(true);
+    setIsDropdownOpen(true);
   };
 
   const handleInputFocus = () => {
     if (!query) {
-      setDropdownOpen(true);
+      setIsDropdownOpen(true);
     }
   };
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person =>
-      person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+      person.name.toLowerCase().includes(appliedQuery.toLowerCase().trim()),
     );
   }, [appliedQuery]);
 
@@ -70,7 +70,7 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
             />
           </div>
 
-          {dropdownOpen && (
+          {isDropdownOpen && (
             <div
               className="dropdown-menu"
               role="menu"
