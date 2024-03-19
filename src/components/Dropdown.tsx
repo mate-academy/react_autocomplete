@@ -56,14 +56,14 @@ export const Dropdown: React.FC<Props> = React.memo(({ delay, onSelected }) => {
         {filteredPeople.length ? (
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              {filteredPeople.map(people => (
+              {filteredPeople.map(person => (
                 <div
-                  onMouseDown={() => choiceHandler(people)}
-                  key={people.slug}
+                  onMouseDown={() => choiceHandler(person)}
+                  key={person.slug}
                   className="dropdown-item"
                   data-cy="suggestion-item"
                 >
-                  <p className="has-text-link">{people.name}</p>
+                  <p className="has-text-link">{person.name}</p>
                 </div>
               ))}
             </div>
