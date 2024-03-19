@@ -80,7 +80,14 @@ export const Dropdown: React.FC<DropdownType> = ({
                   data-cy="suggestion-item"
                   onClick={() => handleSelectPerson(person)}
                 >
-                  <p className="has-text-link">{person.name}</p>
+                  <p
+                    className={classNames({
+                      'has-text-link': person.sex === 'm',
+                      'has-text-danger': person.sex === 'f',
+                    })}
+                  >
+                    {person.name}
+                  </p>
                 </button>
               ))}
             </div>
