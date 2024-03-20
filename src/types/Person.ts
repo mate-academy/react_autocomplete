@@ -6,5 +6,5 @@ export interface Person {
   fatherName: string | null;
   motherName: string | null;
   slug: string;
-  onSelected: (person: Person) => void;
+  onSelected?: (person: Person) => void;
 }
