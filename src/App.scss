@@ -1,3 +1,7 @@
 iframe {
   display: none;
 }
+
+.dropdown-item.active {
+  background-color: #f5f5f5;
+}
