@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -15,9 +15,9 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, debounceDelay), [
-    debounceDelay,
-  ]);
+  const applyQuery = useMemo(() => {
+    return debounce(setAppliedQuery, debounceDelay);
+  }, [debounceDelay]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -47,13 +47,15 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
     );
   }, [appliedQuery]);
 
+  const titleText = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : 'No selected person';
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson
-            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-            : 'No selected person'}
+          {titleText}
         </h1>
 
         <div className="dropdown is-active">
@@ -70,7 +72,7 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
             />
           </div>
 
-          {isDropdownOpen && (
+          {isDropdownOpen && filteredPeople.length > 0 && (
             <div
               className="dropdown-menu"
               role="menu"
@@ -83,7 +85,7 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
                       active: selectedPerson === person,
                     })}
                     data-cy="suggestion-item"
-                    key={peopleFromServer.indexOf(person)}
+                    key={person.name}
                     onClick={() => onSelected(person)}
                   >
                     <p
@@ -101,7 +103,7 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
           )}
         </div>
 
-        {filteredPeople.length === 0 && query !== '' && (
+        {!filteredPeople.length && query && (
           <div
             className="
           notification
