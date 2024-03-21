@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Person } from '../types/Person';
 
 import { peopleFromServer } from '../data/people';
@@ -12,26 +12,30 @@ type Props = {
 
 export const Dropdown: React.FC<Props> = ({ onSelected, delay = 300 }) => {
   const [query, setQuery] = useState('');
+  const [applyedQuery, setApplyedQuery] = useState('');
+
   const [selected, setSelected] = useState(false);
 
-  const applyQuery = () => {
-    debounce(() => setSelected(true), delay)();
-  };
+  const applyQuery = useCallback(debounce(setApplyedQuery, delay), [
+    setApplyedQuery,
+  ]);
 
   const handleQueryChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    applyQuery(event.target.value);
+
     setQuery(event.target.value);
     onSelected('No selected person');
   };
 
   const filteredPeople = useMemo(() => {
-    const normalisedQuery = query.toLowerCase().trim();
+    const normalisedQuery = applyedQuery.toLowerCase().trim();
 
     return peopleFromServer.filter(person => {
       const normalisedPerson = person.name.toLowerCase();
 
       return normalisedPerson.includes(normalisedQuery);
     });
-  }, [query]);
+  }, [applyedQuery]);
 
   const handlePersonClick = (person: Person) => {
     setQuery(person.name);
@@ -49,7 +53,7 @@ export const Dropdown: React.FC<Props> = ({ onSelected, delay = 300 }) => {
           className="input"
           data-cy="search-input"
           onChange={handleQueryChanged}
-          onFocus={applyQuery}
+          onFocus={() => setSelected(true)}
         />
       </div>
 
