@@ -1,15 +1,53 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import debounce from 'lodash.debounce';
+import cn from 'classnames';
+
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState<string>('');
+  const [appliedQuery, setAppliedQuery] = useState<string>('');
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [onSelected, setOnSelected] = useState<Person | null>(null);
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
+
+  const handleChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
+
+  const handleSelected = (person: Person) => {
+    setOnSelected(person);
+    setQuery(person.name);
+    setIsOpen(false);
+  };
+
+  const handleInput = () => {
+    setIsOpen(true);
+  };
+
+  const handleFocus = () => {
+    if (!query) {
+      setIsOpen(true);
+    }
+  };
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter(people =>
+      people.name.toLowerCase().includes(query.toLocaleLowerCase().trim()),
+    );
+  }, [appliedQuery]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {onSelected
+            ? `${onSelected.name} (${onSelected.born} - ${onSelected.died})`
+            : 'No selected person'}
         </h1>
 
         <div className="dropdown is-active">
@@ -19,55 +57,59 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              value={query}
+              onChange={handleChangeQuery}
+              onFocus={handleFocus}
+              onClick={handleInput}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
+          {isOpen && filteredPeople.length > 0 && (
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
+              <div className="dropdown-content">
+                {filteredPeople.map(people => (
+                  <div
+                    className={cn('dropdown-item', {
+                      active: onSelected === people,
+                    })}
+                    data-cy="suggestion-item"
+                    key={people.name}
+                    onClick={() => handleSelected(people)}
+                  >
+                    <p
+                      className={cn('', {
+                        'has-text-link': people.sex === 'm',
+                        'has-text-danger': people.sex === 'f',
+                      })}
+                    >
+                      {people.name}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
         </div>
 
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        {filteredPeople.length === 0 && query && (
+          <div
+            className="
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
