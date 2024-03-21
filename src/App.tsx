@@ -7,9 +7,9 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const [query, setQuery] = useState<string>('');
-  const [appliedQuery, setAppliedQuery] = useState<string>('');
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
   const [onSelected, setOnSelected] = useState<Person | null>(null);
 
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
@@ -23,10 +23,6 @@ export const App: React.FC = () => {
     setOnSelected(person);
     setQuery(person.name);
     setIsOpen(false);
-  };
-
-  const handleInput = () => {
-    setIsOpen(true);
   };
 
   const handleFocus = () => {
@@ -60,7 +56,6 @@ export const App: React.FC = () => {
               value={query}
               onChange={handleChangeQuery}
               onFocus={handleFocus}
-              onClick={handleInput}
             />
           </div>
 
