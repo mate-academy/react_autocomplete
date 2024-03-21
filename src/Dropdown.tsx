@@ -80,7 +80,7 @@ export const Dropdown: React.FC<Props> = ({ delay, people, onSelected }) => {
         </div>
       </div>
 
-      {filteredPeople.length === 0 && (
+      {!filteredPeople.length && (
         <div
           className="
           notification
