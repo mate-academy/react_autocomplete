@@ -6,7 +6,7 @@ import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 
 type Props = {
-  onSelected: (person: string) => void;
+  onSelected: (person: Person | null) => void;
   delay: number;
 };
 
@@ -24,7 +24,7 @@ export const Dropdown: React.FC<Props> = ({ onSelected, delay = 300 }) => {
     applyQuery(event.target.value);
 
     setQuery(event.target.value);
-    onSelected('No selected person');
+    onSelected(null);
   };
 
   const filteredPeople = useMemo(() => {
@@ -40,7 +40,7 @@ export const Dropdown: React.FC<Props> = ({ onSelected, delay = 300 }) => {
   const handlePersonClick = (person: Person) => {
     setQuery(person.name);
     setSelected(false);
-    onSelected(`${person.name} (${person.born} - ${person.died})`);
+    onSelected(person);
   };
 
   return (
