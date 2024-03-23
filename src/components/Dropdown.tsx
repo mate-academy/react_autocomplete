@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Person } from '../types/Person';
 import { debounce } from './debounce';
 import classNames from 'classnames';
@@ -41,7 +41,26 @@ export const Dropdown: React.FC<DropdownType> = ({
   const handleSelectPerson = (person: Person) => {
     onSelected(person);
     setQuery(person.name);
+    setIsInputShown(false);
   };
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      const dropdownElement = document.querySelector('.dropdown');
+      const isClickedOutside =
+        dropdownElement && !dropdownElement.contains(event.target as Node);
+
+      if (isClickedOutside) {
+        setIsInputShown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
 
   return (
     <>
