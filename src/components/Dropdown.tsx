@@ -14,7 +14,11 @@ export const Dropdown: React.FC<AppProps> = ({ items, delay, onSelected }) => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [inputFocused, setInputFocused] = useState(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+  const applyQueryCallback = debounce((value: string) => {
+    setAppliedQuery(value);
+  }, delay);
+
+  const applyQuery = useCallback(applyQueryCallback, [applyQueryCallback]);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -39,9 +43,9 @@ export const Dropdown: React.FC<AppProps> = ({ items, delay, onSelected }) => {
     return items.filter(person =>
       person.name.trim().toLowerCase().includes(appliedQuery.toLowerCase()),
     );
-  }, [appliedQuery]);
+  }, [appliedQuery, items]);
 
-  const isNoneFound = filteredPeople.length === 0;
+  const isNotFound = !filteredPeople.length;
 
   return (
     <>
@@ -60,7 +64,7 @@ export const Dropdown: React.FC<AppProps> = ({ items, delay, onSelected }) => {
         </div>
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-          {!isNoneFound && (
+          {!isNotFound && (
             <div className="dropdown-content">
               {filteredPeople.map(person => (
                 <div
@@ -83,12 +87,12 @@ export const Dropdown: React.FC<AppProps> = ({ items, delay, onSelected }) => {
           )}
         </div>
       </div>
-      {isNoneFound && (
+      {isNotFound && (
         <div
           className="notification
            is-danger
            is-light
-           mt-3 
+           mt-3
            is-align-self-flex-start"
           role="alert"
           data-cy="no-suggestions-message"
