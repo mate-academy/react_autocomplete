@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
 import debounce from 'lodash.debounce';
 
@@ -9,20 +9,28 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const [activePerson, setActivePerson] = useState<Person | null>(null);
   const [isDropdownActive, setIsDropdownActive] = useState(false);
-  // const [isInputActive, setIsInputActive] = useState(false);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [title, setTitle] = useState('No selected person');
 
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
 
-  const clickOnButton = () => {
-    setIsDropdownActive(!isDropdownActive);
-  };
+  useEffect(() => {
+    if (activePerson) {
+      setTitle(
+        `${activePerson.name} (${activePerson.born} - ${activePerson.died})`,
+      );
+    } else {
+      setTitle('No selected person');
+    }
+  }, [activePerson]);
 
   const changePerson = (selectedPerson: Person) => {
     setActivePerson(selectedPerson);
-    clickOnButton();
     setQuery(selectedPerson.name);
+    setAppliedQuery('');
+    setIsDropdownActive(true);
+    document.title = `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`;
   };
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,15 +50,26 @@ export const App: React.FC = () => {
     );
   }, [appliedQuery]);
 
+  const handleFocusSelect = () => {
+    setIsDropdownActive(true);
+  };
+
+  const handleBlurSelect = () => {
+    setTimeout(() => {
+      setIsDropdownActive(false);
+    }, 300);
+  };
+
   const emptyList = !filteredPeople.length;
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {activePerson
+          {/* {activePerson
             ? `${activePerson.name} (${activePerson.born} - ${activePerson.died})`
-            : 'No selected person'}
+            : 'No selected person'} */}
+          {title}
         </h1>
 
         <div className={cn('dropdown', { 'is-active': isDropdownActive })}>
@@ -61,7 +80,6 @@ export const App: React.FC = () => {
               })}
               aria-haspopup="true"
               aria-controls="dropdown-menu"
-              onClick={clickOnButton}
             >
               <div className="input-wrapper">
                 <input
@@ -71,7 +89,8 @@ export const App: React.FC = () => {
                   data-cy="search-input"
                   value={query}
                   onChange={handleQueryChange}
-                  onFocus={clickOnButton}
+                  onFocus={handleFocusSelect}
+                  onBlur={handleBlurSelect}
                 />
                 <span className="icon is-small">
                   <i className="fas fa-angle-down" aria-hidden="true"></i>
