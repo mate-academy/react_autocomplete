@@ -22,6 +22,8 @@ export const App: React.FC = () => {
     );
   }, [appliedQuery, newPeople]);
 
+  const hideListOnBlur = useCallback(debounce(setListIsVisible, 300), []);
+
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
 
   const handleOnQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,6 +70,7 @@ export const App: React.FC = () => {
               value={query}
               onChange={handleOnQuery}
               onFocus={handleOnFocus}
+              onBlur={() => hideListOnBlur(false)}
             />
           </div>
 
@@ -92,14 +95,10 @@ export const App: React.FC = () => {
                     onClick={() => handleOnSelected(person)}
                   >
                     <p
-                      className={cn(
-                        {
-                          'has-text-link': person.sex === 'm',
-                        },
-                        {
-                          'has-text-danger': person.sex === 'f',
-                        },
-                      )}
+                      className={cn({
+                        'has-text-link': person.sex === 'm',
+                        'has-text-danger': person.sex === 'f',
+                      })}
                     >
                       {person.name}
                     </p>
@@ -108,10 +107,10 @@ export const App: React.FC = () => {
                 {filteredPeople.length === 0 && (
                   <div
                     className="
+                      dropdown-item
                       notification
                       is-danger
                       is-light
-                      mt-3
                       is-align-self-flex-start
                       "
                     role="alert"
