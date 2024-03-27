@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import cn from 'classnames';
 import debounce from 'lodash.debounce';
 
@@ -11,19 +11,8 @@ export const App: React.FC = () => {
   const [isDropdownActive, setIsDropdownActive] = useState(false);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [title, setTitle] = useState('No selected person');
 
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
-
-  useEffect(() => {
-    if (activePerson) {
-      setTitle(
-        `${activePerson.name} (${activePerson.born} - ${activePerson.died})`,
-      );
-    } else {
-      setTitle('No selected person');
-    }
-  }, [activePerson]);
 
   const changePerson = (selectedPerson: Person) => {
     setActivePerson(selectedPerson);
@@ -66,10 +55,9 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {/* {activePerson
+          {activePerson
             ? `${activePerson.name} (${activePerson.born} - ${activePerson.died})`
-            : 'No selected person'} */}
-          {title}
+            : 'No selected person'}
         </h1>
 
         <div className={cn('dropdown', { 'is-active': isDropdownActive })}>
