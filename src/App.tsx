@@ -113,25 +113,24 @@ export const App: React.FC = () => {
                   <p className="has-text-link">{person.name}</p>
                 </div>
               ))}
-            </div>
-          </div>
-        </div>
-
-        {emptyList && (
-          <div
-            className="
+              {emptyList && (
+                <div
+                  className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-            role="alert"
-            data-cy="no-suggestions-message"
-          >
-            <p className="has-text-danger">No matching suggestions</p>
+                  role="alert"
+                  data-cy="no-suggestions-message"
+                >
+                  <p className="has-text-danger">No matching suggestions</p>
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        </div>
       </main>
     </div>
   );
