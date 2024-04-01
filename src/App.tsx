@@ -7,7 +7,7 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPeople] = useState<Person | null>(null);
-  const [openList, setOpenList] = useState(true);
+  const [openList, setOpenList] = useState(false);
 
   const [search, setSearch] = useState('');
   const [request, setRequest] = useState('');
@@ -37,7 +37,6 @@ export const App: React.FC = () => {
   const handleCancelValue = () => {
     setSearch('');
     setSelectedPeople(null);
-    setOpenList(true);
   };
 
   return (
@@ -62,6 +61,7 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              onFocus={() => setOpenList(true)}
             />
             {search === selectedPerson?.name && (
               <button
