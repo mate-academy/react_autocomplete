@@ -1,7 +1,7 @@
 import React, { SetStateAction, useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { debounce } from '../service/debounce';
-import { Person } from '../types/Person';
+import { Person, Sex } from '../types/Person';
 
 interface Props {
   peoples: Person[];
@@ -80,7 +80,7 @@ export const Dropdown: React.FC<Props> = ({
         </div>
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-          {filteredPeople.length > 0 && (
+          {filteredPeople.length && (
             <div className="dropdown-content">
               {filteredPeople.map(person => (
                 <button
@@ -92,8 +92,8 @@ export const Dropdown: React.FC<Props> = ({
                 >
                   <p
                     className={classNames({
-                      'has-text-link': person.sex === 'm',
-                      'has-text-danger': person.sex === 'f',
+                      'has-text-link': person.sex === Sex.Male,
+                      'has-text-danger': person.sex === Sex.Female,
                     })}
                   >
                     {person.name}
@@ -105,7 +105,7 @@ export const Dropdown: React.FC<Props> = ({
         </div>
       </div>
 
-      {filteredPeople.length === 0 && (
+      {!filteredPeople.length && (
         <div
           className="
               notification
