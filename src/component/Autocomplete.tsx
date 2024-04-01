@@ -79,7 +79,11 @@ export const Autocomplete: React.FC<AutocompleteType> = ({
         </div>
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-          <div className={classNames({ 'dropdown-content': false })}>
+          <div
+            className={classNames({
+              'dropdown-content': shownPeople.length !== 0,
+            })}
+          >
             {shownPeople.map(person => (
               <div
                 className="dropdown-item"
