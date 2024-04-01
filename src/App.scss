@@ -1,3 +1,13 @@
 iframe {
   display: none;
 }
+
+.dropdown-trigger {
+  position: relative;
+}
+
+.delete {
+  position: absolute;
+  right: 5px;
+  top: 12px;
+}
