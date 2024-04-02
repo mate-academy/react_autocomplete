@@ -6,11 +6,11 @@ import debounce from 'lodash.debounce';
 
 type Props = {
   onSelected: (person: Person | null) => void;
-  items: Person[];
+  people: Person[];
   delay: 300;
 };
 
-export const Dropdown: React.FC<Props> = ({ onSelected, items, delay }) => {
+export const Dropdown: React.FC<Props> = ({ onSelected, people, delay }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [inputFocused, setInputFocused] = useState(false);
@@ -34,17 +34,17 @@ export const Dropdown: React.FC<Props> = ({ onSelected, items, delay }) => {
     setInputFocused(false);
   };
 
-  const inputBlur = () => {
+  const handleBlur = () => {
     setTimeout(() => {
       setInputFocused(false);
     }, 300);
   };
 
   const filteredPeople = useMemo(() => {
-    return items.filter(person =>
+    return people.filter(person =>
       person.name.trim().toLowerCase().includes(appliedQuery.toLowerCase()),
     );
-  }, [appliedQuery, items]);
+  }, [appliedQuery, people]);
 
   const isNotFound = !filteredPeople.length;
 
@@ -59,7 +59,7 @@ export const Dropdown: React.FC<Props> = ({ onSelected, items, delay }) => {
             value={query}
             onChange={handleInputChange}
             onFocus={() => setInputFocused(true)}
-            onBlur={inputBlur}
+            onBlur={handleBlur}
             data-cy="search-input"
           />
         </div>
