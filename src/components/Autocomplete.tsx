@@ -42,10 +42,12 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, selectedUser }) => {
     }
   }, [titleField.current?.value, selectedUser, query, onSelected]);
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
-    debounce(setAppliedQuery, 300)(e.target.value);
-  }, []);
+    applyQuery(e.target.value);
+  };
 
   // Filtering users
   const filteredUsers = useMemo(() => {

@@ -10,6 +10,7 @@ iframe {
     cursor: pointer;
   }
 }
+
 .dropdown-menu {
   width: 100%;
 }
@@ -55,7 +56,7 @@ iframe {
     &.active {
       outline: none;
       border-color: #485fc7;
-      box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
+      box-shadow: 0 0 0 0.13em rgba(72, 95, 199, 0.25);
     }
   }
 }
