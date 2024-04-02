@@ -1,3 +1,61 @@
 iframe {
   display: none;
 }
+
+.dropdown-content {
+  max-height: 13em;
+  overflow: auto;
+
+  p {
+    cursor: pointer;
+  }
+}
+.dropdown-menu {
+  width: 100%;
+}
+
+.dropdown-trigger {
+  position: relative;
+  width: 100%;
+
+  .options {
+    width: 40px;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    right: 10px;
+    top: 50%;
+    gap: 10px;
+    transform: translateY(-50%);
+
+    .icon {
+      cursor: pointer;
+      transition: 0.1s ease-in-out;
+
+      &.arrow {
+        margin-left: auto;
+
+        &.transform {
+          transform: rotate(180deg);
+        }
+      }
+
+      &.remove {
+        i {
+          color: rgb(158, 0, 0);
+        }
+      }
+    }
+  }
+
+  .input {
+    height: 56px;
+    z-index: 0;
+
+    &.active {
+      outline: none;
+      border-color: #485fc7;
+      box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
+    }
+  }
+}
