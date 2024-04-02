@@ -25,7 +25,9 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, selectedUser }) => {
   const setUser = (user: Person) => {
     onSelected(user);
     setQuery(user.name);
-    setIsOpened(false);
+    setTimeout(() => {
+      setIsOpened(false);
+    }, 100);
   };
 
   useEffect(() => {
