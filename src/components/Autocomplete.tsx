@@ -22,12 +22,17 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, selectedUser }) => {
   const [query, setQuery] = useState('');
 
   const titleField = useRef<HTMLInputElement>(null);
+
+  const hideList = () => {
+    setTimeout(() => {
+      setIsOpened(false);
+    }, 1000);
+  };
+
   const setUser = (user: Person) => {
     onSelected(user);
     setQuery(user.name);
-    setTimeout(() => {
-      setIsOpened(false);
-    }, 100);
+    hideList();
   };
 
   useEffect(() => {
@@ -62,14 +67,14 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, selectedUser }) => {
   const handleRemove = () => {
     setQuery('');
     setAppliedQuery('');
-    setIsOpened(false);
+    hideList();
     onSelected(null);
   };
 
   //Open List on the click arrow and set Focus for input
   const handleOpen = () => {
     if (isOpened) {
-      setIsOpened(false);
+      hideList();
     } else {
       if (titleField.current) {
         titleField.current.focus();
@@ -88,11 +93,9 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, selectedUser }) => {
 
   //Close List on the blur input
   const handleBlur = () => {
-    setTimeout(() => {
-      if (isOpened) {
-        setIsOpened(false);
-      }
-    }, 100);
+    if (isOpened) {
+      hideList();
+    }
   };
 
   return (
