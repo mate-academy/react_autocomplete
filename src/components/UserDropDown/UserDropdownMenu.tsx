@@ -7,7 +7,7 @@ type Props = {
   handlePasteItem: (item: Person) => void;
 };
 
-export const UserDropdownMenu = React.memo(
+export const UserDropDownMenu = React.memo(
   ({ filteredItems, handlePasteItem }: Props) => {
     return (
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">

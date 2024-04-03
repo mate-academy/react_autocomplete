@@ -1,7 +1,7 @@
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { Person } from '../../types/Person';
 import debounce from 'lodash.debounce';
-import { UserDropdownMenu } from './UserDropdownMenu';
+import { UserDropDownMenu } from './UserDropDownMenu';
 
 type Props = {
   items: Person[];
@@ -60,7 +60,7 @@ export const UserDropDown = ({ items, onSelected, delay }: Props) => {
         </div>
 
         {isOpen && filteredItems.length > 0 && (
-          <UserDropdownMenu
+          <UserDropDownMenu
             filteredItems={filteredItems}
             handlePasteItem={handlePasteItem}
           />
