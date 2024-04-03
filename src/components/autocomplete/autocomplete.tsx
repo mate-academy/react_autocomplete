@@ -5,9 +5,13 @@ import { Person } from '../../types/Person';
 
 interface AutoCompleteProps {
   onSelected: (person: Person | null) => void;
+  delay?: number;
 }
 
-export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
+export const AutoComplete: React.FC<AutoCompleteProps> = ({
+  onSelected,
+  delay = 300,
+}) => {
   const [inputValue, setInputValue] = useState('');
   const [showAllPeople, setShowAllPeople] = useState(false);
   const dropdownRef = useRef(null);
@@ -16,11 +20,13 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({ onSelected }) => {
     setShowAllPeople(true);
   }, []);
 
-  const debouncedApplyQuery = debounce(applyQuery, 300);
+  const debouncedApplyQuery = useMemo(() => {
+    return debounce(applyQuery, delay);
+  }, [applyQuery, delay]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    debouncedApplyQuery();
     setInputValue(e.target.value.trim());
+    debouncedApplyQuery();
     setShowAllPeople(false);
     onSelected(null);
   };
