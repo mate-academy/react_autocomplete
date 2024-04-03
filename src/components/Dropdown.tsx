@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useCallback, ChangeEvent } from 'react';
-// import { peopleFromServer } from '../data/people';
 import { Person } from '../types/Person';
 import cn from 'classnames';
 import debounce from 'lodash.debounce';
@@ -7,7 +6,7 @@ import debounce from 'lodash.debounce';
 type Props = {
   onSelected: (person: Person | null) => void;
   people: Person[];
-  delay: 300;
+  delay: number;
 };
 
 export const Dropdown: React.FC<Props> = ({ onSelected, people, delay }) => {
