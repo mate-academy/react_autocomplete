@@ -1,4 +1,3 @@
-// import React from "react"
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { Person } from '../../types/Person';
 import debounce from 'lodash.debounce';
