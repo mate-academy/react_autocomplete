@@ -38,6 +38,9 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
     setInputValue(partOfName);
 
     window.clearTimeout(timerId.current);
+
+    setVisibleListOfPeople([]);
+
     timerId.current = window.setTimeout(() => {
       if (partOfName === inputValue) {
         return;
