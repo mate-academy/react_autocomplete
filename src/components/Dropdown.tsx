@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, ChangeEvent } from 'react';
 import { Person } from '../types/Person';
 import cn from 'classnames';
 import debounce from 'lodash.debounce';
+import { PersonList } from './PersonList';
 
 type Props = {
   onSelected: (person: Person | null) => void;
@@ -39,6 +40,10 @@ export const Dropdown: React.FC<Props> = ({ onSelected, people, delay }) => {
     }, 300);
   };
 
+  const focusInput = () => {
+    setInputFocused(true);
+  };
+
   const filteredPeople = useMemo(() => {
     return people.filter(person =>
       person.name.trim().toLowerCase().includes(appliedQuery.toLowerCase()),
@@ -57,7 +62,7 @@ export const Dropdown: React.FC<Props> = ({ onSelected, people, delay }) => {
             className="input"
             value={query}
             onChange={handleInputChange}
-            onFocus={() => setInputFocused(true)}
+            onFocus={focusInput}
             onBlur={handleBlur}
             data-cy="search-input"
           />
@@ -65,25 +70,10 @@ export const Dropdown: React.FC<Props> = ({ onSelected, people, delay }) => {
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           {!isNotFound && (
-            <div className="dropdown-content">
-              {filteredPeople.map(person => (
-                <div
-                  className="dropdown-item"
-                  data-cy="suggestion-item"
-                  key={person.slug}
-                  onClick={() => handleSuggestionClick(person)}
-                >
-                  <p
-                    className={cn({
-                      'has-text-link': person.sex === 'm',
-                      'has-text-danger': person.sex === 'f',
-                    })}
-                  >
-                    {person.name}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <PersonList
+              handleSuggestionClick={handleSuggestionClick}
+              people={filteredPeople}
+            />
           )}
         </div>
       </div>

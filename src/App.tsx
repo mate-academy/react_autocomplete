@@ -12,6 +12,10 @@ export const App: React.FC = () => {
 
   const { name, born, died } = selectedUser || {};
 
+  const changeUser = (user: Person | null) => {
+    setSelectedUser(user);
+  };
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
@@ -20,7 +24,7 @@ export const App: React.FC = () => {
         </h1>
 
         <Dropdown
-          onSelected={setSelectedUser}
+          onSelected={changeUser}
           people={peopleFromServer}
           delay={DEFAULT_DELAY}
         />
