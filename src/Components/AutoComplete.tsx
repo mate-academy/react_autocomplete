@@ -4,7 +4,7 @@ import { Person } from '../types/Person';
 interface Props {
   delay: number;
   peopleFromServer: Person[];
-  setSelectedPerson: (person: Person | null) => void; // Corrected prop name and type
+  setSelectedPerson: (person: Person | null) => void;
 }
 
 export const AutoComplete: React.FC<Props> = ({
@@ -103,7 +103,7 @@ export const AutoComplete: React.FC<Props> = ({
                 {suggestPeople.map(person => (
                   <div
                     data-cy="suggestion-item"
-                    className="item"
+                    className="dropdown-item"
                     key={person.name}
                     onMouseDown={() => handleSelectPerson(person.name)}
                   >
