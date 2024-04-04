@@ -33,6 +33,16 @@ export const AutoComplete: React.FC<Props> = ({
 
   const inputWithDelay = useCallback(
     debounce((inputValue: string) => {
+      const tmp = suggestPeople.find(
+        person => person.name.toLowerCase() === inputValue.toLowerCase(),
+      );
+
+      if (tmp === undefined) {
+        setSelectedPerson(null);
+      } else {
+        setSelectedPerson(tmp);
+      }
+
       const matchedPeople = peopleFromServer.filter(person =>
         person.name.toLowerCase().includes(inputValue.toLowerCase()),
       );

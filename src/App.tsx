@@ -10,7 +10,11 @@ export const App: React.FC = () => {
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        {!selectedPerson && <h1>No selected person</h1>}
+        {!selectedPerson && (
+          <h1 className="title" data-cy="title">
+            No selected person
+          </h1>
+        )}
 
         {selectedPerson && (
           <h1 className="title" data-cy="title">
