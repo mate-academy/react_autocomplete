@@ -18,7 +18,7 @@ export const App: React.FC = () => {
 
   const filterUsers = useMemo(() => {
     const filteredUsers = peopleFromServer.filter(user =>
-      user.name.toUpperCase().includes(appliedQuery.toUpperCase())
+      user.name.toUpperCase().includes(appliedQuery.toUpperCase()),
     );
 
     setHasError(filteredUsers.length === 0);
@@ -48,8 +48,8 @@ export const App: React.FC = () => {
   };
 
   const title = selectedPerson
-  ? `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`
-  : 'No selected person';
+    ? `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`
+    : 'No selected person';
 
   return (
     <div className="container">
