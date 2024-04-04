@@ -101,14 +101,14 @@ export const AutoComplete: React.FC<Props> = ({
             >
               <div className="dropdown-content">
                 {suggestPeople.map(person => (
-                  <div
+                  <a
                     data-cy="suggestion-item"
                     className="dropdown-item"
                     key={person.name}
                     onMouseDown={() => handleSelectPerson(person.name)}
                   >
                     {person.name}
-                  </div>
+                  </a>
                 ))}
               </div>
             </div>
