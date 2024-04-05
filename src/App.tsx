@@ -45,7 +45,7 @@ export const App: React.FC = () => {
   const handleUserSelect = (user: Person) => {
     setSelectedPerson(user);
     setQuery(user.name);
-    setAppliedQuery(user.name);
+    setAppliedQuery(user.name); // alway add deley 300
     setIsDropdownActive(false);
   };
 
