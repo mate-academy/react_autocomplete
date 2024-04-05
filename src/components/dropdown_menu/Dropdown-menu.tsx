@@ -1,18 +1,23 @@
 import { Person } from '../../types/Person';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 type Props = {
   filterPeople: Person[];
   query: string;
   handleQueryChange: React.ChangeEventHandler<HTMLInputElement>;
   delay?: number;
+  debounce: (
+    callback: (...args: React.ChangeEvent<HTMLInputElement>[]) => void,
+    delay: number,
+  ) => () => void;
 };
 
 export const Dropdown: React.FC<Props> = ({
   filterPeople,
   query,
   handleQueryChange,
-  delay = 300,
+  debounce,
+  //delay = 300,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -24,22 +29,7 @@ export const Dropdown: React.FC<Props> = ({
     setIsOpen(false);
   };
 
-  const debounce = useCallback(
-    (callback: (...args: React.ChangeEvent<HTMLInputElement>[]) => void) => {
-      let timerId = 0;
-
-      return (...args: React.ChangeEvent<HTMLInputElement>[]) => {
-        window.clearTimeout(timerId);
-
-        timerId = window.setTimeout(() => {
-          callback(...args);
-        }, delay);
-      };
-    },
-    [delay],
-  );
-
-  const handleDebounce = debounce(handleQueryChange);
+  const handleDebounce = debounce(handleQueryChange, 1000);
 
   return (
     <div className="dropdown is-active">

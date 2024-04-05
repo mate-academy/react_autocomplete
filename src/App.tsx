@@ -1,30 +1,42 @@
-//import React, { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { useState, useMemo } from 'react';
 import { Dropdown } from './components/dropdown_menu/Dropdown-menu';
-//import { Dropdown } from './components/dropdown_menu/Dropdown-menu';
 
 export const App: React.FC = () => {
   const { name, born, died } = peopleFromServer[0];
 
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  //const [appliedQuery, setAppliedQuery] = useState('');
-
-  //const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
-
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAppliedQuery(event.target.value);
-    setQuery(event.target.value);
-    //applyQuery(event.target.value);
-  };
 
   const filterPeople = useMemo(() => {
     return peopleFromServer.filter(person =>
       person.name.toLowerCase().includes(appliedQuery),
     );
   }, [appliedQuery]);
+
+  const debounce = (
+    callback: (...args: React.ChangeEvent<HTMLInputElement>[]) => void,
+    delay = 300,
+  ) => {
+    let timerId = 0;
+
+    return (...args: React.ChangeEvent<HTMLInputElement>[]) => {
+      window.clearTimeout(timerId);
+
+      timerId = window.setTimeout(() => {
+        callback(...args);
+      }, delay);
+    };
+  };
+
+  const applyQuery = debounce(setAppliedQuery, 1000);
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    applyQuery(event.target.value);
+    setQuery(event.target.value);
+  };
 
   return (
     <div className="container">
@@ -33,6 +45,7 @@ export const App: React.FC = () => {
           {`${name} (${born} - ${died})`}
         </h1>
         <Dropdown
+          debounce={debounce}
           filterPeople={filterPeople}
           query={query}
           handleQueryChange={handleQueryChange}
