@@ -8,7 +8,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   return (
-    <div className="container">
+    <div className="container center">
       <main className="section is-flex is-flex-direction-column">
         {!selectedPerson && (
           <h1 className="title" data-cy="title">
