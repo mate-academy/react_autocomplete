@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import debounce from 'lodash.debounce';
-import { Person } from '../types/Person';
+import { Person } from '../../types/Person';
+import { PersonList } from '../PersonList/PersonList';
 
 type Props = {
   people: Person[];
-  onPersonSelect?: (person: Person | null) => void;
+  onPersonSelect: (person: Person | null) => void;
   selectedPerson?: Person | null;
-  onQuery?: (query: string) => void;
+  onQuery: (query: string) => void;
   wait?: number;
 };
 
@@ -14,7 +15,7 @@ const onQueryDefault = () => {};
 
 export const Autocomplete: React.FC<Props> = ({
   people,
-  onPersonSelect = () => {},
+  onPersonSelect = () => null,
   selectedPerson = null,
   onQuery = onQueryDefault,
   wait = 300,
@@ -22,6 +23,8 @@ export const Autocomplete: React.FC<Props> = ({
   const [partOfName, setPartOfName] = useState(selectedPerson?.name || '');
   const [isListShown, setIsListShown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const showDropDownMenu = isListShown && people.length && !selectedPerson;
 
   const handleQuery = useMemo(
     () =>
@@ -35,27 +38,26 @@ export const Autocomplete: React.FC<Props> = ({
     [onQuery, wait],
   );
 
-  useEffect(() => {
-    handleQuery(partOfName);
-  }, [handleQuery, partOfName]);
+  const listener = ({ target }: MouseEvent) => {
+    if (
+      !(target instanceof HTMLElement) ||
+      !dropdownRef.current ||
+      dropdownRef.current.contains(target)
+    ) {
+      return;
+    }
 
-  useEffect(() => {
-    const listener = ({ target }: MouseEvent) => {
-      if (
-        !(target instanceof HTMLElement) ||
-        !dropdownRef.current ||
-        dropdownRef.current.contains(target)
-      ) {
-        return;
-      }
+    setIsListShown(false);
+  };
 
-      setIsListShown(false);
-    };
+  const handleFocus = () => {
+    setIsListShown(true);
+  };
 
-    document.addEventListener('click', listener);
-
-    return () => document.removeEventListener('click', listener);
-  }, [isListShown]);
+  const handleSuggestionClick = (person: Person) => {
+    setIsListShown(true);
+    onPersonSelect(person);
+  };
 
   const handlerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newPartOfName = event.target.value;
@@ -65,12 +67,22 @@ export const Autocomplete: React.FC<Props> = ({
     onPersonSelect(null);
   };
 
+  useEffect(() => {
+    handleQuery(partOfName);
+  }, [handleQuery, partOfName]);
+
+  useEffect(() => {
+    document.addEventListener('click', listener);
+
+    return () => document.removeEventListener('click', listener);
+  }, [isListShown]);
+
   return (
     <>
       <div
         className="dropdown is-active"
         ref={dropdownRef}
-        onFocus={() => setIsListShown(true)}
+        onFocus={handleFocus}
       >
         <div className="dropdown-trigger">
           <input
@@ -83,25 +95,11 @@ export const Autocomplete: React.FC<Props> = ({
           />
         </div>
 
-        {Boolean(isListShown && people.length && !selectedPerson) && (
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              {people.map(person => (
-                <div
-                  key={person.slug}
-                  onClick={() => {
-                    setIsListShown(true);
-                    onPersonSelect(person);
-                  }}
-                  className="dropdown-item"
-                  data-cy="suggestion-item"
-                  tabIndex={1}
-                >
-                  <p className="has-text-link">{person.name}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+        {showDropDownMenu && (
+          <PersonList
+            handleSuggestionClick={handleSuggestionClick}
+            people={people}
+          />
         )}
       </div>
     </>

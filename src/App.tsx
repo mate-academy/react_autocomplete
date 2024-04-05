@@ -10,10 +10,15 @@ export const App: React.FC = () => {
   const [filteredPeople, setFilteredPeople] =
     useState<Person[]>(peopleFromServer);
 
+  const { name, born, died, slug } = selectedPerson || {};
+
   const filterPeople = useCallback((query: string) => {
-    const filteredPeopleFromServer = peopleFromServer.filter(currentPerson =>
-      currentPerson.name.toLowerCase().includes(query.toLowerCase()),
-    );
+    const filteredPeopleFromServer = peopleFromServer.filter(currentPerson => {
+      const personName = currentPerson.name.toLowerCase();
+      const queryLower = query.toLowerCase();
+
+      return personName.includes(queryLower);
+    });
 
     setFilteredPeople(filteredPeopleFromServer);
   }, []);
@@ -30,14 +35,15 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         {selectedPerson ? (
-          <h1 key={selectedPerson.slug} className="title" data-cy="title">
-            {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
+          <h1 key={slug} className="title" data-cy="title">
+            {`${name} (${born} - ${died})`}
           </h1>
         ) : (
           <h1 className="title" data-cy="title">
             No selected person
           </h1>
         )}
+
         <Autocomplete
           key={autocompleteKey}
           onPersonSelect={onPersonSelect}
@@ -48,8 +54,13 @@ export const App: React.FC = () => {
 
         {!filteredPeople.length && (
           <div
-            // eslint-disable-next-line max-len
-            className="notification is-danger is-light mt-3 is-align-self-flex-start"
+            className="
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
             role="alert"
             data-cy="no-suggestions-message"
           >
