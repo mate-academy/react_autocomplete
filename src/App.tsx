@@ -29,9 +29,10 @@ export const App: React.FC = () => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setSelectedPerson(null);
   };
 
-  const handleInputClick = () => {
+  const handleInputFocus = () => {
     setIsDropdownActive(true);
   };
 
@@ -44,11 +45,12 @@ export const App: React.FC = () => {
   const handleUserSelect = (user: Person) => {
     setSelectedPerson(user);
     setQuery(user.name);
+    setAppliedQuery(user.name); // alway set with deley 300ms
     setIsDropdownActive(false);
   };
 
   const title = selectedPerson
-    ? `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
     : 'No selected person';
 
   return (
@@ -66,7 +68,7 @@ export const App: React.FC = () => {
             <input
               value={query}
               onChange={handleChange}
-              onClick={handleInputClick}
+              onFocus={handleInputFocus}
               type="text"
               placeholder="Enter a part of the name"
               className="input"
