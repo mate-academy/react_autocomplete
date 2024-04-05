@@ -1,3 +1,5 @@
+import { peopleFromServer } from '../data/people';
+
 export interface Person {
   name: string;
   sex: 'm' | 'f';
@@ -6,4 +8,10 @@ export interface Person {
   fatherName: string | null;
   motherName: string | null;
   slug: string;
+}
+
+export function getPersonByName(name: string) {
+  return peopleFromServer.find(person =>
+    person.name.toLowerCase().includes(name.toLowerCase()),
+  );
 }
