@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { DropdownMenu } from './components/DropdownMenu';
@@ -14,7 +14,7 @@ export const App: React.FC = () => {
   const [isDropdownActive, setIsDropdownActive] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
+  const applyQuery = useMemo(() => debounce(setAppliedQuery, 300), []);
 
   const filterUsers = useMemo(() => {
     const filteredUsers = peopleFromServer.filter(user =>
