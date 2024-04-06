@@ -26,6 +26,7 @@ export const App: React.FC = () => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
       timeOutQuery(event.target.value);
+      setSelectedPerson(null);
     },
     [timeOutQuery],
   );
