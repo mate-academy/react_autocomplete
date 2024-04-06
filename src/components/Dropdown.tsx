@@ -18,7 +18,9 @@ export const Dropdown: React.FC<Props> = ({
   const [isActive, setIsActive] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), [
+    setAppliedQuery,
+  ]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -38,7 +40,7 @@ export const Dropdown: React.FC<Props> = ({
         .toLowerCase()
         .includes(appliedQuery.toLowerCase().trim());
     });
-  }, [appliedQuery]);
+  }, [appliedQuery, peopleFromServer]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
