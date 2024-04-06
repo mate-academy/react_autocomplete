@@ -27,7 +27,7 @@ export const App: React.FC = () => {
       setQuery(event.target.value);
       timeOutQuery(event.target.value);
     },
-    [],
+    [timeOutQuery],
   );
 
   useMemo(() => {
@@ -44,18 +44,22 @@ export const App: React.FC = () => {
     } else {
       setIsError(false);
     }
-  }, [timedQuery]);
-
-  // debounce();
+  }, [people.length, timedQuery]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
-          {born === null && died === null
-            ? `${name}`
-            : `${name} (${born} - ${died})`}
-        </h1>
+        <div>
+          <h1 className="title" data-cy="title">
+            {born === null && died === null
+              ? `${name}`
+              : `${name} (${born} - ${died})`}
+          </h1>
+
+          <button onClick={() => setSelectedPerson(null)} className="button">
+            Reset
+          </button>
+        </div>
 
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
