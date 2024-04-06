@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   const [timedQuery, setTimedQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [isBlockFocused, setIsBlockFocused] = useState(false);
 
   const timeOutQuery = useCallback(debounce(setTimedQuery, 1000), []);
 
@@ -50,17 +51,11 @@ export const App: React.FC = () => {
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <div>
-          <h1 className="title" data-cy="title">
-            {born === null && died === null
-              ? `${name}`
-              : `${name} (${born} - ${died})`}
-          </h1>
-
-          <button onClick={() => setSelectedPerson(null)} className="button">
-            Reset
-          </button>
-        </div>
+        <h1 className="title" data-cy="title">
+          {born === null && died === null
+            ? `${name}`
+            : `${name} (${born} - ${died})`}
+        </h1>
 
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
@@ -70,7 +65,9 @@ export const App: React.FC = () => {
               className="input"
               data-cy="search-input"
               onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
+              onBlur={() => {
+                setIsFocused(false);
+              }}
               onChange={onChangeHandle}
               value={query}
             />
@@ -78,19 +75,27 @@ export const App: React.FC = () => {
 
           <div
             className={classNames('dropdown-menu', {
-              'display-none': !isFocused || isError,
+              'display-none': (!isFocused || isError) && !isBlockFocused,
             })}
             role="menu"
             data-cy="suggestions-list"
           >
-            <div className="dropdown-content">
+            <div
+              className="dropdown-content"
+              onMouseEnter={() => setIsBlockFocused(true)}
+              onMouseLeave={() => setIsBlockFocused(false)}
+            >
               {people.map(person => (
                 <div
                   style={{ cursor: 'pointer' }}
                   key={`${person.name}-${Math.round(Math.random() * 100) / 100}`}
                   className="dropdown-item"
                   data-cy="suggestion-item"
-                  onMouseEnter={() => setSelectedPerson(person)}
+                  onClick={() => {
+                    setSelectedPerson(person);
+                    setQuery(person.name);
+                    setTimedQuery(person.name);
+                  }}
                 >
                   <p className="has-text-link">{person.name}</p>
                 </div>
