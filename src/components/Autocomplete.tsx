@@ -25,6 +25,7 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, delay = 300 }) => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     applyDebouncedQuery(event.target.value);
     setQuery(event.target.value);
+    onSelected(null);
     setListVisibility(false);
   };
 
