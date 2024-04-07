@@ -79,7 +79,9 @@ export const App: React.FC = () => {
 
           <div
             className={classNames('dropdown-menu', {
-              'display-none': (!isFocused || isError) && !isBlockFocused,
+              'display-none':
+                ((!isFocused || isError) && !isBlockFocused) ||
+                query !== timedQuery,
             })}
             role="menu"
             data-cy="suggestions-list"
@@ -111,7 +113,7 @@ export const App: React.FC = () => {
         <div
           className={classNames(
             'notification is-danger is-light mt-3 is-align-self-flex-start',
-            { 'display-none': !isError },
+            { 'display-none': !isError || query !== timedQuery },
           )}
           role="alert"
           data-cy="no-suggestions-message"
