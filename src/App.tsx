@@ -1,73 +1,84 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { Autocomplete } from './components/Autocomplete';
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+function debounse(callback: Function, delay: number) {
+  let timerId = 0;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (...args: any) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const delay = 300;
+  const clearPerson = {
+    name: '',
+    born: 0,
+    died: 0,
+  };
+  const [people] = useState(peopleFromServer);
+  const [searchPeople, setSearchPeople] = useState('');
+  const [apliedPeople, setApliedPeople] = useState('');
+  const [usePeople, setUsePeople] = useState(false);
+  const [activePerson, setActivePerson] = useState(clearPerson);
+  const { name, born, died } = activePerson;
+  const handleUsePeople = () => {
+    setUsePeople(true);
+  };
+
+  const handleClickUser = (person: Person) => {
+    setUsePeople(false);
+    setSearchPeople(person.name);
+    setApliedPeople(person.name);
+    setActivePerson({
+      name: person.name,
+      born: person.born,
+      died: person.died,
+    });
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const applyPeople = useCallback(debounse(setApliedPeople, delay), []);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchPeople(e.target.value);
+    applyPeople(e.target.value);
+
+    if (e.target.value !== name) {
+      setActivePerson(clearPerson);
+    }
+  };
+
+  const peopleFilter = useMemo(() => {
+    return people.filter(it =>
+      it.name.toLowerCase().includes(apliedPeople.toLowerCase()),
+    );
+  }, [people, apliedPeople]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {name ? `${name} (${born} - ${died})` : 'No selected person'}
         </h1>
 
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-            />
-          </div>
-
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        <Autocomplete
+          searchPeople={searchPeople}
+          handleSearchChange={handleSearchChange}
+          handleUsePeople={handleUsePeople}
+          usePeople={usePeople}
+          peopleFilter={peopleFilter}
+          handleClickUser={handleClickUser}
+        />
       </main>
     </div>
   );
