@@ -32,6 +32,12 @@ export const App: React.FC = () => {
     [timeOutQuery],
   );
 
+  const personSelectHandle = useCallback((person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+    setTimedQuery(person.name);
+  }, []);
+
   useMemo(() => {
     const sortedPeople = peopleFromServer.filter(person =>
       person.name.toLowerCase().includes(timedQuery.toLowerCase().trim()),
@@ -48,13 +54,13 @@ export const App: React.FC = () => {
     }
   }, [people.length, timedQuery]);
 
+  const isUser = !born && !died;
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {born === null && died === null
-            ? `${name}`
-            : `${name} (${born} - ${died})`}
+          {isUser ? `${name}` : `${name} (${born} - ${died})`}
         </h1>
 
         <div className="dropdown is-active">
@@ -65,9 +71,7 @@ export const App: React.FC = () => {
               className="input"
               data-cy="search-input"
               onFocus={() => setIsFocused(true)}
-              onBlur={() => {
-                setIsFocused(false);
-              }}
+              onBlur={() => setIsFocused(false)}
               onChange={onChangeHandle}
               value={query}
             />
@@ -88,14 +92,10 @@ export const App: React.FC = () => {
               {people.map(person => (
                 <div
                   style={{ cursor: 'pointer' }}
-                  key={`${person.name}-${Math.round(Math.random() * 100) / 100}`}
+                  key={person.name}
                   className="dropdown-item"
                   data-cy="suggestion-item"
-                  onClick={() => {
-                    setSelectedPerson(person);
-                    setQuery(person.name);
-                    setTimedQuery(person.name);
-                  }}
+                  onClick={() => personSelectHandle(person)}
                 >
                   <p className="has-text-link">{person.name}</p>
                 </div>
