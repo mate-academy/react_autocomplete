@@ -17,8 +17,8 @@ export const Autocomplete: React.FC<Props> = ({ delay = 300 }) => {
 
   useMemo(() => {
     if (isVisible) {
-      const filteredP = people.filter((p: Person) =>
-        p.name.toLowerCase().includes(inputValue.toLowerCase()),
+      const filteredP = people.filter((person: Person) =>
+        person.name.toLowerCase().includes(inputValue.toLowerCase()),
       );
 
       setFilteredPeople(filteredP);
@@ -28,17 +28,20 @@ export const Autocomplete: React.FC<Props> = ({ delay = 300 }) => {
   const handleInputFocus = () => {
     showTimeout();
   };
+
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = e => {
     setIsVisible(false);
     onSelect(null);
     setInputValue(e.target.value);
     showTimeout();
   };
+
   const handleClick = (person: Person) => () => {
     setInputValue(person.name);
     onSelect(person.slug);
     setIsVisible(false);
   };
+
   return (
     <>
       <div
@@ -59,14 +62,14 @@ export const Autocomplete: React.FC<Props> = ({ delay = 300 }) => {
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           <div className="dropdown-content">
-            {filteredPeople.map((p: Person) => (
+            {filteredPeople.map((person: Person) => (
               <div
                 className="dropdown-item"
                 data-cy="suggestion-item"
-                key={p.slug}
+                key={person.slug}
               >
-                <p className="has-text-link" onClick={handleClick(p)}>
-                  {p.name}
+                <p className="has-text-link" onClick={handleClick(person)}>
+                  {person.name}
                 </p>
               </div>
             ))}
