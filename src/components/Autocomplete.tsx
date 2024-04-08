@@ -86,7 +86,7 @@ export const Autocomplete: React.FC<Props> = ({ people, delay, onSelect }) => {
                 <p className="has-text-link">{person.name}</p>
               </div>
             ))}
-            {peopleFilter.length === 0 && (
+            {!peopleFilter.length && (
               <div className="dropdown-item" data-cy="suggestion-item">
                 <div
                   className="
