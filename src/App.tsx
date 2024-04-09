@@ -6,9 +6,9 @@ import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 
 export const App: React.FC = () => {
-  const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [appliedHuman, setAppliedHuman] = useState<Person | null>(null);
+  const [query, setQuery] = useState('');
   const [inputFocused, setInputFocused] = useState(false);
 
   const people = [...peopleFromServer];
@@ -26,7 +26,7 @@ export const App: React.FC = () => {
   };
 
   const handleHumanApplied = (person: Person) => {
-    setQuery('');
+    setQuery(person.name);
     applyQuery('');
     setAppliedHuman(person);
     setInputFocused(false);
@@ -34,6 +34,12 @@ export const App: React.FC = () => {
 
   const handleInputFocus = () => {
     setInputFocused(true);
+  };
+
+  const handleInputBlur = () => {
+    setTimeout(() => {
+      setInputFocused(false);
+    }, 200);
   };
 
   return (
@@ -55,51 +61,52 @@ export const App: React.FC = () => {
               data-cy="search-input"
               onChange={handleQueryChange}
               onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
             />
           </div>
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             {inputFocused && (
               <div className="dropdown-content">
-                {filteredPeople.map(human => {
-                  return (
-                    <div
-                      className="dropdown-item"
-                      data-cy="suggestion-item"
-                      key={human.slug}
-                      onClick={() => handleHumanApplied(human)}
-                    >
-                      <p
-                        className={classNames({
-                          'has-text-link': true,
-                          'has-text-danger': false,
-                        })}
+                {(appliedQuery && filteredPeople.length === 0) ? (
+                  <div
+                    className="
+                      notification
+                      is-danger
+                      is-light
+                      mt-3
+                      is-align-self-flex-start
+                    "
+                    role="alert"
+                    data-cy="no-suggestions-message"
+                  >
+                    <p className="has-text-danger">No matching suggestions</p>
+                  </div>
+                ) : (
+                  filteredPeople.map(human => {
+                    return (
+                      <div
+                        className="dropdown-item"
+                        data-cy="suggestion-item"
+                        key={human.slug}
+                        onClick={() => handleHumanApplied(human)}
                       >
-                        {human.name}
-                      </p>
-                    </div>
-                  );
-                })}
+                        <p
+                          className={classNames({
+                            'has-text-link': true,
+                            'has-text-danger': false,
+                          })}
+                        >
+                          {human.name}
+                        </p>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             )}
           </div>
         </div>
-
-        {(appliedQuery && filteredPeople.length === 0) && (
-          <div
-            className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-            role="alert"
-            data-cy="no-suggestions-message"
-          >
-            <p className="has-text-danger">No matching suggestions</p>
-          </div>
-        )}
       </main>
     </div>
   );
