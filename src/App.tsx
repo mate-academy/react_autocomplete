@@ -1,9 +1,11 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Person } from './types/Person';
-import './App.scss';
-import { peopleFromServer } from './data/people';
-import classNames from 'classnames';
 import debounce from 'lodash.debounce';
+import './App.scss';
+
+import { peopleFromServer } from './data/people';
+import { Message } from './components/Message';
+import { PeopleList } from './components/PeopleList';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -11,13 +13,19 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [inputFocused, setInputFocused] = useState(false);
 
-  const people = [...peopleFromServer];
+  const title = appliedHuman
+    ? `${appliedHuman.name} (${appliedHuman.born} - ${appliedHuman.died})`
+    : 'No selected person';
 
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
 
   const filteredPeople = useMemo(() => {
+    const people = [...peopleFromServer];
+
     return people.filter(human => human.name.includes(appliedQuery.trim()));
-  }, [people, appliedQuery]);
+  }, [appliedQuery]);
+
+  const haveMatching = appliedQuery && filteredPeople.length === 0;
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -46,9 +54,7 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {appliedHuman
-            ? `${appliedHuman.name} (${appliedHuman.born} - ${appliedHuman.died})`
-            : 'No selected person'}
+          {title}
         </h1>
 
         <div className="dropdown is-active">
@@ -65,47 +71,29 @@ export const App: React.FC = () => {
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            {inputFocused && (
+          {inputFocused && (
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
               <div className="dropdown-content">
-                {(appliedQuery && filteredPeople.length === 0) ? (
-                  <div
-                    className="
-                      notification
-                      is-danger
-                      is-light
-                      mt-3
-                      is-align-self-flex-start
-                    "
-                    role="alert"
-                    data-cy="no-suggestions-message"
-                  >
-                    <p className="has-text-danger">No matching suggestions</p>
-                  </div>
+                {haveMatching ? (
+                  <Message />
                 ) : (
                   filteredPeople.map(human => {
                     return (
-                      <div
-                        className="dropdown-item"
-                        data-cy="suggestion-item"
+                      <PeopleList
+                        human={human}
+                        humanApplied={handleHumanApplied}
                         key={human.slug}
-                        onClick={() => handleHumanApplied(human)}
-                      >
-                        <p
-                          className={classNames({
-                            'has-text-link': true,
-                            'has-text-danger': false,
-                          })}
-                        >
-                          {human.name}
-                        </p>
-                      </div>
+                      />
                     );
                   })
                 )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
