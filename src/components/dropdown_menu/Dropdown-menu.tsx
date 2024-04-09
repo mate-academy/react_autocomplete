@@ -68,14 +68,14 @@ export const Dropdown: React.FC<Props> = ({ onSelected, selectedPerson }) => {
         )}
       </div>
 
-      {isOpen && (
+      {filterPeople.length && isOpen && (
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           <div className="dropdown-content">
             {filterPeople.map(person => (
               <div
                 className="dropdown-item"
                 key={person.name}
-                data-cy="suggestions-item"
+                data-cy="suggestion-item"
                 role="button"
                 tabIndex={0}
                 onMouseDown={() => onSelected(person)}
