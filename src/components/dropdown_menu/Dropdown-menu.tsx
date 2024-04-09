@@ -68,7 +68,7 @@ export const Dropdown: React.FC<Props> = ({ onSelected, selectedPerson }) => {
         )}
       </div>
 
-      {filterPeople.length && isOpen && (
+      {filterPeople.length > 0 && isOpen && (
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           <div className="dropdown-content">
             {filterPeople.map(person => (
