@@ -74,7 +74,7 @@ export const Dropdown: React.FC<Props> = ({ onSelected, selectedPerson }) => {
             {filterPeople.map(person => (
               <div
                 className="dropdown-item"
-                key={person.born}
+                key={person.name}
                 data-cy="suggestions-item"
                 role="button"
                 tabIndex={0}
