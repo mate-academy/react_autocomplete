@@ -22,6 +22,7 @@ export const App: React.FC = () => {
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setAppliedHuman(null);
   };
 
   const handleHumanApplied = (person: Person) => {
@@ -34,10 +35,6 @@ export const App: React.FC = () => {
   const handleInputFocus = () => {
     setInputFocused(true);
   };
-
-  // const handleInputBlur = () => {
-  //   setInputFocused(false);
-  // };
 
   return (
     <div className="container">
@@ -58,7 +55,6 @@ export const App: React.FC = () => {
               data-cy="search-input"
               onChange={handleQueryChange}
               onFocus={handleInputFocus}
-              // onBlur={handleInputBlur}
             />
           </div>
 
@@ -89,7 +85,7 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {(!inputFocused || filteredPeople.length === 0) && (
+        {(appliedQuery && filteredPeople.length === 0) && (
           <div
             className="
             notification
