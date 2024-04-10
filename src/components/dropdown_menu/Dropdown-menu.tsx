@@ -5,20 +5,29 @@ import { peopleFromServer } from '../../data/people';
 type Props = {
   onSelected: (person: Person | null) => void;
   selectedPerson: Person | null;
+  delay: number;
 };
 
-export const Dropdown: React.FC<Props> = ({ onSelected, selectedPerson }) => {
+export const Dropdown: React.FC<Props> = ({
+  onSelected,
+  selectedPerson,
+  delay,
+}) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
   const filterPeople = useMemo(() => {
+    if (!appliedQuery) {
+      return peopleFromServer;
+    }
+
     return peopleFromServer.filter(person =>
       person.name.toLowerCase().includes(appliedQuery.toLowerCase().trim()),
     );
   }, [appliedQuery]);
 
-  const debounce = (callback: (args: string) => void, delay = 300) => {
+  const debounce = (callback: (args: string) => void) => {
     let timerId = 0;
 
     return (args: string) => {
@@ -30,12 +39,19 @@ export const Dropdown: React.FC<Props> = ({ onSelected, selectedPerson }) => {
     };
   };
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
+  const applyDebounceQuery = useCallback(
+    debounce((value: string) => {
+      setAppliedQuery(value);
+      setIsOpen(true);
+    }),
+    [debounce],
+  );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    applyQuery(event.target.value);
+    applyDebounceQuery(event.target.value);
     setQuery(event.target.value);
     onSelected(null);
+    setIsOpen(false);
   };
 
   return (

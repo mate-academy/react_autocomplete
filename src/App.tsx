@@ -17,6 +17,7 @@ export const App: React.FC = () => {
           {title}
         </h1>
         <Dropdown
+          delay={300}
           onSelected={setSelectedPerson}
           selectedPerson={selectedPerson}
         />
