@@ -11,7 +11,11 @@ type Props = {
   onInputChanged: () => void;
 };
 
-export const Dropdown: React.FC<Props> = ({ delay = 300, onSelected, onInputChanged }) => {
+export const Dropdown: React.FC<Props> = ({
+  delay = 300,
+  onSelected,
+  onInputChanged,
+}) => {
   const inputEl: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
   const [query, setQuery] = useState('');
   const [isActive, setIsActive] = useState(false);
@@ -41,13 +45,14 @@ export const Dropdown: React.FC<Props> = ({ delay = 300, onSelected, onInputChan
 
   const applyQuery = useCallback((input: HTMLInputElement) => {
     setQuery((input?.value ?? '').toLowerCase());
+    setIsActive(true);
   }, []);
 
   const debounced = debounce(applyQuery, delay);
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     debounced(event.target);
-    setIsActive(true);
+    setIsActive(false);
     onInputChanged();
   };
 
@@ -92,7 +97,7 @@ export const Dropdown: React.FC<Props> = ({ delay = 300, onSelected, onInputChan
         ) : null}
       </div>
 
-      {!people.length && query.trim() !== '' && isActive ? (
+      {!people.length && query.trim() && isActive ? (
         <div
           className="
             notification

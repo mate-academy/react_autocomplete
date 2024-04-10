@@ -27,7 +27,10 @@ export const App: React.FC = () => {
           {chosenPerson()}
         </h1>
 
-        <Dropdown onSelected={onPersonSelected} onInputChanged={handleInputChanged}/>
+        <Dropdown
+          onSelected={onPersonSelected}
+          onInputChanged={handleInputChanged}
+        />
       </main>
     </div>
   );
