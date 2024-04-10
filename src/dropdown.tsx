@@ -8,14 +8,19 @@ import './App.scss';
 type Props = {
   delay?: number;
   onSelected: (person?: Person) => void;
+  onInputChanged: () => void;
 };
 
-export const Dropdown: React.FC<Props> = ({ delay = 300, onSelected }) => {
+export const Dropdown: React.FC<Props> = ({ delay = 300, onSelected, onInputChanged }) => {
   const inputEl: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
   const [query, setQuery] = useState('');
   const [isActive, setIsActive] = useState(false);
 
   const people = useMemo(() => {
+    if (!query.trim()) {
+      return peopleFromServer;
+    }
+
     return peopleFromServer.filter(person =>
       person.name.toLowerCase().includes(query),
     );
@@ -42,7 +47,8 @@ export const Dropdown: React.FC<Props> = ({ delay = 300, onSelected }) => {
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     debounced(event.target);
-    onSelected();
+    setIsActive(true);
+    onInputChanged();
   };
 
   return (
@@ -86,7 +92,7 @@ export const Dropdown: React.FC<Props> = ({ delay = 300, onSelected }) => {
         ) : null}
       </div>
 
-      {!people.length ? (
+      {!people.length && query.trim() !== '' && isActive ? (
         <div
           className="
             notification

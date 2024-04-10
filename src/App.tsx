@@ -16,6 +16,10 @@ export const App: React.FC = () => {
       : 'No selected person';
   };
 
+  const handleInputChanged = () => {
+    setSelectedPerson(undefined);
+  };
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
@@ -23,7 +27,7 @@ export const App: React.FC = () => {
           {chosenPerson()}
         </h1>
 
-        <Dropdown onSelected={onPersonSelected} />
+        <Dropdown onSelected={onPersonSelected} onInputChanged={handleInputChanged}/>
       </main>
     </div>
   );
