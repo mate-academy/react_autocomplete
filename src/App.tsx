@@ -32,7 +32,7 @@ export class App extends React.Component {
   handlerOnBlur = () => {
     setTimeout(() => {
       this.setState({ isDropedDown: false });
-    }, 300);
+    }, 100);
   };
 
   handlerOnFocus = () => {
@@ -42,7 +42,7 @@ export class App extends React.Component {
   handlerOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
 
-    this.setState({ query: value.trim() });
+    this.setState({ query: value.trimStart() });
 
     if (value.length < this.state.query.length) {
       this.setState({ selectedPerson: null });
