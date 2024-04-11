@@ -2,6 +2,7 @@ import React from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { PersonList } from './data/components/PersonList';
 
 type State = {
   query: string;
@@ -28,23 +29,35 @@ export class App extends React.Component {
     );
   };
 
-  handlerBlur = () => {
+  handlerOnBlur = () => {
     setTimeout(() => {
       this.setState({ isDropedDown: false });
     }, 300);
   };
 
+  handlerOnFocus = () => {
+    this.setState({ isDropedDown: true });
+  };
+
   handlerOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
 
-    this.setState({ query: value });
+    this.setState({ query: value.trim() });
 
-    if (!value) {
+    if (value.length < this.state.query.length) {
       this.setState({ selectedPerson: null });
     }
   };
 
-  handlerClear = () => {
+  handlerOnClick = (person: Person) => {
+    this.setState({
+      query: person.name,
+      isDropedDown: false,
+      selectedPerson: person,
+    });
+  };
+
+  handlerOnClear = () => {
     this.setState({
       selectedPerson: null,
       query: '',
@@ -54,19 +67,16 @@ export class App extends React.Component {
   render() {
     const { query, selectedPerson } = this.state;
     const { name, born, died } = selectedPerson || {};
+    const filteredPeople = this.getFilterPeople();
 
     return (
       <div className="container">
         <main className="section is-flex is-flex-direction-column">
-          {name ? (
-            <h1 className="title" data-cy="title">
-              {`${name} (${born} - ${died})`}
-            </h1>
-          ) : (
-            <h1 className="title" data-cy="title">
-              No selected person
-            </h1>
-          )}
+          <h1 className="title" data-cy="title">
+            {selectedPerson
+              ? `${name} (${born} - ${died})`
+              : 'No selected person'}
+          </h1>
 
           <div className="dropdown is-active">
             <div className="dropdown-trigger">
@@ -75,49 +85,26 @@ export class App extends React.Component {
                 placeholder="Enter a part of the name"
                 className="input"
                 data-cy="search-input"
-                onFocus={() => this.setState({ isDropedDown: true })}
-                onBlur={this.handlerBlur}
+                onFocus={this.handlerOnFocus}
+                onBlur={this.handlerOnBlur}
                 value={query}
                 onChange={this.handlerOnChange}
               />
             </div>
 
             <div className="control">
-              <button className="button is-info" onClick={this.handlerClear}>
+              <button className="button is-info" onClick={this.handlerOnClear}>
                 Clear
               </button>
             </div>
-
-            <div
-              className="dropdown-menu custom-dropdown-menu"
-              role="menu"
-              data-cy="suggestions-list"
-            >
-              {this.state.isDropedDown &&
-                this.getFilterPeople().map(person => (
-                  <div
-                    className="dropdown-content custom-dropdown-item"
-                    key={person.name}
-                    onClick={() => {
-                      this.setState({
-                        query: person.name,
-                        isDropedDown: false,
-                        selectedPerson: person,
-                      });
-                    }}
-                    style={{
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <div className="dropdown-item" data-cy="suggestion-item">
-                      <p className="has-text-link">{person.name}</p>
-                    </div>
-                  </div>
-                ))}
-            </div>
+            <PersonList
+              people={filteredPeople}
+              onPersonClick={this.handlerOnClick}
+              isDroped={this.state.isDropedDown}
+            />
           </div>
 
-          {this.getFilterPeople().length === 0 && (
+          {filteredPeople.length === 0 && (
             <div
               className="
               notification
@@ -132,14 +119,14 @@ export class App extends React.Component {
             </div>
           )}
 
-          {selectedPerson && this.getFilterPeople().length > 0 && (
+          {selectedPerson && (
             <div
               className="
-              notification
-              is-info
-              is-light
-              mt-3
-              is-align-self-flex-start"
+                notification
+                is-info
+                is-light
+                mt-3
+                is-align-self-flex-start"
               role="alert"
               data-cy="no-suggestions-message"
             >
