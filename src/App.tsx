@@ -119,7 +119,7 @@ export class App extends React.Component {
             </div>
           )}
 
-          {selectedPerson && (
+          {selectedPerson && filteredPeople.length > 0 && (
             <div
               className="
                 notification
