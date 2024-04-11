@@ -10,11 +10,10 @@ export const App: React.FC = () => {
     setSelectedPerson(person);
   };
 
-  const chosenPerson = () => {
-    return selectedPerson
+  const chosenPerson = selectedPerson
       ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
       : 'No selected person';
-  };
+
 
   const handleInputChanged = () => {
     setSelectedPerson(undefined);
@@ -24,7 +23,7 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {chosenPerson()}
+          {chosenPerson}
         </h1>
 
         <Dropdown
