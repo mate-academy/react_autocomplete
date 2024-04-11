@@ -118,6 +118,8 @@ describe('Page', () => {
         .contains(person1.name)
         .click();
 
+        cy.wait(150);
+
       page.searchInput()
         .clear();
 
@@ -129,6 +131,8 @@ describe('Page', () => {
       page.suggestionItems()
         .contains(person2.name)
         .click();
+
+        cy.wait(150)
 
       page.title()
         .should('contain', page.getPageTitle(person2));
