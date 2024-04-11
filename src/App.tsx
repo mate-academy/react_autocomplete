@@ -3,6 +3,7 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Autocomplete } from './components/Autocomplete';
 import { Person } from './types/Person';
+import { ShoppingCart } from './components/ShoppingCart';
 
 const delay = 300;
 
@@ -29,6 +30,7 @@ export const App: React.FC = () => {
           onPersonSelect={setSelectedPerson}
           delay={delay}
         />
+        <ShoppingCart name="Bonus Card" />
       </main>
     </div>
   );
