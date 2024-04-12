@@ -69,7 +69,7 @@ export const Dropdown: React.FC<Props> = ({
           {search === selectedPerson?.name && (
             <button
               className="delete is-small"
-              onClick={() => handleCancelValue()}
+              onClick={handleCancelValue}
             ></button>
           )}
         </div>
@@ -84,9 +84,10 @@ export const Dropdown: React.FC<Props> = ({
                 onMouseDown={() => handleSelectedPeople(person)}
               >
                 <p
-                  className={
-                    person.sex === 'm' ? 'has-text-link' : 'has-text-danger'
-                  }
+                  className={cn({
+                    'has-text-link': person.sex === 'm',
+                    'has-text-danger': person.sex === 'f',
+                  })}
                 >
                   {person.name}
                 </p>
@@ -95,7 +96,7 @@ export const Dropdown: React.FC<Props> = ({
           </div>
         </div>
       </div>
-      {shownPeople.length === 0 && (
+      {!shownPeople.length && (
         <div
           className="
               notification
