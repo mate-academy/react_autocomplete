@@ -1,3 +1,37 @@
 iframe {
   display: none;
 }
+
+.dropdown {
+  &-item:hover {
+    background-color: grey;
+    cursor: pointer;
+  }
+}
+
+.button {
+  padding: 0;
+}
+
+.input {
+  padding-right: 2rem;
+  display: flex;
+
+  &-wrapper {
+    position: relative;
+    width: 100%;
+    display: inline-block;
+  }
+
+  &:focus + .dropdown-menu {
+    display: block;
+  }
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
