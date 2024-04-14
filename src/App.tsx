@@ -8,8 +8,6 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const [person, setPerson] = useState<null | Person>(null);
 
-  // const { name, born, died } = person;
-
   const [errorMessage, setErrorMessage] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
 
@@ -22,8 +20,6 @@ export const App: React.FC = () => {
       setErrorMessage(true);
     }
   }, [filterPeople.length]);
-
-  // console.log(person);
 
   return (
     <div className="container">

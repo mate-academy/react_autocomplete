@@ -1,7 +1,6 @@
 import React, { Dispatch, useCallback, useState } from 'react';
 import debounce from 'lodash.debounce';
 
-// import { DropdownInfo } from './DropdownInfo';
 import { Person } from '../types/Person';
 import classNames from 'classnames';
 
@@ -19,7 +18,6 @@ export const DropdownList: React.FC<Props> = ({
   setPerson,
 }) => {
   const [isActive, setIsActive] = useState(false);
-  // const [inputElement, setInputElement] = useState();
   const [isHovered, setIsHovered] = useState(false);
 
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
@@ -53,15 +51,6 @@ export const DropdownList: React.FC<Props> = ({
             setIsActive(false);
           }}
         />
-        {/* <button
-          className="button"
-          aria-haspopup="true"
-          aria-controls="dropdown-menu"
-        >
-          <span className="icon is-small">
-            <i className="fas fa-angle-down" aria-hidden="false"></i>
-          </span>
-        </button> */}
       </div>
 
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
