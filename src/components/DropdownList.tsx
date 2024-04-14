@@ -1,7 +1,7 @@
 import React, { Dispatch, useCallback, useState } from 'react';
 import debounce from 'lodash.debounce';
 
-import { DropdownInfo } from './DropdownInfo';
+// import { DropdownInfo } from './DropdownInfo';
 import { Person } from '../types/Person';
 import classNames from 'classnames';
 
@@ -20,6 +20,7 @@ export const DropdownList: React.FC<Props> = ({
 }) => {
   const [isActive, setIsActive] = useState(false);
   // const [inputElement, setInputElement] = useState();
+  const [isHovered, setIsHovered] = useState(false);
 
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
 
@@ -27,6 +28,7 @@ export const DropdownList: React.FC<Props> = ({
     applyQuery(event?.target.value);
 
     setErrorMessage(false);
+    setPerson(null);
   };
 
   return (
@@ -65,11 +67,18 @@ export const DropdownList: React.FC<Props> = ({
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
         <div className="dropdown-content">
           {filterPeople.map(people => (
-            <DropdownInfo
-              people={people}
+            <div
+              className={classNames('dropdown-item', {
+                'has-background-info-light': isHovered,
+              })}
+              data-cy="suggestion-item"
+              onMouseDown={() => setPerson(people)}
               key={people.name}
-              setPerson={setPerson}
-            />
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              <p className="has-text-link">{people.name}</p>
+            </div>
           ))}
         </div>
       </div>
