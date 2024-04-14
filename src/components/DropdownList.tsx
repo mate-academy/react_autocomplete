@@ -9,7 +9,7 @@ interface Props {
   filterPeople: Person[];
   setErrorMessage: Dispatch<React.SetStateAction<boolean>>;
   setAppliedQuery: Dispatch<React.SetStateAction<string>>;
-  setPerson: React.Dispatch<React.SetStateAction<Person>>;
+  setPerson: React.Dispatch<React.SetStateAction<Person | null>>;
 }
 
 export const DropdownList: React.FC<Props> = ({
@@ -51,6 +51,15 @@ export const DropdownList: React.FC<Props> = ({
             setIsActive(false);
           }}
         />
+        {/* <button
+          className="button"
+          aria-haspopup="true"
+          aria-controls="dropdown-menu"
+        >
+          <span className="icon is-small">
+            <i className="fas fa-angle-down" aria-hidden="false"></i>
+          </span>
+        </button> */}
       </div>
 
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">

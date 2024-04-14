@@ -3,10 +3,12 @@ import React, { useEffect, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { DropdownList } from './components/DropdownList';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const [person, setPerson] = useState(peopleFromServer[0]);
-  const { name, born, died } = person;
+  const [person, setPerson] = useState<null | Person>(null);
+
+  // const { name, born, died } = person;
 
   const [errorMessage, setErrorMessage] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -21,13 +23,15 @@ export const App: React.FC = () => {
     }
   }, [filterPeople.length]);
 
-  console.log(person);
+  // console.log(person);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {!person
+            ? 'No selected person'
+            : `${person?.name} (${person?.born} - ${person?.died})`}
         </h1>
 
         <DropdownList
