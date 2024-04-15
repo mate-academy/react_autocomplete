@@ -19,7 +19,6 @@ export const DropdownList: React.FC<Props> = ({
 }) => {
   const [isActive, setIsActive] = useState(false);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
 
   const handleQweryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,7 +35,6 @@ export const DropdownList: React.FC<Props> = ({
       <div className="dropdown-trigger">
         <input
           type="text"
-          // ref={inputElement}
           placeholder="Enter a part of the name"
           className="input is-info"
           data-cy="search-input"
