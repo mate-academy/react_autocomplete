@@ -10,6 +10,7 @@ export const App: React.FC = () => {
 
   const [errorMessage, setErrorMessage] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [hideMenu, setHideMenu] = useState(true);
 
   const filterPeople = peopleFromServer.filter(people =>
     people.name.toLowerCase().includes(appliedQuery.toLowerCase()),
@@ -18,6 +19,10 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (filterPeople.length === 0) {
       setErrorMessage(true);
+      setHideMenu(false);
+    } else {
+      setErrorMessage(false);
+      setHideMenu(true);
     }
   }, [filterPeople.length]);
 
@@ -32,9 +37,9 @@ export const App: React.FC = () => {
 
         <DropdownList
           filterPeople={filterPeople}
-          setErrorMessage={setErrorMessage}
           setAppliedQuery={setAppliedQuery}
           setPerson={setPerson}
+          hideMenu={hideMenu}
         />
 
         {errorMessage && (
