@@ -38,7 +38,7 @@ export const DropdownList: React.FC<Props> = ({
           type="text"
           // ref={inputElement}
           placeholder="Enter a part of the name"
-          className="input"
+          className="input is-info"
           data-cy="search-input"
           onChange={handleQweryChange}
           onFocus={() => {

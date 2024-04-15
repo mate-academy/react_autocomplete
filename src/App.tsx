@@ -17,7 +17,7 @@ export const App: React.FC = () => {
   );
 
   useEffect(() => {
-    if (filterPeople.length === 0) {
+    if (!filterPeople.length) {
       setErrorMessage(true);
       setHideMenu(false);
     } else {
