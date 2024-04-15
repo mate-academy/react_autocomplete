@@ -12,7 +12,7 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
 
   const filterPeople = peopleFromServer.filter(people =>
-    people.name.includes(appliedQuery.toLowerCase()),
+    people.name.toLowerCase().includes(appliedQuery.toLowerCase()),
   );
 
   useEffect(() => {
