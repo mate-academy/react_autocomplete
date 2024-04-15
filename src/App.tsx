@@ -1,37 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.scss';
-import { peopleFromServer } from './data/people';
-import { Autocomplete } from './components/Autocomplete';
-import { Person } from './types/Person';
-import { ShoppingCart } from './components/ShoppingCart';
-
-const delay = 300;
+import { Main } from './components/Main';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { LangProvider } from './components/LangContext';
 
 export const App: React.FC = () => {
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-
   return (
-    <div className="container">
-      <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
-          {selectedPerson ? (
-            <h1 key={selectedPerson.slug} className="title" data-cy="title">
-              {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
-            </h1>
-          ) : (
-            <h1 className="title" data-cy="title">
-              No selected person
-            </h1>
-          )}
-        </h1>
-
-        <Autocomplete
-          people={peopleFromServer}
-          onPersonSelect={setSelectedPerson}
-          delay={delay}
-        />
-        <ShoppingCart name="Bonus Card" />
-      </main>
+    <div className="App section">
+      <LangProvider>
+        <Header />
+        <Main />
+        <Footer />
+      </LangProvider>
     </div>
   );
 };
