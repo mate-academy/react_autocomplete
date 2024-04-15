@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useMemo, useState } from 'react';
 import { Lang } from '../types/Lang';
 
 export const LangContext = React.createContext({
   lang: Lang.EN,
-  setLang: (lang: Lang) => {},
+  setLang: (_lang: Lang) => {},
 });
 
 type Props = {
