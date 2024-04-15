@@ -18,7 +18,6 @@ export const DropdownList: React.FC<Props> = ({
   hideMenu,
 }) => {
   const [isActive, setIsActive] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
