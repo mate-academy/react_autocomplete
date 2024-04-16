@@ -16,6 +16,10 @@ export const App: React.FC = () => {
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+
+    if (query.length === 0) {
+      setHighlightedPerson(undefined);
+    }
   };
 
   const filteredNames = useMemo(() => {
@@ -34,7 +38,7 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {highlightedPerson
+          {highlightedPerson && query.length !== 0
             ? `${name} (${born} - ${died})`
             : 'No selected person'
           }
