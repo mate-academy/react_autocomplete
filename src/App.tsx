@@ -1,14 +1,14 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import './App.scss';
-import { peopleFromServer } from './data/people';
 import debounce from 'lodash.debounce';
+import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import './App.scss';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [focusedQuery, setFocusedQuery] = useState(false);
-  const [highlatedPersons, setHighlatedPersons] = useState<Person[]>([]);
+  const [highlatedPerson, setHighlatedPerson] = useState<Person | null>(null);
 
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
 
@@ -24,16 +24,20 @@ export const App: React.FC = () => {
   }, [appliedQuery]);
 
   const handleClick = (person: Person) => {
+    setQuery(person.name);
     setFocusedQuery(true);
-    setHighlatedPersons((prev) => [...prev, person]);
-    // console.log(person);
+    setHighlatedPerson(person);
+    console.log(person);
   };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${query} `}
+          {highlatedPerson
+            ? `${highlatedPerson?.name} (${highlatedPerson?.born} - ${highlatedPerson?.died})`
+            : 'No selected person'
+          }
         </h1>
 
         <div className="dropdown is-active">
@@ -46,7 +50,7 @@ export const App: React.FC = () => {
               value={query}
               onChange={handleQueryChange}
               onFocus={() => setFocusedQuery(true)}
-              onBlur={() => setFocusedQuery(false)}
+              onBlur={() => setTimeout(() => setFocusedQuery(false), 300)}
             />
           </div>
 
@@ -58,9 +62,7 @@ export const App: React.FC = () => {
             >
               <div className="dropdown-content">
                 {filteredNames.map((person) => {
-                  const thatPerson = highlatedPersons.some((man) =>
-                    man.slug === person.slug
-                  );
+                  const thatPerson = highlatedPerson?.slug === person.slug;
 
                   return (
                     <div
