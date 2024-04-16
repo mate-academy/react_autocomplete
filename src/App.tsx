@@ -29,11 +29,15 @@ export const App: React.FC = () => {
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
-          {chosenPerson &&
-            `${chosenPerson.name} (${chosenPerson.born} -
-         ${chosenPerson.died})`}
-        </h1>
+        {!chosenPerson ? (
+          <h1 className="title" data-cy="title">
+            No selected person
+          </h1>
+        ) : (
+          <h1 className="title" data-cy="title">
+            {`${chosenPerson.name} (${chosenPerson.born} - ${chosenPerson.died})`}
+          </h1>
+        )}
 
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
@@ -48,29 +52,38 @@ export const App: React.FC = () => {
                 setPressedInput(true);
               }}
               onChange={handleInputChange}
+              onBlur={() => {
+                setPressedInput(false);
+              }}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              {pressedInput &&
-                filteredPeople.map(person => {
+          {pressedInput && (
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
+              <div className="dropdown-content">
+                {filteredPeople.map(person => {
                   return (
                     <div
                       style={{ cursor: 'pointer' }}
                       className="dropdown-item"
                       data-cy="suggestion-item"
                       key={person.name}
-                      onClick={() => {
+                      onMouseDown={() => {
                         setChosenPerson(person);
+                        setQuery(person.name);
                       }}
                     >
                       <p className="has-text-link-danger">{person.name}</p>
                     </div>
                   );
                 })}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {pressedInput && filteredPeople.length === 0 && (
