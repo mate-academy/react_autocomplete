@@ -3,13 +3,16 @@ import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import './App.scss';
+import classNames from 'classnames';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [focusedQuery, setFocusedQuery] = useState(false);
-  const [highlatedPerson, setHighlatedPerson] = useState<Person | null>(null);
-
+  const [isFocusedQuery, setIsFocusedQuery] = useState(false);
+  const [highlatedPerson, setHighlatedPerson] = useState<Person>(
+    peopleFromServer[0]
+  );
+  const { name, born, died } = highlatedPerson;
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,9 +28,8 @@ export const App: React.FC = () => {
 
   const handleClick = (person: Person) => {
     setQuery(person.name);
-    setFocusedQuery(true);
+    setIsFocusedQuery(true);
     setHighlatedPerson(person);
-    console.log(person);
   };
 
   return (
@@ -35,7 +37,7 @@ export const App: React.FC = () => {
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
           {highlatedPerson
-            ? `${highlatedPerson?.name} (${highlatedPerson?.born} - ${highlatedPerson?.died})`
+            ? `${name} (${born} - ${died})`
             : 'No selected person'
           }
         </h1>
@@ -49,36 +51,44 @@ export const App: React.FC = () => {
               data-cy="search-input"
               value={query}
               onChange={handleQueryChange}
-              onFocus={() => setFocusedQuery(true)}
-              onBlur={() => setTimeout(() => setFocusedQuery(false), 300)}
+              onFocus={() => setIsFocusedQuery(true)}
+              onBlur={() => setTimeout(() => setIsFocusedQuery(false), 300)}
             />
           </div>
 
-          {focusedQuery && (
-            <div
-              className="dropdown-menu"
-              role="menu"
-              data-cy="suggestions-list"
-            >
-              <div className="dropdown-content">
-                {filteredNames.map((person) => {
-                  const thatPerson = highlatedPerson?.slug === person.slug;
+          {(filteredNames.length !== 0) && (
+            isFocusedQuery && (
+              <div
+                className="dropdown-menu"
+                role="menu"
+                data-cy="suggestions-list"
+              >
+                <div className="dropdown-content">
+                  {filteredNames.map((person) => {
+                    const thatPerson = highlatedPerson?.slug === person.slug;
 
-                  return (
-                    <div
-                      key={person.slug}
-                      onClick={() => handleClick(person)}
-                      className={`dropdown-item is-clickable ${thatPerson && 'is-active'}`}
-                      data-cy="suggestion-item"
-                    >
-                      <p className={`has-text-${thatPerson ? 'danger' : 'link'}`}>
-                        {person.name}
-                      </p>
-                    </div>
-                  );
-                })}
+                    return (
+                      <div
+                        key={person.slug}
+                        onClick={() => handleClick(person)}
+                        className={classNames(
+                          'dropdown-item is-clickable',
+                          { 'is-active': thatPerson }
+                        )}
+                        data-cy="suggestion-item"
+                      >
+                        <p className={classNames(
+                          { 'has-text-danger': thatPerson },
+                          { 'has-text-link': !thatPerson },
+                        )}>
+                          {person.name}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )
           )}
         </div>
 
