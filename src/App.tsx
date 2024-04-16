@@ -9,10 +9,8 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isFocusedQuery, setIsFocusedQuery] = useState(false);
-  const [highlatedPerson, setHighlatedPerson] = useState<Person>(
-    peopleFromServer[0]
-  );
-  const { name, born, died } = highlatedPerson;
+  const [highlightedPerson, setHighlightedPerson] = useState<Person | null>();
+  const { name, born, died } = highlightedPerson || {};
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,14 +27,14 @@ export const App: React.FC = () => {
   const handleClick = (person: Person) => {
     setQuery(person.name);
     setIsFocusedQuery(true);
-    setHighlatedPerson(person);
+    setHighlightedPerson(person);
   };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {highlatedPerson
+          {highlightedPerson
             ? `${name} (${born} - ${died})`
             : 'No selected person'
           }
@@ -65,7 +63,7 @@ export const App: React.FC = () => {
               >
                 <div className="dropdown-content">
                   {filteredNames.map((person) => {
-                    const thatPerson = highlatedPerson?.slug === person.slug;
+                    const thatPerson = highlightedPerson?.slug === person.slug;
 
                     return (
                       <div
