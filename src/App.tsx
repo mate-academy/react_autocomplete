@@ -31,21 +31,18 @@ export const App: React.FC = () => {
 
   const handleItemClick = (people: Person) => {
     setItem(people);
+    setSearch(people.name);
     setIsActive(false);
   };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        {!item ? (
-          <h1 className="title" data-cy="title">
-            No selected person
-          </h1>
-        ) : (
-          <h1 className="title" data-cy="title">
-            {`${item?.name} (${item?.born} - ${item?.died})`}
-          </h1>
-        )}
+        <h1 className="title" data-cy="title">
+          {!item
+            ? 'No selected person'
+            : `${item?.name} (${item?.born} - ${item?.died})`}
+        </h1>
 
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
