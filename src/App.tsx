@@ -11,7 +11,13 @@ export const App: React.FC = () => {
   const [item, setItem] = useState<Person | null>(null);
 
   const handleFocus = () => {
-    setIsActive(!isActive);
+    setIsActive(true);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      setIsActive(false);
+    }, 100);
   };
 
   const handleSearchChange = debounce((query: string) => {
@@ -39,7 +45,7 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {!item
+          {item?.name !== search
             ? 'No selected person'
             : `${item?.name} (${item?.born} - ${item?.died})`}
         </h1>
@@ -54,10 +60,11 @@ export const App: React.FC = () => {
               value={search}
               onChange={handleInputChange}
               onFocus={handleFocus}
+              onBlur={handleBlur}
             />
           </div>
 
-          {isActive && filteredPeople.length !== 0 && (
+          {isActive && !!filteredPeople.length && (
             <div
               className="dropdown-menu"
               role="menu"
@@ -79,7 +86,7 @@ export const App: React.FC = () => {
           )}
         </div>
 
-        {filteredPeople.length === 0 && (
+        {!filteredPeople.length && (
           <div
             className="
             notification
