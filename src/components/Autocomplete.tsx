@@ -1,23 +1,35 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import './Autocomplete.scss';
+
 import { Person } from '../types/Person';
+import debounce from 'lodash.debounce';
 
 interface IProps {
   people: Person[];
   onSelected?: (person: Person) => void;
   onInputChange?: (inputValue: string) => void;
+  delay?: number;
 }
 
 export const Autocomplete: React.FC<IProps> = React.memo(
-  ({ people, onSelected = () => {}, onInputChange = () => {} }) => {
+  ({
+    people,
+    onSelected = () => {},
+    onInputChange = () => {},
+    delay = 300,
+  }) => {
     const [inputText, setInputText] = useState('');
     const [appliedInputText, setAppliedInputText] = useState('');
     const [filteredPeople, setFilteredPeople] = useState<Person[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
-    const timerId = useRef(0);
+    const applyInputText = useCallback(
+      debounce(setAppliedInputText, delay),
+      [],
+    );
 
     const useOutsideClick = (callBack: () => void) => {
-      const ref = React.useRef<HTMLInputElement>(null);
+      const ref = useRef<HTMLInputElement>(null);
 
       const handleClick = useCallback(
         (event: MouseEvent) => {
@@ -61,11 +73,7 @@ export const Autocomplete: React.FC<IProps> = React.memo(
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setInputText(event.target.value);
-      window.clearTimeout(timerId.current);
-
-      timerId.current = window.setTimeout(() => {
-        setAppliedInputText(event.target.value);
-      }, 1000);
+      applyInputText(event.target.value);
 
       onInputChange(event.target.value);
     };
@@ -77,9 +85,7 @@ export const Autocomplete: React.FC<IProps> = React.memo(
     };
 
     const handleInputFocus = () => {
-      if (inputText === '') {
-        setShowSuggestions(true);
-      }
+      setShowSuggestions(true);
     };
 
     return (
@@ -87,20 +93,20 @@ export const Autocomplete: React.FC<IProps> = React.memo(
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
             <form>
-              <label htmlFor="search-input">
-                Search name:
-                <input
-                  ref={ref}
-                  id="search-input"
-                  type="text"
-                  value={inputText}
-                  placeholder="Enter a part of the name"
-                  className="input"
-                  name="search-input"
-                  onChange={handleInputChange}
-                  onFocus={handleInputFocus}
-                  data-cy="search-input"
-                />
+              <input
+                ref={ref}
+                id="search-input"
+                type="text"
+                value={inputText}
+                placeholder="Enter a part of the name"
+                className="input"
+                name="search-input"
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
+                data-cy="search-input"
+              />
+              <label htmlFor="search-input" className={inputText && 'filled'}>
+                Enter a part of the name
               </label>
             </form>
           </div>
@@ -117,7 +123,12 @@ export const Autocomplete: React.FC<IProps> = React.memo(
                   >
                     <p
                       className={
-                        !inputText ? 'has-text-link' : 'has-text-danger'
+                        !inputText ||
+                        person.name
+                          .toLowerCase()
+                          .includes(inputText.toLowerCase())
+                          ? 'has-text-link'
+                          : 'has-text-danger'
                       }
                     >
                       {person.name}

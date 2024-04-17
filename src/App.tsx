@@ -14,9 +14,7 @@ export const App: React.FC = () => {
   }, []);
 
   const handleInputChange = (inputValue: string) => {
-    if (inputValue.trim() === '') {
-      setSelectedPerson(null);
-    } else {
+    if (inputValue.trim() || inputValue.trim() === '') {
       setSelectedPerson(null);
     }
   };
