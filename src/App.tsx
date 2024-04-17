@@ -14,30 +14,30 @@ export const App: React.FC = () => {
 
   const delay = 300;
 
-  const applyQuery = useCallback(
-    debounce(setAppliedQuery, delay),
-    [],
-  );
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+  const applyFocusOf = useCallback(debounce(setIsInputFocused, delay), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
     setSelectedPerson(null);
-  }
+  };
 
   const handlePersonChange = (person: Person) => {
     setSelectedPerson(person);
     setQuery(person.name);
-    applyQuery(person.name);
+    setAppliedQuery(person.name);
     setIsInputFocused(false);
-  }
+  };
 
   const filteredPeople = useMemo(() => {
     if (selectedPerson) {
       return peopleFromServer;
     }
 
-    return peopleFromServer.filter(person => person.name.includes(appliedQuery));
+    return peopleFromServer.filter(person =>
+      person.name.includes(appliedQuery),
+    );
   }, [appliedQuery, selectedPerson]);
 
   return (
@@ -46,8 +46,7 @@ export const App: React.FC = () => {
         <h1 className="title" data-cy="title">
           {selectedPerson
             ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-            : 'No selected person'
-          }
+            : 'No selected person'}
         </h1>
 
         <div className="dropdown is-active">
@@ -60,33 +59,45 @@ export const App: React.FC = () => {
               value={query}
               onChange={handleQueryChange}
               onFocus={() => setIsInputFocused(true)}
-              // onBlur={() => { setIsInputFocused(false) }}
+              onBlur={() => applyFocusOf(false)}
             />
           </div>
 
           {isInputFocused &&
-            <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-              <div className="dropdown-content">
-                {filteredPeople.map(person => {
-                  return (
-                    <div className="dropdown-item" data-cy="suggestion-item" key={person.name}>
-                      <p className={cn(person.sex === 'f'
-                        ? "has-text-danger"
-                        : "has-text-link")}
-                        onClick={() => handlePersonChange(person)}
+            query === appliedQuery &&
+            filteredPeople.length > 0 && (
+              <div
+                className="dropdown-menu"
+                role="menu"
+                data-cy="suggestions-list"
+              >
+                <div className="dropdown-content">
+                  {filteredPeople.map(person => {
+                    return (
+                      <div
+                        className="dropdown-item"
+                        data-cy="suggestion-item"
+                        key={person.name}
                       >
-                        {person.name}
-                      </p>
-                    </div>
-                  )
-                })}
+                        <p
+                          className={cn(
+                            person.sex === 'f'
+                              ? 'has-text-danger'
+                              : 'has-text-link',
+                          )}
+                          onClick={() => handlePersonChange(person)}
+                        >
+                          {person.name}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          }
-
+            )}
         </div>
 
-        {(filteredPeople.length === 0 && appliedQuery) &&
+        {filteredPeople.length === 0 && appliedQuery && (
           <div
             className="
             notification
@@ -99,7 +110,8 @@ export const App: React.FC = () => {
             data-cy="no-suggestions-message"
           >
             <p className="has-text-danger">No matching suggestions</p>
-          </div>}
+          </div>
+        )}
       </main>
     </div>
   );
