@@ -139,7 +139,7 @@ export const Autocomplete: React.FC<IProps> = React.memo(
             )}
           </div>
         </div>
-        {filteredPeople.length === 0 && (
+        {!filteredPeople.length && (
           <div
             className="
             notification

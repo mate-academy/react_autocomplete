@@ -9,12 +9,13 @@
     cursor: pointer;
   }
 }
+
 .input {
   transition: 0.3s ease-in-out;
   color: #8282d1;
   width: 250px;
   &:focus {
-    outline: 3px solid #9999ff;
+    outline: 3px solid #99f;
   }
   &::placeholder {
     color: transparent;
@@ -44,7 +45,6 @@ form label {
   font-size: 0.85rem;
   pointer-events: none;
   background-color: rgb(255, 255, 255);
-  pointer-events: none;
   color: #333030;
-  transform: translate(0px, -20px);
+  transform: translate(0, -20px);
 }
