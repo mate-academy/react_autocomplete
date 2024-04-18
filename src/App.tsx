@@ -20,12 +20,13 @@ export const App: React.FC = () => {
   };
 
   const { name, born, died } = selectedPerson || {};
+  const INFORM_PHRASE = `${name} (${born} - ${died})`;
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson ? `${name} (${born} - ${died})` : START_PHRASE}
+          {selectedPerson ? INFORM_PHRASE : START_PHRASE}
         </h1>
         <Autocomplete
           people={peopleFromServer}

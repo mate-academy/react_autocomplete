@@ -18,10 +18,12 @@ export const Autocomplete: React.FC<IProps> = React.memo(
     onInputChange = () => {},
     delay = 300,
   }) => {
+    // #region State
     const [inputText, setInputText] = useState('');
     const [appliedInputText, setAppliedInputText] = useState('');
     const [filteredPeople, setFilteredPeople] = useState<Person[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
+    // #endregion
 
     const applyInputText = useCallback(
       debounce(setAppliedInputText, delay),
@@ -111,9 +113,19 @@ export const Autocomplete: React.FC<IProps> = React.memo(
             </div>
           </form>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            {showSuggestions && (
-              <div className="dropdown-content">
+          {showSuggestions && (
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
+              <div
+                className={
+                  filteredPeople.length
+                    ? 'dropdown-content'
+                    : 'dropdown-content hidden'
+                }
+              >
                 {filteredPeople.map(person => (
                   <div
                     key={person.name}
@@ -136,18 +148,18 @@ export const Autocomplete: React.FC<IProps> = React.memo(
                   </div>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
         {!filteredPeople.length && (
           <div
             className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
             role="alert"
             data-cy="no-suggestions-message"
           >
