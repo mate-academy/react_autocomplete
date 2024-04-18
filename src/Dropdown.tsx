@@ -63,7 +63,7 @@ export const Dropdown: React.FC<DropdownType> = ({
         </div>
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-          {filteredPeople.length > 0 && (
+          {!!filteredPeople.length && (
             <div className="dropdown-content">
               {filteredPeople.map(person => (
                 <button
@@ -88,7 +88,7 @@ export const Dropdown: React.FC<DropdownType> = ({
         </div>
       </div>
 
-      {filteredPeople.length === 0 && (
+      {!filteredPeople.length && (
         <div
           className="
             notification
