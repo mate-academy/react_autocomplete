@@ -58,7 +58,7 @@ export const Autocomplete: React.FC<IProps> = React.memo(
     const ref = useOutsideClick(handleClickOutside);
 
     useEffect(() => {
-      if (appliedInputText === '') {
+      if (!appliedInputText) {
         setFilteredPeople(people);
         setShowSuggestions(true);
       } else {
@@ -91,11 +91,11 @@ export const Autocomplete: React.FC<IProps> = React.memo(
     return (
       <>
         <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <form>
+          <form>
+            <div className="dropdown-trigger">
               <input
                 ref={ref}
-                id="search-input"
+                id="searchInput"
                 type="text"
                 value={inputText}
                 placeholder="Enter a part of the name"
@@ -105,11 +105,11 @@ export const Autocomplete: React.FC<IProps> = React.memo(
                 onFocus={handleInputFocus}
                 data-cy="search-input"
               />
-              <label htmlFor="search-input" className={inputText && 'filled'}>
+              <label htmlFor="searchInput" className={inputText && 'filled'}>
                 Enter a part of the name
               </label>
-            </form>
-          </div>
+            </div>
+          </form>
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             {showSuggestions && (
