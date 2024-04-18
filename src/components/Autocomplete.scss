@@ -1,0 +1,55 @@
+.input {
+  transition: 0.3s ease-in-out;
+  color: #8282d1;
+  width: 250px;
+
+  &:focus {
+    outline: 3px solid #99f;
+  }
+  &::placeholder {
+    color: transparent;
+  }
+  &:active {
+    border-color: none;
+  }
+}
+
+label {
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  padding: 5px 7px;
+  font-size: 1rem;
+  color: #aaa3a3;
+  transition: 0.3s ease-in-out;
+  background-color: rgb(255, 255, 255);
+}
+
+.input:focus + .filled,
+.input:valid + .filled,
+.input:focus + label {
+  height: 20px;
+  line-height: 20px;
+  z-index: 111;
+  font-size: 0.85rem;
+  pointer-events: none;
+  background-color: rgb(255, 255, 255);
+  color: #333030;
+  transform: translate(0, -20px);
+}
+
+.dropdown-content {
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+.dropdown-item {
+  &:hover {
+    background-color: bisque;
+    cursor: pointer;
+  }
+}
+
+.hidden {
+  display: none;
+}
