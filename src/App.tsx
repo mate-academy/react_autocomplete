@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './App.scss';
 
-import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
-
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+
+import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
 import { Dropdown } from './components/Dropdown/Dropdown';
 
 const defaultDelay = 300;
@@ -50,6 +50,10 @@ export const App: React.FC = () => {
     getDebounceQuery(e.target.value);
   };
 
+  const handlerOnBlur = () => {
+    setShowPeople(false);
+  };
+
   const handlerOnSelected = (person: Person) => {
     setSelectedPerson(person);
     setShowPeople(false);
@@ -59,7 +63,7 @@ export const App: React.FC = () => {
     return people.name.includes(debounceQuery);
   });
 
-  const person = `${selectedPerson?.name} (${selectedPerson?.born}) - (${selectedPerson?.died})`;
+  const person = `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`;
 
   return (
     <div className="container">
@@ -74,6 +78,7 @@ export const App: React.FC = () => {
               ref={searchInputRef}
               onClick={() => setShowPeople(true)}
               onChange={handlerChangeQuery}
+              onBlur={handlerOnBlur}
               type="text"
               value={query}
               placeholder="Enter a part of the name"
