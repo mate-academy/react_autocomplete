@@ -17,9 +17,15 @@ export const App: React.FC = () => {
   };
 
   const [selectedPerson, setSelectedPerson] = useState<Person>(initialPerson);
-  const { name, born, died } = selectedPerson;
   const [isDropdownActive, setIsDropdownActive] = useState(false);
   const [suggestions, setSuggestions] = useState<Person[]>(peopleFromServer);
+
+  const { name, born, died } = selectedPerson;
+
+  const titleText =
+    selectedPerson.name !== initialPerson.name
+      ? `${name} (${born} - ${died})`
+      : 'No selected person';
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -57,15 +63,17 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleDropdownClick = () => {
+    setIsDropdownActive(!isDropdownActive);
+  };
+
   const conditionShowDropdown = suggestions.length !== 0 && isDropdownActive;
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson.name !== initialPerson.name
-            ? `${name} (${born} - ${died})`
-            : 'No selected person'}
+          {titleText}
         </h1>
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
@@ -77,7 +85,7 @@ export const App: React.FC = () => {
               defaultValue=""
               onChange={handleQueryChange}
               data-cy="search-input"
-              onFocus={() => setIsDropdownActive(true)}
+              onFocus={handleDropdownClick}
             />
           </div>
 
@@ -87,6 +95,7 @@ export const App: React.FC = () => {
             selectPersonFromTheList={selectPersonFromTheList}
           />
         </div>
+
         {suggestions.length === 0 && <NoMatch />}
       </main>
     </div>
