@@ -29,6 +29,12 @@ export const App: React.FC = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const handleDropdownClick = (a: boolean) => {
+    setTimeout(() => {
+      setIsDropdownActive(a);
+    }, 200);
+  };
+
   const filterPeople = () => {
     const inputValue = inputRef.current?.value.toLowerCase() || '';
 
@@ -38,14 +44,14 @@ export const App: React.FC = () => {
       ),
     );
 
-    setIsDropdownActive(true);
+    handleDropdownClick(true);
   };
 
   const debounceFilter = debounce(filterPeople, 1000);
   const handleQueryChange = () => {
     setSelectedPerson(initialPerson);
     debounceFilter();
-    setIsDropdownActive(false);
+    handleDropdownClick(false);
   };
 
   const selectPersonFromTheList = (
@@ -63,11 +69,10 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleDropdownClick = () => {
-    setIsDropdownActive(!isDropdownActive);
-  };
-
-  const conditionShowDropdown = suggestions.length !== 0 && isDropdownActive;
+  const conditionShowDropdown =
+    suggestions.length !== 0 &&
+    isDropdownActive &&
+    selectedPerson.name === initialPerson.name;
 
   return (
     <div className="container">
@@ -85,7 +90,8 @@ export const App: React.FC = () => {
               defaultValue=""
               onChange={handleQueryChange}
               data-cy="search-input"
-              onFocus={handleDropdownClick}
+              onFocus={() => handleDropdownClick(true)}
+              onBlur={() => handleDropdownClick(false)}
             />
           </div>
 
