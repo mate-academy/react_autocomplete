@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { AutoComplite } from './components/AutoComplite';
+import { AutoComplete } from './components/AutoComplete';
 import { Person } from './types/Person';
 import './App.scss';
 
@@ -22,7 +22,7 @@ export const App: React.FC = () => {
           {selectPerson}
         </h1>
 
-        <AutoComplite onSelected={handleSelectedPerson} />
+        <AutoComplete onSelected={handleSelectedPerson} />
       </main>
     </div>
   );
