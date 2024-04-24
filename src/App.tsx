@@ -23,6 +23,7 @@ export const App: React.FC = () => {
         </h1>
 
         <AutoComplete onSelected={handleSelectedPerson} />
+
       </main>
     </div>
   );
