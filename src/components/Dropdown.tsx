@@ -72,19 +72,21 @@ export const Dropdown: React.FC<DropdownType> = ({
         </div>
       </div>
 
-      <div
-        className="
+      {filteredPeople.length === 0 && (
+        <div
+          className="
       notification
       is-danger
       is-light
       mt-3
       is-align-self-flex-start
     "
-        role="alert"
-        data-cy="no-suggestions-message"
-      >
-        {filteredPeople.length === 0 ? <p>No matching suggestions</p> : ''}
-      </div>
+          role="alert"
+          data-cy="no-suggestions-message"
+        >
+          <p>No matching suggestions</p>
+        </div>
+      )}
     </>
   );
 };
