@@ -2,16 +2,14 @@ import { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Dropdown } from './components/Dropdown';
-
 import { Person } from './types/Person';
-import React = require('react');
+import React from 'react';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const chosenPerson = selectedPerson
-    ? `${name} (${born} - ${died})`
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
     : 'No selected person';
 
   return (
@@ -23,7 +21,7 @@ export const App: React.FC = () => {
         <Dropdown
           people={peopleFromServer}
           onSelected={setSelectedPerson}
-          person={selectedPerson}
+          delay={300}
         />
       </main>
     </div>

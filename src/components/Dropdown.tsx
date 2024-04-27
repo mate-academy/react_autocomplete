@@ -1,20 +1,18 @@
 import { useMemo, useState } from 'react';
 import { type DropdownType } from '../types/DropdownType';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { debounce } from 'cypress/types/lodash';
 import { type Person } from '../types/Person';
 import classNames from 'classnames';
-import React = require('react');
+import React from 'react';
+import debounce from 'lodash.debounce';
 
 export const Dropdown: React.FC<DropdownType> = ({
   people,
   onSelected,
+  delay,
 }: DropdownType) => {
   const [inputSearch, setInputSearch] = useState('');
   const [searchedText, setSearchedText] = useState('');
   const [isActive, setIsActive] = useState(false);
-
-  const delay = 300;
 
   const filteredPeople = useMemo(() => {
     return people.filter(option =>
@@ -84,7 +82,9 @@ export const Dropdown: React.FC<DropdownType> = ({
     "
         role="alert"
         data-cy="no-suggestions-message"
-      ></div>
+      >
+        {filteredPeople.length === 0 ? <p>No matching suggestions</p> : ''}
+      </div>
     </>
   );
 };
