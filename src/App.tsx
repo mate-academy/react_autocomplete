@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
-import cn from 'classnames';
 
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { DropdownContent } from './componets/DropdownContent';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -67,52 +67,36 @@ export const App: React.FC = () => {
             />
           </div>
 
-          {isShow && (
-            <div
-              className="dropdown-menu"
-              role="menu"
-              data-cy="suggestions-list"
-            >
-              <div className="dropdown-content">
-                {filteredPeople.map(person => {
-                  return (
-                    <div
-                      className="dropdown-item"
-                      data-cy="suggestion-item"
-                      key={person.name}
-                    >
-                      <p
-                        className={cn({
-                          'has-text-danger': person.sex === 'f',
-                          'has-text-link': person.sex === 'm',
-                        })}
-                        onClick={() => handlePersonChange(person)}
-                      >
-                        {person.name}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {filteredPeople.length === 0 && appliedQuery && (
           <div
-            className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-            role="alert"
-            data-cy="no-suggestions-message"
+            className="dropdown-menu"
+            role="menu"
+            data-cy="suggestions-list"
           >
-            <p className="has-text-danger">No matching suggestions</p>
+
+            {isShow &&
+            <DropdownContent
+              filteredPeople={filteredPeople}
+              handlePersonChange={handlePersonChange}
+            />
+            }
+
+            {(filteredPeople.length === 0 && appliedQuery) &&
+              <div
+                className="
+                    notification
+                    is-danger
+                    is-light
+                    mt-3
+                    is-align-self-flex-start
+                  "
+                role="alert"
+                data-cy="no-suggestions-message"
+              >
+                <p className="has-text-danger">No matching suggestions</p>
+              </div>
+            }
           </div>
-        )}
+        </div>
       </main>
     </div>
   );
