@@ -1,6 +1,15 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import { Person } from '../../types/Person';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
 import debounce from 'lodash.debounce';
+
+import { Person } from '../../types/Person';
+import cn from 'classnames';
 
 type Props = {
   people: Person[];
@@ -13,8 +22,10 @@ export const Dropdown: React.FC<Props> = ({
   delay = 300,
   onSelect,
 }) => {
-  const [query, setQuery] = React.useState('');
-  const [appliedQuery, setAppliedQuery] = React.useState('');
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
   const debouncedApplyQuery = useRef(
     debounce((value: string) => {
@@ -35,6 +46,7 @@ export const Dropdown: React.FC<Props> = ({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    setIsDropdownVisible(true);
   };
 
   const filteredPeople = useMemo(() => {
@@ -45,10 +57,34 @@ export const Dropdown: React.FC<Props> = ({
 
   const handleSelectPerson = (person: Person) => {
     onSelect(person);
+    setQuery('');
+    setIsDropdownVisible(false);
   };
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setIsDropdownVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="dropdown is-active">
+    <div
+      className={cn('dropdown', {
+        'is-active': isDropdownVisible,
+      })}
+      ref={dropdownRef}
+    >
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -57,6 +93,7 @@ export const Dropdown: React.FC<Props> = ({
           data-cy="search-input"
           value={query}
           onChange={handleQueryChange}
+          onFocus={() => setIsDropdownVisible(true)}
         />
       </div>
 
