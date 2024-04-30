@@ -13,14 +13,17 @@ export const App: React.FC = () => {
 
   const debounceValue = useMemo(() => debounce(setAppliedQuery, 300), []);
 
-  const handleQueryChange = useCallback((value: string) => {
-    debounceValue(value);
-    setQuery(value);
+  const handleQueryChange = useCallback(
+    (value: string) => {
+      debounceValue(value);
+      setQuery(value);
 
-    if (appliedQuery !== selectedPerson?.name) {
-      setSelectedPerson(null);
-    }
-  }, []);
+      if (appliedQuery !== selectedPerson?.name) {
+        setSelectedPerson(null);
+      }
+    },
+    [appliedQuery, debounceValue, selectedPerson?.name],
+  );
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person =>
