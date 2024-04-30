@@ -7,9 +7,10 @@ import React, {
 } from 'react';
 
 import debounce from 'lodash.debounce';
+import cn from 'classnames';
 
 import { Person } from '../../types/Person';
-import cn from 'classnames';
+import './Dropdown.scss';
 
 type Props = {
   people: Person[];
@@ -30,9 +31,7 @@ export const Dropdown: React.FC<Props> = ({
   const debouncedApplyQuery = useRef(
     debounce((value: string) => {
       setAppliedQuery(value);
-      if (value !== '') {
-        onSelect(null);
-      }
+      onSelect(null);
     }, delay),
   );
 
@@ -50,10 +49,14 @@ export const Dropdown: React.FC<Props> = ({
   };
 
   const filteredPeople = useMemo(() => {
+    if (query === '') {
+      return people;
+    }
+
     return people.filter(person =>
       person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
-  }, [people, appliedQuery]);
+  }, [people, appliedQuery, query]);
 
   const handleSelectPerson = (person: Person) => {
     onSelect(person);
