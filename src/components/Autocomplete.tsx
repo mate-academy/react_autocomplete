@@ -24,6 +24,15 @@ export const Autocomplete: React.FC<Props> = ({
 
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [touched, setTouched] = useState(false);
+
+  const handleBlur = () => {
+    setTouched(true);
+  };
+
+  const handleFocus = () => {
+    setTouched(false);
+  };
 
   const filteredPersonList = useMemo(() => {
     return peopleFromServer.filter(person =>
@@ -44,57 +53,62 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   return (
-    <>
-      <div
-        className={classNames({
-          'notification is-danger is-light mt-3 is-align-self-flex-start':
-            filteredPersonList.length === 0,
-          dropdown: filteredPersonList.length > 0,
-          'is-active': (query && !selectedPerson) || !query,
-        })}
-      >
-        <div className="dropdown-trigger">
-          <input
-            ref={titleField}
-            type="text"
-            placeholder="Enter a part of the name"
-            className="input"
-            data-cy="search-input"
-            value={query}
-            onChange={handleQueryChange}
-          />
-        </div>
-
-        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-          <div className="dropdown-content">
-            {filteredPersonList.map((person: Person) => {
-              return (
-                <div
-                  className="dropdown-item"
-                  data-cy="suggestion-item"
-                  key={person.slug}
-                  onClick={() => {
-                    onSelected(person);
-                    setQuery(person.name);
-                  }}
-                >
-                  <p className="has-text-link">{person.name}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+    <div
+      className={classNames('dropdown', {
+        'is-active': !touched,
+      })}
+    >
+      <div className="dropdown-trigger">
+        <input
+          ref={titleField}
+          type="text"
+          placeholder="Enter a part of the name"
+          className="input"
+          data-cy="search-input"
+          value={query}
+          onChange={handleQueryChange}
+          onBlur={handleBlur}
+          onFocus={handleFocus}
+        />
 
         {filteredPersonList.length === 0 && (
-          <p
-            className="has-text-danger"
+          <div
+            className="
+            notification
+            is-danger
+            is-light
+            mt-3
+             is-align-self-flex-start
+          "
             role="alert"
             data-cy="no-suggestions-message"
           >
-            No matching suggestions
-          </p>
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
         )}
       </div>
-    </>
+
+      <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+        <div className="dropdown-content">
+          {filteredPersonList.map((person: Person) => {
+            return (
+              <div
+                className="dropdown-item"
+                data-cy="suggestion-item"
+                key={person.slug}
+                onClick={() => {
+                  // eslint-disable-next-line no-console
+                  console.log('selecting');
+                  onSelected(person);
+                  setQuery(person.name);
+                }}
+              >
+                <p className="has-text-link">{person.name}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 };
