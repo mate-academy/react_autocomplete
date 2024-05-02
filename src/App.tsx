@@ -4,14 +4,13 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const [query] = useState('');
   const [selectUser, setSelectUser] = useState<Person | null>(null);
-  const [searchUser, setSearchUser] = useState('');
+  const [query, setQuery] = useState('');
   const [dropDown, setDropDown] = useState(false);
 
   const handleQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectUser(null);
-    setSearchUser(event.target.value);
+    setQuery(event.target.value);
   };
 
   const handleSelectUser = (user: Person) => {
@@ -42,7 +41,7 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
-              value={searchUser}
+              value={query}
               onChange={handleQuery}
               onFocus={() => setDropDown(true)}
             />
@@ -74,7 +73,7 @@ export const App: React.FC = () => {
           )}
         </div>
 
-        {!filter && dropDown && (
+        {!filter && (
           <div
             className="
             notification
