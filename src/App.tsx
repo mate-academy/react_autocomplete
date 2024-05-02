@@ -73,7 +73,7 @@ export const App: React.FC = () => {
           )}
         </div>
 
-        {!filter && (
+        {!selectUser && dropDown && (
           <div
             className="
             notification
