@@ -63,7 +63,7 @@ export const Autocomplete: React.FC<Props> = ({ onSelected }) => {
       </div>
 
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-        {filteredPeople.length && isFocused ? (
+        {!!filteredPeople.length && isFocused && (
           <div className="dropdown-content">
             {filteredPeople.map(person => (
               <div
@@ -85,7 +85,7 @@ export const Autocomplete: React.FC<Props> = ({ onSelected }) => {
               </div>
             ))}
           </div>
-        ) : null}
+        )}
 
         {!filteredPeople.length && isFocused && (
           <div
