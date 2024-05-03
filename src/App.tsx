@@ -73,7 +73,7 @@ export const App: React.FC = () => {
           )}
         </div>
 
-        {!selectUser && dropDown && (
+        {filter.length === 0 && (
           <div
             className="
             notification
