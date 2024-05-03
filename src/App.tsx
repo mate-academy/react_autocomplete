@@ -61,11 +61,13 @@ export const App: React.FC = () => {
                     key={user.slug}
                     onClick={() => handleSelectUser(user)}
                   >
-                    {user.sex === 'm' ? (
-                      <p className="has-text-link">{user.name}</p>
-                    ) : (
-                      <p className="has-text-danger">{user.name}</p>
-                    )}
+                    <p
+                      className={
+                        user.sex === 'm' ? 'has-text-link' : 'has-text-danger'
+                      }
+                    >
+                      {user.name}
+                    </p>
                   </div>
                 ))}
               </div>
