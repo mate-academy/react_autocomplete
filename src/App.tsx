@@ -7,9 +7,6 @@ import { Autocomplete } from './components/Autocomplete';
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  // eslint-disable-next-line no-console
-  console.log('render', selectedPerson);
-
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">

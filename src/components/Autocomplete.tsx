@@ -24,14 +24,16 @@ export const Autocomplete: React.FC<Props> = ({
 
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [touched, setTouched] = useState(false);
+  const [showValues, setShowValues] = useState(false);
 
   const handleBlur = () => {
-    setTouched(true);
+    setTimeout(() => {
+      setShowValues(false);
+    }, 100);
   };
 
   const handleFocus = () => {
-    setTouched(false);
+    setShowValues(true);
   };
 
   const filteredPersonList = useMemo(() => {
@@ -53,11 +55,7 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   return (
-    <div
-      className={classNames('dropdown', {
-        'is-active': !touched,
-      })}
-    >
+    <div className={classNames('dropdown is-active')}>
       <div className="dropdown-trigger">
         <input
           ref={titleField}
@@ -70,44 +68,45 @@ export const Autocomplete: React.FC<Props> = ({
           onBlur={handleBlur}
           onFocus={handleFocus}
         />
-
-        {filteredPersonList.length === 0 && (
-          <div
-            className="
-            notification
-            is-danger
-            is-light
-            mt-3
-             is-align-self-flex-start
-          "
-            role="alert"
-            data-cy="no-suggestions-message"
-          >
-            <p className="has-text-danger">No matching suggestions</p>
-          </div>
-        )}
       </div>
 
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-        <div className="dropdown-content">
-          {filteredPersonList.map((person: Person) => {
-            return (
+        {showValues && (
+          <div className="dropdown-content">
+            {filteredPersonList.length ? (
+              filteredPersonList.map((person: Person) => {
+                return (
+                  <div
+                    style={{ cursor: 'pointer' }}
+                    className="dropdown-item"
+                    data-cy="suggestion-item"
+                    key={person.slug}
+                    onClick={() => {
+                      onSelected(person);
+                      setQuery(person.name);
+                    }}
+                  >
+                    <p className="has-text-link">{person.name}</p>
+                  </div>
+                );
+              })
+            ) : (
               <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-                key={person.slug}
-                onClick={() => {
-                  // eslint-disable-next-line no-console
-                  console.log('selecting');
-                  onSelected(person);
-                  setQuery(person.name);
-                }}
+                className="
+                  notification
+                  is-danger
+                  is-light
+                  mt-3
+                   is-align-self-flex-start
+                "
+                role="alert"
+                data-cy="no-suggestions-message"
               >
-                <p className="has-text-link">{person.name}</p>
+                <p className="has-text-danger">No matching suggestions</p>
               </div>
-            );
-          })}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
