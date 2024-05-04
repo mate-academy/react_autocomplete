@@ -3,7 +3,7 @@ import './App.scss';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 import classNames from 'classnames';
-import { debounce } from 'lodash';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
