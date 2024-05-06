@@ -1,15 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import cn from 'classnames';
+
+const DELAY = 300;
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [person, setPerson] = useState<Person | null>(null);
+  const [query, setQuery] = useState('');
+  const [suggest, setSuggest] = useState<Person[]>(peopleFromServer);
+  const [dropDownOpen, setDropDownOpen] = useState(false);
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuery = event.target.value;
+
+    setPerson(null);
+    setDropDownOpen(true);
+    setQuery(newQuery);
+
+    setTimeout(() => {
+      const filtered = peopleFromServer.filter(pers =>
+        pers.name.toLowerCase().includes(newQuery.toLowerCase()),
+      );
+
+      setSuggest(filtered);
+    }, DELAY);
+  };
+
+  const handleItemClick = (item: Person) => {
+    setPerson(item);
+    setDropDownOpen(false);
+    setQuery(item?.name);
+  };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {person
+            ? `${person?.name} (${person?.born} - ${person?.died})`
+            : 'No selected person'}
         </h1>
 
         <div className="dropdown is-active">
@@ -19,55 +50,52 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              value={query}
+              onChange={handleQueryChange}
+              onFocus={() => setDropDownOpen(true)}
             />
           </div>
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
+            {suggest.length > 0 && dropDownOpen && (
+              <div className="dropdown-content">
+                {suggest.map(item => (
+                  <div
+                    className="dropdown-item"
+                    data-cy="suggestion-item"
+                    key={item.slug}
+                    onClick={() => handleItemClick(item)}
+                  >
+                    <p
+                      className={cn({
+                        'has-text-link': item.sex === 'm',
+                        'has-text-danger': item.sex === 'f',
+                      })}
+                    >
+                      {item.name}
+                    </p>
+                  </div>
+                ))}
               </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
-        <div
-          className="
+        {suggest.length === 0 && (
+          <div
+            className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
