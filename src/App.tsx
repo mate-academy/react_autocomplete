@@ -22,6 +22,7 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPeople, setSelectedPeople] = useState<Person | null>(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(
     debounce((value: string) => {
       setAppliedQuery(value);
