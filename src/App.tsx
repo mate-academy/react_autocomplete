@@ -10,13 +10,13 @@ export const App: React.FC = () => {
     setSelectedUser(user);
   };
 
+  const { name, born, died } = selectedUser || {};
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedUser
-            ? `${selectedUser.name} (${selectedUser.born} - ${selectedUser.died})`
-            : `No selected person`}
+          {selectedUser ? `${name} ${born} - ${died}` : `No selected person`}
         </h1>
 
         <Autocomplete onSelected={handleSelectedUser} delay={300} />
