@@ -16,6 +16,22 @@ const filteredPeople = (people: Person[], query: string) => {
 
 const DELAY_DEBOUNCE = 300;
 
+export const noSuggestionsMessage = (
+  <div
+    className="
+      notification
+      is-danger
+      is-light
+      mt-3
+      is-align-self-flex-start
+    "
+    role="alert"
+    data-cy="no-suggestions-message"
+  >
+    <p className="has-text-danger">No matching suggestions</p>
+  </div>
+);
+
 export const App: React.FC = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [query, setQuery] = useState('');
@@ -96,14 +112,14 @@ export const App: React.FC = () => {
                     data-cy="suggestion-item"
                     onClick={() => onSelected(person)}
                   >
-                    <p
-                      className={classNames('', {
+                    <a
+                      className={classNames({
                         'has-text-link': person.sex === 'm',
                         'has-text-danger': person.sex === 'f',
                       })}
                     >
                       {person.name}
-                    </p>
+                    </a>
                   </div>
                 ))}
               </div>
