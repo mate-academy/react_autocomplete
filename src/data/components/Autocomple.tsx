@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { Person } from '../../types/Person';
 import debounce from 'lodash.debounce';
 import classNames from 'classnames';
+import './Autocomplete.scss';
 
 type Props = {
   delay?: number;
@@ -18,17 +19,32 @@ export const Autocomplete: React.FC<Props> = ({
   const [aplliedQuery, setApliedQuery] = useState('');
   const [focus, setFocus] = useState(false);
 
-  const aplyQuery = useCallback(debounce(setApliedQuery, delay), []);
+  const aplyQuery = useCallback(
+    debounce(value => setApliedQuery(value), delay),
+    [delay],
+  );
 
-  const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    aplyQuery(event.target.value);
+  const onInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.target;
+
+      setQuery(value);
+      aplyQuery(value);
+    },
+    [setQuery, aplyQuery],
+  );
+
+  const onClick = (person: Person) => {
+    setSelectedPerson(person);
+    setFocus(false);
+    setApliedQuery('');
+    setQuery('');
   };
 
   const handleInputBlur = () => {
     setTimeout(() => {
       setFocus(false);
-    }, 1);
+    }, 300);
   };
 
   const filteredPeople = people.filter(person =>
@@ -51,7 +67,7 @@ export const Autocomplete: React.FC<Props> = ({
           />
         </div>
 
-        {focus && (
+        {focus && filteredPeople.length !== 0 && (
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
               {filteredPeople.map(person => (
@@ -61,16 +77,11 @@ export const Autocomplete: React.FC<Props> = ({
                   key={people.indexOf(person)}
                 >
                   <p
-                    className={classNames('', {
+                    className={classNames('option', {
                       'has-text-link': person.sex === 'm',
                       'has-text-danger': person.sex === 'f',
                     })}
-                    onClick={() => {
-                      setSelectedPerson(person);
-                      setFocus(false);
-                      setApliedQuery('');
-                      setQuery('');
-                    }}
+                    onClick={() => onClick(person)}
                   >
                     {person.name}
                   </p>
