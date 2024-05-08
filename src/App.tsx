@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import debounce from 'lodash.debounce';
+import React, { useCallback, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -7,10 +8,14 @@ export const App: React.FC = () => {
   const [selectUser, setSelectUser] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [dropDown, setDropDown] = useState(false);
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
 
   const handleQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectUser(null);
     setQuery(event.target.value);
+    applyQuery(event.target.value);
   };
 
   const handleSelectUser = (user: Person) => {
@@ -20,7 +25,7 @@ export const App: React.FC = () => {
 
   const filter = peopleFromServer.filter(user => {
     const normName = user.name.trim().toLowerCase();
-    const normQuery = query.trim().toLowerCase();
+    const normQuery = appliedQuery.trim().toLowerCase();
 
     return normName.includes(normQuery);
   });
