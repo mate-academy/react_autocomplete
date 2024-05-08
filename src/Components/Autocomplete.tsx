@@ -30,7 +30,7 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, delay }) => {
   const handleFocus = () => {
     setSuggestionList(peopleFromServer);
     setIsFocused(true);
-    onSelected(null);
+    // onSelected(null);
   };
 
   const handleBlur = () => {
@@ -70,7 +70,7 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, delay }) => {
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
               {filteredList.map(person => {
-                const { name, slug } = person;
+                const { name, slug, sex } = person;
 
                 return (
                   <div
@@ -79,11 +79,13 @@ export const Autocomplete: React.FC<Props> = ({ onSelected, delay }) => {
                     key={slug}
                     onClick={() => handleClick(person)}
                   >
-                    {person.sex === 'm' ? (
-                      <p className="has-text-link">{name}</p>
-                    ) : (
-                      <p className="has-text-danger">{name}</p>
-                    )}
+                    <p
+                      className={
+                        sex === 'm' ? 'has-text-link' : 'has-text-danger'
+                      }
+                    >
+                      {name}
+                    </p>
                   </div>
                 );
               })}
