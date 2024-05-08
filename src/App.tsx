@@ -1,31 +1,16 @@
-import React, { useCallback, useState, useMemo } from 'react';
-import debounce from 'lodash.debounce';
+import React, { useState, useMemo, useEffect } from 'react';
 
 import './App.scss';
 
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { Dropdown } from './components/Dropdown/Dropdown';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [dropdownVisible, setDropdownVisible] = useState(true);
-
-  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
-
-  const onQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuery = event.target.value;
-
-    setSelectedPerson(null);
-    setQuery(newQuery.trimStart());
-    applyQuery(newQuery.trim().toLowerCase());
-  };
-
-  const onSelected = (person: Person) => {
-    setSelectedPerson(() => person);
-    setDropdownVisible(() => false);
-  };
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const visiblePeople: Person[] = useMemo(
     () =>
@@ -34,6 +19,15 @@ export const App: React.FC = () => {
       ),
     [appliedQuery],
   );
+
+  const onSelected = (person: Person) => {
+    setSelectedPerson(() => person);
+    setDropdownVisible(() => false);
+  };
+
+  useEffect(() => {
+    setDropdownVisible(false);
+  }, [query]);
 
   return (
     <div className="container">
@@ -44,62 +38,17 @@ export const App: React.FC = () => {
             : 'No selected person'}
         </h1>
 
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-              value={query}
-              onChange={onQueryChange}
-              onFocus={() => setDropdownVisible(true)}
-            />
-          </div>
-
-          {dropdownVisible && (
-            <div
-              className="dropdown-menu"
-              role="menu"
-              data-cy="suggestions-list"
-            >
-              <div className="dropdown-content">
-                {visiblePeople.map((person: Person) => (
-                  <div
-                    className="dropdown-item"
-                    data-cy="suggestion-item"
-                    key={person.slug}
-                    onClick={() => onSelected(person)}
-                  >
-                    <p
-                      className={
-                        person.sex === 'm' ? 'has-text-link' : 'has-text-danger'
-                      }
-                    >
-                      {person.name}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {visiblePeople.length === 0 && (
-          <div
-            className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-            role="alert"
-            data-cy="no-suggestions-message"
-          >
-            <p className="has-text-danger">No matching suggestions</p>
-          </div>
-        )}
+        <Dropdown
+          delay={300}
+          visiblePeople={visiblePeople}
+          dropdownVisible={dropdownVisible}
+          query={query}
+          onSelected={onSelected}
+          setSelectedPerson={setSelectedPerson}
+          setDropdownVisible={setDropdownVisible}
+          setQuery={setQuery}
+          setAppliedQuery={setAppliedQuery}
+        />
       </main>
     </div>
   );
