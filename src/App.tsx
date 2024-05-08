@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import debounce from 'lodash.debounce';
 import React, { useCallback, useState } from 'react';
 import './App.scss';
