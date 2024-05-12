@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import './App.scss';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
 import cn from 'classnames';
+import './App.scss';
 
 export const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -12,11 +12,18 @@ export const App: React.FC = () => {
   const [hasErrorInput, setHasErrorInput] = useState(true);
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
-  const applyInput = useCallback(debounce(setInputText, 300), []);
-
-  const filteredPeople = peopleFromServer.filter(person =>
-    person.name.toLowerCase().includes(inputText.toLowerCase()),
+  const applyInput = useCallback(
+    debounce((text: string) => {
+      setInputText(text);
+    }, 300),
+    [],
   );
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter(person =>
+      person.name.toLowerCase().includes(inputText.toLowerCase()),
+    );
+  }, [inputText]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     applyInput(event.target.value);
@@ -41,14 +48,16 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (inputText !== titleSelectPerson) {
-      setDropdownVisible(false);
+      setDropdownVisible(true);
       setSelectedPerson('No selected person');
     }
+  }, [inputText, titleSelectPerson, selectedPerson]);
 
-    if (selectedPerson === 'No selected person') {
+  const handleChangeFocus = () => {
+    if (!inputText) {
       setDropdownVisible(true);
     }
-  });
+  };
 
   return (
     <div className="container">
@@ -70,6 +79,7 @@ export const App: React.FC = () => {
               data-cy="search-input"
               value={inputText}
               onChange={handleInputChange}
+              onFocus={handleChangeFocus}
             />
           </div>
 
