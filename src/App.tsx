@@ -1,38 +1,31 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
-import { Autocomplete } from './components/autocomplete';
-import { NoMatch } from './components/nomatch';
+import { AutoComplete } from './components/Autocomplete';
+import { NoMatch } from './components/Nomatch';
 
 export const App: React.FC = () => {
-  const initialPerson: Person = {
-    name: '',
-    born: 0,
-    died: 0,
-    slug: '',
-    fatherName: '',
-    motherName: '',
-    sex: 'm',
-  };
-
-  const [selectedPerson, setSelectedPerson] = useState<Person>(initialPerson);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isDropdownActive, setIsDropdownActive] = useState(false);
   const [suggestions, setSuggestions] = useState<Person[]>(peopleFromServer);
 
-  const { name, born, died } = selectedPerson;
+  const { name, born, died } = selectedPerson || {
+    name: '',
+    born: '',
+    died: '',
+  };
 
-  const titleText =
-    selectedPerson.name !== initialPerson.name
-      ? `${name} (${born} - ${died})`
-      : 'No selected person';
+  const titleText = selectedPerson
+    ? `${name} (${born} - ${died})`
+    : 'No selected person';
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleDropdownClick = (a: boolean) => {
+  const handleDropdownClick = (isActive: boolean) => {
     setTimeout(() => {
-      setIsDropdownActive(a);
+      setIsDropdownActive(isActive);
     }, 200);
   };
 
@@ -48,9 +41,9 @@ export const App: React.FC = () => {
     handleDropdownClick(true);
   };
 
-  const debounceFilter = debounce(filterPeople, 1000);
+  const debounceFilter = useCallback(debounce(filterPeople, 1000), []);
   const handleQueryChange = () => {
-    setSelectedPerson(initialPerson);
+    setSelectedPerson(null);
     debounceFilter();
     handleDropdownClick(false);
   };
@@ -65,15 +58,13 @@ export const App: React.FC = () => {
     );
 
     if (person && inputRef.current) {
-      setSelectedPerson(person as Person);
+      setSelectedPerson(person);
       inputRef.current.value = person.name;
     }
   };
 
   const conditionShowDropdown =
-    suggestions.length !== 0 &&
-    isDropdownActive &&
-    selectedPerson.name === initialPerson.name;
+    suggestions.length !== 0 && isDropdownActive && selectedPerson === null;
 
   return (
     <div className="container">
@@ -81,7 +72,7 @@ export const App: React.FC = () => {
         <h1 className="title" data-cy="title">
           {titleText}
         </h1>
-        <div className="dropdown is-active">
+        <div className={`dropdown ${isDropdownActive ? 'is-active' : ''}`}>
           <div className="dropdown-trigger">
             <input
               ref={inputRef}
@@ -96,7 +87,7 @@ export const App: React.FC = () => {
             />
           </div>
 
-          <Autocomplete
+          <AutoComplete
             suggestions={suggestions}
             conditionShowDropdown={conditionShowDropdown}
             selectPersonFromTheList={selectPersonFromTheList}

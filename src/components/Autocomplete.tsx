@@ -1,7 +1,7 @@
 import React from 'react';
-import { Person } from '../../types/Person';
+import { Person } from '../types/Person';
 
-type AutocompleteProps = {
+type AutoCompleteProps = {
   suggestions: Person[];
   conditionShowDropdown: boolean;
   selectPersonFromTheList: (
@@ -9,7 +9,7 @@ type AutocompleteProps = {
   ) => void;
 };
 
-export const Autocomplete: React.FC<AutocompleteProps> = ({
+export const AutoComplete: React.FC<AutoCompleteProps> = ({
   suggestions,
   conditionShowDropdown,
   selectPersonFromTheList,
