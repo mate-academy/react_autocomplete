@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import debounce from 'lodash.debounce';
 import './Autocomplete.scss';
@@ -13,21 +13,31 @@ type Props = {
   onWarning: (a: boolean) => void;
 };
 
-export const Autocomplite: React.FC<Props> = memo(
+export const Autocomplete: React.FC<Props> = memo(
   ({ delay = 300, width = 300, onSelected, onWarning }) => {
     const [query, setQuery] = useState('');
     const [appliedQuery, setAppliedQuery] = useState('');
     const [showDrop, setShowDrop] = useState(true);
     const [isFirstRender, setIsFirstRender] = useState(true);
 
+    const debouncedApplyQuery = useRef(
+      debounce((value: string) => {
+        setAppliedQuery(value);
+      }, delay),
+    ).current;
+
+    useEffect(() => {
+      return () => {
+        debouncedApplyQuery.cancel();
+      };
+    }, [debouncedApplyQuery]);
+
     const filteredPeople = useMemo(() => {
-      const filter = peopleFromServer.filter(person =>
+      return peopleFromServer.filter(person =>
         person.name
           .toLocaleLowerCase()
           .includes(appliedQuery.toLocaleLowerCase()),
       );
-
-      return filter;
     }, [appliedQuery]);
 
     useEffect(() => {
@@ -42,16 +52,7 @@ export const Autocomplite: React.FC<Props> = memo(
       } else {
         setIsFirstRender(false);
       }
-    }, [filteredPeople]);
-
-    const applyQuery = useCallback(
-      debounce((value: string) => {
-        if (value !== query) {
-          setAppliedQuery(value);
-        }
-      }, delay),
-      [query],
-    );
+    }, [filteredPeople, isFirstRender, onWarning]);
 
     const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
@@ -59,7 +60,7 @@ export const Autocomplite: React.FC<Props> = memo(
       onSelected('');
       setShowDrop(false);
       setQuery(value);
-      applyQuery(value);
+      debouncedApplyQuery(value);
     };
 
     const handleSelectedItem = (item: Person) => {
@@ -71,14 +72,13 @@ export const Autocomplite: React.FC<Props> = memo(
 
     const handleFocus = () => {
       setShowDrop(false);
-
       if (filteredPeople.length === 0) {
         setShowDrop(true);
       }
     };
 
     return (
-      <div className="dropdown is-active" style={{ width: width }}>
+      <div className="dropdown is-active" style={{ width }}>
         <div className="dropdown-trigger width-trigger">
           <input
             placeholder="Enter a part of the name"
@@ -94,10 +94,8 @@ export const Autocomplite: React.FC<Props> = memo(
         </div>
 
         <div
-          className={classNames('dropdown-menu', {
-            'is-hidden': showDrop,
-          })}
-          style={{ width: width }}
+          className={classNames('dropdown-menu', { 'is-hidden': showDrop })}
+          style={{ width }}
           role="menu"
           data-cy="suggestions-list"
           id="dropdown-menu"

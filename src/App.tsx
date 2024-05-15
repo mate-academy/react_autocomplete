@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './App.scss';
-import { Autocomplite } from './components/Autocomplete';
+import { Autocomplete } from './components/Autocomplete';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
@@ -18,22 +18,17 @@ export const App: React.FC = () => {
             : 'No selected person'}
         </h1>
 
-        <Autocomplite
+        <Autocomplete
           onSelected={setSelectedOne}
           delay={delay}
           width={widthDropdown}
-          onWarning={a => setNotification(a)}
+          onWarning={setNotification}
         />
 
         {notification && (
           <div
-            className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
+            className="notification
+            is-danger is-light mt-3 is-align-self-flex-start"
             role="alert"
             data-cy="no-suggestions-message"
           >
