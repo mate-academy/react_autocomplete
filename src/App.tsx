@@ -4,13 +4,15 @@ import { peopleFromServer } from './data/people';
 import classNames from 'classnames';
 import { Person } from './types/Person';
 
-export const App: React.FC<Person> = () => {
+export const App: React.FC<Person | {}> = () => {
   const [query, setQuery] = useState('');
   // const [title, setTitle] = useState('No selected person');
   const [selectedPeople, setSelectedPeople] = useState<Person | ''>('');
   const [showAllPeople, setShowAllPeople] = useState(false);
 
-  const filteredPersons = peopleFromServer.filter(person => person.name.includes(query));
+  const filteredPersons = peopleFromServer.filter(person =>
+    person.name.includes(query),
+  );
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -24,7 +26,7 @@ export const App: React.FC<Person> = () => {
   const handleOnFocus = () => {
     if (!query) {
       setShowAllPeople(true);
-    };
+    }
   };
 
   return (
@@ -33,8 +35,7 @@ export const App: React.FC<Person> = () => {
         <h1 className="title" data-cy="title">
           {selectedPeople
             ? `${selectedPeople.name} (${selectedPeople.born} - ${selectedPeople.died})`
-            : 'No selected person'
-            }
+            : 'No selected person'}
         </h1>
 
         <div className="dropdown is-active">
@@ -50,46 +51,52 @@ export const App: React.FC<Person> = () => {
             />
           </div>
 
-          {(query || showAllPeople) && (<div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              {filteredPersons.map(person => (
-                  <div className={classNames('dropdown-item', {
-                    'is-active': person === selectedPeople
-                  })}
+          {(query || showAllPeople) && (
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
+              <div className="dropdown-content">
+                {filteredPersons.map(person => (
+                  <div
+                    className={classNames('dropdown-item', {
+                      'is-active': person === selectedPeople,
+                    })}
                     key={person.name}
                     data-cy="suggestion-item"
-                  onClick={() => handleOnClick(person)}
+                    onClick={() => handleOnClick(person)}
                   >
-                  <p
-                    className={classNames({
-                      'has-text-link': person.sex === 'm',
-                      'has-text-danger' : person.sex === 'f'
-                    })}
+                    <p
+                      className={classNames({
+                        'has-text-link': person.sex === 'm',
+                        'has-text-danger': person.sex === 'f',
+                      })}
                     >
-                    {person.name}
+                      {person.name}
                     </p>
                   </div>
-                ))
-              }
+                ))}
+              </div>
             </div>
-          </div>
           )}
         </div>
 
-        {(query && filteredPersons.length === 0) && (<div
-          className="
+        {query && filteredPersons.length === 0 && (
+          <div
+            className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>)
-        }
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
