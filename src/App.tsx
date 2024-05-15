@@ -1,8 +1,8 @@
 import { useState, ChangeEvent, FC, useEffect, useRef } from 'react';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 import DropdownContent from './components/DropdownContent';
 import './App.scss';
-import { Person } from './types/Person';
 
 export const App: FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,6 +14,7 @@ export const App: FC = () => {
   const [personSelected, setPersonSelected] = useState(false);
 
   const debounceDelay = useRef<number>(300);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -39,6 +40,23 @@ export const App: FC = () => {
     setPersonSelected(false);
   }, [debouncedSearchTerm, prevTerm]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsFocused(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownRef]);
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase();
 
@@ -57,7 +75,7 @@ export const App: FC = () => {
   const handleSelectPerson = (person: Person) => {
     setSearchTerm(person.name);
     setSelectedPerson(person);
-    setFilteredPeople([]);
+    setFilteredPeople([person]);
     setIsFocused(false);
     setPersonSelected(true);
   };
@@ -84,7 +102,10 @@ export const App: FC = () => {
             : 'No selected person'}
         </h1>
 
-        <div className={`dropdown ${isFocused ? 'is-active' : ''}`}>
+        <div
+          className={`dropdown ${isFocused ? 'is-active' : ''}`}
+          ref={dropdownRef}
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
