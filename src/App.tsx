@@ -1,33 +1,45 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import './App.scss';
-import { peopleFromServer } from './data/people';
-import classNames from 'classnames';
 import { Person } from './types/Person';
+import { normalizeInput } from './services/normalize-input';
+import { filterPeople } from './services/filterPeople';
+import debounce from 'lodash.debounce';
+import classNames from 'classnames';
 
 export const App: React.FC<Person | {}> = () => {
   const [query, setQuery] = useState('');
-  // const [title, setTitle] = useState('No selected person');
+  const [normalizedQuery, setNormalizedQuery] = useState('');
+
   const [selectedPeople, setSelectedPeople] = useState<Person | ''>('');
   const [showAllPeople, setShowAllPeople] = useState(false);
 
-  const filteredPersons = peopleFromServer.filter(person =>
-    person.name.includes(query),
-  );
+  const filteredPersons = useMemo(() => {
+    return filterPeople(normalizedQuery);
+  }, [normalizedQuery]);
+
+  // const field = useRef<HTMLInputElement>(null);
+
+  const applyQuery = useCallback(debounce(setNormalizedQuery, 1000), []);
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
+    applyQuery(normalizeInput(event.target.value));
+    setShowAllPeople(false);
   };
 
   const handleOnClick = (person: Person) => {
+    setQuery(person.name);
     setSelectedPeople(person);
-    setQuery('');
+    setShowAllPeople(false);
   };
 
   const handleOnFocus = () => {
-    if (!query) {
-      setShowAllPeople(true);
-    }
+    setShowAllPeople(true);
   };
+
+  const handleOnBlur = () => {
+    setShowAllPeople(false);
+  }
 
   return (
     <div className="container">
@@ -46,8 +58,10 @@ export const App: React.FC<Person | {}> = () => {
               className="input"
               data-cy="search-input"
               value={query}
+              // ref={field}
               onChange={handleOnChange}
               onFocus={handleOnFocus}
+              onBlur={handleOnBlur}
             />
           </div>
 
@@ -63,6 +77,7 @@ export const App: React.FC<Person | {}> = () => {
                     className={classNames('dropdown-item', {
                       'is-active': person === selectedPeople,
                     })}
+                    style={{ cursor: 'pointer' }}
                     key={person.name}
                     data-cy="suggestion-item"
                     onClick={() => handleOnClick(person)}
@@ -82,7 +97,7 @@ export const App: React.FC<Person | {}> = () => {
           )}
         </div>
 
-        {query && filteredPersons.length === 0 && (
+        {filteredPersons.length === 0 && (
           <div
             className="
             notification
