@@ -10,7 +10,7 @@ export const App: React.FC<Person | {}> = () => {
   const [query, setQuery] = useState('');
   const [normalizedQuery, setNormalizedQuery] = useState('');
 
-  const [selectedPeople, setSelectedPeople] = useState<Person | ''>('');
+  const [selectedPeople, setSelectedPeople] = useState<Person | null>(null);
   const [showAllPeople, setShowAllPeople] = useState(false);
 
   const filteredPersons = useMemo(() => {
@@ -22,33 +22,28 @@ export const App: React.FC<Person | {}> = () => {
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(normalizeInput(event.target.value));
-    setShowAllPeople(false);
+    setSelectedPeople(null);
   };
 
   const handleOnClick = (person: Person) => {
     setQuery(person.name);
     setSelectedPeople(person);
-    setShowAllPeople(false);
-  };
-
-  const handleOnFocus = () => {
-    setShowAllPeople(true);
-  };
-
-  const handleOnBlur = () => {
-    setShowAllPeople(false);
   };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPeople
-            ? `${selectedPeople.name} (${selectedPeople.born} - ${selectedPeople.died})`
-            : 'No selected person'}
+          {!selectedPeople
+            ? 'No selected person'
+            : `${selectedPeople.name} (${selectedPeople.born} - ${selectedPeople.died})`}
         </h1>
 
-        <div className="dropdown is-active">
+        <div
+          className={classNames('dropdown', {
+            'is-active': showAllPeople || query,
+          })}
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
@@ -57,8 +52,8 @@ export const App: React.FC<Person | {}> = () => {
               data-cy="search-input"
               value={query}
               onChange={handleOnChange}
-              onFocus={handleOnFocus}
-              onBlur={handleOnBlur}
+              onFocus={() => setShowAllPeople(true)}
+              onBlur={() => setShowAllPeople(false)}
             />
           </div>
 
@@ -74,8 +69,8 @@ export const App: React.FC<Person | {}> = () => {
                     className={classNames('dropdown-item', {
                       'is-active': person === selectedPeople,
                     })}
+                    key={person.slug}
                     style={{ cursor: 'pointer' }}
-                    key={person.name}
                     data-cy="suggestion-item"
                     onClick={() => handleOnClick(person)}
                   >
