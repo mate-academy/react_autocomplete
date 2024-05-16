@@ -17,8 +17,6 @@ export const App: React.FC<Person | {}> = () => {
     return filterPeople(normalizedQuery);
   }, [normalizedQuery]);
 
-  // const field = useRef<HTMLInputElement>(null);
-
   const applyQuery = useCallback(debounce(setNormalizedQuery, 1000), []);
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +37,7 @@ export const App: React.FC<Person | {}> = () => {
 
   const handleOnBlur = () => {
     setShowAllPeople(false);
-  }
+  };
 
   return (
     <div className="container">
@@ -58,7 +56,6 @@ export const App: React.FC<Person | {}> = () => {
               className="input"
               data-cy="search-input"
               value={query}
-              // ref={field}
               onChange={handleOnChange}
               onFocus={handleOnFocus}
               onBlur={handleOnBlur}
