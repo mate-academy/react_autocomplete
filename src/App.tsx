@@ -28,6 +28,7 @@ export const App: React.FC<Person | {}> = () => {
   const handleOnClick = (person: Person) => {
     setQuery(person.name);
     setSelectedPeople(person);
+    setShowAllPeople(false);
   };
 
   return (
@@ -41,7 +42,7 @@ export const App: React.FC<Person | {}> = () => {
 
         <div
           className={classNames('dropdown', {
-            'is-active': showAllPeople || query,
+            'is-active': showAllPeople,
           })}
         >
           <div className="dropdown-trigger">
@@ -53,16 +54,12 @@ export const App: React.FC<Person | {}> = () => {
               value={query}
               onChange={handleOnChange}
               onFocus={() => setShowAllPeople(true)}
-              onBlur={() => setShowAllPeople(false)}
+              // onBlur={() => setShowAllPeople(false)}
             />
           </div>
 
-          {(query || showAllPeople) && (
-            <div
-              className="dropdown-menu"
-              role="menu"
-              data-cy="suggestions-list"
-            >
+          {filteredPersons.length !== 0 && (
+          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
               <div className="dropdown-content">
                 {filteredPersons.map(person => (
                   <div
@@ -85,8 +82,8 @@ export const App: React.FC<Person | {}> = () => {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+          </div>
+            )}
         </div>
 
         {filteredPersons.length === 0 && (
