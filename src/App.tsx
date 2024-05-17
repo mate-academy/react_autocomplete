@@ -1,9 +1,9 @@
 import React from 'react';
+import { useState, useMemo } from 'react';
 import 'bulma';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Dropdown } from './components/Dropdown';
-import { useState, useMemo } from 'react';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
@@ -48,14 +48,12 @@ export const App: React.FC = () => {
         <Dropdown
           onSelected={handleSelect}
           delay={300}
-          inputIsFocused={false}
           filteredList={filteredList}
           setAppliedQuery={handleApliedQuery}
-          appliedQuery={appliedQuery}
           setSelectedPerson={setSelectedPerson}
         />
 
-        {filteredList.length === 0 && (
+        {!filteredList.length && (
           <div
             className="
           notification
