@@ -15,9 +15,9 @@ export const App: React.FC = () => {
       const { name, born, died } = selectedPerson;
 
       return `${name} (${born} - ${died})`;
-    } else {
-      return 'No selected person';
     }
+
+    return 'No selected person';
   };
 
   const filteredList = useMemo(() => {
@@ -28,14 +28,10 @@ export const App: React.FC = () => {
     );
   }, [appliedQuery]);
 
-  const handleApliedQuery = (arg: string) => {
-    setAppliedQuery(arg);
-  };
-
-  const handleSelect = (p: Person | undefined) => {
-    setSelectedPerson(p);
-    if (p) {
-      setAppliedQuery(p?.name);
+  const handleSelect = (person: Person | undefined) => {
+    setSelectedPerson(person);
+    if (person) {
+      setAppliedQuery(person?.name);
     }
   };
 
@@ -49,25 +45,9 @@ export const App: React.FC = () => {
           onSelected={handleSelect}
           delay={300}
           filteredList={filteredList}
-          setAppliedQuery={handleApliedQuery}
+          setAppliedQuery={setAppliedQuery}
           setSelectedPerson={setSelectedPerson}
         />
-
-        {!filteredList.length && (
-          <div
-            className="
-          notification
-          is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-            role="alert"
-            data-cy="no-suggestions-message"
-          >
-            <p className="has-text-danger">No matching suggestions</p>
-          </div>
-        )}
       </main>
     </div>
   );
