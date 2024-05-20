@@ -1,3 +1,13 @@
 iframe {
   display: none;
 }
+
+.max-height-dropdown {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.dropdown-item:hover {
+  background-color: rgb(241, 241, 244);
+  cursor: pointer;
+}
