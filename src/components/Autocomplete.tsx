@@ -40,6 +40,12 @@ export const Autocomplete: React.FC<Props> = ({
     onSelect(null);
   };
 
+  const onBlurChange = (event: React.FocusEvent<HTMLDivElement>) => {
+    if (!event.relatedTarget) {
+      setShowList(false);
+    }
+  };
+
   return (
     <div className={cn('dropdown', { 'is-active': showList })}>
       <div className="dropdown-trigger">
@@ -47,11 +53,7 @@ export const Autocomplete: React.FC<Props> = ({
           value={query}
           onChange={handleQuaryChange}
           onFocus={() => setShowList(true)}
-          onBlur={event => {
-            if (!event.relatedTarget) {
-              setShowList(false);
-            }
-          }}
+          onBlur={onBlurChange}
           type="text"
           placeholder="Enter a part of the name"
           className="input"
