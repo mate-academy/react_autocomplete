@@ -17,8 +17,8 @@ export const App: React.FC = () => {
           {personInfo}
         </h1>
         <Autocomplete
-          people={peopleFromServer}
           onSelected={setSelectedPerson}
+          people={peopleFromServer}
         />
       </main>
     </div>
