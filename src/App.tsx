@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -16,9 +16,12 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
   const [appliedInput, setAppliedInput] = useState('');
   const [isInputFocus, setIsInputFocus] = useState(true);
 
-  const debouncedSetAppliedInput = debounce((value: string) => {
-    setAppliedInput(value);
-  }, debounceDelay);
+  const debouncedSetAppliedInput = useCallback(
+    debounce((value: string) => {
+      setAppliedInput(value);
+    }, debounceDelay),
+    [debounceDelay],
+  );
 
   useEffect(() => {
     if (inputName.trim() === '') {
