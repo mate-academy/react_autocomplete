@@ -1,14 +1,14 @@
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
 
-interface AppProps {
+export interface AppProps {
   debounceDelay: number;
 }
 
-export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
+export const App: React.FC<AppProps> = ({ debounceDelay }) => {
   const [selectedName, setSelectedName] =
     useState<string>('No selected person');
   const [personList, setPersonList] = useState(peopleFromServer);
@@ -16,12 +16,9 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
   const [appliedInput, setAppliedInput] = useState('');
   const [isInputFocus, setIsInputFocus] = useState(true);
 
-  const applyInput = useCallback(
-    debounce((value: string) => {
-      setAppliedInput(value);
-    }, debounceDelay),
-    [debounceDelay],
-  );
+  const debouncedSetAppliedInput = debounce((value: string) => {
+    setAppliedInput(value);
+  }, debounceDelay);
 
   useEffect(() => {
     if (inputName.trim() === '') {
@@ -38,7 +35,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
   function handleInputBlur() {
     setTimeout(() => {
       setIsInputFocus(false);
-    }, 200)
+    }, 150);
   }
 
   function handlePersonClick(person: Person) {
@@ -48,8 +45,10 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
   }
 
   function handleChangeInput(event: ChangeEvent<HTMLInputElement>) {
-    setInputName(event.target.value);
-    applyInput(event.target.value);
+    const newValue = event.target.value;
+
+    setInputName(newValue);
+    debouncedSetAppliedInput(newValue);
     setSelectedName('No selected person');
   }
 
