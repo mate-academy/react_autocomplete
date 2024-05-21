@@ -4,7 +4,11 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
 
-export const App: React.FC = () => {
+interface AppProps {
+  debounceDelay: number;
+}
+
+export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
   const [selectedName, setSelectedName] =
     useState<string>('No selected person');
   const [personList, setPersonList] = useState(peopleFromServer);
@@ -12,9 +16,12 @@ export const App: React.FC = () => {
   const [appliedInput, setAppliedInput] = useState('');
   const [isInputFocus, setIsInputFocus] = useState(true);
 
-  const applyInput = useCallback((value: string) => {
-    debounce(() => setAppliedInput(value), 300)();
-  }, []);
+  const applyInput = useCallback(
+    debounce((value: string) => {
+      setAppliedInput(value);
+    }, debounceDelay),
+    [debounceDelay],
+  );
 
   useEffect(() => {
     if (inputName.trim() === '') {
@@ -26,7 +33,13 @@ export const App: React.FC = () => {
         ),
       );
     }
-  }, [appliedInput]);
+  }, [appliedInput, inputName]);
+
+  function handleInputBlur() {
+    setTimeout(() => {
+      setIsInputFocus(false);
+    }, 200)
+  }
 
   function handlePersonClick(person: Person) {
     setInputName(person.name);
@@ -51,7 +64,8 @@ export const App: React.FC = () => {
           <div className="dropdown-trigger">
             <input
               value={inputName}
-              onClick={() => setIsInputFocus(true)}
+              onFocus={() => setIsInputFocus(true)}
+              onBlur={handleInputBlur}
               onChange={handleChangeInput}
               type="text"
               placeholder="Enter a part of the name"
@@ -75,7 +89,7 @@ export const App: React.FC = () => {
             </div>
           </div>
         </div>
-        {personList.length === 0 ? (
+        {personList.length === 0 && (
           <div
             className="
               notification
@@ -89,7 +103,7 @@ export const App: React.FC = () => {
           >
             <p className="has-text-danger">No matching suggestions</p>
           </div>
-        ) : null}
+        )}
       </main>
     </div>
   );
