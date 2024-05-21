@@ -16,12 +16,9 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
   const [appliedInput, setAppliedInput] = useState('');
   const [isInputFocus, setIsInputFocus] = useState(true);
 
-  const applyInput = useCallback(
-    (value: string) => {
-      debounce(() => setAppliedInput(value), debounceDelay)();
-    },
-    [debounceDelay],
-  );
+  const applyInput = useCallback((value: string) => {
+    debounce(() => setAppliedInput(value), debounceDelay)();
+  }, []);
 
   useEffect(() => {
     if (inputName.trim() === '') {
@@ -34,12 +31,6 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
       );
     }
   }, [appliedInput, inputName]);
-
-  function handleInputBlur() {
-    setTimeout(() => {
-      setIsInputFocus(false);
-    }, 100);
-  }
 
   function handlePersonClick(person: Person) {
     setInputName(person.name);
@@ -65,7 +56,6 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
             <input
               value={inputName}
               onClick={() => setIsInputFocus(true)}
-              onBlur={handleInputBlur}
               onChange={handleChangeInput}
               type="text"
               placeholder="Enter a part of the name"
