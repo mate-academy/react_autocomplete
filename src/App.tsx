@@ -35,7 +35,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
   function handleInputBlur() {
     setTimeout(() => {
       setIsInputFocus(false);
-    }, 150);
+    }, 100);
   }
 
   function handlePersonClick(person: Person) {
