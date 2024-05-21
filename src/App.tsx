@@ -4,8 +4,8 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
 
-export interface AppProps {
-  debounceDelay: number;
+interface AppProps {
+  debounceDelay?: number;
 }
 
 export const App: React.FC<AppProps> = ({ debounceDelay }) => {
@@ -16,12 +16,9 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
   const [appliedInput, setAppliedInput] = useState('');
   const [isInputFocus, setIsInputFocus] = useState(true);
 
-  const debouncedSetAppliedInput = useCallback(
-    debounce((value: string) => {
-      setAppliedInput(value);
-    }, debounceDelay),
-    [debounceDelay],
-  );
+  const applyInput = useCallback((value: string) => {
+    debounce(() => setAppliedInput(value), debounceDelay)();
+  }, []);
 
   useEffect(() => {
     if (inputName.trim() === '') {
@@ -48,10 +45,8 @@ export const App: React.FC<AppProps> = ({ debounceDelay }) => {
   }
 
   function handleChangeInput(event: ChangeEvent<HTMLInputElement>) {
-    const newValue = event.target.value;
-
-    setInputName(newValue);
-    debouncedSetAppliedInput(newValue);
+    setInputName(event.target.value);
+    applyInput(event.target.value);
     setSelectedName('No selected person');
   }
 
