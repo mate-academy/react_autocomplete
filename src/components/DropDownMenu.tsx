@@ -6,7 +6,7 @@ import debounce from 'lodash.debounce';
 type Props = {
   persons: Person[];
   onSelected: (person: Person | null) => void;
-  delay?: 300;
+  delay?: number;
 };
 
 export const DropDownMenu: React.FC<Props> = ({
@@ -16,9 +16,12 @@ export const DropDownMenu: React.FC<Props> = ({
 }) => {
   const [focused, setFocused] = useState(false);
   const [query, setQuery] = useState('');
-  const [delayQuery, setDelayQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const delayedQuery = debounce(setDelayQuery, delay);
+  const applyQuery = debounce((value: string) => {
+    setAppliedQuery(value);
+    setFocused(true);
+  }, delay);
 
   const handlePersonChange = (selectedPerson: Person) => {
     setQuery(selectedPerson.name);
@@ -28,8 +31,9 @@ export const DropDownMenu: React.FC<Props> = ({
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    delayedQuery(event.target.value);
+    applyQuery(event.target.value);
     onSelected(null);
+    setFocused(false);
   };
 
   const filteredPersons = useMemo(() => {
@@ -37,9 +41,9 @@ export const DropDownMenu: React.FC<Props> = ({
       person.name
         .toLowerCase()
         .trim()
-        .includes(delayQuery.trim().toLowerCase()),
+        .includes(appliedQuery.trim().toLowerCase()),
     );
-  }, [delayQuery, persons]);
+  }, [appliedQuery, persons]);
 
   return (
     <div className={cn('dropdown', { 'is-active': focused })}>
