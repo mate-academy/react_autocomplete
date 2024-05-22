@@ -4,21 +4,21 @@ import { peopleFromServer } from './data/people';
 import { DropDownMenu } from './components/dropdown_menu/dropdownMenu';
 import { Person } from './types/Person';
 
-function debounce(callback, delay = 300) {
+function debounce(callback: (arg: string) => void, delay = 300) {
   let timerId = 0;
 
-  return (...args) => {
+  return (args: string) => {
     window.clearTimeout(timerId);
 
     timerId = window.setTimeout(() => {
-      callback(...args);
+      callback(args);
     }, delay);
   };
 }
 
 export const App: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
-  const [peopleList, setPeopleList] = useState<Person[]>(peopleFromServer);
+  const [peopleList] = useState<Person[]>(peopleFromServer);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
