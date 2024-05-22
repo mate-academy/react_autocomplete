@@ -34,7 +34,10 @@ export const DropDownMenu: React.FC<Props> = ({
 
   const filteredPersons = useMemo(() => {
     return persons.filter(person =>
-      person.name.toLowerCase().includes(delayQuery.toLowerCase()),
+      person.name
+        .toLowerCase()
+        .trim()
+        .includes(delayQuery.trim().toLowerCase()),
     );
   }, [delayQuery, persons]);
 
