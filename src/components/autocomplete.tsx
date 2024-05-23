@@ -64,7 +64,7 @@ export const CustomAutocomplete: React.FC<Props> = ({
   }, [appliedQuery, peopleFromServer]);
 
   return (
-    <div className={`dropdown ${dropDown ? 'is-active' : ''}`}>
+    <div className={cn('dropdown', { 'is-active': dropDown })}>
       <div className="dropdown-trigger">
         <input
           type="text"
