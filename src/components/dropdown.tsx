@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Person } from '../types/Person';
 import { peopleFromServer } from '../data/people';
 import debounce from 'lodash.debounce';
+import classNames from 'classnames';
 
 type Props = {
   onSelected: (person: Person | null) => void;
@@ -11,19 +12,25 @@ type Props = {
 export const Dropdown: React.FC<Props> = React.memo(({ onSelected, delay }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [typing, setTyping] = useState(false);
   const [hasFocus, setHasFocus] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(
-    debounce(q => {
+    debounce((q: string) => {
       setAppliedQuery(q);
+      setTyping(false);
     }, delay),
     [delay],
   );
 
   const handleQueryChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(event.target.value);
-      applyQuery(event.target.value);
+      const value = event.target.value;
+
+      setQuery(value);
+      setTyping(true);
+      applyQuery(value);
       onSelected(null);
     },
     [applyQuery, onSelected],
@@ -33,19 +40,32 @@ export const Dropdown: React.FC<Props> = React.memo(({ onSelected, delay }) => {
     (person: Person) => {
       onSelected(person);
       setQuery(person.name);
+      setTyping(false);
       setHasFocus(false);
     },
     [onSelected],
   );
 
   const filteredPeople = useMemo(() => {
+    if (appliedQuery === '' && hasFocus) {
+      return peopleFromServer;
+    }
+
     return peopleFromServer.filter(p =>
       p.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
-  }, [appliedQuery]);
+  }, [appliedQuery, hasFocus]);
+
+  useEffect(() => {
+    return () => {
+      applyQuery.cancel();
+    };
+  }, [applyQuery]);
 
   return (
-    <div className="dropdown is-active">
+    <div
+      className={classNames('dropdown', { 'is-active': hasFocus && !typing })}
+    >
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -60,7 +80,7 @@ export const Dropdown: React.FC<Props> = React.memo(({ onSelected, delay }) => {
       </div>
 
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-        {hasFocus && (
+        {hasFocus && !typing && (
           <div className="dropdown-content">
             {filteredPeople.length ? (
               filteredPeople.map((person: Person) => (
