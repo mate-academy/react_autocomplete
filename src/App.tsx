@@ -19,10 +19,7 @@ export const App: React.FC = () => {
           </h1>
         )}
 
-        <Dropdown
-          onSelected={person => setSelectedPerson(person)}
-          delay={300}
-        />
+        <Dropdown onSelected={setSelectedPerson} delay={300} />
       </main>
     </div>
   );

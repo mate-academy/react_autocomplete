@@ -13,7 +13,12 @@ export const Dropdown: React.FC<Props> = React.memo(({ onSelected, delay }) => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [hasFocus, setHasFocus] = useState(false);
 
-  const applyQuery = useMemo(() => debounce(setAppliedQuery, delay), [delay]);
+  const applyQuery = useCallback(
+    debounce(q => {
+      setAppliedQuery(q);
+    }, delay),
+    [delay],
+  );
 
   const handleQueryChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
