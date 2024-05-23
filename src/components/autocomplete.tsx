@@ -7,20 +7,27 @@ interface Props {
   peopleFromServer: Person[];
   onSelected: (person: Person) => void;
   onInputChange: () => void;
+  debounceDelay?: number;
 }
 
 export const CustomAutocomplete: React.FC<Props> = ({
   peopleFromServer,
   onSelected,
   onInputChange,
+  debounceDelay = 300,
 }) => {
   const [query, setQuery] = useState('');
   const [dropDown, setDropDown] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 300), [
-    setAppliedQuery,
-  ]);
+  const applyQuery = useMemo(
+    () =>
+      debounce((value: string) => {
+        setAppliedQuery(value);
+        setDropDown(true);
+      }, debounceDelay),
+    [debounceDelay],
+  );
 
   const handleQueryChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,22 +35,26 @@ export const CustomAutocomplete: React.FC<Props> = ({
 
       setQuery(value);
       applyQuery(value);
-      setDropDown(true);
+      setDropDown(false);
       onInputChange();
     },
-    [setQuery, applyQuery, setDropDown, onInputChange],
+    [applyQuery, onInputChange],
   );
 
   const handleSelectPerson = useCallback(
     (person: Person) => {
-      setQuery(person?.name);
+      setQuery(person.name);
       setDropDown(false);
       onSelected(person);
     },
-    [setQuery, setDropDown, onSelected],
+    [onSelected],
   );
 
   const filteredPeople = useMemo(() => {
+    if (appliedQuery.trim() === '') {
+      return peopleFromServer;
+    }
+
     return peopleFromServer.filter(person => {
       const normalName = person.name.trim().toLowerCase();
       const normalQuery = appliedQuery.trim().toLowerCase();
@@ -53,7 +64,7 @@ export const CustomAutocomplete: React.FC<Props> = ({
   }, [appliedQuery, peopleFromServer]);
 
   return (
-    <div className="dropdown is-active">
+    <div className={`dropdown ${dropDown ? 'is-active' : ''}`}>
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -62,9 +73,7 @@ export const CustomAutocomplete: React.FC<Props> = ({
           data-cy="search-input"
           value={query}
           onChange={handleQueryChange}
-          onFocus={() => {
-            setDropDown(true);
-          }}
+          onFocus={() => setDropDown(query.trim() === '')}
         />
       </div>
 
@@ -74,19 +83,19 @@ export const CustomAutocomplete: React.FC<Props> = ({
             className={filteredPeople.length !== 0 ? 'dropdown-content' : ''}
           >
             {filteredPeople.length !== 0 ? (
-              filteredPeople.map(people => (
+              filteredPeople.map(person => (
                 <div
                   className="dropdown-item"
                   data-cy="suggestion-item"
-                  key={people.slug}
-                  onClick={() => handleSelectPerson(people)}
+                  key={person.slug}
+                  onClick={() => handleSelectPerson(person)}
                 >
                   <p
                     className={cn('has-text-link', {
-                      'has-text-danger': people.sex === 'f',
+                      'has-text-danger': person.sex === 'f',
                     })}
                   >
-                    {people.name}
+                    {person.name}
                   </p>
                 </div>
               ))
