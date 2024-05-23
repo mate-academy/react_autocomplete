@@ -64,11 +64,12 @@ export const App: React.FC = () => {
             />
           </div>
 
-          {peopleList && isFocused && (
+          {filteredList.length > 0 && peopleList && isFocused && (
             <DropDownMenu
               list={filteredList}
               setTitle={setTitle}
               setFocused={setIsFocused}
+              setQuery={setQuery}
             />
           )}
         </div>

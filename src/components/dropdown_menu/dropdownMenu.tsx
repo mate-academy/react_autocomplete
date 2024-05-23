@@ -6,12 +6,14 @@ interface Props {
   list: Person[];
   setTitle: (arg: string) => void;
   setFocused: (arg: boolean) => void;
+  setQuery: (arg: string) => void;
 }
 
 export const DropDownMenu: React.FC<Props> = ({
   list,
   setTitle,
   setFocused,
+  setQuery,
 }) => {
   return (
     <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
@@ -19,6 +21,7 @@ export const DropDownMenu: React.FC<Props> = ({
         people={list}
         setTitle={setTitle}
         setFocused={setFocused}
+        setQuery={setQuery}
       />
     </div>
   );

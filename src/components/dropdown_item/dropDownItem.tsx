@@ -5,12 +5,14 @@ interface Prop {
   person: Person;
   setTitle: (arg: string) => void;
   setFocused: (arg: boolean) => void;
+  setQuery: (arg: string) => void;
 }
 
 export const DropDownItem: React.FC<Prop> = ({
   person,
   setTitle,
   setFocused,
+  setQuery,
 }) => {
   const selectedPersonTitle = `${person.name} (${person.born} - ${person.died})`;
 
@@ -20,6 +22,7 @@ export const DropDownItem: React.FC<Prop> = ({
       data-cy="suggestion-item"
       onClick={() => {
         setTitle(selectedPersonTitle);
+        setQuery(person.name);
         setFocused(false);
       }}
     >
