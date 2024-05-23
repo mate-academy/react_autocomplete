@@ -14,7 +14,7 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-        {selectedOne
+          {selectedOne
             ? `${selectedOne.name} (${selectedOne.born} - ${selectedOne.died})`
             : 'No selected person'}
         </h1>
@@ -28,18 +28,18 @@ export const App: React.FC = () => {
 
         {notification && (
           <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+            className="
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
         )}
       </main>
     </div>

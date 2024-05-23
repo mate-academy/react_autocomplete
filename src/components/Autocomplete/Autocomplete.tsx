@@ -1,9 +1,9 @@
-import React from "react"
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Person } from "../../types/Person";
-import { peopleFromServer } from "../../data/people";
-import debounce from "lodash.debounce";
-import classNames from "classnames";
+import React from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
+import { Person } from '../../types/Person';
+import { peopleFromServer } from '../../data/people';
+import debounce from 'lodash.debounce';
+import classNames from 'classnames';
 
 interface Props {
   delay?: number;
@@ -41,15 +41,18 @@ export const AutoComplete: React.FC<Props> = memo(
       } else {
         setIsFirstRender(false);
       }
-    }, [filteredPeople]);
+    }, [filteredPeople, isFirstRender, onWarning]);
 
-    const applyQuery = useCallback(
-      debounce((value: string) => {
-        if (value !== query) {
-          setAppliedQuery(value);
-        }
-      }, delay),
-      [query],
+    const applyQuery = useMemo(() => (
+      debounce(
+        (value: string) => {
+          if (value !== query) {
+            setAppliedQuery(value);
+          }
+        }, 
+        delay
+      )),
+      [query]
     );
 
     const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,5 +126,5 @@ export const AutoComplete: React.FC<Props> = memo(
         </div>
       </div>
     );
-  }
+  },
 );
