@@ -14,20 +14,18 @@ export const App: React.FC = () => {
   const [selected, setSelected] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [touched, setTouched] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(setAppliedQuery, DELAY), []);
 
-  const normalizeQuery = appliedQuery.trim().toLowerCase();
+  const filteredPeople = useMemo(() => {
+    const normalizeQuery = appliedQuery.trim().toLowerCase();
 
-  const filteredPeople = useMemo(
-    () =>
-      peopleFromServer.filter(person =>
-        person.name.toLowerCase().includes(normalizeQuery),
-      ),
-    [normalizeQuery],
-  );
+    return peopleFromServer.filter(person =>
+      person.name.toLowerCase().includes(normalizeQuery),
+    );
+  }, [appliedQuery]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -36,14 +34,15 @@ export const App: React.FC = () => {
 
   const handleClick = (event: MouseEvent) => {
     if (dropRef.current && !dropRef.current.contains(event.target as Node)) {
-      setTouched(false);
+      setIsFocused(false);
     }
   };
 
   const activateTitle = (person: Person) => () => {
     setSelected(person);
     setQuery(person.name);
-    setTouched(false);
+    setIsFocused(false);
+    setAppliedQuery('');
   };
 
   useEffect(() => {
@@ -67,13 +66,13 @@ export const App: React.FC = () => {
 
         <div
           className={cn('dropdown', {
-            'is-active': touched,
+            'is-active': isFocused,
           })}
           ref={dropRef}
         >
           <div className="dropdown-trigger">
             <input
-              onFocus={() => setTouched(true)}
+              onFocus={() => setIsFocused(true)}
               type="text"
               placeholder="Enter a part of the name"
               className="input"
