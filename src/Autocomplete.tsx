@@ -22,6 +22,7 @@ export const Autocomplete: React.FC<Props> = React.memo(({
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     applyQuery(event.target.value);
+    onSelect('');
   };
 
   const handleSelect = (person: Person) => {

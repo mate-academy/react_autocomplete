@@ -5,13 +5,12 @@ import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | ''>('');
+  const personInfo = selectedPerson ? `${selectedPerson.name} ${selectedPerson.born} - ${selectedPerson.died}` : '';
 
   return (
     <main className="section">
       <h1 className="title">
-        {selectedPerson
-          ? `${selectedPerson.name} ${selectedPerson.born} - ${selectedPerson.died}`
-          : 'No selected person'}
+        {personInfo || 'No selected person'}
       </h1>
 
       <Autocomplete
