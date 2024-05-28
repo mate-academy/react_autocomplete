@@ -29,7 +29,7 @@ export const App: React.FC = () => {
     timerId.current = window.setTimeout(() => {
       setCorrectPeople(
         peopleFromServer.filter(person =>
-          person.name.includes(event.target.value),
+          person.name.toLowerCase().includes(event.target.value.toLowerCase()),
         ),
       );
     }, 300);

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Person } from '../types/Person';
+import cn from 'classnames';
 
 interface Type {
   person: Person;
@@ -18,7 +19,11 @@ export const DropdownItem: React.FC<Type> = ({
       data-cy="suggestion-item"
       onClick={() => onSelect(person)}
     >
-      <p className="has-text-link">{name}</p>
+      <p
+        className={cn(person.sex === 'm' ? 'has-text-link' : 'has-text-danger')}
+      >
+        {name}
+      </p>
     </div>
   );
 };

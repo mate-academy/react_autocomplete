@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Person } from '../types/Person';
 import { DropdownMenu } from '../DropdownMenu';
+import cn from 'classnames';
 
 interface Type {
   people: Person[];
@@ -16,15 +17,37 @@ export const Dropdown: React.FC<Type> = ({
   onSelect,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleBlur = () => {
-    setTimeout(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
       setShowMenu(false);
-    }, 20);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleSelect = (person: Person) => {
+    onSelect(person);
+    setShowMenu(false);
   };
 
   return (
-    <div className="dropdown is-active">
+    <div
+      className={cn('dropdown', {
+        'is-active': showMenu,
+      })}
+      ref={dropdownRef}
+    >
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -34,11 +57,10 @@ export const Dropdown: React.FC<Type> = ({
           value={partText}
           onChange={queryChange}
           onFocus={() => setShowMenu(true)}
-          onBlur={handleBlur}
         />
       </div>
 
-      {showMenu && <DropdownMenu people={people} onSelect={onSelect} />}
+      <DropdownMenu people={people} onSelect={handleSelect} />
     </div>
   );
 };
