@@ -1,72 +1,51 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
-import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
+import { peopleFromServer } from './data/people';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
-  const [hasError, setHasError] = useState(true);
-  const [selectedPerson, setSelectedPerson] = useState('No selected person');
-  const [titleSelectPerson, setTitleSelectPerson] = useState('');
-  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [dropDown, setDropDown] = useState(false);
+  const [appliedQuery, setAppliedQuery] = useState('');
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const applyQuery = useCallback(debounce(setQuery, 300), []);
+  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    applyQuery(event.target.value);
     setQuery(event.target.value);
+    applyQuery(event.target.value);
+    setSelectedPerson(null);
+    setDropDown(true);
+  };
 
-    const hasMatch = peopleFromServer.some(person =>
-      person.name
-        .toLowerCase()
-        .includes(event.target.value.trim().toLowerCase()),
-    );
-
-    setHasError(hasMatch);
+  const handleSelectPerson = (person: Person) => {
+    setQuery(person?.name);
+    setSelectedPerson(person);
+    setDropDown(false);
   };
 
   const filteredPeople = useMemo(() => {
-    return peopleFromServer.filter(person =>
-      person.name.toLowerCase().includes(query.toLowerCase()),
-    );
-  }, [query]);
+    return peopleFromServer.filter(person => {
+      const normalazedName = person.name.trim().toLowerCase();
+      const normalazedQuery = appliedQuery.trim().toLowerCase();
 
-  const personData = (person: Person) => {
-    setSelectedPerson(`${person.name} (${person.born} - ${person.died})`);
-
-    setQuery(person.name);
-    setTitleSelectPerson(person.name);
-    setDropdownVisible(false);
-  };
-
-  useEffect(() => {
-    if (query !== titleSelectPerson) {
-      setDropdownVisible(true);
-      setSelectedPerson('No selected person');
-    }
-  }, [query, titleSelectPerson, selectedPerson]);
-
-  const handleChangeFocus = () => {
-    if (!query) {
-      setDropdownVisible(true);
-    }
-  };
+      return normalazedName.includes(normalazedQuery);
+    });
+  }, [appliedQuery]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson}
+          {selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+            : 'No selected person'}
         </h1>
 
-        <div
-          className={classNames('dropdown', {
-            'is-active': dropdownVisible,
-          })}
-        >
+        <div className="dropdown is-active">
           <div className="dropdown-trigger">
             <input
               type="text"
@@ -75,35 +54,53 @@ export const App: React.FC = () => {
               data-cy="search-input"
               value={query}
               onChange={handleQueryChange}
-              onFocus={handleChangeFocus}
+              onFocus={() => {
+                setDropDown(true);
+              }}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              {filteredPeople.map((people, index) => (
-                <div
-                  className="dropdown-item"
-                  key={index}
-                  data-cy="suggestion-item"
-                  onClick={() => personData(people)}
-                >
-                  <p className="has-text-link">{people.name}</p>
-                </div>
-              ))}
+          {dropDown && (
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
+              <div
+                className={
+                  filteredPeople.length !== 0 ? 'dropdown-content' : ''
+                }
+              >
+                {filteredPeople.map(people => (
+                  <div
+                    className="dropdown-item"
+                    data-cy="suggestion-item"
+                    key={people.slug}
+                    onClick={() => handleSelectPerson(people)}
+                  >
+                    <p
+                      className={classNames('has-text-link', {
+                        'has-text-danger': people.sex === 'f',
+                      })}
+                    >
+                      {people.name}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
-        {!hasError && (
+        {filteredPeople.length === 0 && (
           <div
             className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
             role="alert"
             data-cy="no-suggestions-message"
           >
