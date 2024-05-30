@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import debounce from 'lodash.debounce';
@@ -9,7 +9,10 @@ export const App: React.FC = () => {
   const [onFocus, setOnFocus] = useState(false);
   const [currentPerson, setCurrentPerson] = useState<Person | null>(null);
   const [appliedQuery, setAppliedQuery] = useState('');
-  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
+  const applyQuery = useMemo(
+    () => debounce(setAppliedQuery, 300),
+    [setAppliedQuery],
+  );
 
   const filteredPeople = useMemo(() => {
     if (appliedQuery) {
