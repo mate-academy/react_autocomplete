@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Menu } from './data/Components/Menu';
@@ -12,7 +12,6 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const inputRef = useRef<HTMLInputElement | null>(null);
   const applyQuery = debounce((value: string) => {
     setAppliedQuery(value);
     setFocused(true);
@@ -44,7 +43,6 @@ export const App: React.FC = () => {
           <div className="dropdown-trigger">
             <input
               type="text"
-              ref={inputRef}
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
@@ -59,7 +57,6 @@ export const App: React.FC = () => {
               setFocus={setFocused}
               onSelect={setSelectedPerson}
               list={filteredPersons}
-              key={selectedPerson?.name}
             />
           )}
         </div>
