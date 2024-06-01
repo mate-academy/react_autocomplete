@@ -33,12 +33,6 @@ export const Autocomplete: React.FC<Props> = ({
     debouncedAppliedQuery(newQuery);
   };
 
-  const handlBlurChange = (event: React.FocusEvent<HTMLInputElement>) => {
-    if (!event.relatedTarget) {
-      setInputFocus(false);
-    }
-  };
-
   return (
     <div className="dropdown is-active">
       <div className="dropdown-trigger">
@@ -52,7 +46,9 @@ export const Autocomplete: React.FC<Props> = ({
           onFocus={() => {
             setInputFocus(true);
           }}
-          onBlur={handlBlurChange}
+          onBlur={() => {
+            setInputFocus(false);
+          }}
         />
       </div>
 
@@ -75,7 +71,7 @@ export const Autocomplete: React.FC<Props> = ({
                 }}
               >
                 <p
-                  className={classNames('', {
+                  className={classNames('is-clickable', {
                     'has-text-link': sex === 'm',
                     'has-text-danger': sex === 'f',
                   })}
