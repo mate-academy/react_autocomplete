@@ -17,13 +17,15 @@ export const App = () => {
     return peopleFromServer.find(person => person.name === query);
   }, [query]);
 
+  const personTitle = currentPerson
+    ? `${currentPerson.name} (${currentPerson.born} - ${currentPerson.died})`
+    : 'No selected person';
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {currentPerson
-            ? `${currentPerson.name} (${currentPerson.born} - ${currentPerson.died})`
-            : 'No selected person'}
+          {personTitle}
         </h1>
 
         <Autocomplete
@@ -33,7 +35,7 @@ export const App = () => {
           setAppliedQuery={setAppliedQuery}
         />
 
-        {filterPeople.length === 0 && (
+        {!filterPeople.length && (
           <div
             className="
             notification

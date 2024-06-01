@@ -22,15 +22,21 @@ export const Autocomplete: React.FC<Props> = ({
   const debouncedAppliedQuery = useCallback(
     debounce((newQuery: string) => {
       setAppliedQuery(newQuery);
+      setInputFocus(true);
     }, delay),
     [delay],
   );
   const filterPeople = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = event.target.value;
 
-    setInputFocus(true);
+    setInputFocus(false);
     setQuery(newQuery);
     debouncedAppliedQuery(newQuery);
+  };
+
+  const handlePerson = (name: string) => {
+    setQuery(name);
+    setInputFocus(false);
   };
 
   return (
@@ -43,12 +49,8 @@ export const Autocomplete: React.FC<Props> = ({
           onChange={filterPeople}
           className="input"
           data-cy="search-input"
-          onFocus={() => {
-            setInputFocus(true);
-          }}
-          onBlur={() => {
-            setInputFocus(false);
-          }}
+          onFocus={() => setInputFocus(true)}
+          onBlur={() => setInputFocus(false)}
         />
       </div>
 
@@ -65,10 +67,7 @@ export const Autocomplete: React.FC<Props> = ({
                 ) => {
                   event.preventDefault();
                 }}
-                onClick={() => {
-                  setQuery(name);
-                  setInputFocus(false);
-                }}
+                onClick={() => handlePerson(name)}
               >
                 <p
                   className={classNames('is-clickable', {
