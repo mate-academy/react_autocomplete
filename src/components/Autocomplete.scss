@@ -1,0 +1,16 @@
+.dropdown {
+
+  &-item {
+    cursor: pointer;
+  }
+
+  &-trigger {
+    position: relative;
+  }
+
+  &-close {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+  }
+}
