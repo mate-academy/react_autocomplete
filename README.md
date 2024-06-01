@@ -8,10 +8,9 @@ that will suggest people matching an entered text.
 - the `delay` should be customizable via props (default value is 300ms);
 - show the list of all people when input is focused but empty ([Check this](https://mui.com/material-ui/react-autocomplete/#combo-box) to see how it can work)
 - show `No matching suggestions` message if there are no people containing the entered text;
-- don't run filtering again if the text has not changed (pause in typing happened when the text was the same as before)
-- hide suggestions on text change;
+- don't run filtering again if the text has not changed (a pause in typing happened when the text was the same as before)
 - save selected suggestion text to the input on click and close the list;
-- pass selected person to the `onSelected` callback passed via props;
+- pass the selected person to the `onSelected` callback passed via props;
 - add an `h1` to the `App` showing `Name (born - died)` of the selected person or `No selected person`.
 - when the selected person is displayed in the title, but the value in the input changes, the selected person should be cleared and `No selected person` should be shown.
 
@@ -45,7 +44,7 @@ Solutions:
   npm install sass --save-dev
 ```
 
-- Alternative solution is to install `node-sass@npm:sass` version:
+An alternative solution is to install `node-sass@npm:sass` version:
 
 ```bash
   npm install node-sass@npm:sass --save-dev
