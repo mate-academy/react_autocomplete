@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import { Person } from '../types/Person';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../data/people';
@@ -9,19 +9,20 @@ interface AutocompleteProps {
 }
 
 const Autocomplete: React.FC<AutocompleteProps> = React.memo(
-  ({ onSelected, debounceDelay = 1300 }) => {
+  ({ onSelected, debounceDelay = 300 }) => {
     const [query, setQuery] = useState('');
     const [appliedQuery, setAppliedQuery] = useState('');
     const [showList, setShowList] = useState(false);
+    const inputElement = useRef<HTMLInputElement>(null);
 
-    const applyQuery = useCallback(
-      debounce(setAppliedQuery, debounceDelay),
-      [],
+    const applyQuery = useMemo(
+      () => debounce(setAppliedQuery, debounceDelay),
+      [debounceDelay],
     );
 
     const filtredPeople = useMemo(() => {
       return peopleFromServer.filter(person =>
-        person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+        person.name.toLowerCase().includes(appliedQuery.toLowerCase().trim()),
       );
     }, [appliedQuery]);
 
@@ -30,18 +31,21 @@ const Autocomplete: React.FC<AutocompleteProps> = React.memo(
     };
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setShowList(true);
       onSelected(null);
       setQuery(event.target.value);
       applyQuery(event.target.value);
     };
 
-    const handleBlur = useCallback(
-      debounce(() => {
-        if (true) {
-          setShowList(false);
-        }
-      }, debounceDelay),
-      [],
+    const handleItemClick = useCallback(
+      (person: Person) => {
+        setQuery(person.name);
+        setAppliedQuery(person.name);
+        onSelected(person);
+        setShowList(false);
+        inputElement.current?.blur();
+      },
+      [onSelected],
     );
 
     return (
@@ -56,19 +60,19 @@ const Autocomplete: React.FC<AutocompleteProps> = React.memo(
               value={query}
               onChange={handleQueryChange}
               onFocus={handleFocus}
-              onBlur={handleBlur}
+              ref={inputElement}
             />
           </div>
 
-          {showList && filtredPeople.length !== 0 && (
+          {showList && !!filtredPeople.length && (
             <div
               className="dropdown-menu"
               role="menu"
               data-cy="suggestions-list"
             >
-              <div className="dropdown-content">
+              <ul className="dropdown-content">
                 {filtredPeople.map(person => (
-                  <div
+                  <li
                     className="dropdown-item"
                     data-cy="suggestion-item"
                     key={person.slug}
@@ -78,27 +82,26 @@ const Autocomplete: React.FC<AutocompleteProps> = React.memo(
                       className="has-text-link"
                       onClick={ev => {
                         ev.preventDefault();
-                        setQuery(person.name);
-                        onSelected(person);
+                        handleItemClick(person);
                       }}
                     >
                       {person.name}
                     </a>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           )}
         </div>
-        {filtredPeople.length === 0 && (
+        {!filtredPeople.length && (
           <div
             className="
-                      notification
-                      is-danger
-                      is-light
-                      mt-3
-                      is-align-self-flex-start
-                    "
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
             role="alert"
             data-cy="no-suggestions-message"
           >
