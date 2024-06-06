@@ -4,6 +4,7 @@ import { peopleFromServer } from './data/people';
 import classNames from 'classnames';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
+import { People } from './components/People';
 
 type Props = {
   delay?: number;
@@ -60,13 +61,19 @@ export const App: React.FC<Props> = ({ delay = 500 }) => {
     };
   }, []);
 
+  const title = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : `No selected person`;
+
+  const handleIsActive = () => {
+    setIsActive(true);
+  };
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson
-            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-            : `No selected person`}
+          {title}
         </h1>
 
         <div
@@ -83,29 +90,16 @@ export const App: React.FC<Props> = ({ delay = 500 }) => {
               data-cy="search-input"
               value={inputField}
               onChange={inputChange}
-              onFocus={() => setIsActive(true)}
+              onFocus={handleIsActive}
             />
           </div>
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              {visiableContent.map(person => (
-                <div
-                  className="dropdown-item"
-                  data-cy="suggestion-item"
-                  key={person.name}
-                >
-                  <a
-                    className={classNames('has-text-link link', {
-                      'has-text-danger': selectedPerson === person,
-                    })}
-                    onClick={() => handleSelect(person)}
-                  >
-                    {person.name}
-                  </a>
-                </div>
-              ))}
-            </div>
+            <People
+              people={visiableContent}
+              selectedPerson={selectedPerson}
+              onSelect={handleSelect}
+            />
           </div>
         </div>
 
