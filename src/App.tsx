@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
-import classNames from 'classnames';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
-import { People } from './components/People';
+import { Autocomplete } from './components/Autocomplete';
 
 type Props = {
   delay?: number;
@@ -43,30 +42,12 @@ export const App: React.FC<Props> = ({ delay = 500 }) => {
     setInputField(person.name);
   };
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target as Node)
-    ) {
-      setIsActive(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   const title = selectedPerson
     ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
     : `No selected person`;
 
-  const handleIsActive = () => {
-    setIsActive(true);
+  const handleIsActive = (value: boolean) => {
+    setIsActive(value);
   };
 
   return (
@@ -76,32 +57,15 @@ export const App: React.FC<Props> = ({ delay = 500 }) => {
           {title}
         </h1>
 
-        <div
-          className={classNames('dropdown', {
-            'is-active': isActive && visiableContent.length,
-          })}
-          ref={dropdownRef}
-        >
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-              value={inputField}
-              onChange={inputChange}
-              onFocus={handleIsActive}
-            />
-          </div>
-
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <People
-              people={visiableContent}
-              selectedPerson={selectedPerson}
-              onSelect={handleSelect}
-            />
-          </div>
-        </div>
+        <Autocomplete
+          people={visiableContent}
+          selectedPerson={selectedPerson}
+          visiable={isActive}
+          inputText={inputField}
+          onType={inputChange}
+          onSelect={handleSelect}
+          onChange={handleIsActive}
+        />
 
         {!visiableContent.length && (
           <div
