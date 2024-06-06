@@ -1,22 +1,16 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import cn from 'classnames';
 
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
-
-// function debounce(callback: Function, delay: number) {
-//   let timerId = 0;
-
-//   return (...args: any) => {
-//     clearTimeout(timerId);
-
-//     timerId = +setTimeout(() => {
-//       callback(...args);
-//     }, delay);
-//   };
-// }
 
 export const App: React.FC = () => {
   const [person, setPerson] = useState<Person | null>(null);
@@ -25,14 +19,26 @@ export const App: React.FC = () => {
   const [filterQuery, setFilterQuery] = useState('');
 
   const [isActive, setIsActive] = useState(false);
+
   const debounceQuery = useCallback(debounce(setFilterQuery, 1000), []);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setVisibleQuery(event.target.value);
-    setPerson(null);
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setVisibleQuery(event.target.value);
+      setPerson(null);
 
-    debounceQuery(event.target.value);
-  };
+      debounceQuery(event.target.value);
+    },
+    [],
+  );
+
+  const handleSuggestionClick = useCallback((suggestion: Person) => {
+    setVisibleQuery(suggestion.name);
+    setFilterQuery(suggestion.name);
+    setPerson(suggestion);
+
+    setIsActive(false);
+  }, []);
 
   const filteredSuggestions = useMemo(
     () =>
@@ -41,6 +47,25 @@ export const App: React.FC = () => {
       ),
     [filterQuery],
   );
+
+  const container = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      const dropdownElement = container.current;
+
+      if (dropdownElement && !dropdownElement.contains(target)) {
+        setIsActive(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="container">
@@ -57,6 +82,7 @@ export const App: React.FC = () => {
           className={cn('dropdown', {
             'is-active': isActive && filteredSuggestions.length > 0,
           })}
+          ref={container}
         >
           <div className="dropdown-trigger">
             <input
@@ -81,9 +107,7 @@ export const App: React.FC = () => {
                   data-cy="suggestion-item"
                   key={suggestion.slug}
                   onClick={() => {
-                    setVisibleQuery(suggestion.name);
-                    setPerson(suggestion);
-                    setIsActive(false);
+                    handleSuggestionClick(suggestion);
                   }}
                 >
                   <p
@@ -100,7 +124,7 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {filteredSuggestions.length === 0 && (
+        {!filteredSuggestions.length && (
           <div
             className="
               notification
