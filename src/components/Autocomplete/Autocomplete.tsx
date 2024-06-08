@@ -39,12 +39,6 @@ export const Autocomplete: React.FC<Props> = memo(
       onSelected(null);
     };
 
-    const handleFocus = () => {
-      if (!appliedQuery) {
-        setShowSuggestions(true);
-      }
-    };
-
     const filteredPeople = useMemo(() => {
       return peopleFromServer.filter(person =>
         person.name.toLowerCase().includes(appliedQuery.toLowerCase().trim()),
@@ -64,7 +58,9 @@ export const Autocomplete: React.FC<Props> = memo(
               ref={input}
               value={query}
               onChange={handleQueryChange}
-              onFocus={handleFocus}
+              onFocus={() => {
+                setShowSuggestions(true);
+              }}
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
