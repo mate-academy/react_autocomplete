@@ -1,20 +1,62 @@
-import React from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import debounce from 'lodash.debounce';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+interface AppProps {
+  debounceDelay?: number;
+}
+
+export const App: React.FC<AppProps> = ({ debounceDelay }) => {
+  const [selectedName, setSelectedName] =
+    useState<string>('No selected person');
+  const [personList, setPersonList] = useState(peopleFromServer);
+  const [inputName, setInputName] = useState('');
+  const [appliedInput, setAppliedInput] = useState('');
+  const [isInputFocus, setIsInputFocus] = useState(true);
+
+  const applyInput = useCallback((value: string) => {
+    debounce(() => setAppliedInput(value), debounceDelay)();
+  }, []);
+
+  useEffect(() => {
+    if (inputName.trim() === '') {
+      setPersonList(peopleFromServer);
+    } else {
+      setPersonList(
+        peopleFromServer.filter(person =>
+          person.name.toLowerCase().includes(appliedInput.toLowerCase()),
+        ),
+      );
+    }
+  }, [appliedInput, inputName]);
+
+  function handlePersonClick(person: Person) {
+    setInputName(person.name);
+    setSelectedName(`${person.name} (${person.born} - ${person.died})`);
+    setIsInputFocus(false);
+  }
+
+  function handleChangeInput(event: ChangeEvent<HTMLInputElement>) {
+    setInputName(event.target.value);
+    applyInput(event.target.value);
+    setSelectedName('No selected person');
+  }
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selectedName}
         </h1>
 
-        <div className="dropdown is-active">
+        <div className={`dropdown ${isInputFocus ? 'is-active' : ''} `}>
           <div className="dropdown-trigger">
             <input
+              value={inputName}
+              onClick={() => setIsInputFocus(true)}
+              onChange={handleChangeInput}
               type="text"
               placeholder="Enter a part of the name"
               className="input"
@@ -24,50 +66,34 @@ export const App: React.FC = () => {
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
+              {personList.map(person => (
+                <div
+                  key={person.name}
+                  onClick={() => handlePersonClick(person)}
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                >
+                  <p className="has-text-link">{person.name}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        {personList.length === 0 && (
+          <div
+            className="
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
