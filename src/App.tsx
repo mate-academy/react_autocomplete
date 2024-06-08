@@ -21,7 +21,7 @@ export const App: React.FC = () => {
 
         <Dropdown
           onSelected={handlePersonTitleChange}
-          delay={1000}
+          delay={300}
           selectedPerson={selectedPerson}
         />
       </main>
