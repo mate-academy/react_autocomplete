@@ -122,5 +122,3 @@ export const Dropdown: React.FC<Props> = ({
     </React.Fragment>
   );
 };
-
-// when the selected person is displayed in the title, but the value in the input changes, the selected person should be cleared and No selected person should be shown.
