@@ -6,10 +6,6 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const handlePersonTitleChange = (person: Person | null) => {
-    setSelectedPerson(person);
-  };
-
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
@@ -20,7 +16,7 @@ export const App: React.FC = () => {
         </h1>
 
         <Dropdown
-          onSelected={handlePersonTitleChange}
+          onSelected={setSelectedPerson}
           delay={300}
           selectedPerson={selectedPerson}
         />

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Person } from '../types/Person';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../data/people';
@@ -16,7 +16,6 @@ export const Dropdown: React.FC<Props> = ({
 }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [listOfPeople, setListOfPeople] = useState(peopleFromServer);
   const [listVisibility, setListVisibility] = useState(false);
 
   const filteredPeopleList = useMemo(() => {
@@ -27,9 +26,15 @@ export const Dropdown: React.FC<Props> = ({
     return peopleFromServer.filter((person: Person) =>
       person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
-  }, [appliedQuery, listOfPeople]);
+  }, [appliedQuery]);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+  const applyQuery = useMemo(
+    () =>
+      debounce(value => {
+        setAppliedQuery(value);
+      }, delay),
+    [],
+  );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
@@ -42,7 +47,6 @@ export const Dropdown: React.FC<Props> = ({
     }
 
     applyQuery(inputValue);
-    setListOfPeople(filteredPeopleList);
   };
 
   const handleBlur = () => {
@@ -61,6 +65,13 @@ export const Dropdown: React.FC<Props> = ({
     }
   };
 
+  const handlePersonClick = (person: Person) => {
+    onSelected(person);
+    setQuery(person.name);
+    setAppliedQuery(person.name);
+    setListVisibility(false);
+  };
+
   return (
     <React.Fragment>
       <div className="dropdown is-active">
@@ -72,12 +83,8 @@ export const Dropdown: React.FC<Props> = ({
             data-cy="search-input"
             value={query}
             onChange={handleQueryChange}
-            onFocus={event => {
-              handleFocus(event);
-            }}
-            onBlur={() => {
-              handleBlur();
-            }}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
           />
         </div>
 
@@ -90,10 +97,7 @@ export const Dropdown: React.FC<Props> = ({
                   data-cy="suggestion-item"
                   key={person.slug}
                   onClick={() => {
-                    onSelected(person);
-                    setQuery(person.name);
-                    setAppliedQuery(person.name);
-                    setListVisibility(false);
+                    handlePersonClick(person);
                   }}
                 >
                   <p className="has-text-link">{person.name}</p>
