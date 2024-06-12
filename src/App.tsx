@@ -1,50 +1,72 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-
-function filterPeople(arr: Person[], query: string) {
-  return arr.filter((person: Person) =>
-    person.name.toLowerCase().includes(query.toLowerCase().trim()),
-  );
-}
+import debounce from 'lodash.debounce';
+import cn from 'classnames';
 
 export const App: React.FC = () => {
-  // const { name, born, died } = peopleFromServer[0];
-  // const [selectedPerson, setSelectedPerson] =
-  //   useState<React.ReactNode>('No selected person');
-
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-
-  // console.log(selectedPerson);
+  const delay = 300;
 
   const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const filteredPeople = filterPeople(peopleFromServer, query);
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter((person: Person) =>
+      person.name.toLowerCase().includes(appliedQuery.toLowerCase().trim()),
+    );
+  }, [appliedQuery]);
 
-  const handleChoose = (
-    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-    person: Person,
-  ) => {
-    event.preventDefault();
+  const selectedPerson = useMemo(() => {
+    return peopleFromServer.find(person => person.name === query);
+  }, [query]);
 
-    setSelectedPerson(person);
-  };
+  const handleQueryChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery(event.target.value);
+      applyQuery(event.target.value);
+    },
+    [],
+  );
 
-  // const onSelected = (person: Person) => {
-  //   setSelectedPerson(`${person.name} (${person.born} - ${person.died})`);
-  // };
+  const isFocused = useCallback(() => {
+    setShowDropdown(true);
+  }, []);
+
+  const isBlured = useCallback(() => {
+    setTimeout(() => setShowDropdown(false), 100);
+  }, []);
+
+  const handleChoose = useCallback(
+    (
+      event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+      person: Person,
+    ) => {
+      event.preventDefault();
+
+      setAppliedQuery(person.name);
+      setQuery(person.name);
+    },
+    [],
+  );
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson ? selectedPerson.name : 'No selected person'}
+          {selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+            : 'No selected person'}
         </h1>
 
-        <div className="dropdown is-active">
+        <div
+          className={cn('dropdown', {
+            'is-active': showDropdown,
+          })}
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
@@ -52,62 +74,43 @@ export const App: React.FC = () => {
               className="input"
               data-cy="search-input"
               value={query}
-              onChange={event => setQuery(event.target.value)}
-              onFocus={() => setShowDropdown(true)}
-              onBlur={() => setShowDropdown(false)}
+              onChange={handleQueryChange}
+              onFocus={isFocused}
+              onBlur={isBlured}
             />
           </div>
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            {showDropdown && (
-              <div className="dropdown-content">
-                <div data-cy="suggestion-item">
-                  {filteredPeople.length > 0 ? (
-                    filteredPeople.map((person: Person) => (
-                      <a
-                        href="#"
-                        key={person.slug}
-                        className="dropdown-item"
-                        onClick={event => handleChoose(event, person)}
-                      >
-                        {person.name}
-                      </a>
-                      // <hr className="dropdown-divider" />
-                    ))
-                  ) : (
-                    <div
-                      className="
+            <div className="dropdown-content">
+              {filteredPeople.length > 0 ? (
+                filteredPeople.map((person: Person) => (
+                  <a
+                    data-cy="suggestion-item"
+                    key={person.slug}
+                    className="dropdown-item"
+                    onClick={event => handleChoose(event, person)}
+                  >
+                    {person.name}
+                  </a>
+                ))
+              ) : (
+                <div
+                  className="
                       notification
                       is-danger
                       is-light
                       mt-3
                       is-align-self-flex-start
                       "
-                      role="alert"
-                      data-cy="no-suggestions-message"
-                    >
-                      <p className="has-text-danger">No matching suggestions</p>
-                    </div>
-                  )}
+                  role="alert"
+                  data-cy="no-suggestions-message"
+                >
+                  <p className="has-text-danger">No matching suggestions</p>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-
-        {/* <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div> */}
       </main>
     </div>
   );
