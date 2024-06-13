@@ -41,6 +41,10 @@ export const Dropdown: React.FC<Type> = ({
     setShowMenu(false);
   };
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    queryChange(event);
+  };
+
   return (
     <div
       className={cn('dropdown', {
@@ -55,7 +59,7 @@ export const Dropdown: React.FC<Type> = ({
           className="input"
           data-cy="search-input"
           value={partText}
-          onChange={queryChange}
+          onChange={handleInputChange}
           onFocus={() => setShowMenu(true)}
         />
       </div>

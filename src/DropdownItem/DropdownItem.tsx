@@ -20,7 +20,10 @@ export const DropdownItem: React.FC<Type> = ({
       onClick={() => onSelect(person)}
     >
       <p
-        className={cn(person.sex === 'm' ? 'has-text-link' : 'has-text-danger')}
+        className={cn({
+          'has-text-link': person.sex === 'm',
+          'has-text-danger': person.sex === 'f',
+        })}
       >
         {name}
       </p>
