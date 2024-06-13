@@ -1,143 +1,144 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import cn from 'classnames';
+
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import debounce from 'lodash.debounce';
 
-interface AppProps {
-  debounceDelay?: number;
-  onSelected?: (person: Person) => void;
-}
+export const App: React.FC = () => {
+  const [person, setPerson] = useState<Person | null>(null);
 
-export const App: React.FC<AppProps> = ({
-  debounceDelay = 300,
-  onSelected,
-}) => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [filteredSuggestions, setFilteredSuggestions] = useState<
-    typeof peopleFromServer
-  >([]);
-  const [inputFocused, setInputFocused] = useState<boolean>(false);
-  const [showNoSuggestionsMessage, setShowNoSuggestionsMessage] =
-    useState<boolean>(false);
-  const previousSearchTerm = useRef<string>('');
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [visibleQuery, setVisibleQuery] = useState('');
+  const [filterQuery, setFilterQuery] = useState('');
+
+  const [isActive, setIsActive] = useState(false);
+
+  const debounceQuery = useCallback(debounce(setFilterQuery, 1000), []);
+
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setVisibleQuery(event.target.value);
+      setPerson(null);
+
+      debounceQuery(event.target.value);
+    },
+    [],
+  );
+
+  const handleSuggestionClick = useCallback((suggestion: Person) => {
+    setVisibleQuery(suggestion.name);
+    setFilterQuery(suggestion.name);
+    setPerson(suggestion);
+
+    setIsActive(false);
+  }, []);
+
+  const filteredSuggestions = useMemo(
+    () =>
+      peopleFromServer.filter(suggestion =>
+        suggestion.name.toLowerCase().includes(filterQuery.toLowerCase()),
+      ),
+    [filterQuery],
+  );
+
+  const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const timerId = setTimeout(() => {
-      if (searchTerm !== previousSearchTerm.current) {
-        if (selectedPerson) {
-          setSelectedPerson(null);
-        }
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      const dropdownElement = container.current;
 
-        if (searchTerm) {
-          const suggestions = peopleFromServer.filter(person =>
-            person.name.toLowerCase().includes(searchTerm.toLowerCase()),
-          );
-
-          setFilteredSuggestions(suggestions);
-          setShowNoSuggestionsMessage(suggestions.length === 0);
-        } else if (inputFocused) {
-          setFilteredSuggestions(peopleFromServer);
-          setShowNoSuggestionsMessage(false);
-        } else {
-          setFilteredSuggestions([]);
-          setShowNoSuggestionsMessage(false);
-        }
-
-        previousSearchTerm.current = searchTerm;
+      if (dropdownElement && !dropdownElement.contains(target)) {
+        setIsActive(false);
       }
-    }, debounceDelay);
+    };
 
-    return () => clearTimeout(timerId);
-  }, [searchTerm, debounceDelay, inputFocused, selectedPerson]);
+    document.addEventListener('click', handleClickOutside);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleInputFocus = () => {
-    setInputFocused(true);
-    if (!searchTerm) {
-      setFilteredSuggestions(peopleFromServer);
-    }
-  };
-
-  const handleInputBlur = () => {
-    setInputFocused(false);
-    if (!searchTerm) {
-      setFilteredSuggestions([]);
-    }
-  };
-
-  const handleSuggestionClick = (person: Person) => {
-    setSearchTerm(person.name);
-    setSelectedPerson(person);
-    setFilteredSuggestions([]);
-    setShowNoSuggestionsMessage(false);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-
-    if (onSelected) {
-      onSelected(person);
-    }
-  };
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson
-            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-            : 'No selected person'}
+          <p>
+            {person
+              ? `${person.name} (${person.born} - ${person.died})`
+              : 'No selected person'}
+          </p>
         </h1>
 
-        <div className="dropdown is-active">
+        <div
+          className={cn('dropdown', {
+            'is-active': isActive && filteredSuggestions.length > 0,
+          })}
+          ref={container}
+        >
           <div className="dropdown-trigger">
             <input
+              autoFocus
               type="text"
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
-              value={searchTerm}
+              value={visibleQuery}
               onChange={handleInputChange}
-              onFocus={handleInputFocus}
-              onBlur={handleInputBlur}
-              ref={inputRef}
+              onFocus={() => {
+                setIsActive(true);
+              }}
             />
           </div>
 
-          {(searchTerm || inputFocused) && (
-            <div
-              className="dropdown-menu"
-              role="menu"
-              data-cy="suggestions-list"
-            >
-              <div className="dropdown-content">
-                {filteredSuggestions.length > 0 ? (
-                  filteredSuggestions.map(person => (
-                    <div
-                      className="dropdown-item"
-                      data-cy="suggestion-item"
-                      key={person.slug}
-                      onMouseDown={() => handleSuggestionClick(person)}
-                    >
-                      <p className="has-text-link">{person.name}</p>
-                    </div>
-                  ))
-                ) : showNoSuggestionsMessage ? (
-                  <div
-                    className="dropdown-item"
-                    data-cy="no-suggestions-message"
+          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+            <div className="dropdown-content">
+              {filteredSuggestions.map(suggestion => (
+                <a
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                  key={suggestion.slug}
+                  onClick={() => {
+                    handleSuggestionClick(suggestion);
+                  }}
+                >
+                  <p
+                    className={cn({
+                      'has-text-link': suggestion.sex === 'm',
+                      'has-text-danger': suggestion.sex === 'f',
+                    })}
                   >
-                    <p className="has-text-danger">No matching suggestions</p>
-                  </div>
-                ) : null}
-              </div>
+                    {suggestion.name}
+                  </p>
+                </a>
+              ))}
             </div>
-          )}
+          </div>
         </div>
+
+        {!filteredSuggestions.length && (
+          <div
+            className="
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
