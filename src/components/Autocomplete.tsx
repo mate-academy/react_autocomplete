@@ -40,10 +40,10 @@ export const Autocomplete: React.FC<Props> = ({
 
   const handleOnFocus = useCallback(() => setShowSugestion(!query), [query]);
   const handleOnBlur = useCallback(() => {
-    debounce(setShowSugestion, delay)(false);
+    debounce(setShowSugestion, 200)(false);
     onSelect(null);
     setQuery('');
-  }, [delay, onSelect]);
+  }, [onSelect]);
 
   const onSelectPerson = (person: Person) => {
     setShowSugestion(true);

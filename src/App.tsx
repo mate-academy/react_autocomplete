@@ -7,7 +7,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const showPersonInfo =
     selectedPerson !== null
-      ? `${selectedPerson.name} (${selectedPerson.born}-${selectedPerson.died})`
+      ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
       : 'No selected person';
 
   return (
