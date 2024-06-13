@@ -55,6 +55,7 @@ export const App: React.FC = () => {
           queryChange={queryChange}
           partText={partText}
           onSelect={onSelect}
+          noSugAlert={noSugAlert}
         />
         {noSugAlert && <Notification />}
       </main>

@@ -8,6 +8,7 @@ interface Type {
   queryChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   partText: string;
   onSelect: (person: Person) => void;
+  noSugAlert: string | boolean;
 }
 
 export const Dropdown: React.FC<Type> = ({
@@ -15,9 +16,11 @@ export const Dropdown: React.FC<Type> = ({
   queryChange,
   partText,
   onSelect,
+  noSugAlert,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const timerId = useRef(0);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -43,6 +46,11 @@ export const Dropdown: React.FC<Type> = ({
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     queryChange(event);
+    setShowMenu(false);
+
+    timerId.current = window.setTimeout(() => {
+      setShowMenu(true);
+    }, 300);
   };
 
   return (
@@ -64,7 +72,7 @@ export const Dropdown: React.FC<Type> = ({
         />
       </div>
 
-      <DropdownMenu people={people} onSelect={handleSelect} />
+      {noSugAlert || <DropdownMenu people={people} onSelect={handleSelect} />}
     </div>
   );
 };
