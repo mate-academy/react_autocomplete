@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Person } from '../types/Person';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from '.././data/people';
+import classNames from 'classnames';
 
 type Props = {
   onSelectPerson: (person: Person) => void;
@@ -31,7 +32,10 @@ export const Autocomplete: React.FC<Props> = ({
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     debouncedFilter(event.target.value);
-    clearPerson();
+
+    if (event.target.value === '') {
+      clearPerson();
+    }
   };
 
   const handleSelectedPerson = (person: Person) => {
@@ -48,12 +52,18 @@ export const Autocomplete: React.FC<Props> = ({
     }
   };
 
+  const handleInputBlur = () => {
+    setTimeout(() => {
+      setInputFocused(false);
+    }, 200);
+  };
+
   useEffect(() => {
     setFilteredPeople(peopleFromServer);
   }, []);
 
   return (
-    <div className={`dropdown ${inputFocused ? 'is-active' : ''}`}>
+    <div className={classNames('dropdown', { 'is-active': inputFocused })}>
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -63,6 +73,7 @@ export const Autocomplete: React.FC<Props> = ({
           value={query}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
         />
       </div>
 
@@ -70,11 +81,11 @@ export const Autocomplete: React.FC<Props> = ({
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           <div className="dropdown-content">
             {filteredPeople.length > 0 ? (
-              filteredPeople.map((person, index) => (
+              filteredPeople.map(person => (
                 <div
                   className="dropdown-item"
                   data-cy="suggestion-item"
-                  key={index}
+                  key={person.name}
                   onClick={() => handleSelectedPerson(person)}
                 >
                   <p>{person.name}</p>

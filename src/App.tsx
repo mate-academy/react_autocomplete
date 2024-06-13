@@ -17,15 +17,11 @@ export const App: React.FC = () => {
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        {selectPerson ? (
-          <h1 className="title" data-cy="title">
-            {`${selectPerson.name} (${selectPerson.born} - ${selectPerson.died})`}
-          </h1>
-        ) : (
-          <h1 className="title" data-cy="title">
-            No selected person
-          </h1>
-        )}
+        <h1 className="title" data-cy="title">
+          {selectPerson
+            ? `${selectPerson.name} (${selectPerson.born} - ${selectPerson.died})`
+            : 'No selected person'}
+        </h1>
         <Autocomplete
           onSelectPerson={handleSelectedPerson}
           clearPerson={clearPerson}
