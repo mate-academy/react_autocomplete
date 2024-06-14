@@ -1,30 +1,31 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { Context } from './Context';
 
-type Props = {
-  delay: number;
-  onTrigger: (activate: boolean) => void;
-  onFilter: (partOfName: string) => void;
-};
+export const DropdownTrigger: React.FC = () => {
+  const {
+    inputPersonName,
+    delay,
+    personName,
+    changeActive,
+    changeInputPersonName,
+    onSelected,
+  } = useContext(Context);
 
-export const DropdownTrigger: React.FC<Props> = ({
-  delay,
-  onTrigger,
-  onFilter,
-}) => {
-  const [partOfName, setPartOfName] = useState('');
+  const [timeoutId, setTimeoutId] = useState(0);
 
-  let timeoutId = 0;
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newPersonName = event.currentTarget.value;
+    const trimmedNewPersonName = newPersonName.trim();
 
-  const handleChange = function (event: React.ChangeEvent<HTMLInputElement>) {
-    const newPartOfName = event.currentTarget.value;
-
+    changeInputPersonName(newPersonName);
     clearTimeout(timeoutId);
-    timeoutId = window.setTimeout(() => {
-      if (partOfName !== newPartOfName) {
-        setPartOfName(newPartOfName);
-        onFilter(newPartOfName);
-      }
-    }, delay);
+    setTimeoutId(
+      window.setTimeout(() => {
+        if (personName !== trimmedNewPersonName) {
+          onSelected(trimmedNewPersonName);
+        }
+      }, delay),
+    );
   };
 
   return (
@@ -34,8 +35,9 @@ export const DropdownTrigger: React.FC<Props> = ({
         placeholder="Enter a part of the name"
         className="input"
         data-cy="search-input"
-        onFocus={() => onTrigger(true)}
-        onBlur={() => onTrigger(false)}
+        value={inputPersonName}
+        onFocus={() => changeActive(true)}
+        onBlur={() => changeActive(false)}
         onChange={handleChange}
       />
     </div>

@@ -1,13 +1,28 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { Person } from '../../types/Person';
+import { Context } from './Context';
 
 type Props = {
-  name: string;
+  person: Person;
 };
 
-export const DropdownItem: React.FC<Props> = ({ name }) => {
+export const DropdownItem: React.FC<Props> = ({ person }) => {
+  const { onSelected, changeInputPersonName } = useContext(Context);
+
+  const handleClick = () => {
+    changeInputPersonName(person.name);
+    onSelected(person.name);
+  };
+
   return (
-    <div className="dropdown-item" data-cy="suggestion-item">
-      <p className="has-text-link">{name}</p>
+    <div
+      className="dropdown-item"
+      data-cy="suggestion-item"
+      onMouseDown={handleClick}
+    >
+      <p className={person.sex === 'f' ? 'has-text-danger' : 'has-text-link'}>
+        {person.name}
+      </p>
     </div>
   );
 };
