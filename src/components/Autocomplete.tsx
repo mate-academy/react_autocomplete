@@ -13,7 +13,7 @@ type Props = {
 export const Autocomplete: React.FC<Props> = ({
   delay = 300,
   onSelect = () => {},
-  peopleFromServerWithId: peopleFromServerWithIds,
+  peopleFromServerWithId,
 }) => {
   const [query, setQuery] = useState<string>('');
   const [appliedQuery, setAppliedQuery] = useState<string>('');
@@ -25,10 +25,10 @@ export const Autocomplete: React.FC<Props> = ({
   );
 
   const filteredPeople = useMemo(() => {
-    return peopleFromServerWithIds.filter((person: Person) =>
+    return peopleFromServerWithId.filter((person: Person) =>
       person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
-  }, [appliedQuery, peopleFromServerWithIds]);
+  }, [appliedQuery, peopleFromServerWithId]);
 
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
