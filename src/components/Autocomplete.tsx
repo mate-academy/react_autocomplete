@@ -2,16 +2,18 @@ import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import { useCallback, useMemo, useState } from 'react';
 import { Person } from '../types/Person';
-import { peopleFromServer } from '../data/people';
+import { PersonWithId } from '../types/PersonWithId';
 
 type Props = {
   delay?: number;
-  onSelect?: (person: Person | null) => void;
+  onSelect?: (person: number | null) => void;
+  peopleFromServerWithId: PersonWithId[];
 };
 
 export const Autocomplete: React.FC<Props> = ({
   delay = 300,
   onSelect = () => {},
+  peopleFromServerWithId: peopleFromServerWithIds,
 }) => {
   const [query, setQuery] = useState<string>('');
   const [appliedQuery, setAppliedQuery] = useState<string>('');
@@ -23,10 +25,10 @@ export const Autocomplete: React.FC<Props> = ({
   );
 
   const filteredPeople = useMemo(() => {
-    return peopleFromServer.filter((person: Person) =>
+    return peopleFromServerWithIds.filter((person: Person) =>
       person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
-  }, [appliedQuery]);
+  }, [appliedQuery, peopleFromServerWithIds]);
 
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,12 +45,13 @@ export const Autocomplete: React.FC<Props> = ({
     debounce(setShowSugestion, 200)(false);
     onSelect(null);
     setQuery('');
-  }, [onSelect]);
+    applyQuery('');
+  }, [onSelect, applyQuery]);
 
-  const onSelectPerson = (person: Person) => {
+  const onSelectPerson = (person: PersonWithId) => {
     setShowSugestion(true);
     setQuery(person.name);
-    onSelect(person);
+    onSelect(person.id);
     setShowSugestion(false);
   };
 
