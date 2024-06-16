@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { DropdownItem } from './DropdownItem';
-import { Context, isPartInText } from './Context';
+import { isPartInText, useDropdownPeople } from './Context';
 
-export const DropdownMenu: React.FC = () => {
-  const { people, personName } = useContext(Context);
+export const DropdownMenu = React.memo(() => {
+  const { people, personName } = useDropdownPeople();
 
   return (
     <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
@@ -16,4 +16,4 @@ export const DropdownMenu: React.FC = () => {
       </div>
     </div>
   );
-};
+});

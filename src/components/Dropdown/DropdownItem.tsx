@@ -1,13 +1,12 @@
-import React, { useContext } from 'react';
 import { Person } from '../../types/Person';
-import { Context } from './Context';
+import { useDropdownApi } from './Context';
 
 type Props = {
   person: Person;
 };
 
 export const DropdownItem: React.FC<Props> = ({ person }) => {
-  const { onSelected, changeInputPersonName } = useContext(Context);
+  const { onSelected, changeInputPersonName } = useDropdownApi();
 
   const handleClick = () => {
     changeInputPersonName(person.name);

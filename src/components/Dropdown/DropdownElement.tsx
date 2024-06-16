@@ -1,11 +1,11 @@
 import classNames from 'classnames';
-import React, { useContext } from 'react';
-import { Context } from './Context';
+import React from 'react';
+import { useDropdown } from './Context';
 import { DropdownTrigger } from './DropdownTrigger';
 import { DropdownMenu } from './DropdownMenu';
 
 export const DropdownElement: React.FC = () => {
-  const { active } = useContext(Context);
+  const { active } = useDropdown();
 
   return (
     <div

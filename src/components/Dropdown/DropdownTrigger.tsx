@@ -1,15 +1,10 @@
-import React, { useContext, useState } from 'react';
-import { Context } from './Context';
+import React, { useState } from 'react';
+import { useDropdown, useDropdownPeople, useDropdownApi } from './Context';
 
 export const DropdownTrigger: React.FC = () => {
-  const {
-    inputPersonName,
-    delay,
-    personName,
-    changeActive,
-    changeInputPersonName,
-    onSelected,
-  } = useContext(Context);
+  const { inputPersonName, delay } = useDropdown();
+  const { personName } = useDropdownPeople();
+  const { changeActive, changeInputPersonName, onSelected } = useDropdownApi();
 
   const [timeoutId, setTimeoutId] = useState(0);
 

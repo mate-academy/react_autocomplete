@@ -15,15 +15,13 @@ export const Dropdown: React.FC<Props> = ({
   delay = 300,
   personName,
   onSelected,
-}) => {
-  return (
-    <DropdownProvider
-      people={people}
-      delay={delay}
-      personName={personName}
-      onSelected={onSelected}
-    >
-      <DropdownElement />
-    </DropdownProvider>
-  );
-};
+}) => (
+  <DropdownProvider
+    people={people}
+    delay={delay}
+    personName={personName}
+    onSelected={onSelected}
+  >
+    <DropdownElement />
+  </DropdownProvider>
+);
