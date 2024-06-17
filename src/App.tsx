@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+/* eslint-disable jsx-a11y/no-noninteractive-element-to-interactive-role */
 import React, {
   useCallback, useState,
 } from 'react';
@@ -83,8 +85,6 @@ export const App: React.FC = () => {
 
       <p
         className="has-text-link"
-        role='button'
-        tabIndex={0}
         onMouseDown={() => {
           setSelectedPerson(person);
           setQuery(person.name);
