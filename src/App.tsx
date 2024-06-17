@@ -23,10 +23,14 @@ export const App: React.FC = () => {
   };
 
   const filteredPeople = React.useMemo(() => {
+    if (query.length === 0 || query === '' || query === null) {
+      return peopleFromServer;
+    }
+
     return peopleFromServer
       .filter(person => person.name.toLowerCase()
         .includes(apliedQuery.toLowerCase()));
-  }, [apliedQuery]);
+  }, [apliedQuery, query]);
 
   return (
     <div className="container">
@@ -52,10 +56,8 @@ export const App: React.FC = () => {
               data-cy="search-input"
               onChange={handleQueryChange}
               onFocus={() => {
-                // if (selectedPerson){
                 setSelectedPerson(null);
                 setQuery('');
-
                 setIsFocused(true);
               }}
               onBlur={() => {
@@ -72,19 +74,21 @@ export const App: React.FC = () => {
             data-cy="suggestions-list"
           >
 
-            {isFocused
+            {(isFocused)
 && filteredPeople.map(person => (
 
   <div className="dropdown-content">
 
     <div
       className="dropdown-item"
-      data-cy="suggestion-item"
       key={person.name}
+      data-cy="suggestion-item"
+
     >
 
       <p
         className="has-text-link"
+
         onMouseDown={() => {
           setSelectedPerson(person);
           setQuery(person.name);
