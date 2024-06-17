@@ -3,9 +3,9 @@ import React, {
 } from 'react';
 import debounce from 'lodash.debounce';
 import './App.scss';
+import classNames from 'classnames';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-import classNames from 'classnames';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -38,8 +38,9 @@ export const App: React.FC = () => {
           }
         </h1>
 
-        <div className={classNames("dropdown",
-          { 'is-active': isFocused && filteredPeople.length})}>
+        <div className={classNames('dropdown',
+          { 'is-active': isFocused && filteredPeople.length })}
+        >
           <div className="dropdown-trigger">
             <input
               value={query}
@@ -50,8 +51,8 @@ export const App: React.FC = () => {
               onChange={handleQueryChange}
               onFocus={() => {
                 // if (selectedPerson){
-                  setSelectedPerson(null);
-                  setQuery('');
+                setSelectedPerson(null);
+                setQuery('');
 
                 setIsFocused(true);
               }}
@@ -59,11 +60,9 @@ export const App: React.FC = () => {
                 setTimeout(() => {
                   setIsFocused(false);
                 }, 100);
-
               }}
             />
           </div>
-
 
           <div
             className="dropdown-menu"
@@ -71,52 +70,42 @@ export const App: React.FC = () => {
             data-cy="suggestions-list"
           >
 
-{isFocused &&
-filteredPeople.map(person => (
+            {isFocused
+&& filteredPeople.map(person => (
 
-            <div className="dropdown-content">
+  <div className="dropdown-content">
 
+    <div
+      className="dropdown-item"
+      data-cy="suggestion-item"
+      key={person.name}
+    >
 
+      <p
+        className="has-text-link"
+        role='button'
+        tabIndex={0}
+        onMouseDown={() => {
+          setSelectedPerson(person);
+          setQuery(person.name);
+        }}
+      >
+        {person.name}
+      </p>
 
-                  <div
-                    className="dropdown-item"
-                    data-cy="suggestion-item"
-                    key={person.name}
+    </div>
 
-                  >
+  </div>
+))}
 
-                    <p
-
-                      className="has-text-link"
-                      onMouseDown={() => {
-
-                          setSelectedPerson(person);
-                          setQuery(person.name);
-
-
-                        }}
-                    >
-                      {person.name}
-                    </p>
-
-
-                  </div>
-
-                  </div>
-                     ))
-                    }
-
-            </div>
-
-
-
+          </div>
 
         </div>
 
         {
-          (!selectedPerson && filteredPeople.length === 0) &&
+          (!selectedPerson && filteredPeople.length === 0)
 
-                  (
+                  && (
                     <div
                       className="
                     notification
