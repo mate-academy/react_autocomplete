@@ -15,22 +15,20 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isFocused, setIsFocused] = useState(false);
 
+
   const applyQuery = useCallback(debounce(setApliedQuery, 300), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
+    setSelectedPerson(null);
     applyQuery(event.target.value);
   };
 
   const filteredPeople = React.useMemo(() => {
-    if (query.length === 0 || query === '' || query === null) {
-      return peopleFromServer;
-    }
-
     return peopleFromServer
       .filter(person => person.name.toLowerCase()
         .includes(apliedQuery.toLowerCase()));
-  }, [apliedQuery, query]);
+  }, [apliedQuery]);
 
   return (
     <div className="container">
@@ -56,14 +54,7 @@ export const App: React.FC = () => {
               data-cy="search-input"
               onChange={handleQueryChange}
               onFocus={() => {
-                setSelectedPerson(null);
-                setQuery('');
                 setIsFocused(true);
-              }}
-              onBlur={() => {
-                setTimeout(() => {
-                  setIsFocused(false);
-                }, 100);
               }}
             />
           </div>
@@ -74,33 +65,28 @@ export const App: React.FC = () => {
             data-cy="suggestions-list"
           >
 
-            {(isFocused)
-&& filteredPeople.map(person => (
+            <div className="dropdown-content">
+              {filteredPeople.map(person => (
+                <div
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                  key={person.slug}
 
-  <div className="dropdown-content">
+                >
 
-    <div
-      className="dropdown-item"
-      key={person.name}
-      data-cy="suggestion-item"
+                  <p
+                    className="has-text-link"
+                    onMouseDown={() => {
+                      setQuery(person.name);
+                      setSelectedPerson(person);
+                    }}
+                  >
+                    {person.name}
+                  </p>
 
-    >
-
-      <p
-        className="has-text-link"
-
-        onMouseDown={() => {
-          setSelectedPerson(person);
-          setQuery(person.name);
-        }}
-      >
-        {person.name}
-      </p>
-
-    </div>
-
-  </div>
-))}
+                </div>
+              ))}
+            </div>
 
           </div>
 
