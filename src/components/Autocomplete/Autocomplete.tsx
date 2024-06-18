@@ -1,8 +1,8 @@
+import React, { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../../data/people';
 import { Person } from '../../types/Person';
-import { useCallback, useMemo, useState } from 'react';
-import debounce from 'lodash.debounce';
 
 interface Props {
   onSelect?: (person: Person | null) => void;
@@ -14,33 +14,38 @@ export const Autocomplete: React.FC<Props> = ({
   delay = 300,
 }) => {
   const [query, setQuery] = useState('');
-  const [appliedQuary, setAppliedQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
   const [showList, setShowList] = useState(false);
 
-  const applyQuary = useCallback(debounce(setAppliedQuery, delay), [
-    setAppliedQuery,
-  ]);
+  const applyQuery = useCallback(
+    debounce((value: string) => {
+      setAppliedQuery(value);
+      setShowList(!!value); // Show the list only if the query is not empty
+    }, delay),
+    [setAppliedQuery]
+  );
 
   const filteredLists = useMemo(() => {
     return peopleFromServer.filter(person =>
-      person.name.toLowerCase().includes(appliedQuary.toLowerCase()),
+      person.name.toLowerCase().includes(appliedQuery.toLowerCase())
     );
-  }, [appliedQuary]);
+  }, [appliedQuery]);
 
-  const onselectedPerson = (person: Person) => {
-    setQuery(person?.name);
+  const onSelectedPerson = (person: Person) => {
+    setQuery(person.name);
     onSelect(person);
     setShowList(false);
   };
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuary(event.target.value);
-    setShowList(true);
+    const value = event.target.value;
+    setQuery(value);
+    setShowList(false); // Hide the list immediately while typing
+    applyQuery(value); // Apply the query with debounce
     onSelect(null);
   };
 
-  const handlBlurChange = (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleBlurChange = (event: React.FocusEvent<HTMLInputElement>) => {
     if (!event.relatedTarget) {
       setShowList(false);
     }
@@ -56,8 +61,8 @@ export const Autocomplete: React.FC<Props> = ({
           data-cy="search-input"
           value={query}
           onChange={handleQueryChange}
-          onFocus={() => setShowList(true)}
-          onBlur={handlBlurChange}
+          onFocus={() => setShowList(!!query)}
+          onBlur={handleBlurChange}
         />
       </div>
 
@@ -70,7 +75,7 @@ export const Autocomplete: React.FC<Props> = ({
                   className="dropdown-item button is-white"
                   data-cy="suggestion-item"
                   key={person.name}
-                  onClick={() => onselectedPerson(person)}
+                  onClick={() => onSelectedPerson(person)}
                 >
                   <p
                     className={classNames('has-text-link', 'is-clickable', {
