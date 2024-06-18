@@ -15,13 +15,25 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isFocused, setIsFocused] = useState(false);
 
-
   const applyQuery = useCallback(debounce(setApliedQuery, 300), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     setSelectedPerson(null);
     applyQuery(event.target.value);
+  };
+
+  const handleOnFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleOnBlur = () => {
+    setIsFocused(false);
+  };
+
+  const handleClickOmParagraph = (person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
   };
 
   const filteredPeople = React.useMemo(() => {
@@ -53,9 +65,8 @@ export const App: React.FC = () => {
               className="input"
               data-cy="search-input"
               onChange={handleQueryChange}
-              onFocus={() => {
-                setIsFocused(true);
-              }}
+              onFocus={handleOnFocus}
+              onBlur={handleOnBlur}
             />
           </div>
 
@@ -76,10 +87,7 @@ export const App: React.FC = () => {
 
                   <p
                     className="has-text-link"
-                    onMouseDown={() => {
-                      setQuery(person.name);
-                      setSelectedPerson(person);
-                    }}
+                    onMouseDown={() => handleClickOmParagraph(person)}
                   >
                     {person.name}
                   </p>
