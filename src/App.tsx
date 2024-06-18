@@ -14,7 +14,7 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-        {selectedPersonInfo}
+          {selectedPersonInfo}
         </h1>
         <Autocomplete onSelect={setSelectedPerson} />
       </main>

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../../data/people';
@@ -17,17 +17,23 @@ export const Autocomplete: React.FC<Props> = ({
   const [appliedQuery, setAppliedQuery] = useState('');
   const [showList, setShowList] = useState(false);
 
-  const applyQuery = useCallback(
-    debounce((value: string) => {
-      setAppliedQuery(value);
-      setShowList(!!value); // Show the list only if the query is not empty
-    }, delay),
-    [setAppliedQuery]
-  );
+  const debounceShowList = debounce(() => {
+    setShowList(true);
+  }, delay);
+
+  useEffect(() => {
+    const debouncedSetAppliedQuery = debounce(setAppliedQuery, delay);
+
+    debouncedSetAppliedQuery(query);
+
+    return () => {
+      debouncedSetAppliedQuery.cancel();
+    };
+  }, [query, delay]);
 
   const filteredLists = useMemo(() => {
     return peopleFromServer.filter(person =>
-      person.name.toLowerCase().includes(appliedQuery.toLowerCase())
+      person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
   }, [appliedQuery]);
 
@@ -39,9 +45,10 @@ export const Autocomplete: React.FC<Props> = ({
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
+
     setQuery(value);
     setShowList(false); // Hide the list immediately while typing
-    applyQuery(value); // Apply the query with debounce
+    debounceShowList();
     onSelect(null);
   };
 
