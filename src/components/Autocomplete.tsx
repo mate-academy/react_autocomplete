@@ -1,47 +1,79 @@
-import cn from "classnames";
-import { peopleFromServer } from "../data/people";
-import { Person } from "../types/Person";
-import React, { useCallback, useMemo, useState } from "react";
-import debounce from "lodash.debounce";
+import React, {
+  useMemo,
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+} from 'react';
+import debounce from 'lodash.debounce';
+import { peopleFromServer } from '../data/people';
+import { Person } from '../types/Person';
 
 type Props = {
-  onSelect: (person: Person | null) => void;
+  onSelected: (person: Person | null) => void;
+  delay?: number;
 };
 
-export const Autocomplete: React.FC<Props> = ({ onSelect = () => {} }) => {
-  const [query, setQuery] = useState("");
-  const [appliedQuery, setAppliedQuery] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
+export const Autocomplete: React.FC<Props> = ({
+  onSelected = () => {},
+  delay = 300,
+}) => {
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isListVisible, setIsListVisible] = useState(false);
 
-  const delay = 300;
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(
-    debounce((event) => {
-      setAppliedQuery(event);
-      setIsFocused(true);
+    debounce((value: string) => {
+      setAppliedQuery(value);
+      setIsListVisible(true);
     }, delay),
     [],
   );
 
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    onSelect(null);
-    setIsFocused(false);
     applyQuery(event.target.value);
+    onSelected(null);
+    setIsListVisible(false);
   };
 
-  const filterPeople = useMemo(() => {
-    return peopleFromServer.filter((person) =>
-      person.name
-        .toLowerCase()
-        .trim()
-        .includes(appliedQuery.trim().toLowerCase()),
+  const handleSelection = (selectedPerson: Person) => {
+    setAppliedQuery(selectedPerson.name);
+    setQuery(selectedPerson.name);
+    onSelected(selectedPerson);
+    setIsListVisible(false);
+  };
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setIsListVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isListVisible) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [isListVisible]);
+
+  const filteredNames = useMemo(() => {
+    return peopleFromServer.filter(person =>
+      person.name.toLowerCase().includes(appliedQuery.toLowerCase().trim()),
     );
   }, [appliedQuery]);
 
   return (
-    <div className={cn("dropdown", { "is-active": isFocused })}>
+    <div className="dropdown is-active" ref={dropdownRef}>
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -49,42 +81,42 @@ export const Autocomplete: React.FC<Props> = ({ onSelect = () => {} }) => {
           className="input"
           data-cy="search-input"
           value={query}
-          onFocus={() => setIsFocused(true)}
-          onChange={handleQueryChange}
+          onFocus={() => setIsListVisible(true)}
+          onChange={handleInputChange}
         />
       </div>
 
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-        {isFocused && filterPeople.length > 0 && (
+        {isListVisible && (
           <div className="dropdown-content">
-            {filterPeople.map((person: Person) => (
+            {filteredNames.length ? (
+              filteredNames.map(person => (
+                <div
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                  key={person.slug}
+                  onClick={() => handleSelection(person)}
+                >
+                  <p className="has-text-link" style={{ cursor: 'pointer' }}>
+                    {person.name}
+                  </p>
+                </div>
+              ))
+            ) : (
               <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-                key={person.name}
-                onClick={() => (
-                  onSelect(person), setQuery(person.name), setIsFocused(false)
-                )}
+                className="
+                  notification
+                  is-danger
+                  is-light
+                  mt-3
+                  is-align-self-flex-start
+                "
+                role="alert"
+                data-cy="no-suggestions-message"
               >
-                <p className="has-text-link">{person.name}</p>
+                <p className="has-text-danger">No matching suggestions</p>
               </div>
-            ))}
-          </div>
-        )}
-
-        {filterPeople.length === 0 && appliedQuery && (
-          <div
-            className="
-                notification
-                is-danger
-                is-light
-                mt-3
-                is-align-self-flex-start
-              "
-            role="alert"
-            data-cy="no-suggestions-message"
-          >
-            <p className="has-text-danger">No matching suggestions</p>
+            )}
           </div>
         )}
       </div>
