@@ -58,7 +58,7 @@ export const Autocomplete: React.FC<Props> = ({ onSelect = () => {} }) => {
         {isFocused && filterPeople.length > 0 && (
           <div className="dropdown-content">
             {filterPeople.map((person: Person) => (
-              <div
+              <li
                 className="dropdown-item"
                 data-cy="suggestion-item"
                 key={person.name}
@@ -67,20 +67,20 @@ export const Autocomplete: React.FC<Props> = ({ onSelect = () => {} }) => {
                 )}
               >
                 <p className="has-text-link">{person.name}</p>
-              </div>
+              </li>
             ))}
           </div>
         )}
 
-        {filterPeople.length === 0 && appliedQuery && (
+        {!filterPeople.length && appliedQuery && (
           <div
             className="
-                notification
-                is-danger
-                is-light
-                mt-3
-                is-align-self-flex-start
-              "
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
             role="alert"
             data-cy="no-suggestions-message"
           >
