@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { Person } from './types/Person';
 
@@ -19,7 +20,10 @@ export const DropdownMenu: React.FC<Props> = ({ list, onSelected }) => {
               data-cy="suggestion-item"
             >
               <p
-                className={`has-text-${user.sex === 'm' ? 'link' : 'danger'}`}
+                className={classNames({
+                  'has-text-danger': user.sex === 'f',
+                  'has-text-link': user.sex === 'm',
+                })}
                 onClick={() => onSelected(user)}
               >
                 {user.name}

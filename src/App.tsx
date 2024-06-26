@@ -43,6 +43,7 @@ export const App: React.FC = () => {
   }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPerson(null);
     setText(event.target.value);
     testDebounce(event.target.value);
   };
@@ -63,13 +64,15 @@ export const App: React.FC = () => {
     );
   }, [appliedQuery]);
 
+  const title = person
+    ? `${person.name} (${person.born} - ${person.died})`
+    : 'No selected person';
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {person
-            ? `${person.name} (${person.born} - ${person.died})`
-            : 'No selected person'}
+          {title}
         </h1>
 
         <div className="dropdown is-active" ref={dropdownRef}>
