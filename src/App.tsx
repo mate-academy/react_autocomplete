@@ -1,73 +1,110 @@
-import React from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from 'react';
+import debounce from 'lodash.debounce';
+
+import 'bulma';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { DropdownMenu } from './DropdownMenu';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [person, setPerson] = useState<Person | null>(null);
+
+  const [text, setText] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  const testDebounce = useCallback(debounce(setAppliedQuery, 300), []);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setText(event.target.value);
+    testDebounce(event.target.value);
+  };
+
+  const handleFocus = () => {
+    setShowSuggestions(true);
+  };
+
+  const onSelected = (user: Person) => {
+    setText(user.name);
+    setShowSuggestions(false);
+    setPerson(user);
+  };
+
+  const people = useMemo(() => {
+    return peopleFromServer.filter(user =>
+      user.name.toLowerCase().includes(appliedQuery.toLowerCase().trim()),
+    );
+  }, [appliedQuery]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {person
+            ? `${person.name} (${person.born} - ${person.died})`
+            : 'No selected person'}
         </h1>
 
-        <div className="dropdown is-active">
+        <div className="dropdown is-active" ref={dropdownRef}>
           <div className="dropdown-trigger">
             <input
               type="text"
-              placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              value={text}
+              onChange={handleChange}
+              onFocus={handleFocus}
+              placeholder="Enter a part of the name"
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
+          {showSuggestions && people.length !== 0 && (
+            <DropdownMenu list={people} onSelected={onSelected} />
+          )}
         </div>
 
-        <div
-          className="
+        {showSuggestions && people.length === 0 && (
+          <div
+            className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
