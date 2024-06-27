@@ -43,9 +43,9 @@ export const App: React.FC = () => {
   }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPerson(null);
     setText(event.target.value);
     testDebounce(event.target.value);
+    setPerson(null);
   };
 
   const handleFocus = () => {
