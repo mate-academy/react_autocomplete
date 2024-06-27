@@ -11,6 +11,10 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
+  const title = onSelected
+    ? `${onSelected.name} (${onSelected.born} - ${onSelected.died})`
+    : 'No selected person';
+
   const handleFocus = () => {
     setOnFocus(!onFocus);
   };
@@ -32,13 +36,25 @@ export const App: React.FC = () => {
     });
   }, [appliedQuery]);
 
+  const onClickHandler = (human: Person) => {
+    const { name } = human;
+
+    setOnSelected(human);
+    setOnFocus(false);
+    setQuery(name);
+    setAppliedQuery(name);
+  };
+
+  enum Sex {
+    male = 'm',
+    female = 'f',
+  }
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {onSelected
-            ? `${onSelected.name} (${onSelected.born} - ${onSelected.died})`
-            : 'No selected person'}
+          {title}
         </h1>
 
         <div className="dropdown is-active">
@@ -69,17 +85,12 @@ export const App: React.FC = () => {
                       className="dropdown-item"
                       data-cy="suggestion-item"
                       key={nameOfPerson}
-                      onClick={() => {
-                        setOnSelected(person);
-                        setOnFocus(false);
-                        setQuery(person.name);
-                        setAppliedQuery(person.name);
-                      }}
+                      onClick={() => onClickHandler(person)}
                     >
                       <p
                         className={cn({
-                          'has-text-link': sex === 'm',
-                          'has-text-danger': sex === 'f',
+                          'has-text-link': sex === Sex.male,
+                          'has-text-danger': sex === Sex.female,
                         })}
                       >
                         {nameOfPerson}
@@ -92,7 +103,7 @@ export const App: React.FC = () => {
           )}
         </div>
 
-        {filteredHumans.length === 0 && (
+        {!filteredHumans.length && (
           <div
             className="
             notification
