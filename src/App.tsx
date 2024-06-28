@@ -13,10 +13,14 @@ export const App: React.FC = () => {
   const preparedPeople: Person[] = useMemo(() => {
     return peopleFromServer.filter(person => person.name.includes(filterQuery));
   }, [filterQuery]);
-  const applyFilterQuery = debounce(setFilterQuery, 300);
+  const applyFilterQuery = debounce(queryToSet => {
+    setFilterQuery(queryToSet);
+    setShowDropdown(true);
+  }, 300);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
+    setShowDropdown(false);
     applyFilterQuery(event.target.value);
   };
 
@@ -25,6 +29,12 @@ export const App: React.FC = () => {
     setQuery(person.name);
     setFilterQuery(person.name);
     setShowDropdown(false);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      setShowDropdown(false);
+    }, 100);
   };
 
   return (
@@ -48,6 +58,7 @@ export const App: React.FC = () => {
               value={query}
               onChange={handleQueryChange}
               onFocus={() => setShowDropdown(true)}
+              onBlur={handleBlur}
             />
           </div>
 
