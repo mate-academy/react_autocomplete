@@ -28,6 +28,7 @@ export const App: React.FC = () => {
   const onSelected = (person: Person): undefined => {
     setSelected(() => person);
     setHasShowAutocomplete(false);
+    setQuery(person.name);
   };
 
   const filteredPersons = useMemo(() => {
