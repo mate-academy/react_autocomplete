@@ -11,12 +11,16 @@ export const App: React.FC = () => {
   const [selected, setSelected] = useState<Person | null>(null);
   const [hasShowAutocomplete, setHasShowAutocomplete] = useState(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
+  const applyQuery = useCallback(
+    debounce(q => setAppliedQuery(q), 300),
+    [],
+  );
 
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value !== query) {
       setSelected(null);
     }
+
     setQuery(e.target.value);
     applyQuery(e.target.value);
   };
