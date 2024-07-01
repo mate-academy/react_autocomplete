@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import './App.scss';
 import cn from 'classnames';
 import { peopleFromServer } from './data/people';
@@ -10,6 +10,7 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selected, setSelected] = useState<Person | null>(null);
   const [hasShowAutocomplete, setHasShowAutocomplete] = useState(false);
+  const isSuggestionClickedRef = useRef(false);
 
   const applyQuery = useCallback(
     debounce(q => setAppliedQuery(q), 300),
@@ -33,9 +34,23 @@ export const App: React.FC = () => {
 
   const filteredPersons = useMemo(() => {
     return peopleFromServer.filter(person =>
-      person.name.includes(appliedQuery),
+      person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
   }, [appliedQuery]);
+
+  const handleBlur = () => {
+    if (!isSuggestionClickedRef.current) {
+      setHasShowAutocomplete(false);
+    }
+  };
+
+  const handleMouseDown = () => {
+    isSuggestionClickedRef.current = true;
+  };
+
+  const handleMouseUp = () => {
+    isSuggestionClickedRef.current = false;
+  };
 
   return (
     <div className="container">
@@ -46,7 +61,11 @@ export const App: React.FC = () => {
             : 'No selected person'}
         </h1>
 
-        <div className={cn('dropdown', { 'is-active': hasShowAutocomplete })}>
+        <div
+          className={cn('dropdown', {
+            'is-active': hasShowAutocomplete && filteredPersons.length,
+          })}
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
@@ -56,6 +75,7 @@ export const App: React.FC = () => {
               value={query}
               onChange={handleQueryChange}
               onFocus={() => setHasShowAutocomplete(true)}
+              onBlur={handleBlur}
             />
           </div>
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
@@ -65,6 +85,8 @@ export const App: React.FC = () => {
                   key={person.slug}
                   className="dropdown-item"
                   data-cy="suggestion-item"
+                  onMouseDown={handleMouseDown}
+                  onMouseUp={handleMouseUp}
                   onClick={() => onSelected(person)}
                 >
                   <p className="has-text-link">{person.name}</p>
