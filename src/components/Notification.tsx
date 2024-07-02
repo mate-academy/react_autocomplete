@@ -4,12 +4,12 @@ export const Notification: FC = () => {
   return (
     <div
       className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
+        notification
+        is-danger
+        is-light
+        mt-3
+        is-align-self-flex-start
+      "
       role="alert"
       data-cy="no-suggestions-message"
     >
