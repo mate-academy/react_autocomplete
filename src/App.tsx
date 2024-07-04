@@ -18,7 +18,7 @@ export const App: React.FC = () => {
           person.name.toLowerCase().includes(value.toLowerCase()),
         ),
       );
-    }, 300);
+    });
   }, []);
 
   const filteredPeople = useMemo(() => {
@@ -42,7 +42,17 @@ export const App: React.FC = () => {
 
   const handleChoose = (person: Person) => {
     setCurrentPerson(person);
+    setSearchPart(person.name);
     setIsDisplayed(false);
+  };
+
+  const handleInputClick = () => {
+    setSuggestedPeople(
+      peopleFromServer.filter(person =>
+        person.name.toLowerCase().includes(searchPart.toLowerCase()),
+      ),
+    );
+    setIsDisplayed(true);
   };
 
   return (
@@ -65,10 +75,9 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              value={searchPart}
               onChange={handleChange}
-              onClick={() => {
-                setIsDisplayed(true);
-              }}
+              onClick={handleInputClick}
             />
           </div>
 
