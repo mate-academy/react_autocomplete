@@ -1,16 +1,51 @@
-import React from 'react';
 import './App.scss';
+import React, { useMemo, useState } from 'react';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import debounce from 'lodash.debounce';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [searchPart, setSearchPart] = useState('');
+  const [suggestedPeople, setSuggestedPeople] = useState(peopleFromServer);
+  const [currentPerson, setCurrentPerson] = useState<Person | null>(
+    peopleFromServer[0],
+  );
+  const [isDisplayed, setIsDisplayed] = useState(false);
+
+  const setQueryWithDelay = useMemo(() => {
+    return debounce((value: string) => setSearchPart(value), 300);
+  }, [setSearchPart]);
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter(person =>
+      person.name.toLowerCase().includes(searchPart.toLowerCase()),
+    );
+  }, [searchPart]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQueryWithDelay(event.target.value.trim());
+    setSuggestedPeople(filteredPeople);
+    setIsDisplayed(true);
+    setCurrentPerson(null);
+  };
+
+  const handleChoose = (person: Person) => {
+    setCurrentPerson(person);
+    setIsDisplayed(false);
+  };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
-        </h1>
+        {currentPerson ? (
+          <h1 className="title" data-cy="title">
+            {`${currentPerson.name} (${currentPerson.born} - ${currentPerson.died})`}
+          </h1>
+        ) : (
+          <h1 className="title" data-cy="title">
+            No selected person
+          </h1>
+        )}
 
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
@@ -19,55 +54,50 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              onChange={handleChange}
+              onClick={() => {
+                setIsDisplayed(true);
+              }}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
+          {isDisplayed && (
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
+              <div className="dropdown-content">
+                {suggestedPeople.map((person, index) => (
+                  <div
+                    className="dropdown-item"
+                    data-cy="suggestion-item"
+                    key={index}
+                    onClick={() => handleChoose(person)}
+                  >
+                    <p className="has-text-link">{person.name}</p>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
         </div>
 
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        {searchPart && suggestedPeople.length === 0 && isDisplayed && (
+          <div
+            className="
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
