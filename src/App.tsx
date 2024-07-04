@@ -18,7 +18,7 @@ export const App: React.FC = () => {
           person.name.toLowerCase().includes(value.toLowerCase()),
         ),
       );
-    });
+    }, 300);
   }, []);
 
   const filteredPeople = useMemo(() => {
