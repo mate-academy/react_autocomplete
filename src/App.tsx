@@ -1,5 +1,5 @@
 import './App.scss';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
@@ -10,34 +10,27 @@ export const App: React.FC = () => {
   const [currentPerson, setCurrentPerson] = useState<Person | null>(null);
   const [isDisplayed, setIsDisplayed] = useState(false);
 
+  const filterPeople = useCallback((value: string) => {
+    return peopleFromServer.filter(person =>
+      person.name.toLowerCase().includes(value.toLowerCase()),
+    );
+  }, []);
+
   const setQueryWithDelay = useMemo(() => {
     return debounce((value: string) => {
       setSearchPart(value);
-      setSuggestedPeople(
-        peopleFromServer.filter(person =>
-          person.name.toLowerCase().includes(value.toLowerCase()),
-        ),
-      );
+      setSuggestedPeople(filterPeople(value));
     }, 300);
-  }, []);
-
-  const filteredPeople = useMemo(() => {
-    return peopleFromServer.filter(person =>
-      person.name.toLowerCase().includes(searchPart.toLowerCase()),
-    );
-  }, [searchPart]);
+  }, [filterPeople]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value === '') {
-      setSuggestedPeople(peopleFromServer);
-    } else {
-      setQueryWithDelay(event.target.value);
-    }
+    const value = event.target.value.trim();
 
-    setQueryWithDelay(event.target.value.trim());
-    setSuggestedPeople(filteredPeople);
+    setSearchPart(value);
     setIsDisplayed(true);
     setCurrentPerson(null);
+    setQueryWithDelay(value);
+    setSuggestedPeople(filterPeople(value));
   };
 
   const handleChoose = (person: Person) => {
@@ -47,11 +40,7 @@ export const App: React.FC = () => {
   };
 
   const handleInputClick = () => {
-    setSuggestedPeople(
-      peopleFromServer.filter(person =>
-        person.name.toLowerCase().includes(searchPart.toLowerCase()),
-      ),
-    );
+    setSuggestedPeople(filterPeople(searchPart));
     setIsDisplayed(true);
   };
 
