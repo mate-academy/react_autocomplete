@@ -7,14 +7,19 @@ import debounce from 'lodash.debounce';
 export const App: React.FC = () => {
   const [searchPart, setSearchPart] = useState('');
   const [suggestedPeople, setSuggestedPeople] = useState(peopleFromServer);
-  const [currentPerson, setCurrentPerson] = useState<Person | null>(
-    peopleFromServer[0],
-  );
+  const [currentPerson, setCurrentPerson] = useState<Person | null>(null);
   const [isDisplayed, setIsDisplayed] = useState(false);
 
   const setQueryWithDelay = useMemo(() => {
-    return debounce((value: string) => setSearchPart(value), 300);
-  }, [setSearchPart]);
+    return debounce((value: string) => {
+      setSearchPart(value);
+      setSuggestedPeople(
+        peopleFromServer.filter(person =>
+          person.name.toLowerCase().includes(value.toLowerCase()),
+        ),
+      );
+    }, 300);
+  }, []);
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person =>
@@ -23,6 +28,12 @@ export const App: React.FC = () => {
   }, [searchPart]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value === '') {
+      setSuggestedPeople(peopleFromServer);
+    } else {
+      setQueryWithDelay(event.target.value);
+    }
+
     setQueryWithDelay(event.target.value.trim());
     setSuggestedPeople(filteredPeople);
     setIsDisplayed(true);
@@ -67,18 +78,20 @@ export const App: React.FC = () => {
               role="menu"
               data-cy="suggestions-list"
             >
-              <div className="dropdown-content">
-                {suggestedPeople.map((person, index) => (
-                  <div
-                    className="dropdown-item"
-                    data-cy="suggestion-item"
-                    key={index}
-                    onClick={() => handleChoose(person)}
-                  >
-                    <p className="has-text-link">{person.name}</p>
-                  </div>
-                ))}
-              </div>
+              {suggestedPeople.length > 0 && (
+                <div className="dropdown-content">
+                  {suggestedPeople.map((person, index) => (
+                    <div
+                      className="dropdown-item is-active"
+                      data-cy="suggestion-item"
+                      key={index}
+                      onClick={() => handleChoose(person)}
+                    >
+                      <p className="has-text-link">{person.name}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
