@@ -1,5 +1,5 @@
 import './App.scss';
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
@@ -16,12 +16,14 @@ export const App: React.FC = () => {
     );
   }, []);
 
-  const setQueryWithDelay = useMemo(() => {
-    return debounce((value: string) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedSetSearchPart = useCallback(
+    debounce((value: string) => {
       setSearchPart(value);
       setSuggestedPeople(filterPeople(value));
-    }, 300);
-  }, [filterPeople]);
+    }, 300),
+    [filterPeople],
+  );
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.trim();
@@ -29,8 +31,7 @@ export const App: React.FC = () => {
     setSearchPart(value);
     setIsDisplayed(true);
     setCurrentPerson(null);
-    setQueryWithDelay(value);
-    setSuggestedPeople(filterPeople(value));
+    debouncedSetSearchPart(value);
   };
 
   const handleChoose = (person: Person) => {
