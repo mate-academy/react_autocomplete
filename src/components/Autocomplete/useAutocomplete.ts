@@ -35,10 +35,9 @@ export const useAutocomplete = <TOption>({
     }
 
     return dropdownOptions.filter(option => {
-      const searchedValue =
-        typeof option[searchKey] === 'string' ? option[searchKey] : '';
+      const optionValue = option[searchKey] as string;
 
-      return searchedValue.toLocaleLowerCase().includes(query.toLowerCase());
+      return optionValue.toLowerCase().includes(query.toLowerCase());
     });
   }, [dropdownOptions, searchKey, query]);
 
