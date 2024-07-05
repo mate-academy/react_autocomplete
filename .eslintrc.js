@@ -4,6 +4,6 @@ module.exports = {
     'plugin:cypress/recommended',
   ],
   rules: {
-    'react/display-name': 0
+    'react/display-name': 0,
   },
 };
