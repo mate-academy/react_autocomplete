@@ -10,26 +10,25 @@ export const App: React.FC = () => {
   const [currentPerson, setCurrentPerson] = useState<Person | null>(null);
   const [isDisplayed, setIsDisplayed] = useState(false);
 
-  const filterPeople = useCallback((value: string) => {
+  const filterPeople = (value: string) => {
     return peopleFromServer.filter(person =>
       person.name.toLowerCase().includes(value.toLowerCase()),
     );
-  }, []);
+  };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSetSearchPart = useCallback(
     debounce((value: string) => {
-      setSearchPart(value);
       setSuggestedPeople(filterPeople(value));
+      setIsDisplayed(true);
     }, 300),
-    [filterPeople],
+    [],
   );
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.trim();
 
     setSearchPart(value);
-    setIsDisplayed(true);
     setCurrentPerson(null);
     debouncedSetSearchPart(value);
   };
@@ -38,6 +37,11 @@ export const App: React.FC = () => {
     setCurrentPerson(person);
     setSearchPart(person.name);
     setIsDisplayed(false);
+
+    setTimeout(() => {
+      setSuggestedPeople(filterPeople(''));
+      setIsDisplayed(false);
+    }, 0);
   };
 
   const handleInputClick = () => {
@@ -58,7 +62,7 @@ export const App: React.FC = () => {
           </h1>
         )}
 
-        <div className="dropdown is-active">
+        <div className={`dropdown ${isDisplayed ? 'is-active' : ''}`}>
           <div className="dropdown-trigger">
             <input
               type="text"
@@ -68,6 +72,7 @@ export const App: React.FC = () => {
               value={searchPart}
               onChange={handleChange}
               onClick={handleInputClick}
+              onFocus={handleInputClick}
             />
           </div>
 
@@ -77,11 +82,11 @@ export const App: React.FC = () => {
               role="menu"
               data-cy="suggestions-list"
             >
-              {suggestedPeople.length > 0 && (
+              {suggestedPeople.length > 0 ? (
                 <div className="dropdown-content">
                   {suggestedPeople.map((person, index) => (
                     <div
-                      className="dropdown-item is-active"
+                      className="dropdown-item"
                       data-cy="suggestion-item"
                       key={index}
                       onClick={() => handleChoose(person)}
@@ -90,26 +95,14 @@ export const App: React.FC = () => {
                     </div>
                   ))}
                 </div>
+              ) : (
+                <div className="dropdown-item" data-cy="no-suggestions-message">
+                  <p className="has-text-danger">No matching suggestions</p>
+                </div>
               )}
             </div>
           )}
         </div>
-
-        {searchPart && suggestedPeople.length === 0 && isDisplayed && (
-          <div
-            className="
-              notification
-              is-danger
-              is-light
-              mt-3
-              is-align-self-flex-start
-            "
-            role="alert"
-            data-cy="no-suggestions-message"
-          >
-            <p className="has-text-danger">No matching suggestions</p>
-          </div>
-        )}
       </main>
     </div>
   );
