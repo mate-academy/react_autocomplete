@@ -32,7 +32,7 @@ export const Dropdown: React.FC<Props> = ({ onSelect }) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(e.target.value);
-      applyQuery(e.target.value);
+      applyQuery(e.target.value.trim());
       onSelect(null);
     },
     [applyQuery, onSelect],
