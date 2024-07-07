@@ -1,4 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import debounce from 'lodash.debounce';
@@ -7,42 +13,52 @@ import classNames from 'classnames';
 
 export const App: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
-  const [suggestions, setSuggestions] = useState<Person[]>([]);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [dropDown, setDropDown] = useState(false);
+  const [appliedInputValue, setAppliedInputValue] = useState('');
 
-  const debouncedSuggestions = useMemo(
-    () =>
-      debounce((value: string) => {
-        const filteredSuggestions = value
-          ? peopleFromServer.filter(person => person.name.includes(value))
-          : peopleFromServer;
-
-        setSuggestions(filteredSuggestions);
-      }, 300),
-    [],
-  );
+  const applyInputValue = useCallback(debounce(setAppliedInputValue, 300), []);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
+    applyInputValue(event.target.value);
     setSelectedPerson(null);
-    debouncedSuggestions(event.target.value);
-    setIsDropdownVisible(true);
+    setDropDown(true);
   };
 
-  const handleSuggestionClick = (person: Person) => {
-    setInputValue(person.name);
+  const handleSelectPerson = (person: Person) => {
+    setInputValue(person?.name);
     setSelectedPerson(person);
-    setSuggestions([]);
-    setIsDropdownVisible(false);
+    setDropDown(false);
   };
 
-  const handleInputFocus = () => {
-    setIsDropdownVisible(true);
-    if (!inputValue) {
-      setSuggestions(peopleFromServer);
-    }
-  };
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter(person => {
+      const normalazedName = person.name.trim().toLowerCase();
+      const normalazedQuery = appliedInputValue.trim().toLowerCase();
+
+      return normalazedName.includes(normalazedQuery);
+    });
+  }, [appliedInputValue]);
+
+  const container = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      const dropdownElement = container.current;
+
+      if (dropdownElement && !dropdownElement.contains(target)) {
+        setDropDown(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="container">
@@ -53,11 +69,7 @@ export const App: React.FC = () => {
             : 'No selected person'}
         </h1>
 
-        <div
-          className={classNames('dropdown', {
-            'is-active': isDropdownVisible,
-          })}
-        >
+        <div className="dropdown is-active" ref={container}>
           <div className="dropdown-trigger">
             <input
               type="text"
@@ -66,25 +78,37 @@ export const App: React.FC = () => {
               data-cy="search-input"
               value={inputValue}
               onChange={handleInputChange}
-              onFocus={handleInputFocus}
+              onFocus={() => {
+                setDropDown(true);
+              }}
             />
           </div>
 
-          {isDropdownVisible && !!suggestions.length && (
+          {dropDown && (
             <div
               className="dropdown-menu"
               role="menu"
               data-cy="suggestions-list"
             >
-              <div className="dropdown-content">
-                {suggestions.map(person => (
+              <div
+                className={
+                  filteredPeople.length !== 0 ? 'dropdown-content' : ''
+                }
+              >
+                {filteredPeople.map(person => (
                   <div
                     key={person.name}
                     className="dropdown-item"
                     data-cy="suggestion-item"
-                    onClick={() => handleSuggestionClick(person)}
+                    onClick={() => handleSelectPerson(person)}
                   >
-                    <p className="has-text-link">{person.name}</p>
+                    <p
+                      className={classNames('has-text-link', {
+                        'has-text-danger': person.sex === 'f',
+                      })}
+                    >
+                      {person.name}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -92,7 +116,7 @@ export const App: React.FC = () => {
           )}
         </div>
 
-        {!suggestions.length && inputValue && !selectedPerson && (
+        {filteredPeople.length === 0 && (
           <div
             className="
             notification
