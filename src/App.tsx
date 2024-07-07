@@ -3,6 +3,7 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import debounce from 'lodash.debounce';
 import { Person } from './types/Person';
+import classNames from 'classnames';
 
 export const App: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
@@ -46,17 +47,17 @@ export const App: React.FC = () => {
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        {selectedPerson ? (
-          <h1 className="title" data-cy="title">
-            {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
-          </h1>
-        ) : (
-          <h1 className="title" data-cy="title">
-            No selected person
-          </h1>
-        )}
+        <h1 className="title" data-cy="title">
+          {selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+            : 'No selected person'}
+        </h1>
 
-        <div className={`dropdown ${isDropdownVisible ? 'is-active' : ''}`}>
+        <div
+          className={classNames('dropdown', {
+            'is-active': isDropdownVisible,
+          })}
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
