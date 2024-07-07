@@ -38,7 +38,6 @@ export const App: React.FC = () => {
     setSearchPart(person.name);
 
     setTimeout(() => {
-      setSuggestedPeople(filterPeople(''));
       setIsDisplayed(false);
     }, 0);
   };
