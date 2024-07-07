@@ -36,7 +36,6 @@ export const App: React.FC = () => {
   const handleChoose = (person: Person) => {
     setCurrentPerson(person);
     setSearchPart(person.name);
-    setIsDisplayed(false);
 
     setTimeout(() => {
       setSuggestedPeople(filterPeople(''));
