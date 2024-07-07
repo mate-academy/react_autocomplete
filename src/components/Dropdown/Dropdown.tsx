@@ -44,6 +44,11 @@ export const Dropdown: React.FC<Props> = ({ onSelect }) => {
     );
   }, [appliedQuery]);
 
+  const handleClick = (person: Person) => {
+    onSelect(person);
+    setQuery(person.name);
+  };
+
   return (
     <div className={cn('dropdown', { 'is-active': isDropdownVisible })}>
       <div className="dropdown-trigger">
@@ -69,7 +74,7 @@ export const Dropdown: React.FC<Props> = ({ onSelect }) => {
                 className="dropdown-item"
                 data-cy="suggestion-item"
                 key={person.name}
-                onClick={() => onSelect(person)}
+                onClick={() => handleClick(person)}
               >
                 <p className="has-text-link">{person.name}</p>
               </div>
