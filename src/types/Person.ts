@@ -7,3 +7,13 @@ export interface Person {
   motherName: string | null;
   slug: string;
 }
+
+export interface DropdownContentProps {
+  people: Person[];
+  onSelectPerson: (person: Person) => void;
+}
+
+export interface DropdownItemProps {
+  person: Person;
+  onSelectPerson: (person: Person) => void;
+}
