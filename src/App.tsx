@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 import './App.scss';
-
+import cn from 'classnames';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
@@ -10,8 +10,6 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [dropDown, setDropDown] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const applyQuery = useMemo(
     () => debounce(setAppliedQuery, 300),
@@ -29,11 +27,8 @@ export const App: React.FC = () => {
   }, [appliedQuery]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!selectedPerson) {
-      setQuery(event.target.value.trim());
-      applyQuery(event.target.value.trim());
-    }
-
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
     setSelectedPerson(null);
   };
 
@@ -44,25 +39,6 @@ export const App: React.FC = () => {
     setDropDown(false);
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      inputRef.current &&
-      dropdownRef.current &&
-      !inputRef.current.contains(event.target as Node) &&
-      !dropdownRef.current.contains(event.target as Node)
-    ) {
-      setDropDown(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
@@ -72,10 +48,13 @@ export const App: React.FC = () => {
             : 'No selected person'}
         </h1>
 
-        <div className="dropdown is-active">
+        <div
+          className={cn('dropdown', {
+            'is-active': dropDown,
+          })}
+        >
           <div className="dropdown-trigger">
             <input
-              ref={inputRef}
               type="text"
               placeholder="Enter a part of the name"
               className="input"
@@ -83,51 +62,42 @@ export const App: React.FC = () => {
               value={query}
               onChange={handleInputChange}
               onFocus={() => setDropDown(true)}
+              onBlur={() => setDropDown(false)}
             />
           </div>
-
-          {dropDown && (
-            <div
-              ref={dropdownRef}
-              className="dropdown-menu"
-              role="menu"
-              data-cy="suggestions-list"
-            >
-              <div className="dropdown-content">
-                {filteredPerson.length > 0 ? (
-                  filteredPerson.map(person => (
-                    <div
-                      className="dropdown-item"
-                      data-cy="suggestion-item"
-                      key={person.slug}
-                      onClick={() => handleSuggestionSelect(person)}
-                    >
-                      <p
-                        className={
-                          person.sex === 'm'
-                            ? 'has-text-link'
-                            : 'has-text-danger'
-                        }
-                      >
-                        {person.name}
-                      </p>
-                    </div>
-                  ))
-                ) : (
+          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+            <div className="dropdown-content">
+              {filteredPerson.length > 0 ? (
+                filteredPerson.map(person => (
                   <div
-                    className="notification
+                    className="dropdown-item"
+                    data-cy="suggestion-item"
+                    key={person.slug}
+                    onMouseDown={() => handleSuggestionSelect(person)}
+                  >
+                    <p
+                      className={
+                        person.sex === 'm' ? 'has-text-link' : 'has-text-danger'
+                      }
+                    >
+                      {person.name}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div
+                  className="notification
                     is-danger is-light
                     mt-3
                     is-align-self-flex-start"
-                    role="alert"
-                    data-cy="no-suggestions-message"
-                  >
-                    <p className="has-text-danger">No matching suggestions</p>
-                  </div>
-                )}
-              </div>
+                  role="alert"
+                  data-cy="no-suggestions-message"
+                >
+                  <p className="has-text-danger">No matching suggestions</p>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </main>
     </div>
