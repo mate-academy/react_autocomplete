@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import debounce from 'lodash.debounce';
 import './App.scss';
 
@@ -10,6 +10,8 @@ export const App: React.FC = () => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [dropDown, setDropDown] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const applyQuery = useMemo(
     () => debounce(setAppliedQuery, 300),
@@ -42,6 +44,25 @@ export const App: React.FC = () => {
     setDropDown(false);
   };
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      inputRef.current &&
+      dropdownRef.current &&
+      !inputRef.current.contains(event.target as Node) &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setDropDown(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
@@ -54,6 +75,7 @@ export const App: React.FC = () => {
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
             <input
+              ref={inputRef}
               type="text"
               placeholder="Enter a part of the name"
               className="input"
@@ -66,6 +88,7 @@ export const App: React.FC = () => {
 
           {dropDown && (
             <div
+              ref={dropdownRef}
               className="dropdown-menu"
               role="menu"
               data-cy="suggestions-list"
