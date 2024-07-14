@@ -18,8 +18,10 @@ export const App: React.FC = () => {
 
   const filteredPerson = useMemo(() => {
     if (appliedQuery) {
+      const lowerCaseQuery = appliedQuery.toLowerCase();
+
       return peopleFromServer.filter(person =>
-        person.name.includes(appliedQuery),
+        person.name.toLowerCase().includes(lowerCaseQuery),
       );
     }
 
