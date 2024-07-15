@@ -13,7 +13,7 @@ export const Dropdown: React.FC<Props> = React.memo(({ onSelect }) => {
   const [appliedQuery, setAppliedQuery] = useState('');
   const [show, setShow] = useState(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
+  const applyQuery = debounce(setAppliedQuery, 300);
 
   const heandleQueryChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,7 +21,7 @@ export const Dropdown: React.FC<Props> = React.memo(({ onSelect }) => {
       applyQuery(event.target.value);
       onSelect(null);
     },
-    [appliedQuery, onSelect],
+    [applyQuery, onSelect],
   );
 
   const heandleClick = (people: Person) => {
@@ -37,7 +37,7 @@ export const Dropdown: React.FC<Props> = React.memo(({ onSelect }) => {
     return peopleFromServer.filter(people =>
       people.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
-  }, [appliedQuery, peopleFromServer]);
+  }, [appliedQuery]);
 
   return (
     <div className={classNames('dropdown', { 'is-active': show })}>
@@ -64,6 +64,7 @@ export const Dropdown: React.FC<Props> = React.memo(({ onSelect }) => {
                   data-cy="suggestion-item"
                   key={people.slug}
                   onClick={() => heandleClick(people)}
+                  style={{ cursor: 'pointer' }}
                 >
                   <p className="has-text-link">{people.name}</p>
                 </div>
@@ -77,6 +78,7 @@ export const Dropdown: React.FC<Props> = React.memo(({ onSelect }) => {
                     mt-3
                     is-align-self-flex-start
                   "
+                style={{ cursor: 'pointer' }}
                 role="alert"
                 data-cy="no-suggestions-message"
               >
