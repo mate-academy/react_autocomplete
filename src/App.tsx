@@ -9,7 +9,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [dropDown, setDropDown] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const applyQuery = useMemo(
     () => debounce(setAppliedQuery, 300),
@@ -38,7 +38,7 @@ export const App: React.FC = () => {
     setQuery(person.name);
     applyQuery(person.name);
     setSelectedPerson(person);
-    setDropDown(false);
+    setIsFocused(false);
   };
 
   return (
@@ -52,7 +52,7 @@ export const App: React.FC = () => {
 
         <div
           className={cn('dropdown', {
-            'is-active': dropDown,
+            'is-active': isFocused,
           })}
         >
           <div className="dropdown-trigger">
@@ -63,8 +63,8 @@ export const App: React.FC = () => {
               data-cy="search-input"
               value={query}
               onChange={handleInputChange}
-              onFocus={() => setDropDown(true)}
-              onBlur={() => setDropDown(false)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
             />
           </div>
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
