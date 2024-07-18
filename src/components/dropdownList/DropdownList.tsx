@@ -56,7 +56,7 @@ const DropdownList = ({
             <div className="dropdown-content">
               {people.map(person => (
                 <DropdownItem
-                  key={person.name}
+                  key={person.slug}
                   person={person}
                   onClick={onClick}
                 />
