@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Person } from '../types/Person';
 import { peopleFromServer } from '../data/people';
 import debounce from 'lodash.debounce';
@@ -13,7 +13,7 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelect }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const applyQuery = debounce(setAppliedQuery, delay);
+  const applyQuery = useMemo(() => debounce(setAppliedQuery, delay), [delay]);
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person =>
@@ -24,14 +24,11 @@ export const Autocomplete: React.FC<Props> = ({ delay, onSelect }) => {
   const isNoMatching = !filteredPeople.length && query;
   const isChoosing = isFocused && filteredPeople.length > 0;
 
-  const handleChangeInput = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(event.target.value);
-      applyQuery(event.target.value);
-      onSelect(null);
-    },
-    [applyQuery, onSelect],
-  );
+  const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+    onSelect(null);
+  };
 
   const handleChoose = (person: Person) => {
     onSelect(person);
