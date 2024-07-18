@@ -1,73 +1,83 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import DropdownList from './components/dropdownList/DropdownList';
+import debounce from 'lodash.debounce';
+
+type ChosenPerson = Person | 'No selected person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [chosenPerson, setChosenPerson] =
+    useState<ChosenPerson>('No selected person');
+  const [inputValue, setInputValue] = useState<string>('');
+  const [appliedQuery, setAppliedQuery] = useState<string>('');
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const { name, born, died } = chosenPerson as Person;
+
+  const title =
+    typeof chosenPerson === 'object'
+      ? `${name} (${born} - ${died})`
+      : chosenPerson;
+
+  const applyQuery = useMemo(() => debounce(setAppliedQuery, 300), []);
+
+  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+
+    setInputValue(value);
+    applyQuery(value);
+    setChosenPerson('No selected person');
+  };
+
+  const handleFocusElement = (state: boolean) => {
+    setIsFocused(state);
+  };
+
+  const handleClick = (person: Person) => {
+    setChosenPerson(person);
+    handleFocusElement(false);
+  };
+
+  const dropdownPersons = useMemo(() => {
+    const toEditet = (text: string) => text.toLowerCase().trim();
+
+    return peopleFromServer.filter(person =>
+      toEditet(person.name).includes(toEditet(appliedQuery)),
+    );
+  }, [appliedQuery]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {title}
         </h1>
 
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-            />
+        <DropdownList
+          people={dropdownPersons}
+          onClick={handleClick}
+          isFocused={isFocused}
+          onFocusElement={handleFocusElement}
+          inputValue={inputValue}
+          onChangeInput={handleChangeInput}
+        />
+
+        {!dropdownPersons.length && (
+          <div
+            className="
+        notification
+        is-danger
+        is-light
+        mt-3
+        is-align-self-flex-start
+      "
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
           </div>
-
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        )}
       </main>
     </div>
   );
