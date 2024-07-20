@@ -6,7 +6,7 @@ import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
 
 export const App: React.FC = () => {
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [appliedQuery, setAppliedQuery] = useState('');
 
   const [query, setQuery] = useState('');
@@ -14,31 +14,38 @@ export const App: React.FC = () => {
 
   const applyQuery = useCallback(debounce(setAppliedQuery, 1000), []);
 
-  const filterList = peopleFromServer.filter(people => people.name.toLowerCase().includes(appliedQuery.toLowerCase()))
+  const filterList = peopleFromServer.filter(people =>
+    people.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+  );
 
   //#region handle
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
-    applyQuery(event.target.value)
-    setQuery(event.target.value)
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    applyQuery(event.target.value);
+    setQuery(event.target.value);
     setIsDropdownActive(true); // Активируем выпадающий список при изменении запроса
     if (event.target.value === '') {
       setSelectedPerson(null); // Устанавливаем выбранного человека в null, если поле ввода пустое
     }
-  }
+  };
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, people: Person) => {
+  const handleClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    people: Person,
+  ) => {
     e.preventDefault();
-    setSelectedPerson(people)
+    setSelectedPerson(people);
     setIsDropdownActive(false);
-  }
+  };
   //#endregion
 
   //#region press input
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-
   const handleClickOutside = (event: MouseEvent) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
       setIsDropdownActive(false);
     }
   };
@@ -49,12 +56,12 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
+
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
   //#endregion
-
 
   return (
     <div className="container">
@@ -62,18 +69,14 @@ export const App: React.FC = () => {
         <h1 className="title" data-cy="title">
           {selectedPerson
             ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-            : 'No selected person'
-          }
+            : 'No selected person'}
         </h1>
 
         <div
           className={`dropdown ${isDropdownActive ? 'is-active' : ''}`}
           data-cy="dropdown"
         >
-          <div
-            className="dropdown-trigger"
-            ref={dropdownRef}
-          >
+          <div className="dropdown-trigger" ref={dropdownRef}>
             <input
               type="text"
               placeholder="Enter a part of the name"
@@ -98,7 +101,7 @@ export const App: React.FC = () => {
                   href="#"
                   className="dropdown-item is-activ"
                   data-cy="suggestion-item"
-                  onClick={(e) => handleClick(e, people)}
+                  onClick={e => handleClick(e, people)}
                 >
                   {people.name}
                 </a>
