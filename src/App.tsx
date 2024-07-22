@@ -81,7 +81,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
               <button
                 className="delete"
                 onClick={handleDeleteClick}
-                // aria-label="delete"
+                aria-label="delete"
               ></button>
             )}
           </div>
