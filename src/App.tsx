@@ -78,7 +78,11 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
             />
 
             {isDropDownActive && (
-              <button className="delete" onClick={handleDeleteClick}></button>
+              <button
+                className="delete"
+                onClick={handleDeleteClick}
+                // aria-label="delete"
+              ></button>
             )}
           </div>
 
