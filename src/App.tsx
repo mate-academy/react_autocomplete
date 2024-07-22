@@ -24,9 +24,7 @@ export const App: React.FC = () => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     setIsDropdownActive(true);
-    if (event.target.value === '') {
-      setSelectedPerson(null);
-    }
+    setSelectedPerson(null);
 
     applyQuery(event.target.value);
   };
