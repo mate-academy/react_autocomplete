@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Person } from '../types/Person';
 import { peopleFromServer } from '../data/people';
 import debounce from 'lodash.debounce';
+import cn from 'classnames';
 
 type Props = {
   setSelected: (person: Person | null) => void;
@@ -46,7 +47,7 @@ export const Dropdown: React.FC<Props> = ({ setSelected, delay }) => {
   };
 
   return (
-    <div className={`dropdown ${isDropdownActive ? 'is-active' : ''}`}>
+    <div className={cn('dropdown', { 'is-active': isDropdownActive })}>
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -63,7 +64,7 @@ export const Dropdown: React.FC<Props> = ({ setSelected, delay }) => {
       {isDropdownActive && (
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           <div className="dropdown-content">
-            {filterPeople.length > 0 ? (
+            {filterPeople.length ? (
               filterPeople.map(person => (
                 <div
                   className="dropdown-item"
