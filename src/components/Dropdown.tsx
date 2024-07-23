@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Person } from '../types/Person';
-import { peopleFromServer } from '../data/people';
 import debounce from 'lodash.debounce';
 import cn from 'classnames';
+import { Persons } from './Person';
 
 type Props = {
   setSelected: (person: Person | null) => void;
@@ -36,11 +36,11 @@ export const Dropdown: React.FC<Props> = ({ setSelected, delay }) => {
     setQuery(person.name);
   };
 
-  const filterPeople = useMemo(() => {
-    return peopleFromServer.filter(peop =>
-      peop.name.toLowerCase().includes(appliedQuery.toLowerCase()),
-    );
-  }, [appliedQuery]);
+  const handleBlur = () => {
+    if (isDropdownActive) {
+      setIsDropdownActive(false);
+    }
+  };
 
   const handleFocus = () => {
     setIsDropdownActive(true);
@@ -56,45 +56,14 @@ export const Dropdown: React.FC<Props> = ({ setSelected, delay }) => {
           data-cy="search-input"
           value={query}
           onChange={handleInputChange}
-          onBlur={() => setIsDropdownActive(false)}
+          onBlur={handleBlur}
           onFocus={handleFocus}
         />
       </div>
 
       {isDropdownActive && (
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-          <div className="dropdown-content">
-            {filterPeople.length ? (
-              filterPeople.map(person => (
-                <div
-                  className="dropdown-item"
-                  key={person.slug}
-                  data-cy="suggestion-item"
-                >
-                  <p
-                    className="has-text-link"
-                    onMouseDown={() => handleClick(person)}
-                  >
-                    {person.name}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <div
-                className="
-                  notification
-                  is-danger
-                  is-light
-                  mt-3
-                  is-align-self-flex-start
-                "
-                role="alert"
-                data-cy="no-suggestions-message"
-              >
-                <p className="has-text-danger">No matching suggestions</p>
-              </div>
-            )}
-          </div>
+          <Persons handleClicks={handleClick} appliedQuery={appliedQuery} />
         </div>
       )}
     </div>
