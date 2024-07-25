@@ -39,14 +39,21 @@ export const Dropdown: React.FC<Props> = ({
     [appliedQuery, options],
   );
 
-  const handleOptionSelect = (option: string) => {
+  const handleOptionSelect = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    option: string,
+  ) => {
+    if (event.button !== 0) {
+      return;
+    }
+
     setInput(option);
     onSelected(option);
     setAppliedQuery(option);
   };
 
-  const toggleDropdownVisibility = (isVisible: boolean) => {
-    setTimeout(() => setActiveDropdown(isVisible), 100);
+  const toggleDropdownVisibility = () => {
+    setActiveDropdown(!activeDropdown);
   };
 
   return (
@@ -59,8 +66,8 @@ export const Dropdown: React.FC<Props> = ({
           data-cy="search-input"
           value={input}
           onChange={handleInputChange}
-          onFocus={() => toggleDropdownVisibility(true)}
-          onBlur={() => toggleDropdownVisibility(false)}
+          onFocus={toggleDropdownVisibility}
+          onBlur={toggleDropdownVisibility}
         />
       </div>
       <div className="dropdown-menu" data-cy="suggestions-list">
@@ -71,7 +78,7 @@ export const Dropdown: React.FC<Props> = ({
                 className="dropdown-item"
                 data-cy="suggestion-item"
                 key={option}
-                onClick={() => handleOptionSelect(option)}
+                onMouseDown={e => handleOptionSelect(e, option)}
               >
                 <p className="has-text-link">{option}</p>
               </div>
