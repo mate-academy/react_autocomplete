@@ -77,7 +77,12 @@ export const Autocomplete: React.FC<Props> = ({
       </div>
 
       {list && (
-        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+        <div
+          ref={dropdownRef}
+          className="dropdown-menu"
+          role="menu"
+          data-cy="suggestions-list"
+        >
           <div className="dropdown-content">
             {filteredPersons.length ? (
               filteredPersons.map(person => (
