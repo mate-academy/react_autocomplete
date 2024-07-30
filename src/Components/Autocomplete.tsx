@@ -16,6 +16,8 @@ export const Autocomplete: React.FC<Props> = ({
   const [debouncedQuery, setDebouncedQuery] = useState(query);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const handleFocus = () => setList(true);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(query);
@@ -69,7 +71,7 @@ export const Autocomplete: React.FC<Props> = ({
           className="input"
           data-cy="search-input"
           value={query}
-          onFocus={() => setList(true)}
+          onFocus={handleFocus}
           onChange={changeHandler}
         />
       </div>

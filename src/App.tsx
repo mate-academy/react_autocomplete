@@ -7,7 +7,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const title = selectedPerson
     ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-    : 'NO SELECTED PERSON';
+    : 'No selected person';
 
   return (
     <div className="container">
