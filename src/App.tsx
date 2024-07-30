@@ -5,19 +5,16 @@ import { Autocomplete } from './Components';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const title = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : 'NO SELECTED PERSON';
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        {selectedPerson ? (
-          <h1 className="title" data-cy="title">
-            {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
-          </h1>
-        ) : (
-          <h1 className="title" data-cy="title">
-            NO SELECTED PERSON
-          </h1>
-        )}
+        <h1 className="title" data-cy="title">
+          {title}
+        </h1>
 
         <Autocomplete onSelect={setSelectedPerson} />
       </main>
