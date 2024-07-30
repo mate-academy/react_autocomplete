@@ -60,7 +60,7 @@ export const Autocomplete: React.FC<Props> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, []);
 
   return (
     <div className="dropdown is-active">
