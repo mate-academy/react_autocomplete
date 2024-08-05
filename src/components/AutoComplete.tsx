@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Person } from '../types/Person';
 import debounce from 'lodash/debounce';
 import './AutoComplete.scss';
@@ -14,6 +14,7 @@ export const AutoComplete: React.FC<Props> = ({ people, handlePeople }) => {
   const [previousQuery, setPreviousQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const debouncedSetQuery = debounce(value => {
@@ -61,6 +62,22 @@ export const AutoComplete: React.FC<Props> = ({ people, handlePeople }) => {
     );
   }, [people, query, isFocused]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsFocused(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [])
+
   return (
     <>
       <div className={`dropdown ${isFocused ? 'is-active' : ''}`}>
@@ -76,7 +93,7 @@ export const AutoComplete: React.FC<Props> = ({ people, handlePeople }) => {
           />
         </div>
 
-        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+        <div className="dropdown-menu" role="menu" data-cy="suggestions-list" ref={dropdownRef}>
           <div className="dropdown-content">
             {filteredPeople.map((person, index) => (
               <div
