@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { Person } from '../types/Person';
 import debounce from 'lodash/debounce';
+import './AutoComplete.scss';
 
 type Props = {
   people: Person[];
@@ -44,7 +45,7 @@ export const AutoComplete: React.FC<Props> = ({ people, handlePeople }) => {
   };
 
   const handleItemClick = (person: Person) => {
-    setQuery('');
+    setQuery(person.name);
     setSelectedPerson(person);
     handlePeople(person);
     setIsFocused(false);
