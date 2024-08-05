@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Person } from '../types/Person';
 import debounce from 'lodash/debounce';
 import './AutoComplete.scss';
+import cn from 'classnames';
 
 type Props = {
   people: Person[];
@@ -64,7 +65,8 @@ export const AutoComplete: React.FC<Props> = ({ people, handlePeople }) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current &&
+      if (
+        dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsFocused(false);
@@ -75,12 +77,12 @@ export const AutoComplete: React.FC<Props> = ({ people, handlePeople }) => {
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [])
+    };
+  }, []);
 
   return (
     <>
-      <div className={`dropdown ${isFocused ? 'is-active' : ''}`}>
+      <div className={cn('dropdown', {'is-active' : isFocused})}>
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -93,7 +95,12 @@ export const AutoComplete: React.FC<Props> = ({ people, handlePeople }) => {
           />
         </div>
 
-        <div className="dropdown-menu" role="menu" data-cy="suggestions-list" ref={dropdownRef}>
+        <div
+          className="dropdown-menu"
+          role="menu"
+          data-cy="suggestions-list"
+          ref={dropdownRef}
+        >
           <div className="dropdown-content">
             {filteredPeople.map((person, index) => (
               <div
