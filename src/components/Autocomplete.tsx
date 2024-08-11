@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Person } from '../types/Person';
-import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../data/people';
 import classNames from 'classnames';
+import { debounce } from '../utils';
 
 type Props = {
   onSelect: (person: Person) => void;
@@ -47,6 +47,12 @@ const Autocomplete: React.FC<Props> = ({ onSelect, onClear }) => {
     setShowDropdown(true);
   };
 
+  const handleSelectPerson = (person: Person) => {
+    setSearchQuery(person.name);
+    setShowDropdown(false);
+    onSelect(person);
+  };
+
   const hasNoSuggestions = searchedPeople.length === 0;
 
   return (
@@ -85,7 +91,7 @@ const Autocomplete: React.FC<Props> = ({ onSelect, onClear }) => {
                 <div
                   key={person.slug}
                   onMouseDown={event => event.preventDefault()}
-                  onClick={() => onSelect(person)}
+                  onClick={() => handleSelectPerson(person)}
                   className="dropdown-item"
                   data-cy="suggestion-item"
                 >
