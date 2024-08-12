@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Person } from '../types/Person';
+import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../data/people';
 import classNames from 'classnames';
-import { debounce } from '../utils';
 
 type Props = {
   onSelect: (person: Person) => void;
@@ -37,19 +37,17 @@ const Autocomplete: React.FC<Props> = ({ onSelect, onClear }) => {
     return filteredPeople;
   }, [savedQuery, people]);
 
-  const handleInputBlur = () => {
-    setTimeout(() => {
-      setShowDropdown(false);
-    }, 200);
-  };
 
   const handleInputFocus = () => {
     setShowDropdown(true);
   };
 
-  const handleSelectPerson = (person: Person) => {
-    setSearchQuery(person.name);
+  const selectPerson = (person: Person) => {
     setShowDropdown(false);
+
+    setSearchQuery(person.name);
+    setSavedQuery(person.name);
+
     onSelect(person);
   };
 
@@ -66,7 +64,6 @@ const Autocomplete: React.FC<Props> = ({ onSelect, onClear }) => {
           value={searchQuery}
           onChange={handleQueryChange}
           onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
         />
       </div>
       {showDropdown && (
@@ -90,8 +87,7 @@ const Autocomplete: React.FC<Props> = ({ onSelect, onClear }) => {
               {searchedPeople.map(person => (
                 <div
                   key={person.slug}
-                  onMouseDown={event => event.preventDefault()}
-                  onClick={() => handleSelectPerson(person)}
+                  onClick={() => selectPerson(person)}
                   className="dropdown-item"
                   data-cy="suggestion-item"
                 >
