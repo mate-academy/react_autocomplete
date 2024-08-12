@@ -8,7 +8,10 @@ interface AppProps {
 }
 
 export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
-  const people: Person[] = [...peopleFromServer];
+  const people: Person[] = useMemo(
+    () => [...peopleFromServer],
+    [peopleFromServer],
+  );
   const [isSelected, setIsSelected] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person>(people[0]);
   const [filterUserText, setFilterUserText] = useState('');
@@ -40,8 +43,6 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
     setSelectedPerson(person);
     setIsSelected(true);
   };
-
-  console.log(filterPeople);
 
   return (
     <div className="container">
