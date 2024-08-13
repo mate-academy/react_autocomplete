@@ -7,3 +7,9 @@ export interface Person {
   motherName: string | null;
   slug: string;
 }
+
+export interface SelectedPerson {
+  name: string;
+  born: number;
+  died: number;
+}

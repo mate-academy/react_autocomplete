@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import debounce from 'debounce';
+import { SelectedPerson } from './types/Person';
 
 interface Props {
   debounceDelay?: number;
@@ -11,14 +12,12 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [listVisible, setListVisible] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState<{
-    name: string;
-    born: number;
-    died: number;
-  } | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<SelectedPerson | null>(
+    null,
+  );
 
   const filteredPeople = useMemo(() => {
-    if (debouncedQuery.trim() === '') {
+    if (!debouncedQuery.trim()) {
       return peopleFromServer;
     }
 
@@ -28,7 +27,7 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
   }, [debouncedQuery]);
 
   const onFocus = () => {
-    if (query.trim() === '') {
+    if (!query.trim()) {
       setDebouncedQuery('');
       setListVisible(true);
     }
@@ -46,10 +45,7 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
       setQuery(value);
       debouncedSetQuery(value);
 
-      if (
-        value === '' ||
-        !filteredPeople.find(person => person.name === value)
-      ) {
+      if (!value || !filteredPeople.find(person => person.name === value)) {
         setSelectedPerson(null);
       }
 
@@ -58,11 +54,7 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
     [debouncedSetQuery, filteredPeople],
   );
 
-  const handlePersonSelect = (person: {
-    name: string;
-    born: number;
-    died: number;
-  }) => {
+  const handlePersonSelect = (person: SelectedPerson) => {
     setSelectedPerson(person);
     setQuery(person.name);
     setListVisible(false);
@@ -80,15 +72,11 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        {selectedPerson ? (
-          <h1 className="title" data-cy="title">
-            {`${displayedPerson?.name} (${displayedPerson?.born} - ${displayedPerson?.died})`}
-          </h1>
-        ) : (
-          <h1 className="title" data-cy="title">
-            No selected person
-          </h1>
-        )}
+        <h1 className="title" data-cy="title">
+          {selectedPerson
+            ? `${displayedPerson?.name} (${displayedPerson?.born} - ${displayedPerson?.died})`
+            : 'No selected person'}
+        </h1>
 
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
@@ -127,7 +115,7 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
           )}
         </div>
 
-        {filteredPeople.length === 0 && (
+        {!filteredPeople.length && (
           <div
             className="
             notification
