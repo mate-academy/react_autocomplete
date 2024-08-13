@@ -10,6 +10,7 @@ interface Props {
 export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [listVisible, setListVisible] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<{
     name: string;
     born: number;
@@ -29,6 +30,7 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
   const onFocus = () => {
     if (query.trim() === '') {
       setDebouncedQuery('');
+      setListVisible(true);
     }
   };
 
@@ -50,6 +52,8 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
       ) {
         setSelectedPerson(null);
       }
+
+      setListVisible(true);
     },
     [debouncedSetQuery, filteredPeople],
   );
@@ -61,6 +65,13 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
   }) => {
     setSelectedPerson(person);
     setQuery(person.name);
+    setListVisible(false);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      setListVisible(false);
+    }, 100);
   };
 
   const displayedPerson =
@@ -89,9 +100,10 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
               value={query}
               onChange={handleChange}
               onFocus={onFocus}
+              onBlur={handleBlur}
             />
           </div>
-          {filteredPeople.length > 0 && (
+          {listVisible && (
             <div
               className="dropdown-menu"
               role="menu"
