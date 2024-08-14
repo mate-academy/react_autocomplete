@@ -84,8 +84,8 @@ export const App: React.FC<Props> = ({ debounceDelay = 300 }) => {
               type="text"
               placeholder="Enter a part of the name"
               className="input"
-              data-cy="search-input"
               value={query}
+              data-cy="search-input"
               onChange={handleChange}
               onFocus={onFocus}
               onBlur={handleBlur}
