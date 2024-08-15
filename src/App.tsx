@@ -22,7 +22,7 @@ export const App: React.FC = () => {
   const people: Person[] = useMemo(() => [...peopleFromServer], []);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isActive, setIsActive] = useState(false);
 
   const applyQuery = useCallback(
