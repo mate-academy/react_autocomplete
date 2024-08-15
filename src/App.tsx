@@ -104,8 +104,7 @@ export const App: React.FC = () => {
               </div>
             )}
           </div>
-
-          {isActive && filteredList.length === 0 && (
+          {isActive && !filteredList.length && (
             <div
               className="
       notification
