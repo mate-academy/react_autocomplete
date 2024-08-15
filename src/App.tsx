@@ -43,6 +43,12 @@ export const App: React.FC = () => {
     setSelectedPerson(null);
   };
 
+  const handleFilteredList = (elem: Person) => {
+    setSelectedPerson(elem);
+    setQuery(elem.name);
+    setIsActive(false);
+  };
+
   return (
     <>
       <div className="container">
@@ -83,11 +89,7 @@ export const App: React.FC = () => {
                       className="dropdown-item"
                       data-cy="suggestion-item"
                       key={person.name}
-                      onClick={() => {
-                        setSelectedPerson(person);
-                        setQuery(person.name);
-                        setIsActive(false);
-                      }}
+                      onClick={() => handleFilteredList(person)}
                     >
                       <p
                         className={classNames('has-text-link', {
