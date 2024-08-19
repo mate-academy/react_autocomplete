@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Message } from './components/Message';
+// import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const { name, born, died } = peopleFromServer[0];
+  // const [people, setPeople] = useState<Person[]>(peopleFromServer);
+  // const [filteredPerson, setFilteredPerson] = useState<Person[]>([]);
+  const [value, setValue] = useState<string>('');
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setValue(event.target.value);
+
+    // setFilteredPerson()
+  };
 
   return (
     <div className="container">
@@ -19,6 +30,8 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              value={value}
+              onChange={handleChange}
             />
           </div>
 
@@ -55,19 +68,7 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        <Message />
       </main>
     </div>
   );
