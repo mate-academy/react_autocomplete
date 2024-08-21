@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Message } from './components/Message';
@@ -6,7 +6,6 @@ import { DropdownItem } from './components/DropdownItem';
 import { Title } from './components/Title';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
-// import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [people] = useState<Person[]>(peopleFromServer);
@@ -16,33 +15,33 @@ export const App: React.FC = () => {
 
   const [focus, setFocus] = useState<boolean>(false);
 
-  const appliedFilterPersons = useCallback(
-    debounce(setFilteredPersons, 300),
-    [],
-  );
+  const appliedFilterPersons = debounce(setFilteredPersons, 300);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setValue(event.target.value);
 
-    const filterPeople = people.filter(person =>
-      person.name.toLowerCase().includes(event.target.value.toLowerCase()),
+    appliedFilterPersons(
+      people.filter(item =>
+        item.name.toLowerCase().includes(event.target.value.toLowerCase()),
+      ),
     );
-
-    appliedFilterPersons(filterPeople);
+    setPerson(people.find(item => item.name === event.target.value));
   };
 
   const handleSelect = (name: string) => {
     setValue(name);
+    appliedFilterPersons(
+      people.filter(item =>
+        item.name.toLowerCase().includes(name.toLowerCase()),
+      ),
+    );
+    setPerson(people.find(item => item.name === name));
   };
-
-  useEffect(() => {
-    setPerson(people.find(item => item.name === value));
-  }, [value]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        {person && <Title person={person} />}
+        {<Title person={person} text={'No selected person'} />}
 
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
@@ -64,10 +63,10 @@ export const App: React.FC = () => {
               data-cy="suggestions-list"
             >
               <div className="dropdown-content">
-                {filteredPersons.map(person => (
+                {filteredPersons.map(pers => (
                   <DropdownItem
-                    name={person.name}
-                    key={person.name + person.died}
+                    name={pers.name}
+                    key={pers.name + pers.died}
                     onSelected={handleSelect}
                     onFocus={setFocus}
                   />

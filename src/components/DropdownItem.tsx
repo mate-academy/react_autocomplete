@@ -2,8 +2,8 @@ import { FC } from 'react';
 
 type DropdownItemProps = {
   name: string;
-  onSelected: Function;
-  onFocus: Function;
+  onSelected: (name: string) => void;
+  onFocus: (value: boolean) => void;
 };
 
 export const DropdownItem: FC<DropdownItemProps> = ({
