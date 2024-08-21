@@ -2,12 +2,26 @@ import { FC } from 'react';
 
 type DropdownItemProps = {
   name: string;
+  onSelected: Function;
+  onFocus: Function;
 };
 
-export const DropdownItem: FC<DropdownItemProps> = ({ name }) => {
+export const DropdownItem: FC<DropdownItemProps> = ({
+  name,
+  onSelected,
+  onFocus,
+}) => {
   return (
     <div className="dropdown-item " data-cy="suggestion-item">
-      <p className="has-text-link ">{name}</p>
+      <p
+        className="has-text-link "
+        onClick={() => {
+          onSelected(name);
+          onFocus(false);
+        }}
+      >
+        {name}
+      </p>
     </div>
   );
 };
