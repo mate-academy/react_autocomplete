@@ -56,7 +56,7 @@ export const Dropdown: React.FC<Props> = ({
       >
         <div
           className={classNames('dropdown-content', {
-            'is-hidden': filteredPeople.length === 0 || inputFocus,
+            'is-hidden': filteredPeople.length || inputFocus,
           })}
         >
           {filteredPeople.map(person => (
@@ -67,7 +67,7 @@ export const Dropdown: React.FC<Props> = ({
             />
           ))}
         </div>
-        {filteredPeople.length === 0 && (
+        {filteredPeople.length && (
           <div
             className="
             notification
