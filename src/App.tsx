@@ -53,12 +53,13 @@ export const App: React.FC = () => {
               value={value}
               onChange={handleChange}
               onFocus={() => setFocus(true)}
+              // onBlur={}
             />
           </div>
 
           {focus && (
             <div
-              className="dropdown-menu"
+              className={`dropdown-menu`}
               role="menu"
               data-cy="suggestions-list"
             >
