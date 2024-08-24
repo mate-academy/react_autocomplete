@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { FC } from 'react';
 
 type DropdownItemProps = {
@@ -12,12 +13,15 @@ export const DropdownItem: FC<DropdownItemProps> = ({
   onFocus,
 }) => {
   return (
-    <div className="dropdown-item " data-cy="suggestion-item">
+    <div className={classNames('dropdown-item')} data-cy="suggestion-item">
       <p
-        className="has-text-link "
+        className="has-text-link"
         onClick={() => {
           onSelected(name);
           onFocus(false);
+        }}
+        onMouseDown={e => {
+          e.preventDefault();
         }}
       >
         {name}
