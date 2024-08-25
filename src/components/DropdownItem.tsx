@@ -12,16 +12,18 @@ export const DropdownItem: FC<DropdownItemProps> = ({
   onFocus,
 }) => {
   return (
-    <div className="dropdown-item " data-cy="suggestion-item">
-      <p
-        className="has-text-link "
-        onClick={() => {
-          onSelected(name);
-          onFocus(false);
-        }}
-      >
-        {name}
-      </p>
+    <div className="dropdown-content">
+      <div className="dropdown-item " data-cy="suggestion-item">
+        <p
+          className="has-text-link "
+          onClick={() => {
+            onSelected(name);
+            onFocus(false);
+          }}
+        >
+          {name}
+        </p>
+      </div>
     </div>
   );
 };

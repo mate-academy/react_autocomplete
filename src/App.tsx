@@ -17,6 +17,8 @@ export const App: React.FC = () => {
 
   const appliedFilterPersons = debounce(setFilteredPersons, 300);
 
+  const [visible, setVisible] = useState<string>('initial');
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setValue(event.target.value);
 
@@ -52,18 +54,23 @@ export const App: React.FC = () => {
               data-cy="search-input"
               value={value}
               onChange={handleChange}
-              onFocus={() => setFocus(true)}
+              onFocus={() => {
+                setFocus(true);
+                setVisible('initial');
+              }}
             />
           </div>
 
           {focus && (
             <div
+              style={{ display: visible }}
               className="dropdown-menu"
               role="menu"
               data-cy="suggestions-list"
             >
-              <div className="dropdown-content">
-                {filteredPersons.map(pers => (
+              {!filteredPersons.length && <Message />}
+              {focus &&
+                filteredPersons.map(pers => (
                   <DropdownItem
                     name={pers.name}
                     key={pers.name + pers.died}
@@ -71,12 +78,9 @@ export const App: React.FC = () => {
                     onFocus={setFocus}
                   />
                 ))}
-              </div>
             </div>
           )}
         </div>
-
-        {!filteredPersons.length && <Message />}
       </main>
     </div>
   );
