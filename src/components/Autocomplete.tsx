@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Person } from '../types/Person';
 import { peopleFromServer } from '../data/people';
 import debounce from 'lodash.debounce';
+import cn from 'classnames';
 
 type Props = {
   onSelected?: (person: Person | null) => void;
@@ -18,7 +19,7 @@ export const Autocomplete: React.FC<Props> = ({
   const [appliedQuery, setAppliedQuery] = useState<string>('');
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+  const applyQuery = debounce(setAppliedQuery, delay);
 
   const filterPeople = useMemo(() => {
     return peopleFromServer.filter(person =>
@@ -70,9 +71,10 @@ export const Autocomplete: React.FC<Props> = ({
                   onClick={() => handlePersonClick(person)}
                 >
                   <p
-                    className={
-                      person.sex === 'm' ? 'has-text-link' : 'has-text-danger'
-                    }
+                    className={cn({
+                      'has-text-link': person.sex === 'm',
+                      'has-text-danger': person.sex === 'f',
+                    })}
                   >
                     {person.name}
                   </p>
@@ -82,12 +84,12 @@ export const Autocomplete: React.FC<Props> = ({
           ) : (
             <div
               className="
-              notification
-              is-danger
-              is-light
-              mt-3
-              is-align-self-flex-start
-            "
+                notification
+                is-danger
+                is-light
+                mt-3
+                is-align-self-flex-start
+              "
               role="alert"
               data-cy="no-suggestions-message"
             >
