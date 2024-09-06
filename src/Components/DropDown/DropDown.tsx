@@ -1,8 +1,7 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Person } from '../../types/Person';
 import debounce from 'lodash.debounce';
 import { peopleFromServer } from '../../data/people';
-import classNames from 'classnames';
 
 type Props = {
   onSelected: (person: Person | null) => void;
@@ -20,7 +19,7 @@ export const DropDown: React.FC<Props> = ({ onSelected, delay }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
+  const applyQuery = useMemo(() => debounce(setAppliedQuery, delay), [delay]);
 
   const handleQueryChange = (newValue: string) => {
     setQuery(newValue);
@@ -44,7 +43,7 @@ export const DropDown: React.FC<Props> = ({ onSelected, delay }) => {
 
   return (
     <>
-      <div className={classNames('dropdown', { 'is-active': hasFocus })}>
+      <div className="dropdown is-active">
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -58,7 +57,7 @@ export const DropDown: React.FC<Props> = ({ onSelected, delay }) => {
           />
         </div>
 
-        {filteredPeople.length !== 0 && (
+        {filteredPeople.length !== 0 && hasFocus && (
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
               {filteredPeople.map(person => (
