@@ -51,5 +51,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
-// show No matching suggestions message if there are no people containing the entered text;

@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { Person } from '../../types/Person';
-import classNames from 'classnames';
 import './ComboBox.scss';
 
 type Props = {
@@ -29,7 +28,6 @@ export const ComboBox: React.FC<Props> = ({
 }) => {
   const [focustInput, setFocustInput] = useState(false);
   const [inputValue, setInputValue] = useState('');
-
   const applyQuery = useCallback(debounce(onChange, delay), [delay]);
 
   const handleClick = (person: Person) => {
@@ -40,19 +38,21 @@ export const ComboBox: React.FC<Props> = ({
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onSelect(null);
     const val = event.target.value;
 
+    onSelect(null);
     setInputValue(val);
     applyQuery(val);
   };
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
+    if (!e.relatedTarget) {
+      setFocustInput(false);
+    }
+  };
+
   return (
-    <div
-      className={classNames('dropdown', {
-        'is-active': focustInput && people.length,
-      })}
-    >
+    <div className="dropdown is-active">
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -60,28 +60,31 @@ export const ComboBox: React.FC<Props> = ({
           className="input"
           data-cy="search-input"
           onFocus={() => setFocustInput(true)}
+          onBlur={e => handleBlur(e)}
           value={inputValue}
           onChange={handleChange}
         />
         {''}
       </div>
 
-      <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-        <div className="dropdown-content">
-          {people.map((person: Person) => {
-            return (
-              <div
-                key={person.slug}
-                className="dropdown-item"
-                data-cy="suggestion-item"
-                onClick={() => handleClick(person)}
-              >
-                <p>{person.name}</p>
-              </div>
-            );
-          })}
+      {focustInput && (
+        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+          <div className="dropdown-content">
+            {people.map((person: Person) => {
+              return (
+                <div
+                  key={person.slug}
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                  onClick={() => handleClick(person)}
+                >
+                  <p tabIndex={0}>{person.name}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
