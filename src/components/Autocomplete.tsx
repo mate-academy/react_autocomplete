@@ -18,6 +18,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
