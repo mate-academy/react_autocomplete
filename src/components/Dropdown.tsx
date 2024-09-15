@@ -77,7 +77,7 @@ const Dropdown: FC<Props> = ({
 
         {openDropdown && (
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-wrapper dropdown-content ">
+            <div className="dropdown-content ">
               {people.map(person => (
                 <div
                   key={person.slug}
