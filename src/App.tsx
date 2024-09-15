@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+
 import React from 'react';
 import './App.scss';
 import { useState } from 'react';
