@@ -6,7 +6,6 @@ import { Person } from '../src/types/Person';
 import { Autocomplete } from './Autocomplete';
 
 export const App: React.FC = () => {
-  // const { name, born, died } = peopleFromServer[0];
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const handleSelected = (person: Person) => {
@@ -17,13 +16,15 @@ export const App: React.FC = () => {
     setSelectedPerson(null);
   };
 
+  const personInfo = selectedPerson
+  ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+            : 'No selected person';
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson
-            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-            : 'No selected person'}
+          {personInfo}
         </h1>
         <Autocomplete
           persons={peopleFromServer}

@@ -88,7 +88,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
           {suggesting.length > 0
             ? suggesting.map(person => (
                 <div
-                  key={person.id}
+                  key={person.name}
                   className="dropdown-item"
                   data-cy="suggestion-item"
                   onClick={() => handleSuggestionClick(person)}
