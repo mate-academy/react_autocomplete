@@ -1,7 +1,6 @@
 /* eslint-disable indent */
 /* eslint-disable @typescript-eslint/indent */
 
-
 import { Person } from '../src/types/Person';
 import debounce from 'lodash/debounce';
 import React, { useMemo, useState } from 'react';
