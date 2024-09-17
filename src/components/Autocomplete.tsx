@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import debounce from 'lodash.debounce';
 
 import { Person } from '../types/Person';
@@ -16,33 +16,46 @@ export const Autocomplete: React.FC<Props> = ({
   onPersonSelect = () => {},
 }) => {
   const [query, setQuery] = useState('');
-  const [suggestedPeople, setSuggestedPeople] = useState(people);
+  const [suggestedPeople, setSuggestedPeople] = useState<Person[]>(people);
   const [isListVisible, setIsListVisible] = useState(false);
 
-  const debounceSuggestedPeople = useCallback(
-    debounce(setSuggestedPeople, delay),
-    [],
+  const debouncedSuggestedPeople = useRef(
+    debounce((filteredPeople: Person[]) => {
+      setSuggestedPeople(filteredPeople);
+    }, delay),
+  ).current;
+
+  useEffect(() => {
+    return () => {
+      debouncedSuggestedPeople.cancel();
+    };
+  }, [debouncedSuggestedPeople]);
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery(e.target.value);
+
+      const filteredPeople = people.filter(person =>
+        person.name.toLowerCase().includes(e.target.value.toLowerCase()),
+      );
+
+      debouncedSuggestedPeople(filteredPeople);
+      onPersonSelect(null);
+    },
+    [people, debouncedSuggestedPeople, onPersonSelect],
   );
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-
-    const filteredPeople = people.filter(person =>
-      person.name.toLowerCase().includes(e.target.value.toLowerCase()),
-    );
-
-    debounceSuggestedPeople(filteredPeople);
-    onPersonSelect(null);
-  };
-
-  const handleBlur = () => {
+  const handleBlur = useCallback(() => {
     setIsListVisible(false);
-  };
+  }, []);
 
-  const handlePersonSelect = (person: Person) => {
-    onPersonSelect(person);
-    setQuery(person.name);
-  };
+  const handlePersonSelect = useCallback(
+    (person: Person) => {
+      onPersonSelect(person);
+      setQuery(person.name);
+    },
+    [onPersonSelect],
+  );
 
   return (
     <>
@@ -62,28 +75,26 @@ export const Autocomplete: React.FC<Props> = ({
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           <div className="dropdown-content">
-            {suggestedPeople.length > 0 ? (
-              suggestedPeople.map(person => {
-                return (
-                  <div
-                    key={person.slug}
-                    className="dropdown-item"
-                    data-cy="suggestion-item"
-                    onMouseDown={() => handlePersonSelect(person)}
-                  >
-                    <p className="has-text-link">{person.name}</p>
-                  </div>
-                );
-              })
+            {!!suggestedPeople.length ? (
+              suggestedPeople.map(person => (
+                <div
+                  key={person.slug}
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                  onMouseDown={() => handlePersonSelect(person)}
+                >
+                  <p className="has-text-link">{person.name}</p>
+                </div>
+              ))
             ) : (
               <div
                 className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
+                  notification
+                  is-danger
+                  is-light
+                  mt-3
+                  is-align-self-flex-start
+                "
                 role="alert"
                 data-cy="no-suggestions-message"
               >
