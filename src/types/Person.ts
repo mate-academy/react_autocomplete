@@ -4,6 +4,7 @@ export interface Person {
   born: number;
   died: number;
   fatherName: string | null;
+  id?: number;
   motherName: string | null;
   slug: string;
 }
