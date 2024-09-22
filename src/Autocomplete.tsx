@@ -17,6 +17,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ people, onSelect }) => {
   useEffect(() => {
     if (!debouncedValue) {
       setFilteredPeople(people);
+
       return;
     }
 
@@ -29,12 +30,16 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ people, onSelect }) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
