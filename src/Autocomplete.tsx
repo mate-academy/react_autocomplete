@@ -15,11 +15,12 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ people, onSelect }) => {
   useEffect(() => {
     if (!debouncedValue) {
       setFilteredPeople(people);
+
       return;
     }
 
-    const filtered = people.filter((person) =>
-      person.name.toLowerCase().includes(debouncedValue.toLowerCase())
+    const filtered = people.filter(person =>
+      person.name.toLowerCase().includes(debouncedValue.toLowerCase()),
     );
 
     setFilteredPeople(filtered);
@@ -50,7 +51,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ people, onSelect }) => {
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
         <div className="dropdown-content">
           {filteredPeople.length > 0 ? (
-            filteredPeople.map((person) => (
+            filteredPeople.map(person => (
               <div
                 key={person.slug}
                 className="dropdown-item"
