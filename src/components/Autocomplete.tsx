@@ -7,25 +7,28 @@ import './Autocomplete.scss';
 type Props = {
   onSelected: (person: Person) => void;
   people: Person[];
-  cleareSelectedPerson: () => void;
+  clearSelectedPerson: () => void;
   delay?: number;
 };
 
 export const Autocomplete: React.FC<Props> = ({
   onSelected,
   people,
-  cleareSelectedPerson,
+  clearSelectedPerson,
   delay = 300,
 }) => {
   const [inputChange, setInputChange] = useState('');
   const [currentPeople, setCurrentPeople] = useState(people);
   const [selectPerson, setSelectPerson] = useState<Person | null>(null);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [isPoiterEvent, setIsPoiterEvent] = useState(false);
 
   const personSelect = (person: Person) => {
     setSelectPerson(person);
     setInputChange(person.name);
     setCurrentPeople([]);
     onSelected(person);
+    setIsDropdownVisible(false);
   };
 
   const debouncedFilterPeople = debounce((inputValue: string) => {
@@ -39,37 +42,59 @@ export const Autocomplete: React.FC<Props> = ({
     setCurrentPeople(filteredPeople);
   }, delay);
 
-  const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
     setInputChange(value);
 
     if (selectPerson && value !== selectPerson.name) {
       setSelectPerson(null);
-      cleareSelectedPerson();
+      clearSelectedPerson();
     }
 
     debouncedFilterPeople(value);
   };
 
+  const handlePointerEvent = () => {
+    setIsPoiterEvent(true);
+    setIsDropdownVisible(prev => !prev);
+  };
+
+  const handleFocus = () => {
+    if (!isPoiterEvent) {
+      setIsDropdownVisible(true);
+    } else {
+      setIsPoiterEvent(false);
+    }
+  };
+
+  const isDropdownMenuActive = () => {
+    return (
+      isDropdownVisible &&
+      (currentPeople.length || (selectPerson === null && !currentPeople.length))
+    );
+  };
+
   return (
-    <div className="dropdown is-active">
+    <div
+      className={classNames('dropdown', {
+        'is-active': isDropdownMenuActive(),
+      })}
+    >
       <div className="dropdown-trigger">
         <input
           type="text"
           placeholder="Enter a part of the name"
           className="input"
           value={inputChange}
-          onChange={handleSelect}
+          onChange={handleSearch}
+          onPointerDown={handlePointerEvent}
+          onFocus={handleFocus}
           data-cy="search-input"
         />
       </div>
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-        <div
-          className={classNames('dropdown-content', {
-            hidden: selectPerson !== null,
-          })}
-        >
+        <div className="dropdown-content">
           {currentPeople.length > 0 || selectPerson !== null ? (
             currentPeople.map((person: Person) => (
               <div
@@ -83,11 +108,13 @@ export const Autocomplete: React.FC<Props> = ({
             ))
           ) : (
             <div
-              className="notification
-              is-danger
-              is-light
-              mt-3
-              is-align-self-flex-start"
+              className="
+                notification
+                is-danger
+                is-light
+                mt-3
+                is-align-self-flex-start
+                "
               role="alert"
               data-cy="no-suggestions-message"
             >

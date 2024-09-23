@@ -49,4 +49,3 @@ An alternative solution is to install `node-sass@npm:sass` version:
 ```bash
   npm install node-sass@npm:sass --save-dev
 ```
-gi

@@ -11,22 +11,26 @@ export const App: React.FC = () => {
     setSelectedPerson(person);
   };
 
-  const cleareSelectedPerson = () => {
+  const clearSelectedPerson = () => {
     setSelectedPerson(null);
+  };
+
+  const dropdownTitle = () => {
+    return selectedPerson
+      ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+      : 'No selected person';
   };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson
-            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-            : 'No selected person'}
+          {dropdownTitle()}
         </h1>
         <Autocomplete
           onSelected={handleSelectedPerson}
           people={peopleFromServer}
-          cleareSelectedPerson={cleareSelectedPerson}
+          clearSelectedPerson={clearSelectedPerson}
         />
       </main>
     </div>
