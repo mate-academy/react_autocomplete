@@ -7,19 +7,20 @@ import './Autocomplete.scss';
 type Props = {
   onSelected: (person: Person) => void;
   people: Person[];
-  cleareSelectedPerson: () => void;
+  clearSelectedPerson: () => void;
   delay?: number;
 };
 
 export const Autocomplete: React.FC<Props> = ({
   onSelected,
   people,
-  cleareSelectedPerson,
+  clearSelectedPerson,
   delay = 300,
 }) => {
   const [inputChange, setInputChange] = useState('');
   const [currentPeople, setCurrentPeople] = useState(people);
   const [selectPerson, setSelectPerson] = useState<Person | null>(null);
+  const [focusOnInput, setFocusOnInput] = useState(false);
 
   const personSelect = (person: Person) => {
     setSelectPerson(person);
@@ -46,7 +47,7 @@ export const Autocomplete: React.FC<Props> = ({
 
     if (selectPerson && value !== selectPerson.name) {
       setSelectPerson(null);
-      cleareSelectedPerson();
+      clearSelectedPerson();
     }
 
     debouncedFilterPeople(value);
@@ -61,13 +62,15 @@ export const Autocomplete: React.FC<Props> = ({
           className="input"
           value={inputChange}
           onChange={handleSelect}
+          onFocus={() => setFocusOnInput(true)}
+          onBlur={() => setFocusOnInput(false)}
           data-cy="search-input"
         />
       </div>
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
         <div
           className={classNames('dropdown-content', {
-            hidden: selectPerson !== null,
+            hidden: !focusOnInput || selectPerson !== null,
           })}
         >
           {currentPeople.length > 0 || selectPerson !== null ? (
@@ -76,18 +79,20 @@ export const Autocomplete: React.FC<Props> = ({
                 className="dropdown-item"
                 data-cy="suggestion-item"
                 key={person.name}
-                onClick={() => personSelect(person)}
+                onMouseDown={() => personSelect(person)}
               >
                 <p className="has-text-link">{person.name}</p>
               </div>
             ))
           ) : (
             <div
-              className="notification
-              is-danger
-              is-light
-              mt-3
-              is-align-self-flex-start"
+              className="
+                notification
+                is-danger
+                is-light
+                mt-3
+                is-align-self-flex-start
+              "
               role="alert"
               data-cy="no-suggestions-message"
             >
