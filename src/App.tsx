@@ -25,6 +25,14 @@ export const App: React.FC = () => {
     setValue(newValue);
   };
 
+  const error = () => {
+    if (filteredPeople.length === 0) {
+      return true;
+    }
+
+    return false;
+  };
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
@@ -54,7 +62,11 @@ export const App: React.FC = () => {
           </div>
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
+            <div
+              className={classNames({
+                'dropdown-content': !error(),
+              })}
+            >
               {filteredPeople.map(people => (
                 <div
                   key={people.name}
@@ -79,7 +91,7 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {filteredPeople.length === 0 && (
+        {error() && (
           <div
             className="
               notification
