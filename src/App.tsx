@@ -11,6 +11,10 @@ export const App: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [selectedPerson] = peopleFromServer.filter(p => p.name === value);
 
+  const title = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : 'No selected person';
+
   const appliedQuery = useCallback(debounce(setQuery, 300), []);
 
   const inputHandler: React.ChangeEventHandler<HTMLInputElement> = event => {
@@ -30,9 +34,7 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson
-            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-            : 'No selected person'}
+          {title}
         </h1>
 
         <div className={classNames('dropdown', { 'is-active': isFocused })}>
@@ -45,10 +47,11 @@ export const App: React.FC = () => {
               value={value}
               onChange={inputHandler}
               onFocus={() => setIsFocused(true)}
+              onBlur={() => setTimeout(() => setIsFocused(false), 150)}
             />
           </div>
 
-          {filteredPeople.length !== 0 && (
+          {!!filteredPeople.length && (
             <Dropdown
               people={filteredPeople}
               onSelect={setValue}

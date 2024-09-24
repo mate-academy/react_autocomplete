@@ -11,22 +11,28 @@ export const Dropdown: React.FC<Props> = ({
   people,
   onSelect,
   setIsFocused,
-}) => (
-  <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-    <div className="dropdown-content">
-      {people.map(person => (
-        <div
-          className="dropdown-item"
-          data-cy="suggestion-item"
-          key={person.slug}
-          onClick={() => {
-            onSelect(person.name);
-            setIsFocused(false);
-          }}
-        >
-          <p className="has-text-link">{person.name}</p>
-        </div>
-      ))}
+}) => {
+  const clickHandler = (personName: string) => {
+    onSelect(personName);
+    setIsFocused(false);
+  };
+
+  return (
+    <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+      <div className="dropdown-content">
+        {people.map(({ name, slug }) => (
+          <div
+            className="dropdown-item"
+            data-cy="suggestion-item"
+            key={slug}
+            onClick={() => {
+              clickHandler(name);
+            }}
+          >
+            <p className="has-text-link">{name}</p>
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
