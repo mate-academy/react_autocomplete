@@ -25,7 +25,7 @@ export const Dropdown: React.FC<Props> = ({
             className="dropdown-item"
             data-cy="suggestion-item"
             key={slug}
-            onClick={() => {
+            onMouseDown={() => {
               clickHandler(name);
             }}
           >
