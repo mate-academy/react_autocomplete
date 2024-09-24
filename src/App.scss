@@ -2,7 +2,12 @@ iframe {
   display: none;
 }
 
+input {
+  min-width: 230px;
+}
+
 .dropdown-content {
-  height: 400px;
+  min-width: 230px;
+  max-height: 400px;
   overflow: scroll;
 }
