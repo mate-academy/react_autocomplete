@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Person } from '../types/Person';
 import debounce from 'lodash.debounce';
-import classNames from 'classnames';
 import './Autocomplete.scss';
 
 type Props = {
@@ -21,14 +20,31 @@ export const Autocomplete: React.FC<Props> = ({
   const [currentPeople, setCurrentPeople] = useState(people);
   const [selectPerson, setSelectPerson] = useState<Person | null>(null);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [isPoiterEvent, setIsPoiterEvent] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownVisible(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const personSelect = (person: Person) => {
     setSelectPerson(person);
     setInputChange(person.name);
     setCurrentPeople([]);
     onSelected(person);
-    setIsDropdownVisible(false);
+    setIsDropdownVisible(true);
   };
 
   const debouncedFilterPeople = debounce((inputValue: string) => {
@@ -52,35 +68,18 @@ export const Autocomplete: React.FC<Props> = ({
       clearSelectedPerson();
     }
 
+    setIsDropdownVisible(true);
     debouncedFilterPeople(value);
   };
 
-  const handlePointerEvent = () => {
-    setIsPoiterEvent(true);
-    setIsDropdownVisible(prev => !prev);
-  };
-
   const handleFocus = () => {
-    if (!isPoiterEvent) {
-      setIsDropdownVisible(true);
-    } else {
-      setIsPoiterEvent(false);
-    }
-  };
+    setCurrentPeople(people);
 
-  const isDropdownMenuActive = () => {
-    return (
-      isDropdownVisible &&
-      (currentPeople.length || (selectPerson === null && !currentPeople.length))
-    );
+    setIsDropdownVisible(true);
   };
 
   return (
-    <div
-      className={classNames('dropdown', {
-        'is-active': isDropdownMenuActive(),
-      })}
-    >
+    <div className="dropdown is-active" ref={dropdownRef}>
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -88,41 +87,42 @@ export const Autocomplete: React.FC<Props> = ({
           className="input"
           value={inputChange}
           onChange={handleSearch}
-          onPointerDown={handlePointerEvent}
           onFocus={handleFocus}
           data-cy="search-input"
         />
       </div>
-      <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-        <div className="dropdown-content">
-          {currentPeople.length > 0 || selectPerson !== null ? (
-            currentPeople.map((person: Person) => (
+      {isDropdownVisible && (
+        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+          <div className="dropdown-content">
+            {currentPeople.length > 0 ? (
+              currentPeople.map((person: Person) => (
+                <div
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                  key={person.name}
+                  onMouseDown={() => personSelect(person)}
+                >
+                  <p className="has-text-link">{person.name}</p>
+                </div>
+              ))
+            ) : (
               <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-                key={person.name}
-                onClick={() => personSelect(person)}
-              >
-                <p className="has-text-link">{person.name}</p>
-              </div>
-            ))
-          ) : (
-            <div
-              className="
+                className="
                 notification
                 is-danger
                 is-light
                 mt-3
                 is-align-self-flex-start
                 "
-              role="alert"
-              data-cy="no-suggestions-message"
-            >
-              <p className="has-text-danger">No matching suggestions</p>
-            </div>
-          )}
+                role="alert"
+                data-cy="no-suggestions-message"
+              >
+                <p className="has-text-danger">No matching suggestions</p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
