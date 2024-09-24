@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Person } from '../../types/Person';
+import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 
 type Props = {
@@ -40,7 +41,7 @@ export const Autocomplete: React.FC<Props> = ({
 
   return (
     <>
-      <div className={`dropdown ${toggleDropdown ? 'is-active' : ''}`}>
+      <div className={classNames('dropdown', { 'is-active': toggleDropdown })}>
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -79,7 +80,7 @@ export const Autocomplete: React.FC<Props> = ({
         )}
       </div>
 
-      {filteredPeople.length === 0 && (
+      {!filteredPeople.length && (
         <div
           className="
               notification
