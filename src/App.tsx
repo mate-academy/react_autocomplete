@@ -32,11 +32,14 @@ export const App: React.FC = () => {
     setValue(newValue);
   };
 
-  const inputRef = useRef(null);
-  const dropdownRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    inputRef.current.focus();
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+
     setFocused(true);
   }, []);
 
@@ -45,7 +48,10 @@ export const App: React.FC = () => {
   };
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement, Element>) => {
-    if (!dropdownRef.current.contains(event.relatedTarget)) {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.relatedTarget)
+    ) {
       setFocused(false);
     }
   };
