@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import classNames from 'classnames';
@@ -9,6 +15,7 @@ export const App: React.FC = () => {
   const [value, setValue] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [appliedQuery, setAppliedQuery] = useState('');
+  const [focused, setFocused] = useState(false);
 
   const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
 
@@ -23,6 +30,29 @@ export const App: React.FC = () => {
 
     applyQuery(newValue);
     setValue(newValue);
+  };
+
+  const inputRef = useRef(null);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus();
+    setFocused(true);
+  }, []);
+
+  const handleFocus = () => {
+    setFocused(true);
+  };
+
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement, Element>) => {
+    if (!dropdownRef.current.contains(event.relatedTarget)) {
+      setFocused(false);
+    }
+  };
+
+  const onSelected = (person: Person) => {
+    setSelectedPerson(person);
+    setFocused(false);
   };
 
   const error = () => {
@@ -49,9 +79,11 @@ export const App: React.FC = () => {
         >
           <div className="dropdown-trigger">
             <input
-              autoFocus
+              ref={inputRef}
               type="text"
               value={value}
+              onClick={() => handleFocus()}
+              onBlur={event => handleBlur(event)}
               onChange={event => {
                 handleQueryChange(event);
               }}
@@ -62,32 +94,35 @@ export const App: React.FC = () => {
           </div>
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div
-              className={classNames({
-                'dropdown-content': !error(),
-              })}
-            >
-              {filteredPeople.map(people => (
-                <div
-                  key={people.name}
-                  onClick={() => {
-                    setSelectedPerson(people);
-                    setValue(people.name);
-                  }}
-                  className="dropdown-item"
-                  data-cy="suggestion-item"
-                >
-                  <p
-                    className={classNames({
-                      'has-text-danger': people.sex === 'f',
-                      'has-text-link': people.sex === 'm',
-                    })}
+            {focused && (
+              <div
+                ref={dropdownRef}
+                className={classNames({
+                  'dropdown-content': !error(),
+                })}
+              >
+                {filteredPeople.map(people => (
+                  <div
+                    key={people.name}
+                    onMouseDown={() => {
+                      onSelected(people);
+                      setValue(people.name);
+                    }}
+                    className="dropdown-item"
+                    data-cy="suggestion-item"
                   >
-                    {people.name}
-                  </p>
-                </div>
-              ))}
-            </div>
+                    <p
+                      className={classNames({
+                        'has-text-danger': people.sex === 'f',
+                        'has-text-link': people.sex === 'm',
+                      })}
+                    >
+                      {people.name}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
