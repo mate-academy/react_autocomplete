@@ -33,7 +33,6 @@ export const App: React.FC = () => {
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const dropdownRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -42,19 +41,6 @@ export const App: React.FC = () => {
 
     setFocused(true);
   }, []);
-
-  const handleFocus = () => {
-    setFocused(true);
-  };
-
-  const handleBlur = (event: React.FocusEvent<HTMLInputElement, Element>) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.relatedTarget)
-    ) {
-      setFocused(false);
-    }
-  };
 
   const onSelected = (person: Person) => {
     setSelectedPerson(person);
@@ -88,8 +74,8 @@ export const App: React.FC = () => {
               ref={inputRef}
               type="text"
               value={value}
-              onClick={() => handleFocus()}
-              onBlur={event => handleBlur(event)}
+              onClick={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
               onChange={event => {
                 handleQueryChange(event);
               }}
@@ -102,7 +88,6 @@ export const App: React.FC = () => {
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             {focused && (
               <div
-                ref={dropdownRef}
                 className={classNames({
                   'dropdown-content': !error(),
                 })}
