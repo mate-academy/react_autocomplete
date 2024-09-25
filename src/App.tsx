@@ -1,21 +1,84 @@
-import React from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import classNames from 'classnames';
+import { Person } from './types/Person';
+import debounce from 'lodash.debounce';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [value, setValue] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [focused, setFocused] = useState(false);
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
+
+  const filteredPeople = useMemo(() => {
+    return peopleFromServer.filter(people =>
+      people.name.includes(appliedQuery),
+    );
+  }, [appliedQuery]);
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+
+    applyQuery(newValue);
+    setValue(newValue);
+  };
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+
+    setFocused(true);
+  }, []);
+
+  const onSelected = (person: Person) => {
+    setSelectedPerson(person);
+    setFocused(false);
+  };
+
+  const error = () => {
+    if (filteredPeople.length === 0) {
+      return true;
+    }
+
+    return false;
+  };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selectedPerson?.name === value
+            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+            : 'No selected person'}
         </h1>
 
-        <div className="dropdown is-active">
+        <div
+          className={classNames('dropdown', {
+            'is-active': selectedPerson?.name !== value,
+          })}
+        >
           <div className="dropdown-trigger">
             <input
+              ref={inputRef}
               type="text"
+              value={value}
+              onClick={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              onChange={event => {
+                handleQueryChange(event);
+              }}
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
@@ -23,51 +86,52 @@ export const App: React.FC = () => {
           </div>
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
+            {focused && (
+              <div
+                className={classNames({
+                  'dropdown-content': !error(),
+                })}
+              >
+                {filteredPeople.map(people => (
+                  <div
+                    key={people.name}
+                    onMouseDown={() => {
+                      onSelected(people);
+                      setValue(people.name);
+                    }}
+                    className="dropdown-item"
+                    data-cy="suggestion-item"
+                  >
+                    <p
+                      className={classNames({
+                        'has-text-danger': people.sex === 'f',
+                        'has-text-link': people.sex === 'm',
+                      })}
+                    >
+                      {people.name}
+                    </p>
+                  </div>
+                ))}
               </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        {error() && (
+          <div
+            className="
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
