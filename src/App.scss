@@ -1,3 +1,16 @@
 iframe {
   display: none;
 }
+
+.item {
+  cursor: pointer;
+}
+
+.item:hover {
+  background-color: cornflowerblue;
+}
+
+
+.center {
+text-align: center;
+}
