@@ -33,6 +33,11 @@ export const Autocomplete: React.FC<Props> = ({
     setQuery(person.name);
   };
 
+  enum Sex {
+    m = 'm',
+    f = 'f',
+  }
+
   return (
     <div
       className={classNames('dropdown', {
@@ -59,14 +64,12 @@ export const Autocomplete: React.FC<Props> = ({
               className="dropdown-item"
               data-cy="suggestion-item"
               key={person.name}
-              onMouseDown={() => {
-                handleSelect(person);
-              }}
+              onMouseDown={() => handleSelect(person)}
             >
               <p
                 className={classNames({
-                  'has-text-link': person.sex === 'm',
-                  'has-text-danger': person.sex === 'f',
+                  'has-text-link': person.sex === Sex.m,
+                  'has-text-danger': person.sex === Sex.f,
                 })}
               >
                 {person.name}

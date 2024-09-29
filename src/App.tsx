@@ -5,7 +5,6 @@ import { Person } from './types/Person';
 import { Autocomplete } from './componets/Autocomplete';
 
 export const App: React.FC = () => {
-  // const [people, setPeople] = useState<Person[]>(peopleFromServer);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [appliedQuery, setAppliedQuery] = useState('');
 
@@ -18,15 +17,11 @@ export const App: React.FC = () => {
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        {selectedPerson ? (
-          <h1 className="title" data-cy="title">
-            {`${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
-          </h1>
-        ) : (
-          <h1 className="title" data-cy="title">
-            No selected person
-          </h1>
-        )}
+        <h1 className="title" data-cy="title">
+          {selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+            : 'No selected person'}
+        </h1>
 
         <Autocomplete
           onSelected={setSelectedPerson}
@@ -37,12 +32,12 @@ export const App: React.FC = () => {
         {!filteredPeople.length && (
           <div
             className="
-          notification
-          is-danger
-          is-light
-          mt-3
-          is-align-self-flex-start
-        "
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
             role="alert"
             data-cy="no-suggestions-message"
           >
