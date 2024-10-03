@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { peopleFromServer } from '../../data/people';
+import { Person } from '../../types/Person';
 
-// type AutocompleteProps = {
-// };
+type AutocompleteProps = {
+  onSelectPerson: (person: Person | null) => void;
+};
 
-export const Autocomplete = () => {
+export const Autocomplete = ({ onSelectPerson }: AutocompleteProps) => {
   const [searchInput, setSearchInput] = useState('');
   const [isSearchInputFocus, setIsSearchInputFocus] = useState(false);
 
@@ -23,12 +25,12 @@ export const Autocomplete = () => {
             data-cy="search-input"
             value={searchInput}
             onChange={event => {
-              setSearchInput(event?.target.value);
+              setSearchInput(event.target.value);
+              onSelectPerson(null);
             }}
             onFocus={() => {
               setIsSearchInputFocus(true);
             }}
-            onBlur={() => setIsSearchInputFocus(false)}
           />
         </div>
 
@@ -41,6 +43,10 @@ export const Autocomplete = () => {
                     key={person.slug}
                     className="dropdown-item"
                     data-cy="suggestion-item"
+                    onClick={() => {
+                      onSelectPerson(person);
+                      setIsSearchInputFocus(false);
+                    }}
                   >
                     <p
                       className={`${person.sex === 'm' ? 'has-text-link' : 'has-text-danger'}`}
