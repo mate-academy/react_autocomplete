@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { peopleFromServer } from '../../data/people';
 import { Person } from '../../types/Person';
 
@@ -9,14 +9,32 @@ type AutocompleteProps = {
 export const Autocomplete = ({ onSelectPerson }: AutocompleteProps) => {
   const [searchInput, setSearchInput] = useState('');
   const [isSearchInputFocus, setIsSearchInputFocus] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const filteredPeople = peopleFromServer.filter(person =>
     person.name.toLowerCase().includes(searchInput.toLowerCase()),
   );
 
+  useEffect(() => {
+    const handleClickOutsideSearchInput = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchInputFocus(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutsideSearchInput);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideSearchInput);
+    };
+  }, []);
+
   return (
     <>
-      <div className="dropdown is-active">
+      <div className="dropdown is-active" ref={dropdownRef}>
         <div className="dropdown-trigger">
           <input
             type="text"
