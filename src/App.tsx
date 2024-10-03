@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
-import { Autocomplete } from './components/Autocomplete/Autocomplete';
+import { Autocomplete } from './components/Autocomplete';
 
 export const App: React.FC = () => {
   const { name, born, died } = peopleFromServer[0];
