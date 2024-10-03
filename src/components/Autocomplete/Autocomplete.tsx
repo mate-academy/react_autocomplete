@@ -4,19 +4,34 @@ import { Person } from '../../types/Person';
 
 type AutocompleteProps = {
   onSelectPerson: (person: Person | null) => void;
+  debounceDelay: number;
 };
 
-export const Autocomplete = ({ onSelectPerson }: AutocompleteProps) => {
+export const Autocomplete = ({
+  onSelectPerson,
+  debounceDelay,
+}: AutocompleteProps) => {
   const [searchInput, setSearchInput] = useState('');
   const [isSearchInputFocus, setIsSearchInputFocus] = useState(false);
+  const [filteredPeople, setFilteredPeople] = useState<Person[]>([]);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const filteredPeople = peopleFromServer.filter(person =>
-    person.name.toLowerCase().includes(searchInput.toLowerCase()),
-  );
+  useEffect(() => {
+    const debounceTimeOut = setTimeout(() => {
+      const result = peopleFromServer.filter(person =>
+        person.name.toLowerCase().includes(searchInput.toLowerCase()),
+      );
+
+      setFilteredPeople(result);
+    }, debounceDelay);
+
+    return () => {
+      clearTimeout(debounceTimeOut);
+    };
+  }, [searchInput, debounceDelay]);
 
   useEffect(() => {
-    const handleClickOutsideSearchInput = (event: MouseEvent) => {
+    const handleClickOutsideDropdown = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
@@ -25,10 +40,10 @@ export const Autocomplete = ({ onSelectPerson }: AutocompleteProps) => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutsideSearchInput);
+    document.addEventListener('mousedown', handleClickOutsideDropdown);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutsideSearchInput);
+      document.removeEventListener('mousedown', handleClickOutsideDropdown);
     };
   }, []);
 

@@ -18,7 +18,7 @@ export const App: React.FC = () => {
             ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
             : 'No selected person'}
         </h1>
-        <Autocomplete onSelectPerson={handleSelectPerson} />
+        <Autocomplete onSelectPerson={handleSelectPerson} debounceDelay={300} />
       </main>
     </div>
   );
