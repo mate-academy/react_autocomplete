@@ -13,20 +13,19 @@ export const App: React.FC = () => {
 
   const debounceDelay = 300;
 
-  const applyQuery = useMemo(
-    () => debounce(setAppliedQuery, debounceDelay),
-    [],
-  );
+  const applyQuery = useCallback(debounce(setAppliedQuery, debounceDelay), [
+    debounceDelay,
+  ]);
 
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    applyQuery(event.target.value);
+    applyQuery(event.target.value.trim());
     setSelectedPerson(null);
   };
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person =>
-      person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+      person.name.toLowerCase().includes(appliedQuery.toLowerCase().trim()),
     );
   }, [appliedQuery]);
 
@@ -44,7 +43,7 @@ export const App: React.FC = () => {
         </h1>
         <Dropdown
           query={query}
-          onQueryChange={handleQueryChange}
+          onInputChange={handleInputChange}
           filteredPeople={filteredPeople}
           onSelected={handleSelectedPerson}
           setQuery={setQuery}

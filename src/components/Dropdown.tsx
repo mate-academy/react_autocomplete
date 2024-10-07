@@ -5,7 +5,7 @@ import '../App.scss';
 
 interface Props {
   query: string;
-  onQueryChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   filteredPeople: Person[];
   onSelected: (person: Person) => void;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
@@ -13,7 +13,7 @@ interface Props {
 
 export const Dropdown: React.FC<Props> = ({
   query,
-  onQueryChange,
+  onInputChange,
   filteredPeople,
   onSelected,
   setQuery,
@@ -40,13 +40,14 @@ export const Dropdown: React.FC<Props> = ({
       <div className="dropdown-trigger">
         <input
           ref={inputRef}
+          onBlur={handleUnfocus}
           onFocus={handleFocus}
           type="search"
           placeholder="Enter a part of the name"
           className="input"
           data-cy="search-input"
-          value={query}
-          onChange={onQueryChange}
+          value={query.trimStart()}
+          onChange={onInputChange}
         />
       </div>
 
@@ -55,8 +56,8 @@ export const Dropdown: React.FC<Props> = ({
           <div className="dropdown-content">
             {filteredPeople.map(person => (
               <div
-                onClick={() => handleSelectAndFocus(person)}
-                key={person.slug}
+                onMouseDown={() => handleSelectAndFocus(person)}
+                key={Date.now()}
                 className="dropdown-item hovered"
                 data-cy="suggestion-item"
               >
