@@ -2,18 +2,18 @@ import React, { useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import classNames from 'classnames';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [typingTimeout, setTypingTimeout] = useState<number | undefined>(
     undefined,
   );
-
   const [filterValue, setFilterValue] = useState('');
 
   const handleSelectedPerson = (person: Person | null) => {
-    setSelectedPerson(() => person);
-    setFilterValue('');
+    setSelectedPerson(person);
+    setFilterValue(person ? person.name : '');
   };
 
   const handleChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +29,7 @@ export const App: React.FC = () => {
 
     setTypingTimeout(newTimeout);
 
-    if (selectedPerson) {
+    if (selectedPerson && value) {
       setSelectedPerson(null);
     }
   };
@@ -56,13 +56,15 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               onChange={handleChangeText}
+              value={filterValue}
               data-cy="search-input"
             />
           </div>
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              {filteredPeople.length > 0 ? (
+              {filteredPeople.length !== 0 &&
+                !selectedPerson &&
                 filteredPeople.map(person => (
                   <div
                     className="dropdown-item"
@@ -70,10 +72,17 @@ export const App: React.FC = () => {
                     onClick={() => handleSelectedPerson(person)}
                     key={person.slug}
                   >
-                    <p className="has-text-danger">{person.name}</p>
+                    <p
+                      className={classNames({
+                        'has-text-danger': person.sex === 'f',
+                        'has-text-link': person.sex === 'm',
+                      })}
+                    >
+                      {person.name}
+                    </p>
                   </div>
-                ))
-              ) : (
+                ))}
+              {filteredPeople.length === 0 && (
                 <div className="dropdown-item" data-cy="no-suggestions-message">
                   <p>No matching suggestions</p>
                 </div>
