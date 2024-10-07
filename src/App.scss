@@ -1,3 +1,11 @@
 iframe {
   display: none;
 }
+
+.hovered:hover {
+  background-color: aqua;
+}
+
+.hovered:active {
+  background-color: burlywood;
+}
