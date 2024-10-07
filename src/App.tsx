@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
-import { DropDownMenu } from './DropDownMenu/DropDownMenu';
+import { DropDownMenu } from './Components/DropDownMenu';
 
 export const App: React.FC = () => {
   const [chosenPerson, setChosenPerson] = useState<Person | null>(null);
