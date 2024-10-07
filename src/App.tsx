@@ -1,15 +1,21 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import classNames from 'classnames';
+import debounce from 'lodash.debounce';
 
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [typingTimeout, setTypingTimeout] = useState<number | undefined>(
-    undefined,
-  );
   const [filterValue, setFilterValue] = useState('');
+  const [debouncedFilterValue, setDebouncedFilterValue] = useState(filterValue);
+
+  const debouncedSetFilterValue = useCallback(
+    debounce((value: string) => {
+      setDebouncedFilterValue(value);
+    }, 300),
+    [],
+  );
 
   const handleSelectedPerson = (person: Person | null) => {
     setSelectedPerson(person);
@@ -21,13 +27,7 @@ export const App: React.FC = () => {
 
     setFilterValue(value);
 
-    if (typingTimeout) {
-      clearTimeout(typingTimeout);
-    }
-
-    const newTimeout = setTimeout(() => {}, 300);
-
-    setTypingTimeout(newTimeout);
+    debouncedSetFilterValue(value);
 
     if (selectedPerson && value) {
       setSelectedPerson(null);
@@ -36,9 +36,9 @@ export const App: React.FC = () => {
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(user =>
-      user.name.toLowerCase().includes(filterValue.toLowerCase()),
+      user.name.toLowerCase().includes(debouncedFilterValue.toLowerCase()),
     );
-  }, [filterValue]);
+  }, [debouncedFilterValue]);
 
   return (
     <div className="container">
