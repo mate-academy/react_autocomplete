@@ -1,0 +1,6 @@
+@import '../../variables/colors';
+
+.dropdown-item:hover {
+  background-color: $dropdown-backgrount-hover-color;
+  cursor: pointer;
+}
