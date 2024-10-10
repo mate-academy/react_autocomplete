@@ -1,0 +1,14 @@
+.dropdown {
+  &-content {
+    max-height: 30em;
+    overflow: auto;
+  }
+
+  &-item {
+    cursor: pointer;
+
+    &:hover {
+      backdrop-filter: invert(15%);
+    }
+  }
+}
