@@ -9,6 +9,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [filterValue, setFilterValue] = useState('');
   const [debouncedFilterValue, setDebouncedFilterValue] = useState(filterValue);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const debouncedSetFilterValue = useCallback(
     debounce((value: string) => {
@@ -20,6 +21,7 @@ export const App: React.FC = () => {
   const handleSelectedPerson = (person: Person | null) => {
     setSelectedPerson(person);
     setFilterValue(person ? person.name : '');
+    setIsDropdownOpen(false);
   };
 
   const handleChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +34,12 @@ export const App: React.FC = () => {
     if (selectedPerson && value) {
       setSelectedPerson(null);
     }
+
+    setIsDropdownOpen(true);
+  };
+
+  const handleFocus = () => {
+    setIsDropdownOpen(true);
   };
 
   const filteredPeople = useMemo(() => {
@@ -43,53 +51,73 @@ export const App: React.FC = () => {
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
-          {selectedPerson
-            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-            : 'No selected person'}
-        </h1>
+        {selectedPerson && (
+          <h1 className="title" data-cy="title">
+            {`${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`}
+          </h1>
+        )}
 
-        <div className="dropdown is-active">
+        {!selectedPerson && (
+          <h1 className="title" data-cy="title">
+            No selected person
+          </h1>
+        )}
+
+        <div
+          className={classNames('dropdown', { 'is-active': isDropdownOpen })}
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
               placeholder="Enter a part of the name"
               className="input"
-              onChange={handleChangeText}
               value={filterValue}
+              onChange={handleChangeText}
+              onFocus={handleFocus}
               data-cy="search-input"
             />
           </div>
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              {filteredPeople.length !== 0 &&
-                !selectedPerson &&
-                filteredPeople.map(person => (
-                  <div
-                    className="dropdown-item"
-                    data-cy="suggestion-item"
-                    onClick={() => handleSelectedPerson(person)}
-                    key={person.slug}
-                  >
-                    <p
-                      className={classNames({
-                        'has-text-danger': person.sex === 'f',
-                        'has-text-link': person.sex === 'm',
-                      })}
+            {isDropdownOpen &&
+              filteredPeople.map(person => {
+                return (
+                  <div className="dropdown-content" key={person.slug}>
+                    <div
+                      className="dropdown-item"
+                      onClick={() => handleSelectedPerson(person)}
+                      data-cy="suggestion-item"
                     >
-                      {person.name}
-                    </p>
+                      <p
+                        className={classNames({
+                          'has-text-link': person.sex === 'm',
+                          'has-text-danger': person.sex === 'f',
+                        })}
+                      >
+                        {person.name}
+                      </p>
+                    </div>
                   </div>
-                ))}
-              {filteredPeople.length === 0 && (
-                <div className="dropdown-item" data-cy="no-suggestions-message">
-                  <p>No matching suggestions</p>
-                </div>
-              )}
-            </div>
+                );
+              })}
           </div>
         </div>
+
+        {!filteredPeople.length && (
+          <div
+            className="
+            notification
+            is-danger
+            is-light
+            mt-3
+            is-align-self-flex-start
+          "
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
