@@ -16,12 +16,14 @@ import './Dropdown.scss';
 interface Props {
   people: Person[];
   delay?: number;
+  filteredPerson: Person[];
   onChangeQuery: (query: string) => void;
   onSelectPerson: (person: Person | null) => void;
 }
 
 const Dropdown: FC<Props> = ({
   people,
+  filteredPerson,
   delay = 300,
   onSelectPerson,
   onChangeQuery,
@@ -37,7 +39,7 @@ const Dropdown: FC<Props> = ({
   );
 
   const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(event.target.value);
+    setSearchValue(event.target.value.trimStart());
     onSelectPerson(null);
     debouncedOnChangeQuery(event.target.value);
   };
@@ -75,7 +77,7 @@ const Dropdown: FC<Props> = ({
           />
         </div>
 
-        {openDropdown && (
+        {openDropdown && !!filteredPerson.length && (
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content ">
               {people.map(person => (

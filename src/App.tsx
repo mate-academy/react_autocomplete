@@ -12,13 +12,11 @@ export const App: FC = () => {
   const [query, setQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const filteredPerson = useMemo(
-    () =>
-      peopleFromServer.filter(person =>
-        person.name.toLowerCase().includes(query.trim().toLowerCase()),
-      ),
-    [query],
-  );
+  const filteredPerson = useMemo(() => {
+    return peopleFromServer.filter(person =>
+      person.name.toLowerCase().includes(query.trim().toLowerCase()),
+    );
+  }, [query]);
 
   const handleSelectPerson = useCallback((person: Person | null) => {
     setSelectedPerson(person);
@@ -28,9 +26,11 @@ export const App: FC = () => {
     setQuery(str);
   }, []);
 
-  const selectedPersonInfo = selectedPerson
-    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-    : 'No selected person';
+  const selectedPersonInfo = useMemo(() => {
+    return selectedPerson
+      ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+      : 'No selected person';
+  }, [selectedPerson]);
 
   return (
     <div className="container">
@@ -41,6 +41,7 @@ export const App: FC = () => {
 
         <Dropdown
           people={filteredPerson}
+          filteredPerson={filteredPerson}
           onSelectPerson={handleSelectPerson}
           onChangeQuery={handleChangeQuery}
         />
