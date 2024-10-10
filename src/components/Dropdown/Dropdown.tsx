@@ -32,17 +32,17 @@ export const Dropdown: FC<Props> = ({
 
   const visiblePeople = selectedPerson ? peopleFromServer : filteredPeople;
 
-  const handleInputFocus = () => {
+  const onInputFocus = () => {
     setIsActive(true);
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value.trimStart());
     applyQuery(event.target.value);
     onSelect(null);
   };
 
-  const handleSelect = (person: Person) => {
+  const onSelectPerson = (person: Person) => {
     onSelect(person);
     setQuery(person.name);
     setIsActive(false);
@@ -62,8 +62,8 @@ export const Dropdown: FC<Props> = ({
             data-cy="search-input"
             className="input"
             value={query}
-            onFocus={handleInputFocus}
-            onChange={handleInputChange}
+            onFocus={onInputFocus}
+            onChange={onInputChange}
           />
         </div>
 
@@ -71,7 +71,7 @@ export const Dropdown: FC<Props> = ({
           <DropdownMenu
             people={visiblePeople}
             selectedPerson={selectedPerson}
-            onSelect={handleSelect}
+            handleSelectPerson={onSelectPerson}
           />
         )}
       </div>
