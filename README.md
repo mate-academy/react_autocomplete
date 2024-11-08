@@ -15,10 +15,11 @@ that will suggest people matching an entered text.
 - when the selected person is displayed in the title, but the value in the input changes, the selected person should be cleared and `No selected person` should be shown.
 
 ## Instructions
+
 - Install Prettier Extention and use this [VSCode settings](https://mate-academy.github.io/fe-program/tools/vscode/settings.json) to enable format on save.
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_autocomplete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://Svimpik.github.io/react_autocomplete/) and add it to the PR description.
 - Don't remove the `data-qa` attributes. It is required for tests.
 
 ## Troubleshooting
