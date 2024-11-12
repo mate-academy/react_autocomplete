@@ -1,73 +1,71 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
+import classNames from 'classnames';
+
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+
+import { SearchInput } from './components/searchInput/searchInput';
+import Content from './components/content/content';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [delay, setDelay] = useState(300); // for change add setDelay
+
+  const [fullField, setFullField] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const [focus, setFocus] = useState(false);
+
+  const people = useMemo(() => {
+    return [...peopleFromServer];
+  }, []);
+
+  const peopleSearcher = useMemo(() => {
+    return people.filter(person => person.name.includes(fullField));
+  }, [people, fullField]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+            : 'No selected person'}
         </h1>
 
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-            />
-          </div>
+        <div className={classNames(`dropdown`, { 'is-active': focus })}>
+          <SearchInput
+            delay={delay}
+            setFullField={setFullField}
+            setSelectedPerson={setSelectedPerson}
+            selectedPerson={selectedPerson}
+            setFocus={setFocus}
+            setDelay={setDelay}
+          />
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
+            <Content
+              peopleFromServer={peopleSearcher}
+              setSelectedPerson={setSelectedPerson}
+            />
           </div>
         </div>
 
-        <div
-          className="
+        {peopleSearcher.length === 0 && (
+          <div
+            className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
