@@ -1,3 +1,14 @@
 iframe {
   display: none;
 }
+
+.dropdown-item {
+  cursor: pointer;
+
+  &:hover {
+    .dropdown-text {
+      text-decoration: underline;
+    }
+  }
+}
+
