@@ -6,12 +6,14 @@
   "author": "Mate Academy",
   "license": "GPL-3.0",
   "dependencies": {
+    "16": "0.0.2",
     "@fortawesome/fontawesome-free": "^6.5.2",
     "bulma": "^1.0.1",
     "classnames": "^2.5.1",
     "lodash.debounce": "^4.0.8",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "use-debounce": "^10.0.3"
   },
   "devDependencies": {
     "@cypress/react18": "^2.0.1",
