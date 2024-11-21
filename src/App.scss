@@ -1,3 +1,7 @@
 iframe {
   display: none;
 }
+
+.dropdown-content:not(:has(*)) {
+  display: none;
+}
