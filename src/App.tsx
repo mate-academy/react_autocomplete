@@ -1,73 +1,63 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Dropdown } from './Dropdown';
+import { Notification } from './Notification';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [selectedUser, setSelectedUser] = useState<Person | null>(null);
+  const [partText, setPartText] = useState('');
+  const [textChanged, setTextChanged] = useState(false);
+
+  const { name, born, died } = selectedUser || {};
+  const personInfo =
+    selectedUser && !textChanged
+      ? `${name} (${born} - ${died})`
+      : 'No selected person';
+
+  const [correctPeople, setCorrectPeople] = useState(peopleFromServer);
+
+  const timerId = useRef(0);
+
+  const queryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPartText(event.target.value);
+    setTextChanged(true);
+
+    window.clearTimeout(timerId.current);
+
+    timerId.current = window.setTimeout(() => {
+      setCorrectPeople(
+        peopleFromServer.filter(person =>
+          person.name.toLowerCase().includes(event.target.value.toLowerCase()),
+        ),
+      );
+    }, 300);
+  };
+
+  const onSelect = (person: Person) => {
+    setSelectedUser(person);
+    setPartText(person.name);
+    setTextChanged(false);
+  };
+
+  const noSugAlert = partText && !correctPeople.length;
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {personInfo}
         </h1>
 
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-            />
-          </div>
-
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        <Dropdown
+          people={correctPeople}
+          queryChange={queryChange}
+          partText={partText}
+          onSelect={onSelect}
+          noSugAlert={noSugAlert}
+        />
+        {noSugAlert && <Notification />}
       </main>
     </div>
   );
