@@ -1,0 +1,19 @@
+.dropdownMenu {
+
+  &__list{
+    max-height: 500px;
+    overflow-y: scroll;
+  }
+
+  &__item {
+    background: none;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    transition: background-color 0.5s;
+  }
+
+  &__item:hover {
+    background-color: #E6E6E6 ;
+  }
+}
