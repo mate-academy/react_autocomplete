@@ -4,7 +4,7 @@ import './Autocomplete.scss';
 /* eslint-disable prettier/prettier */
 /* eslint-disable max-len */
 
-type AutocompleteProps = {
+interface AutocompleteProps {
   people: Person[];
   onSelected: (person: Person | null) => void;
   debounceDelay: number;
