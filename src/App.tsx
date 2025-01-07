@@ -29,7 +29,7 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
   const debouncedSetInputValue = useMemo(
     () =>
       debounce((value: string) => {
-        setInputValue(value);
+        setInputValue(value.trim());
       }, delay),
     [delay],
   );
@@ -57,7 +57,10 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
 
   const filteredNames = useMemo(() => {
     return peopleFromServer.filter(person =>
-      person.name.toLowerCase().includes(inputValue.toLowerCase()),
+      person.name
+        .toLowerCase()
+        .trim()
+        .includes(inputValue.toLowerCase().trim()),
     );
   }, [inputValue]);
 
@@ -66,7 +69,7 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
           {selectedPerson
-            ? `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.born})`
+            ? `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`
             : `No selected person`}
         </h1>
 
@@ -78,7 +81,7 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
-              defaultValue={inputValue}
+              defaultValue={inputValue.trim()}
               onChange={handleInputChange}
               onFocus={() => setIsDropdownVisible(true)}
               onBlur={() => setTimeout(() => setIsDropdownVisible(false), 200)}
@@ -95,7 +98,7 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
                 {filteredNames.map(person => (
                   <div
                     className="dropdown-item"
-                    key={person.born}
+                    key={person.name}
                     data-cy="suggestion-item"
                     onClick={() => handleSelectPerson(person)}
                   >
