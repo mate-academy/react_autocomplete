@@ -1,72 +1,108 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  // const { name, born, died } = peopleFromServer[0];
+  const [query, setQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<null | {
+    name: string;
+    born: number;
+    died: number;
+  }>(null); // Обрана людина
+
+  // Фільтрація списку
+  const filteredPeople = peopleFromServer.filter(person =>
+    person.name.toLowerCase().includes(query.trim().toLowerCase()),
+  );
+
+  // Перевірка чи повністю збігається ім'я
+  // const exactMatch = peopleFromServer.find(
+  //   person => person.name.toLowerCase() === query.toLowerCase(),
+  // );
+
+  // Вибір елемента
+  const handleSelect = (person: {
+    name: string;
+    born: number;
+    died: number;
+  }) => {
+    setSelectedItem(person);
+    setQuery(person.name);
+    setIsDropdownOpen(false);
+  };
+
+  // Функія на перевірку імені
+  const handleQueryChange = (value: string) => {
+    setQuery(value);
+
+    if (
+      !filteredPeople.some(
+        person => person.name.toLowerCase() === value.toLowerCase(),
+      )
+    ) {
+      setSelectedItem(null);
+    }
+  };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selectedItem
+            ? `${selectedItem.name} (${selectedItem.born} - ${selectedItem.died})`
+            : 'No selected person'}
         </h1>
 
-        <div className="dropdown is-active">
+        <div className={`dropdown ${isDropdownOpen ? 'is-active' : ''}`}>
           <div className="dropdown-trigger">
             <input
               type="text"
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              value={query}
+              onFocus={() => setIsDropdownOpen(true)}
+              onChange={e => handleQueryChange(e.target.value)}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
+          {isDropdownOpen && filteredPeople.length > 0 && (
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
+              <div className="dropdown-content">
+                {filteredPeople.map(person => (
+                  <div
+                    className="dropdown-item"
+                    data-cy="suggestion-item"
+                    onClick={() => handleSelect(person)}
+                    key={person.slug}
+                  >
+                    <p className="has-text-link">{person.name}</p>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
-        </div>
+          )}
 
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
+          {isDropdownOpen && filteredPeople.length === 0 && (
+            <div
+              className="
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start"
+              role="alert"
+              data-cy="no-suggestions-message"
+            >
+              <p className="has-text-danger">No matching suggestions</p>
+            </div>
+          )}
         </div>
       </main>
     </div>
