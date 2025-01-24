@@ -1,5 +1,11 @@
 // eslint-disable-next-line max-len, prettier/prettier
-import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
+import React, {
+  useMemo,
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+} from 'react';
 import debounce from 'lodash.debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
@@ -14,12 +20,12 @@ export const App: React.FC = () => {
   const [isFocused, setIsFocused] = useState(true);
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const searchFielt = useRef<HTMLInputElement>(null);
+  const searchField = useRef<HTMLInputElement>(null);
   const dropdown = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (searchFielt.current) {
-      searchFielt.current.focus();
+    if (searchField.current) {
+      searchField.current.focus();
     }
   }, []);
 
@@ -28,8 +34,8 @@ export const App: React.FC = () => {
       if (
         dropdown.current &&
         !dropdown.current.contains(event.target as Node) &&
-        searchFielt.current &&
-        !searchFielt.current.contains(event.target as Node)
+        searchField.current &&
+        !searchField.current.contains(event.target as Node)
       ) {
         setIsShown(false);
       }
@@ -44,17 +50,17 @@ export const App: React.FC = () => {
 
   const handleInputClick = () => {
     if (isFocused) {
-      searchFielt.current?.blur();
+      searchField.current?.blur();
       setIsShown(false);
     } else {
-      searchFielt.current?.focus();
+      searchField.current?.focus();
       setIsShown(true);
     }
 
     setIsFocused(!isFocused);
   };
 
-  const inputBlure = () => {
+  const inputBlur = () => {
     setIsFocused(false);
   };
 
@@ -103,9 +109,9 @@ export const App: React.FC = () => {
               data-cy="search-input"
               value={query}
               onChange={handleQueryChange}
-              ref={searchFielt}
+              ref={searchField}
               onClick={handleInputClick}
-              onBlur={inputBlure}
+              onBlur={inputBlur}
             />
           </div>
 
@@ -116,9 +122,9 @@ export const App: React.FC = () => {
             ref={dropdown}
           >
             <div className="dropdown-content">
-              {filteredPerson.map((person, index) => (
+              {filteredPerson.map(person => (
                 <div
-                  key={index}
+                  key={person.slug}
                   className="dropdown-item"
                   data-cy="suggestion-item"
                   onClick={() => setSelectedPerson(person)}
