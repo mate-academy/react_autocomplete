@@ -1,73 +1,156 @@
-import React from 'react';
+// eslint-disable-next-line max-len, prettier/prettier
+import React, {
+  useMemo,
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+} from 'react';
+import debounce from 'lodash.debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import classNames from 'classnames';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [people] = useState<Person[]>(peopleFromServer);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [query, setQuery] = useState('');
+  const [isShown, setIsShown] = useState(true);
+  const [isFocused, setIsFocused] = useState(true);
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  const searchField = useRef<HTMLInputElement>(null);
+  const dropdown = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (searchField.current) {
+      searchField.current.focus();
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdown.current &&
+        !dropdown.current.contains(event.target as Node) &&
+        searchField.current &&
+        !searchField.current.contains(event.target as Node)
+      ) {
+        setIsShown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleInputClick = () => {
+    if (isFocused) {
+      searchField.current?.blur();
+      setIsShown(false);
+    } else {
+      searchField.current?.focus();
+      setIsShown(true);
+    }
+
+    setIsFocused(!isFocused);
+  };
+
+  const inputBlur = () => {
+    setIsFocused(false);
+  };
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, 300), []);
+
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedPerson(null);
+    setIsShown(true);
+    setQuery(e.target.value);
+    applyQuery(e.target.value);
+  };
+
+  const filteredPerson = useMemo(() => {
+    const filtered = people.filter(person =>
+      person.name.toLowerCase().includes(appliedQuery.toLocaleLowerCase()),
+    );
+
+    if (!filtered.length) {
+      setIsShown(false);
+    }
+
+    return filtered;
+  }, [appliedQuery, people]);
+
+  const isDangerShown = !filteredPerson.length && !isShown;
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+            : 'No selected person'}
         </h1>
 
-        <div className="dropdown is-active">
+        <div
+          className={classNames('dropdown', {
+            'is-active': isShown,
+          })}
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              value={query}
+              onChange={handleQueryChange}
+              ref={searchField}
+              onClick={handleInputClick}
+              onBlur={inputBlur}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+          <div
+            className="dropdown-menu"
+            role="menu"
+            data-cy="suggestions-list"
+            ref={dropdown}
+          >
             <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
+              {filteredPerson.map(person => (
+                <div
+                  key={person.slug}
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                  onClick={() => setSelectedPerson(person)}
+                >
+                  <p className="has-text-link">{person.name}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        {isDangerShown && (
+          <div
+            className="
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
