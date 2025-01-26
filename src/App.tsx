@@ -26,7 +26,7 @@ export const App: React.FC = () => {
 
         setListPeople(filtered);
       }, 300),
-    [],
+    [value],
   );
 
   useEffect(() => {

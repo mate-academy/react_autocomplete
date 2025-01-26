@@ -7,7 +7,7 @@ interface Props {
   filteredPeople: Person[];
   value: string;
   setValue: (str: string) => void;
-  setSelectedPerson: (person: Person) => void;
+  setSelectedPerson: (person: Person | null) => void;
 }
 
 const Dropdown = ({
