@@ -1,73 +1,74 @@
-import React from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Autocomplete } from './components/Autocomplete';
+import React, { useState } from 'react';
+import classNames from 'classnames';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [focusOnInput, setFocusOnInput] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [currentPerson, setCurrentPerson] = useState<null | Person>(null);
+  const [isPersonEmpty, setIsPersonEmpty] = useState(true);
+
+  const changeUser = (person: Person) => {
+    setCurrentPerson(person);
+    setInputValue(person.name);
+  };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {currentPerson
+            ? `${currentPerson.name} ${currentPerson.born} - ${currentPerson.died}`
+            : 'No selected person'}
         </h1>
-
-        <div className="dropdown is-active">
+        <div className={classNames('dropdown', { 'is-active': focusOnInput })}>
           <div className="dropdown-trigger">
             <input
               type="text"
+              value={inputValue}
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              onFocus={() => setFocusOnInput(true)}
+              onBlur={() => setTimeout(() => setFocusOnInput(false), 100)}
+              onChange={event => {
+                setInputValue(event.currentTarget.value);
+                setCurrentPerson(null);
+              }}
             />
           </div>
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
+              <Autocomplete
+                persons={peopleFromServer}
+                filterBy={inputValue}
+                onChangePerson={changeUser}
+                onPersonEmpty={(isPersonInList: boolean) =>
+                  setIsPersonEmpty(isPersonInList)
+                }
+              />
             </div>
           </div>
         </div>
-
-        <div
-          className="
+        {!isPersonEmpty && (
+          <div
+            className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
