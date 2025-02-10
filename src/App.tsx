@@ -1,15 +1,65 @@
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import debounce from 'lodash.debounce';
+import { Person } from './types/Person';
+import classNames from 'classnames';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+type Props = {
+  delay?: number;
+  onSelected?: (person: Person | null) => void;
+};
+
+export const App: React.FC<Props> = ({ delay = 300, onSelected = () => {} }) => {
+  const [people] = useState(peopleFromServer);
+  const [inputValue, setInputValue] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [selected, setSelected] = useState<Person | null>(null);
+  const [hoveredPerson, setHoveredPerson] = useState<string | null>(null);
+  const searchField = useRef<HTMLInputElement | null>(null);
+
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), [delay]);
+
+  useEffect(() => {
+    return () => {
+      applyQuery.cancel();
+    };
+  }, [applyQuery]);
+
+  const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+    applyQuery(event.target.value);
+
+    if (event.target.value !== selected?.name) {
+      setSelected(null);
+      onSelected(null);
+    }
+
+    setIsFocused(true);
+  };
+
+  const filteredPeople = useMemo(
+    () =>
+      people.filter(person =>
+        person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+      ),
+    [people, appliedQuery],
+  );
+
+  const handleSelectPerson = (person: Person) => {
+    setSelected(person);
+    onSelected(person);
+    setInputValue(person.name);
+  };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selected
+            ? `${selected.name} (${selected.born} - ${selected.died})`
+            : 'No selected person'}
         </h1>
 
         <div className="dropdown is-active">
@@ -19,55 +69,69 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              ref={searchField}
+              value={inputValue}
+              onChange={handleChangeInput}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setTimeout(() => setIsFocused(false), 200)}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
+          {isFocused && (
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+              onMouseDown={e => e.preventDefault()}
+            >
+              <div
+                className="dropdown-content"
+                style={{
+                  height: 300,
+                  overflowY: 'auto',
+                }}
+              >
+                {(appliedQuery === '' ? people : filteredPeople).map(person => (
+                  <div
+                    className="dropdown-item"
+                    style={{
+                      cursor: 'pointer',
+                    }}
+                    data-cy="suggestion-item"
+                    key={person.name}
+                  >
+                    <p
+                      className={classNames('has-text-link', {
+                        'has-text-danger': hoveredPerson === person.name,
+                      })}
+                      onMouseEnter={() => setHoveredPerson(person.name)}
+                      onMouseLeave={() => setHoveredPerson(null)}
+                      onClick={() => handleSelectPerson(person)}
+                    >
+                      {person.name}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
         </div>
 
-        <div
-          className="
+        {isFocused && appliedQuery && filteredPeople.length === 0 && (
+          <div
+            className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
