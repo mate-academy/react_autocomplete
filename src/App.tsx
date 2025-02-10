@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import debounce from 'lodash.debounce';
@@ -10,7 +16,10 @@ type Props = {
   onSelected?: (person: Person | null) => void;
 };
 
-export const App: React.FC<Props> = ({ delay = 300, onSelected = () => {} }) => {
+export const App: React.FC<Props> = ({
+  delay = 300,
+  onSelected = () => {},
+}) => {
   const [people] = useState(peopleFromServer);
   const [inputValue, setInputValue] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -18,6 +27,7 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected = () => {} }) => 
   const [selected, setSelected] = useState<Person | null>(null);
   const [hoveredPerson, setHoveredPerson] = useState<string | null>(null);
   const searchField = useRef<HTMLInputElement | null>(null);
+  const timeoutRef = useRef<number | null>(null);
 
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), [delay]);
 
@@ -39,10 +49,24 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected = () => {} }) => 
     setIsFocused(true);
   };
 
+  const handleBlur = () => {
+    timeoutRef.current = window.setTimeout(() => {
+      setIsFocused(false);
+    }, 200);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
   const filteredPeople = useMemo(
     () =>
       people.filter(person =>
-        person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+        person.name.toLowerCase().includes(appliedQuery.trim().toLowerCase()),
       ),
     [people, appliedQuery],
   );
@@ -73,7 +97,7 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected = () => {} }) => 
               value={inputValue}
               onChange={handleChangeInput}
               onFocus={() => setIsFocused(true)}
-              onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+              onBlur={handleBlur}
             />
           </div>
 
@@ -98,7 +122,7 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected = () => {} }) => 
                       cursor: 'pointer',
                     }}
                     data-cy="suggestion-item"
-                    key={person.name}
+                    key={person.slug}
                   >
                     <p
                       className={classNames('has-text-link', {
