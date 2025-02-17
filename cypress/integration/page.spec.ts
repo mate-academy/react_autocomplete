@@ -151,7 +151,7 @@ describe('Page', () => {
 
       page.searchInput()
         .type('{backspace}');
-
+      cy.wait(100);
       page.title()
         .should('contain', 'No selected person');
     });
