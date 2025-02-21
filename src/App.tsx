@@ -1,15 +1,23 @@
-import React, { useMemo, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-shadow */
+import React, { useMemo, useState, useEffect } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
 
-export const App: React.FC = () => {
+interface AppProps {
+  debounceDelay?: number;
+}
+
+export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<null | Person>(null);
 
-  const applyQuery = useMemo(() => debounce(setAppliedQuery, 300), []);
+  const applyQuery = useMemo(
+    () => debounce(setAppliedQuery, debounceDelay),
+    [debounceDelay],
+  );
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -17,14 +25,28 @@ export const App: React.FC = () => {
     setSelectedPerson(null);
   };
 
-  const peopleToShow = peopleFromServer.filter(person => {
-    const nameLower = person.name.toLowerCase().trim();
-    const queryLower = appliedQuery.toLowerCase().trim();
+  const filterPeople = (query: string, people: Person[]) => {
+    if (query.trim() === '') {
+      return people;
+    }
 
-    return nameLower.includes(queryLower);
-  });
+    return people.filter(person => {
+      const nameLower = person.name.toLowerCase().trim();
+      const queryLower = appliedQuery.toLowerCase().trim();
+
+      return nameLower.includes(queryLower);
+    });
+  };
+
+  const peopleToShow = filterPeople(query, peopleFromServer);
 
   const showNoSuggestionsMessage = query && peopleToShow.length === 0;
+
+  useEffect(() => {
+    if (query.trim() === '') {
+      setAppliedQuery('');
+    }
+  }, [query]);
 
   return (
     <div className="container">
