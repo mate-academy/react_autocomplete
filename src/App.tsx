@@ -13,17 +13,19 @@ function getPeopleList(people: Person[], query: string) {
   );
 }
 
-type Props = {
-  delay: number;
-};
-export const App: React.FC<Props> = ({ delay = 1000 }) => {
+export const App: React.FC = () => {
+  const delay = 300;
   const [query, setQuery] = useState("");
   const [appliedQuery, setAppliedQuery] = useState("");
   const [isActive, setIsActive] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const filteredList = getPeopleList(peopleFromServer, appliedQuery);
+  let filteredList = peopleFromServer;
+
+  if (appliedQuery.trim()) {
+    filteredList = getPeopleList(peopleFromServer, appliedQuery);
+  }
 
   const applyQuery = useCallback(debounce(setAppliedQuery, delay), []);
 
@@ -63,6 +65,7 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
               data-cy="search-input"
               onChange={(event) => {
                 setQuery(event.target.value);
+                setSelectedPerson(null);
                 applyQuery(event.target.value);
               }}
               onClick={() => setIsActive(true)}
@@ -83,7 +86,7 @@ export const App: React.FC<Props> = ({ delay = 1000 }) => {
                     className="dropdown-item"
                     data-cy="suggestion-item"
                     style={{ cursor: "pointer" }}
-                    key={person.name}
+                    key={person.slug}
                   >
                     <p
                       className={classNames({
