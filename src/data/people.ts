@@ -9,6 +9,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Carel Haverbeke',
     motherName: 'Maria van Brussel',
     slug: 'carolus-haverbeke-1832',
+    id: undefined,
   },
   {
     name: 'Emma de Milliano',
@@ -18,6 +19,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Petrus de Milliano',
     motherName: 'Sophia van Damme',
     slug: 'emma-de-milliano-1876',
+    id: undefined,
   },
   {
     name: 'Maria de Rycke',
@@ -27,6 +29,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Frederik de Rycke',
     motherName: 'Laurentia van Vlaenderen',
     slug: 'maria-de-rycke-1683',
+    id: undefined,
   },
   {
     name: 'Jan van Brussel',
@@ -36,6 +39,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Jacobus van Brussel',
     motherName: 'Joanna van Rooten',
     slug: 'jan-van-brussel-1714',
+    id: undefined,
   },
   {
     name: 'Philibert Haverbeke',
@@ -45,6 +49,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Emile Haverbeke',
     motherName: 'Emma de Milliano',
     slug: 'philibert-haverbeke-1907',
+    id: undefined,
   },
   {
     name: 'Jan Frans van Brussel',
@@ -54,6 +59,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Jacobus Bernardus van Brussel',
     motherName: null,
     slug: 'jan-frans-van-brussel-1761',
+    id: undefined,
   },
   {
     name: 'Pauwels van Haverbeke',
@@ -63,6 +69,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'N. van Haverbeke',
     motherName: null,
     slug: 'pauwels-van-haverbeke-1535',
+    id: undefined,
   },
   {
     name: 'Clara Aernoudts',
@@ -72,6 +79,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Henry Aernoudts',
     motherName: 'Sidonie Coene',
     slug: 'clara-aernoudts-1918',
+    id: undefined,
   },
   {
     name: 'Emile Haverbeke',
@@ -81,6 +89,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Carolus Haverbeke',
     motherName: 'Maria Sturm',
     slug: 'emile-haverbeke-1877',
+    id: undefined,
   },
   {
     name: 'Lieven de Causmaecker',
@@ -90,6 +99,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Carel de Causmaecker',
     motherName: 'Joanna Claes',
     slug: 'lieven-de-causmaecker-1696',
+    id: undefined,
   },
   {
     name: 'Pieter Haverbeke',
@@ -99,6 +109,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Lieven van Haverbeke',
     motherName: null,
     slug: 'pieter-haverbeke-1602',
+    id: undefined,
   },
   {
     name: 'Livina Haverbeke',
@@ -108,6 +119,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Daniel Haverbeke',
     motherName: 'Joanna de Pape',
     slug: 'livina-haverbeke-1692',
+    id: undefined,
   },
   {
     name: 'Pieter Bernard Haverbeke',
@@ -117,6 +129,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Willem Haverbeke',
     motherName: 'Petronella Wauters',
     slug: 'pieter-bernard-haverbeke-1695',
+    id: undefined,
   },
   {
     name: 'Lieven van Haverbeke',
@@ -126,6 +139,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Pauwels van Haverbeke',
     motherName: 'Lievijne Jans',
     slug: 'lieven-van-haverbeke-1570',
+    id: undefined,
   },
   {
     name: 'Joanna de Causmaecker',
@@ -135,6 +149,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Bernardus de Causmaecker',
     motherName: null,
     slug: 'joanna-de-causmaecker-1762',
+    id: undefined,
   },
   {
     name: 'Willem Haverbeke',
@@ -144,6 +159,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Lieven Haverbeke',
     motherName: 'Elisabeth Hercke',
     slug: 'willem-haverbeke-1668',
+    id: undefined,
   },
   {
     name: 'Pieter Antone Haverbeke',
@@ -153,6 +169,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Jan Francies Haverbeke',
     motherName: 'Petronella de Decker',
     slug: 'pieter-antone-haverbeke-1753',
+    id: undefined,
   },
   {
     name: 'Maria van Brussel',
@@ -162,6 +179,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Jan Frans van Brussel',
     motherName: 'Joanna de Causmaecker',
     slug: 'maria-van-brussel-1801',
+    id: undefined,
   },
   {
     name: 'Angela Haverbeke',
@@ -171,6 +189,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Pieter Bernard Haverbeke',
     motherName: 'Livina de Vrieze',
     slug: 'angela-haverbeke-1728',
+    id: undefined,
   },
   {
     name: 'Elisabeth Haverbeke',
@@ -180,6 +199,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Jan Haverbeke',
     motherName: 'Maria de Rycke',
     slug: 'elisabeth-haverbeke-1711',
+    id: undefined,
   },
   {
     name: 'Lievijne Jans',
@@ -189,6 +209,7 @@ export const peopleFromServer: Person[] = [
     fatherName: null,
     motherName: null,
     slug: 'lievijne-jans-1542',
+    id: undefined,
   },
   {
     name: 'Bernardus de Causmaecker',
@@ -198,6 +219,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Lieven de Causmaecker',
     motherName: 'Livina Haverbeke',
     slug: 'bernardus-de-causmaecker-1721',
+    id: undefined,
   },
   {
     name: 'Jacoba Lammens',
@@ -207,6 +229,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Lieven Lammens',
     motherName: 'Livina de Vrieze',
     slug: 'jacoba-lammens-1699',
+    id: undefined,
   },
   {
     name: 'Pieter de Decker',
@@ -216,6 +239,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Joos de Decker',
     motherName: 'Petronella van de Steene',
     slug: 'pieter-de-decker-1705',
+    id: undefined,
   },
   {
     name: 'Joanna de Pape',
@@ -225,6 +249,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Vincent de Pape',
     motherName: 'Petronella Wauters',
     slug: 'joanna-de-pape-1654',
+    id: undefined,
   },
   {
     name: 'Daniel Haverbeke',
@@ -234,6 +259,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Lieven Haverbeke',
     motherName: 'Elisabeth Hercke',
     slug: 'daniel-haverbeke-1652',
+    id: undefined,
   },
   {
     name: 'Lieven Haverbeke',
@@ -243,6 +269,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Pieter Haverbeke',
     motherName: 'Anna van Hecke',
     slug: 'lieven-haverbeke-1631',
+    id: undefined,
   },
   {
     name: 'Martina de Pape',
@@ -252,6 +279,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Vincent de Pape',
     motherName: 'Petronella Wauters',
     slug: 'martina-de-pape-1666',
+    id: undefined,
   },
   {
     name: 'Jan Francies Haverbeke',
@@ -261,6 +289,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Pieter Bernard Haverbeke',
     motherName: 'Livina de Vrieze',
     slug: 'jan-francies-haverbeke-1725',
+    id: undefined,
   },
   {
     name: 'Maria Haverbeke',
@@ -270,6 +299,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Emile Haverbeke',
     motherName: 'Emma de Milliano',
     slug: 'maria-haverbeke-1905',
+    id: undefined,
   },
   {
     name: 'Petronella de Decker',
@@ -279,6 +309,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Pieter de Decker',
     motherName: 'Livina Haverbeke',
     slug: 'petronella-de-decker-1731',
+    id: undefined,
   },
   {
     name: 'Livina Sierens',
@@ -288,6 +319,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Jan Sierens',
     motherName: 'Maria van Waes',
     slug: 'livina-sierens-1761',
+    id: undefined,
   },
   {
     name: 'Laurentia Haverbeke',
@@ -297,6 +329,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Jan Haverbeke',
     motherName: 'Maria de Rycke',
     slug: 'laurentia-haverbeke-1710',
+    id: undefined,
   },
   {
     name: 'Carel Haverbeke',
@@ -306,6 +339,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Pieter Antone Haverbeke',
     motherName: 'Livina Sierens',
     slug: 'carel-haverbeke-1796',
+    id: undefined,
   },
   {
     name: 'Elisabeth Hercke',
@@ -315,6 +349,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Willem Hercke',
     motherName: 'Margriet de Brabander',
     slug: 'elisabeth-hercke-1632',
+    id: undefined,
   },
   {
     name: 'Jan Haverbeke',
@@ -324,6 +359,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Lieven Haverbeke',
     motherName: 'Elisabeth Hercke',
     slug: 'jan-haverbeke-1671',
+    id: undefined,
   },
   {
     name: 'Anna van Hecke',
@@ -333,6 +369,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Paschasius van Hecke',
     motherName: 'Martijntken Beelaert',
     slug: 'anna-van-hecke-1607',
+    id: undefined,
   },
   {
     name: 'Maria Sturm',
@@ -342,6 +379,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Charles Sturm',
     motherName: 'Seraphina Spelier',
     slug: 'maria-sturm-1835',
+    id: undefined,
   },
   {
     name: 'Jacobus Bernardus van Brussel',
@@ -351,5 +389,7 @@ export const peopleFromServer: Person[] = [
     fatherName: 'Jan van Brussel',
     motherName: 'Elisabeth Haverbeke',
     slug: 'jacobus-bernardus-van-brussel-1736',
+    id: undefined,
   },
 ];
+export type { Person };
