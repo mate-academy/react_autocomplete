@@ -1,16 +1,44 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import debounce from 'lodash.debounce';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+type DelayProp = {
+  delay?: number;
+};
+
+export const App: React.FC<DelayProp> = ({ delay = 300 }) => {
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [focused, setFocused] = useState(false);
+
+  const title = [...peopleFromServer].find(person => person.name === query);
+
+  const applyQuery = useMemo(() => debounce(setAppliedQuery, delay), [delay]);
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  };
+
+  const filteredNames = useMemo(() => {
+    return peopleFromServer.filter(person =>
+      person.name.includes(appliedQuery.trim()),
+    );
+  }, [appliedQuery]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
-        </h1>
+        {title ? (
+          <h1 className="title" data-cy="title">
+            {`${title.name} (${title.born} - ${title.died})`}
+          </h1>
+        ) : (
+          <h1 className="title" data-cy="title">
+            {`No selected person`}
+          </h1>
+        )}
 
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
@@ -19,54 +47,53 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              value={query}
+              onChange={handleQueryChange}
+              onFocus={() => setFocused(true)}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
+          {filteredNames.length !== 0 && focused ? (
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
+              <div className="dropdown-content">
+                {filteredNames.map(item => {
+                  return (
+                    <div
+                      key={item.name}
+                      className="dropdown-item"
+                      data-cy="suggestion-item"
+                      onClick={() => {
+                        setQuery(item.name);
+                        setAppliedQuery(item.name);
+                      }}
+                    >
+                      <p className="has-text-link">{item.name}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          </div>
-        </div>
-
-        <div
-          className="
+          ) : (
+            appliedQuery !== '' && (
+              <div
+                className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
+                role="alert"
+                data-cy="no-suggestions-message"
+              >
+                <p className="has-text-danger">No matching suggestions</p>
+              </div>
+            )
+          )}
         </div>
       </main>
     </div>
