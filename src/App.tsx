@@ -4,20 +4,25 @@ import { peopleFromServer } from './data/people';
 import debounce from 'lodash.debounce';
 import { Person } from './types/Person';
 
-export const App: React.FC = () => {
-  const delay = 300;
+interface AppProps {
+  delay?: number;
+}
+
+export const App: React.FC<AppProps> = ({ delay = 300 }) => {
   const [query, setQuery] = useState('');
   const [comparator, setComparator] = useState('');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyComparator = useCallback(debounce(setComparator, delay), []);
   const [selected, setSelected] = useState<Person | null>(null);
   const filteredPeople = useMemo(() => {
-    return peopleFromServer.filter(person => person.name.includes(comparator));
+    return peopleFromServer.filter(person =>
+      person.name.toLowerCase().includes(comparator.toLowerCase()),
+    );
   }, [comparator]);
 
   const handleApplyQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value.trim());
-    applyComparator(event.target.value.trim());
+    setQuery(event.target.value);
+    applyComparator(event.target.value);
     setSelected(null);
   };
 
