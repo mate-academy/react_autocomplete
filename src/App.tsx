@@ -5,18 +5,19 @@ import debounce from 'lodash.debounce';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
+  const delay = 300;
   const [query, setQuery] = useState('');
   const [comparator, setComparator] = useState('');
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const applyComparator = useCallback(debounce(setComparator, 300), []);
+  const applyComparator = useCallback(debounce(setComparator, delay), []);
   const [selected, setSelected] = useState<Person | null>(null);
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person => person.name.includes(comparator));
   }, [comparator]);
 
   const handleApplyQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyComparator(event.target.value);
+    setQuery(event.target.value.trim());
+    applyComparator(event.target.value.trim());
     setSelected(null);
   };
 
@@ -44,9 +45,9 @@ export const App: React.FC = () => {
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              {filteredPeople.map((person, index) => (
+              {filteredPeople.map(person => (
                 <div
-                  key={index}
+                  key={person.slug}
                   className="dropdown-item"
                   data-cy="suggestion-item"
                   onClick={() => setSelected(person)}
