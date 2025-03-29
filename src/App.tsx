@@ -9,7 +9,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [isDropDown, setIsDropDown] = useState(true);
+  const [isDropDown, setIsDropDown] = useState(false);
 
   const debouncedSetQuery = useMemo(
     () => debounce((value: string) => setAppliedQuery(value), 300),
@@ -52,10 +52,12 @@ export const App: React.FC = () => {
                 setSelectedPerson(null);
                 setIsDropDown(true);
               }}
+              onFocus={() => setIsDropDown(true)}
+              onBlur={() => setTimeout(() => setIsDropDown(false), 150)}
             />
           </div>
 
-          {isDropDown && (
+          {isDropDown && filteredByQuery.length > 0 &&(
             <div
               className="dropdown-menu"
               role="menu"
