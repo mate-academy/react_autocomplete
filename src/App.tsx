@@ -18,13 +18,26 @@ export const App: React.FC = () => {
   );
 
   const handleChange = (changeEvent: React.ChangeEvent<HTMLInputElement>) => {
+    const trimmedValue = changeEvent.target.value.trim();
+
     setQuery(changeEvent.target.value);
-    applyQuery(changeEvent.target.value);
+
+    if (trimmedValue === '') {
+      applyQuery('');
+    } else {
+      applyQuery(trimmedValue);
+    }
   };
 
-  const filteredPeople = peopleFromServer.filter(person =>
-    person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
-  );
+  let filteredPeople: Person[] = [];
+
+  if (appliedQuery.trim() === '') {
+    filteredPeople = peopleFromServer;
+  } else {
+    filteredPeople = peopleFromServer.filter(person =>
+      person.name.toLowerCase().includes(appliedQuery.toLowerCase().trim()),
+    );
+  }
 
   useEffect(() => {
     inputField.current?.focus();
