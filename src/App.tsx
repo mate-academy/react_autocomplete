@@ -58,7 +58,7 @@ export const App: React.FC = () => {
               }}
             />
           </div>
-          {filteredPeople.length !== 0 && inputField !== null && (
+          {filteredPeople.length !== 0 && (
             <DropDown people={filteredPeople} onSelected={setCurrentPerson} />
           )}
         </div>
