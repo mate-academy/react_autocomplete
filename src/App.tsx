@@ -19,8 +19,14 @@ export const App: React.FC = () => {
   );
 
   const filterPeople = useCallback(() => {
+    const trimmedInput = inputValue.trim().toLowerCase();
+
+    if (trimmedInput === '') {
+      return peopleFromServer;
+    }
+
     return peopleFromServer.filter(person =>
-      person.name.toLowerCase().includes(inputValue.toLowerCase()),
+      person.name.toLowerCase().includes(trimmedInput),
     );
   }, [inputValue]);
 
@@ -53,11 +59,11 @@ export const App: React.FC = () => {
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              {filterPeople().map((person, index) => (
+              {filterPeople().map((person) => (
                 <div
                   className="dropdown-item"
                   data-cy="suggestion-item"
-                  key={index + 1}
+                  key={person.name}
                   onMouseDown={() => {
                     setCurrentPerson(person);
                     setContainerActive(false);
