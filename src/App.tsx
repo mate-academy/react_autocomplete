@@ -33,15 +33,9 @@ export const App: React.FC = () => {
   };
 
   const filteredPersons = useMemo(() => {
-    let fltrdPsns = initialPerson;
-
-    if (normalizedQuery) {
-      fltrdPsns = initialPerson.filter(persn =>
-        persn.name.toLowerCase().includes(normalizedQuery),
-      );
-    }
-
-    return fltrdPsns;
+    return initialPerson.filter(persn =>
+      persn.name.toLowerCase().includes(normalizedQuery),
+    );
   }, [normalizedQuery]);
 
   return (
@@ -67,18 +61,20 @@ export const App: React.FC = () => {
           </div>
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              {filteredPersons.map(persn => (
-                <PersonItem
-                  key={persn.slug}
-                  person={persn}
-                  onClick={() => onSelected(persn)}
-                />
-              ))}
+              {(appliedQuery.trim() ? filteredPersons : initialPerson).map(
+                persn => (
+                  <PersonItem
+                    key={persn.slug}
+                    person={persn}
+                    onClick={() => onSelected(persn)}
+                  />
+                ),
+              )}
             </div>
           </div>
         </div>
 
-        {filteredPersons.length === 0 && (
+        {filteredPersons.length === 0 && appliedQuery.trim() && (
           <div
             className="
             notification
