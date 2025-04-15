@@ -3,6 +3,7 @@ import debounce from 'lodash.debounce';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
+import { PersonItem } from './component/PersonItme/PersonItem';
 
 const initialPerson: Person[] = peopleFromServer.map(person => ({
   ...person,
@@ -32,9 +33,15 @@ export const App: React.FC = () => {
   };
 
   const filteredPersons = useMemo(() => {
-    return initialPerson.filter(persn =>
-      persn.name.toLowerCase().includes(normalizedQuery),
-    );
+    let fltrdPsns = initialPerson;
+
+    if (normalizedQuery) {
+      fltrdPsns = initialPerson.filter(persn =>
+        persn.name.toLowerCase().includes(normalizedQuery),
+      );
+    }
+
+    return fltrdPsns;
   }, [normalizedQuery]);
 
   return (
@@ -61,14 +68,11 @@ export const App: React.FC = () => {
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
               {filteredPersons.map(persn => (
-                <div
+                <PersonItem
                   key={persn.slug}
-                  className="dropdown-item"
-                  data-cy="suggestion-item"
+                  person={persn}
                   onClick={() => onSelected(persn)}
-                >
-                  <p className="has-text-link">{persn.name}</p>
-                </div>
+                />
               ))}
             </div>
           </div>
