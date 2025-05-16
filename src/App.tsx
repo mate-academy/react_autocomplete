@@ -21,7 +21,6 @@ export const App: React.FC = () => {
             : 'No selected person'}
         </h1>
 
-
         <Autocomplete
           people={peopleFromServer}
           debounceDelay={300}

@@ -11,7 +11,11 @@ type Props = {
   onSelected?: (person: Person | null) => void;
 };
 
-export const Autocomplete: FC<Props> = ({ people, debounceDelay = 300, onSelected, }) => {
+export const Autocomplete: FC<Props> = ({
+  people,
+  debounceDelay = 300,
+  onSelected,
+}) => {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -39,6 +43,7 @@ export const Autocomplete: FC<Props> = ({ people, debounceDelay = 300, onSelecte
           value={query}
           onChange={event => {
             const value = event.target.value;
+
             setQuery(value);
 
             if (onSelected) {
@@ -50,8 +55,8 @@ export const Autocomplete: FC<Props> = ({ people, debounceDelay = 300, onSelecte
         />
       </div>
 
-      {(query !== '' || isFocused) && (
-        filteredPeople.length > 0 ? (
+      {(query !== '' || isFocused) &&
+        (filteredPeople.length > 0 ? (
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
               {filteredPeople.map(person => (
@@ -66,8 +71,12 @@ export const Autocomplete: FC<Props> = ({ people, debounceDelay = 300, onSelecte
                     }
                   }}
                 >
-                  <p className={person.sex === 'm' ? 'has-text-link' : 'has-text-danger'}>
-                  {person.name}
+                  <p
+                    className={
+                      person.sex === 'm' ? 'has-text-link' : 'has-text-danger'
+                    }
+                  >
+                    {person.name}
                   </p>
                 </div>
               ))}
@@ -75,14 +84,19 @@ export const Autocomplete: FC<Props> = ({ people, debounceDelay = 300, onSelecte
           </div>
         ) : (
           <div
-            className="notification is-danger is-light mt-3 is-align-self-flex-start"
+            className="
+              notification
+              is-danger
+              is-light
+              mt-3
+              is-align-self-flex-start
+            "
             role="alert"
             data-cy="no-suggestions-message"
           >
             <p className="has-text-danger">No matching suggestions</p>
           </div>
-        )
-      )}
+        ))}
     </div>
   );
 };
