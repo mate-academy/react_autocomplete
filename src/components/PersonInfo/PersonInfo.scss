@@ -1,0 +1,8 @@
+.person-item {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+}
