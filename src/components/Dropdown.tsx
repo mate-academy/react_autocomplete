@@ -57,7 +57,7 @@ export const Dropdown: React.FC<Props> = ({ people, delay, onSelected }) => {
             value={query}
             onChange={handleQueryChange}
             onFocus={() => setIsFocused(true)}
-            // onBlur={() => setIsFocused(false)}
+            onBlur={() => setTimeout(() => setIsFocused(false), 100)}
             placeholder="Enter a part of the name"
             className="input"
             data-cy="search-input"
