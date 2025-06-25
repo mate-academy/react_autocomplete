@@ -1,72 +1,90 @@
-import React from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Persons } from './component/Persons';
+import debounce from 'lodash.debounce';
+import { Person } from './types/Person';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+interface AppProps {
+  delay?: number;
+}
+
+export const App: React.FC<AppProps> = ({ delay = 300 }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredPeople, setFilteredPeople] = useState(peopleFromServer);
+  const [isActive, setIsActive] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const previousSearchTerm = useRef<string>('');
+
+  const debouncedFilter = useCallback(
+    debounce((query: string) => {
+      if (query.trim() === previousSearchTerm.current) {
+        return;
+      }
+
+      previousSearchTerm.current = query.trim();
+
+      const filtered = peopleFromServer.filter(person =>
+        person.name.toLowerCase().includes(query.trim().toLowerCase()),
+      );
+
+      setFilteredPeople(filtered);
+    }, delay),
+    [delay],
+  );
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+
+    if (value.trim() === '') {
+      setFilteredPeople(peopleFromServer);
+      setSearchTerm('');
+
+      return;
+    }
+
+    setSearchTerm(value);
+    setSelectedPerson(null);
+
+    debouncedFilter(value);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      setIsActive(false);
+      setFilteredPeople(peopleFromServer);
+    }, 150);
+  };
+
+  const handleFocus = () => {
+    setIsActive(true);
+  };
+
+  const handleSelected = (person: Person) => {
+    setSelectedPerson(person);
+    setSearchTerm(`${person.name} (${person.born} - ${person.died})`);
+  };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selectedPerson === null
+            ? 'No selected person'
+            : `${selectedPerson?.name} (${selectedPerson?.born} - ${selectedPerson?.died})`}
         </h1>
 
-        <div className="dropdown is-active">
+        <div className={`dropdown ${isActive ? 'is-active' : ''}`}>
           <div className="dropdown-trigger">
             <input
               type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
             />
           </div>
-
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
+          <Persons peoples={filteredPeople} onSelected={handleSelected} />
         </div>
       </main>
     </div>
