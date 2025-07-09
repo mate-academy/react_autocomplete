@@ -8,7 +8,7 @@ export const App: React.FC = () => {
   const [born, setBorn] = useState(0);
   const [died, setDied] = useState(0);
 
-  const [isDropDowdVisible, setIsDropDowdVisible] = useState(false);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [query, setQuery] = useState('');
 
   const visiblePeople = peopleFromServer.filter(person => {
@@ -17,15 +17,15 @@ export const App: React.FC = () => {
     return person.name.toLowerCase().includes(filterLower);
   });
 
-  const hendleClick = (person: Person) => {
+  const handleClick = (person: Person) => {
     setQuery(person.name);
-    setIsDropDowdVisible(false);
+    setIsDropdownVisible(false);
     setName(person.name);
     setBorn(person.born);
     setDied(person.died);
   };
 
-  const hendleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
 
     setName('');
@@ -33,18 +33,18 @@ export const App: React.FC = () => {
     setDied(0);
   };
 
-  const hendleQueryFocus = () => {
-    setIsDropDowdVisible(true);
+  const handleQueryFocus = () => {
+    setIsDropdownVisible(true);
   };
 
-  const hendleQueryBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleQueryBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const relatedTarget = event.relatedTarget as HTMLElement;
 
     if (relatedTarget && relatedTarget.dataset.cy === 'suggestion-item') {
       return;
     }
 
-    setIsDropDowdVisible(false);
+    setIsDropdownVisible(false);
   };
 
   return (
@@ -68,12 +68,12 @@ export const App: React.FC = () => {
               className="input"
               data-cy="search-input"
               value={query}
-              onChange={hendleQueryChange}
-              onFocus={hendleQueryFocus}
-              onBlur={hendleQueryBlur}
+              onChange={handleQueryChange}
+              onFocus={handleQueryFocus}
+              onBlur={handleQueryBlur}
             />
           </div>
-          {isDropDowdVisible && visiblePeople.length !== 0 && (
+          {isDropdownVisible && visiblePeople.length !== 0 && (
             <div
               className="dropdown-menu"
               role="menu"
@@ -88,7 +88,7 @@ export const App: React.FC = () => {
                   >
                     <p
                       className="has-text-link"
-                      onMouseDown={() => hendleClick(person)}
+                      onMouseDown={() => handleClick(person)}
                     >
                       {person.name}
                     </p>
