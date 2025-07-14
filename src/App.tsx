@@ -1,15 +1,63 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { DropdownList } from './components/DropdownList';
+import { Person } from './types/Person';
+import debounce from 'lodash/debounce';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+type Props = { delay?: number };
+
+export const App: React.FC<Props> = ({ delay = 300 }) => {
+  const [query, setQuery] = useState('');
+  const [people] = useState(peopleFromServer);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const debounceQuery = useCallback(debounce(setDebouncedQuery, delay), [
+    delay,
+  ]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    setQuery(value);
+
+    if (value.trim() === '') {
+      setDebouncedQuery('');
+      setSelectedPerson(null);
+
+      return;
+    }
+
+    debounceQuery(value);
+    setSelectedPerson(null);
+  };
+
+  const filteredPeople = useMemo(() => {
+    return people.filter(person =>
+      person.name.toLowerCase().includes(debouncedQuery.toLowerCase()),
+    );
+  }, [debouncedQuery, people]);
+
+  const handleSelectPerson = useCallback(
+    (slug: string) => {
+      setSelectedPerson(people.find(person => person.slug === slug) || null);
+      setIsDropdownOpen(false);
+      setQuery('');
+      setDebouncedQuery('');
+    },
+    [people],
+  );
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+            : `No selected person`}
         </h1>
 
         <div className="dropdown is-active">
@@ -19,55 +67,37 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              value={query}
+              onChange={handleInputChange}
+              onFocus={() => setIsDropdownOpen(true)}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
+          {isDropdownOpen && (
+            <DropdownList
+              people={filteredPeople}
+              onSelected={handleSelectPerson}
+            />
+          )}
         </div>
 
-        <div
-          className="
+        {filteredPeople.length === 0 ? (
+          <div
+            className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        ) : (
+          ''
+        )}
       </main>
     </div>
   );
