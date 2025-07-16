@@ -82,10 +82,7 @@ export const App: React.FC = () => {
   }, []);
 
   const getPersonTextColor = (person: Person): string => {
-    return person.name.toLowerCase().includes('elisabeth') ||
-      person.name.toLowerCase().includes('petronella')
-      ? 'has-text-danger'
-      : 'has-text-link';
+    return person.died ? 'has-text-danger' : 'has-text-link';
   };
 
   return (
