@@ -39,36 +39,25 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+  const value = event.target.value;
+  setInputValue(value);
+  setShowDropdown(true);
+  onSelected(null);
 
-    setInputValue(value);
+  if (value === prevQuery) {
+    return;
+  }
 
-    setShowDropdown(true);
-    onSelected(null);
+  if (debounceTimeout.current) {
+    clearTimeout(debounceTimeout.current);
+  }
 
-    if (value === prevQuery) {
-      return;
-    }
-
+  debounceTimeout.current = setTimeout(() => {
+    filterSuggestions(value);
     setPrevQuery(value);
+  }, delay);
+};
 
-    if (debounceTimeout.current) {
-      clearTimeout(debounceTimeout.current);
-    }
-
-    debounceTimeout.current = setTimeout(() => {
-      return;
-    }, delay);
-    setPrevQuery(value);
-
-    if (debounceTimeout.current) {
-      clearTimeout(debounceTimeout.current);
-    }
-
-    debounceTimeout.current = setTimeout(() => {
-      filterSuggestions(value);
-    }, delay);
-  };
 
   const handleFocus = () => {
     setShowDropdown(true);
