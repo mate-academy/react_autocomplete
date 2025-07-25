@@ -13,6 +13,7 @@ export const App: React.FC = () => {
       const filteredPeople = peopleFromServer.filter(person =>
         person.name.toLowerCase().includes(currentInput.toLowerCase()),
       );
+
       setFilteredSuggestions(filteredPeople);
 
       // Reset selected person if input changes and no match exactly
@@ -27,7 +28,7 @@ export const App: React.FC = () => {
     return () => {
       clearTimeout(timerId);
     };
-  }, [currentInput]);
+  }, [currentInput, selectedPerson]);
 
   return (
     <div className="container">
