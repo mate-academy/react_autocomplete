@@ -1,3 +1,5 @@
+[DEMO LINK](https://vkrasnovyd.github.io/react_autocomplete/)
+
 # React Autocomplete
 
 You have an array of people. Implement the Autocomplete component

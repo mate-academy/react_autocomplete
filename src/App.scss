@@ -1,3 +1,17 @@
 iframe {
   display: none;
 }
+
+.search-input {
+  padding-right: 42px;
+}
+
+.icon-button {
+  cursor: pointer;
+  padding: 0 0.75rem;
+  color: #7a7a7a;
+  display: flex;
+  align-items: center;
+  margin-left: -40px;
+  z-index: 2;
+}
