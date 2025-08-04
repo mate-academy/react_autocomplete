@@ -1,73 +1,63 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import debounce from 'lodash.debounce';
+import { Person } from './types/Person';
+import { Autocomplete } from './components/Autocomplete';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+interface AppProps {
+  delay?: number;
+}
+
+export const App: React.FC<AppProps> = ({ delay = 300 }) => {
+  const [query, setQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<Person[]>([]);
+  const [selected, setSelected] = useState<Person | null>(null);
+  const [dropDown, setDropDown] = useState(false);
+
+  function updateSuggestions(newQuery: string) {
+    setSuggestions(
+      peopleFromServer.filter(person =>
+        person.name.toLowerCase().includes(newQuery.toLowerCase()),
+      ),
+    );
+  }
+
+  const applyQuery = useCallback(debounce(updateSuggestions, delay), [delay]);
+
+  function handleQueryChange(event: React.ChangeEvent<HTMLInputElement>) {
+    if (selected && event.target.value !== selected.name) {
+      setSelected(null);
+    }
+
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
+  }
+
+  function handleFocusInput(event: React.FocusEvent<HTMLInputElement>) {
+    if (event.target.value === '') {
+      setSuggestions(peopleFromServer);
+      setDropDown(true);
+    }
+  }
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selected
+            ? `${selected.name} (${selected.born} - ${selected.died})`
+            : 'No selected person'}
         </h1>
-
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-            />
-          </div>
-
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        <Autocomplete
+          handleFocusInput={handleFocusInput}
+          handleQueryChange={handleQueryChange}
+          query={query}
+          suggestions={suggestions}
+          setSuggestions={setSuggestions}
+          setSelected={setSelected}
+          dropDown={dropDown}
+        />
       </main>
     </div>
   );
