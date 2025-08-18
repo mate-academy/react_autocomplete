@@ -1,38 +1,54 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Person } from '../types/Person';
 import debounce from 'debounce';
 
 interface Props {
   people: Person[];
-  onSelect: (person: Person | undefined) => Person | void;
+  onSelected: (person: Person | undefined) => Person | void;
   delay?: number;
 }
 
-export const Autocomplete: React.FC<Props> = ({ people, onSelect, delay }) => {
+export const Autocomplete: React.FC<Props> = ({
+  people,
+  onSelected,
+  delay = 300,
+}) => {
   const [isActive, setIsActive] = useState(false);
   const [query, setQuery] = useState<string>('');
-  const [aplliedQuery, setAppliedQuery] = useState<string>('');
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), [delay]);
-  console.log('Component re-rendering');
+  const [appliedQuery, setAppliedQuery] = useState<string>('');
+  const applyQuery = useMemo(
+    () => debounce(setAppliedQuery, delay),
+    [setAppliedQuery, delay],
+  );
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onSelect(undefined);
-    setQuery(e.target.value);
-    applyQuery(e.target.value);
+    const newValue = e.target.value;
+    const trimmedValue = newValue.trim();
+    setQuery(newValue);
+    onSelected(undefined);
+
+    if (trimmedValue === '' || trimmedValue === appliedQuery.trim()) {
+      if (trimmedValue === '') {
+        setAppliedQuery('');
+      }
+      return;
+    }
+
+    // Apply the trimmed value for searching
+    applyQuery(trimmedValue);
   };
 
   const handleSelectChange = (person: Person) => {
     setQuery(person.name);
     setIsActive(false);
-    onSelect(person);
+    onSelected(person);
   };
 
   const filteredPeople = useMemo(
     () =>
-      people.filter(person => {
-        console.log(`Filtering check`);
-        return person.name.toLowerCase().includes(aplliedQuery.toLowerCase());
-      }),
-    [people, aplliedQuery],
+      people.filter(person =>
+        person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+      ),
+    [people, appliedQuery],
   );
 
   return (
@@ -59,7 +75,6 @@ export const Autocomplete: React.FC<Props> = ({ people, onSelect, delay }) => {
                 className="dropdown-item"
                 data-cy="suggestion-item"
                 onMouseDown={() => {
-                  console.log('Element clicked!');
                   handleSelectChange(person);
                 }}
               >

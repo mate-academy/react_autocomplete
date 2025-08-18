@@ -8,7 +8,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | undefined>(
     undefined,
   );
-  const [people, setPeople] = useState<Person[]>(peopleFromServer);
+  const [people] = useState<Person[]>(peopleFromServer);
 
   return (
     <div className="container">
@@ -21,8 +21,7 @@ export const App: React.FC = () => {
 
         <Autocomplete
           people={people}
-          onSelect={setSelectedPerson}
-          delay={300}
+          onSelected={setSelectedPerson}
         />
       </main>
     </div>
