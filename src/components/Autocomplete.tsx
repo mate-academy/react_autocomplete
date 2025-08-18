@@ -1,9 +1,13 @@
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 import { Person } from '../types/Person';
+import { useState } from 'react';
+import { useEffect } from 'react';
+// import { Person } from './types/Person';
 
 type Props = {
   people: Person[];
   debounceDelay?: number;
+  // onSelected?: (person: Person) => void;
   onSelected?: (person: Person | null) => void;
 };
 
@@ -24,15 +28,9 @@ export const Autocomplete: FC<Props> = ({
     return () => clearTimeout(timeout);
   }, [query, debounceDelay]);
 
-  // Do not filter when the debounced input is only spaces
-  const isOnlySpaces = debouncedQuery.trim() === '' && debouncedQuery !== '';
-
-  const filteredPeople = isOnlySpaces
-    ? []
-    : people.filter(person =>
-        person.name.toLowerCase()
-        .includes(debouncedQuery.toLowerCase()),
-    );
+  const filteredPeople = people.filter(person =>
+    person.name.toLowerCase().includes(debouncedQuery.toLowerCase()),
+  );
 
   return (
     <div className="dropdown is-active">
