@@ -28,9 +28,12 @@ export const Autocomplete: FC<Props> = ({
     return () => clearTimeout(timeout);
   }, [query, debounceDelay]);
 
-  const filteredPeople = people.filter(person =>
-    person.name.toLowerCase().includes(debouncedQuery.toLowerCase()),
-  );
+  const isOnlySpaces = debouncedQuery.trim() === '' && debouncedQuery !== '';
+  const filteredPeople = isOnlySpaces
+    ? []
+    : people.filter(person =>
+      person.name.toLowerCase().includes(debouncedQuery.toLowerCase()),
+    );
 
   return (
     <div className="dropdown is-active">
