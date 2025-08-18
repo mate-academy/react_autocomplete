@@ -30,8 +30,7 @@ export const Autocomplete: FC<Props> = ({
   const filteredPeople = isOnlySpaces
     ? []
     : people.filter(person =>
-      person.name
-        .toLowerCase()
+        person.name.toLowerCase()
         .includes(debouncedQuery.toLowerCase()),
     );
 
