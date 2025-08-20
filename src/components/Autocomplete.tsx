@@ -20,7 +20,7 @@ function Autocomplete({
   const prevText = useRef('');
 
   function handleInputChange(input: string) {
-    if (selectedUser) {
+    if (selectedUser && input !== selectedUser.name) {
       onSelected(null);
     }
     setSearchText(input);
@@ -29,6 +29,8 @@ function Autocomplete({
   function handleSelectUser(username: string) {
     const user = people.find(u => u.name === username) as Person;
     onSelected(user);
+    setSearchText(username);
+    setIsFocused(false);
   }
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -91,18 +93,20 @@ function Autocomplete({
             </div>
           )}
           {suggestedPeople.length === 0 && isFocused && (
-            <div
-              className="
+            <div className="dropdown-content">
+              <div
+                className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-              role="alert"
-              data-cy="no-suggestions-message"
-            >
-              <p className="has-text-danger">No matching suggestions</p>
+                role="alert"
+                data-cy="no-suggestions-message"
+              >
+                <p className="has-text-danger">No matching suggestions</p>
+              </div>
             </div>
           )}
         </div>
