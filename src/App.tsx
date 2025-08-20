@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { UserList } from './Components/UsersList';
@@ -11,28 +11,36 @@ export const App: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<Person | null>(null);
   const [person, setPerson] = useState<Person[] | Person>(peopleFromServer);
   const [hasError, setHasError] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSelectedUser = (user: Person) => {
     setSelectedUser(user);
     setQuery(user.name);
     setPerson([user]);
+    setIsOpen(false);
   };
-
-  // const normalizeQuery = query.toLowerCase().trim();
 
   const applyQuery = useCallback(debounce(setAppliedQuerry, 300), []);
 
+  const handleQuerychange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+
+    setQuery(value);
+    applyQuery(value);
+    setPerson(peopleFromServer);
+    setIsOpen(true);
+    setSelectedUser(null);
+  };
+
   const filteredUsers = useMemo(() => {
-    return (person as Person[]).filter((user: Person) =>
+    const result = (person as Person[]).filter((user: Person) =>
       user.name.toLowerCase().trim().includes(appliedQuerry),
     );
-  }, [appliedQuerry, person]);
 
-  const handleQuerychange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
-    setPerson(peopleFromServer);
-  };
+    setHasError(result.length === 0 && appliedQuerry !== '' && isOpen);
+
+    return result;
+  }, [appliedQuerry, person]);
 
   return (
     <div className="container">
@@ -42,7 +50,6 @@ export const App: React.FC = () => {
             ? `${selectedUser.name} (${selectedUser.born} - ${selectedUser.died})`
             : 'No selected person'}
         </h1>
-
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
             <input
@@ -52,13 +59,18 @@ export const App: React.FC = () => {
               data-cy="search-input"
               value={query}
               onChange={handleQuerychange}
+              onFocus={() => setIsOpen(true)}
+              onBlur={() => setTimeout(() => setIsOpen(false), 200)}
             />
           </div>
-
-          <UserList users={filteredUsers} onSelectedUser={handleSelectedUser} />
+          {isOpen && filteredUsers.length > 0 && (
+            <UserList
+              users={filteredUsers}
+              onSelectedUser={handleSelectedUser}
+            />
+          )}
         </div>
-
-        {hasError && (
+        {hasError && isOpen && (
           <div
             className="
             notification

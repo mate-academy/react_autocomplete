@@ -1,5 +1,5 @@
 import { Person } from '../types/Person';
-import React, { memo, useState } from 'react';
+import React from 'react';
 
 type Props = {
   users: Person[];
@@ -11,13 +11,15 @@ const UserListComponent: React.FC<Props> = ({ users, onSelectedUser }) => {
     <>
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
         <div className="dropdown-content">
-          {users.map((user, index) => {
+          {users.map(user => {
             return (
               <div
                 className="dropdown-item"
                 data-cy="suggestion-item"
                 key={user.slug}
-                onClick={() => onSelectedUser(user)}
+                onClick={() => {
+                  onSelectedUser(user);
+                }}
               >
                 <p className="has-text-link">{user.name}</p>
               </div>
