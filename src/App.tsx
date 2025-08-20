@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { UserList } from './Components/UsersList';
@@ -20,7 +20,7 @@ export const App: React.FC = () => {
     setIsOpen(false);
   };
 
-  const applyQuery = useCallback(debounce(setAppliedQuerry, 300), []);
+  const applyQuery = useMemo(() => debounce(setAppliedQuerry, 300), []);
 
   const handleQuerychange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -40,7 +40,7 @@ export const App: React.FC = () => {
     setHasError(result.length === 0 && appliedQuerry !== '' && isOpen);
 
     return result;
-  }, [appliedQuerry, person]);
+  }, [appliedQuerry, person, isOpen]);
 
   return (
     <div className="container">
