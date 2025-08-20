@@ -1,56 +1,63 @@
 import React, { useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
-import { UserList } from './Components/UsersList';
 import { Person } from './types/Person';
+import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 
 export const App: React.FC = () => {
+  const [person, setPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
-  const [appliedQuerry, setAppliedQuerry] = useState('');
-  const [selectedUser, setSelectedUser] = useState<Person | null>(null);
-  const [person, setPerson] = useState<Person[] | Person>(peopleFromServer);
-  const [hasError, setHasError] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isError, setIsError] = useState(false);
 
-  const handleSelectedUser = (user: Person) => {
-    setSelectedUser(user);
-    setQuery(user.name);
-    setPerson([user]);
-    setIsOpen(false);
-  };
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        const foundPerson = peopleFromServer.find(human =>
+          human.name.toLowerCase().includes(value.toLowerCase()),
+        );
 
-  const applyQuery = useMemo(() => debounce(setAppliedQuerry, 300), []);
+        if (!foundPerson) {
+          setIsError(true);
+          setPerson(null);
+        } else {
+          setIsError(false);
+        }
+      }, 300),
+    [],
+  );
 
-  const handleQuerychange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
 
     setQuery(value);
-    applyQuery(value);
-    setPerson(peopleFromServer);
     setIsOpen(true);
-    setSelectedUser(null);
+    debouncedSearch(value);
   };
 
-  const filteredUsers = useMemo(() => {
-    const result = (person as Person[]).filter((user: Person) =>
-      user.name.toLowerCase().trim().includes(appliedQuerry),
-    );
+  const matchingPeople = peopleFromServer.filter(human =>
+    human.name.toLowerCase().includes(query.toLowerCase()),
+  );
 
-    setHasError(result.length === 0 && appliedQuerry !== '' && isOpen);
+  const shouldShowDropdown = isOpen && matchingPeople.length > 0;
 
-    return result;
-  }, [appliedQuerry, person, isOpen]);
+  const shouldShowError =
+    isOpen && matchingPeople.length === 0 && query.trim().length > 0;
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedUser
-            ? `${selectedUser.name} (${selectedUser.born} - ${selectedUser.died})`
-            : 'No selected person'}
+          {!person || isError || (person && person.name !== query)
+            ? 'No selected person'
+            : `${person.name} (${person.born} - ${person.died})`}
         </h1>
-        <div className="dropdown is-active">
+        <div
+          className={classNames('dropdown', {
+            'is-active': shouldShowDropdown,
+          })}
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
@@ -58,19 +65,39 @@ export const App: React.FC = () => {
               className="input"
               data-cy="search-input"
               value={query}
-              onChange={handleQuerychange}
+              onChange={handleNameChange}
               onFocus={() => setIsOpen(true)}
               onBlur={() => setTimeout(() => setIsOpen(false), 200)}
             />
           </div>
-          {isOpen && filteredUsers.length > 0 && (
-            <UserList
-              users={filteredUsers}
-              onSelectedUser={handleSelectedUser}
-            />
+
+          {shouldShowDropdown && (
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
+              <div className="dropdown-content">
+                {matchingPeople.map(human => (
+                  <div
+                    className="dropdown-item"
+                    data-cy="suggestion-item"
+                    key={human.slug}
+                    onClick={() => {
+                      setPerson(human);
+                      setQuery(human.name);
+                      setIsError(false);
+                      setIsOpen(false);
+                    }}
+                  >
+                    <p className="has-text-link">{human.name}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
-        {hasError && isOpen && (
+        {shouldShowError && (
           <div
             className="
             notification
