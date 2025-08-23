@@ -14,6 +14,10 @@ export const App: React.FC = () => {
 
   const onQueryChange = (char: string) => {
     setQuery(char);
+
+    if (selectedPerson) {
+      setSelectedPerson(null);
+    }
   };
 
   const handleSelect = (person: Person | null) => {
