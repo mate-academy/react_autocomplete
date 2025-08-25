@@ -10,9 +10,9 @@ interface AppProps {
 }
 
 export const App: React.FC<AppProps> = ({
-                                          debounceDelay = 300,
-                                          onSelected,
-                                        }) => {
+  debounceDelay = 300,
+  onSelected,
+}) => {
   const [searchText, setSearchText] = useState<string>('');
   const [suggestions, setSuggestions] = useState<Person[]>([]);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -22,7 +22,7 @@ export const App: React.FC<AppProps> = ({
     useState<boolean>(false);
 
   // ✅ універсальний тип для setTimeout (працює і в браузері, і в Node)
-  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debounceTimeoutRef = useRef<ReturnType<typeof window.setTimeout>>();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -41,11 +41,11 @@ export const App: React.FC<AppProps> = ({
 
   // 🔹 debounce + фільтрація
   useEffect(() => {
-    if (debounceTimeoutRef.current !== null) {
-      clearTimeout(debounceTimeoutRef.current);
+    if (debounceTimeoutRef.current !== undefined) {
+      window.clearTimeout(debounceTimeoutRef.current);
     }
 
-    debounceTimeoutRef.current = setTimeout(() => {
+    debounceTimeoutRef.current = window.setTimeout(() => {
       const trimmedSearchText = searchText.trim();
 
       // Якщо інпут пустий
@@ -54,6 +54,7 @@ export const App: React.FC<AppProps> = ({
         setNoMatchingSuggestions(false);
         setIsSuggestionsOpen(isInputFocused);
         lastProcessedSearchText.current = trimmedSearchText;
+
         return;
       }
 
@@ -72,8 +73,9 @@ export const App: React.FC<AppProps> = ({
     }, debounceDelay);
 
     return () => {
-      if (debounceTimeoutRef.current !== null) {
-        clearTimeout(debounceTimeoutRef.current);
+      if (debounceTimeoutRef.current !== undefined) {
+        window.clearTimeout(debounceTimeoutRef.current);
+        debounceTimeoutRef.current = undefined;
       }
     };
   }, [searchText, debounceDelay, filterPeople, isInputFocused]);
@@ -82,6 +84,7 @@ export const App: React.FC<AppProps> = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const dropdownElement = dropdownRef.current;
+
       if (dropdownElement && !dropdownElement.contains(event.target as Node)) {
         setIsSuggestionsOpen(false);
         setIsInputFocused(false);
@@ -90,6 +93,7 @@ export const App: React.FC<AppProps> = ({
     };
 
     document.addEventListener('mousedown', handleClickOutside);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -98,6 +102,7 @@ export const App: React.FC<AppProps> = ({
   // 🔹 Зміна тексту
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newText = e.target.value;
+
     setSearchText(newText);
     if (selectedPerson) {
       setSelectedPerson(null);
