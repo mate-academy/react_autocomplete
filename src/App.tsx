@@ -22,7 +22,7 @@ export const App: React.FC<AppProps> = ({
     useState<boolean>(false);
 
   // ✅ універсальний тип для setTimeout (працює і в браузері, і в Node)
-  const debounceTimeoutRef = useRef<ReturnType<typeof window.setTimeout>>();
+  const debounceTimeoutRef = useRef<number>(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -41,7 +41,7 @@ export const App: React.FC<AppProps> = ({
 
   // 🔹 debounce + фільтрація
   useEffect(() => {
-    if (debounceTimeoutRef.current !== undefined) {
+    if (debounceTimeoutRef.current > 0) {
       window.clearTimeout(debounceTimeoutRef.current);
     }
 
@@ -73,9 +73,9 @@ export const App: React.FC<AppProps> = ({
     }, debounceDelay);
 
     return () => {
-      if (debounceTimeoutRef.current !== undefined) {
+      if (debounceTimeoutRef.current > 0) {
         window.clearTimeout(debounceTimeoutRef.current);
-        debounceTimeoutRef.current = undefined;
+        debounceTimeoutRef.current = 0;
       }
     };
   }, [searchText, debounceDelay, filterPeople, isInputFocused]);
