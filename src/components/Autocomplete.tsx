@@ -1,11 +1,33 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useMemo, useState } from 'react';
+import { Person } from '../types/Person';
+import debounce from 'lodash.debounce';
 
-export const Autocomplete: React.FC = () => {
+type Props = {
+  options: Person[];
+  onSelect: (person: Person | null) => void;
+  delay: number;
+};
+
+export const Autocomplete: React.FC<Props> = ({ options, onSelect, delay }) => {
+  const [dropdownInFocus, setDropdownInFocus] = useState(false);
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  const applyQuery = debounce(setAppliedQuery, delay);
+
+  const filteredPeople = useMemo(() => {
+    if (!appliedQuery || appliedQuery === '') {
+      return options;
+    } else {
+      return options.filter(person => {
+        return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
+      });
+    }
+  }, [options, appliedQuery]);
+
   return (
-    <div
-      className={classNames('dropdown', { 'is-active': dropdownInFocus })}
-    >
+    <div className={classNames('dropdown', { 'is-active': dropdownInFocus })}>
       <div className="dropdown-trigger">
         <input
           type="text"
@@ -17,7 +39,7 @@ export const Autocomplete: React.FC = () => {
           onChange={e => {
             setQuery(e.target.value);
             applyQuery(e.target.value);
-            setSelectedPerson(null);
+            onSelect(null);
           }}
           value={query}
         />
@@ -47,42 +69,15 @@ export const Autocomplete: React.FC = () => {
                 data-cy="suggestion-item"
                 onMouseDown={() => {
                   setQuery(person.name);
-                  setSelectedPerson(person);
+                  onSelect(person);
                 }}
               >
                 <p className="has-text-link">{person.name}</p>
               </button>
             ))
           )}
-          {/*<div className="dropdown-item" data-cy="suggestion-item">*/}
-          {/*  <p className="has-text-link">Pieter Haverbeke</p>*/}
-          {/*</div>*/}
-
-          {/*<div className="dropdown-item" data-cy="suggestion-item">*/}
-          {/*  <p className="has-text-link">Pieter Bernard Haverbeke</p>*/}
-          {/*</div>*/}
-
-          {/*<div className="dropdown-item" data-cy="suggestion-item">*/}
-          {/*  <p className="has-text-link">Pieter Antone Haverbeke</p>*/}
-          {/*</div>*/}
-
-          {/*<div className="dropdown-item" data-cy="suggestion-item">*/}
-          {/*  <p className="has-text-danger">Elisabeth Haverbeke</p>*/}
-          {/*</div>*/}
-
-          {/*<div className="dropdown-item" data-cy="suggestion-item">*/}
-          {/*  <p className="has-text-link">Pieter de Decker</p>*/}
-          {/*</div>*/}
-
-          {/*<div className="dropdown-item" data-cy="suggestion-item">*/}
-          {/*  <p className="has-text-danger">Petronella de Decker</p>*/}
-          {/*</div>*/}
-
-          {/*<div className="dropdown-item" data-cy="suggestion-item">*/}
-          {/*  <p className="has-text-danger">Elisabeth Hercke</p>*/}
-          {/*</div>*/}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
