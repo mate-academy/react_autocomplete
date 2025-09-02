@@ -1,0 +1,9 @@
+.dropdown {
+  &-item {
+    cursor: pointer;
+
+    &:hover {
+      background-color: #00000018;
+    }
+  }
+}
