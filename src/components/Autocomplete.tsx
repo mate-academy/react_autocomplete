@@ -19,6 +19,15 @@ function debounce(callback: Callback, delay: number) {
   return (value: string) => {
     window.clearTimeout(timerId);
 
+    const trimmed = value.trim();
+
+    if (trimmed.length === 0) {
+      lastValue = '';
+      callback('');
+
+      return;
+    }
+
     timerId = window.setTimeout(() => {
       if (lastValue === value) {
         return;
@@ -72,11 +81,11 @@ export const Autocomplete: React.FC<Props> = ({
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
         <div className="dropdown-content">
           {filteredPeoples.length > 0 ? (
-            filteredPeoples.map(person => (
+            filteredPeoples.map((person, index) => (
               <div
                 className={classNames('dropdown-item')}
                 data-cy="suggestion-item"
-                key={person.born}
+                key={index}
                 onMouseDown={() => {
                   onSelected(person);
                   onQueryChange(person.name);
