@@ -17,7 +17,7 @@ export const Autocomplete: React.FC<Props> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const timerRef = useRef<number | null>(null);
-  const lastQueriedTextRef = useRef<string | null>(null);
+  const lastQueriedTextRef = useRef<string>('');
 
   useEffect(() => {
     return () => {
@@ -28,17 +28,16 @@ export const Autocomplete: React.FC<Props> = ({
   }, []);
 
   const filterPeople = (text: string) => {
-    const query = text.trim().toLocaleLowerCase();
-
-    if (query === '') {
+    if (text === '') {
       return people;
     }
 
-    return people.filter(p => p.name.toLocaleLowerCase().includes(query));
+    return people.filter(p => p.name.toLowerCase().includes(text));
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
+    const normalized = value.trim().toLowerCase();
 
     setInputValue(value);
     onSelected(null);
@@ -47,14 +46,22 @@ export const Autocomplete: React.FC<Props> = ({
       clearTimeout(timerRef.current);
     }
 
+    if (normalized === '') {
+      lastQueriedTextRef.current = '';
+      setSuggestions([]);
+      setIsOpen(false);
+
+      return;
+    }
+
     timerRef.current = window.setTimeout(() => {
-      if (lastQueriedTextRef.current === value) {
+      if (lastQueriedTextRef.current === normalized) {
         return;
       }
 
-      lastQueriedTextRef.current = value;
+      lastQueriedTextRef.current = normalized;
 
-      const results = filterPeople(value);
+      const results = filterPeople(normalized);
 
       setSuggestions(results);
       setIsOpen(true);
@@ -62,11 +69,13 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   const handleFocus = () => {
-    if (inputValue.trim() === '') {
+    const normalized = inputValue.trim().toLowerCase();
+
+    if (normalized === '') {
       setSuggestions(people);
       setIsOpen(true);
     } else {
-      const results = filterPeople(inputValue);
+      const results = filterPeople(normalized);
 
       setSuggestions(results);
       setIsOpen(true);
@@ -80,7 +89,7 @@ export const Autocomplete: React.FC<Props> = ({
   const handleSelect = (person: Person) => {
     setInputValue(person.name);
     setIsOpen(false);
-    lastQueriedTextRef.current = person.name;
+    lastQueriedTextRef.current = person.name.trim().toLowerCase();
     onSelected(person);
   };
 
@@ -95,18 +104,25 @@ export const Autocomplete: React.FC<Props> = ({
           onBlur={handleBlur}
           placeholder="Enter a part of the name"
           className="input"
+          data-qa="search-input"
           data-cy="search-input"
         />
       </div>
 
       {isOpen && (
-        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+        <div
+          className="dropdown-menu"
+          role="menu"
+          data-qa="suggestions-list"
+          data-cy="suggestions-list"
+        >
           <div className="dropdown-content">
             {suggestions.length > 0 ? (
               suggestions.map(person => (
                 <div
                   key={person.slug}
                   className="dropdown-item"
+                  data-qa="suggestion-item"
                   data-cy="suggestion-item"
                   onMouseDown={e => {
                     e.preventDefault();
@@ -117,7 +133,11 @@ export const Autocomplete: React.FC<Props> = ({
                 </div>
               ))
             ) : (
-              <div className="dropdown-item" data-cy="no-suggestions-message">
+              <div
+                className="dropdown-item"
+                data-qa="no-suggestions-message"
+                data-cy="no-suggestions-message"
+              >
                 <p className="has-text-danger">No matching suggestions</p>
               </div>
             )}
