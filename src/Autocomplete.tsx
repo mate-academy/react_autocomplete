@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import debounce from 'lodash.debounce';
 import { Person } from './types/Person';
 
@@ -16,9 +16,18 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const lastProcessedRef = useRef<string>('');
 
   const applyQuery = useMemo(
-    () => debounce((value: string) => setAppliedQuery(value), delay),
+    () =>
+      debounce((value: string) => {
+        if (lastProcessedRef.current === value) {
+          return;
+        }
+
+        lastProcessedRef.current = value;
+        setAppliedQuery(value);
+      }, delay),
     [delay],
   );
 
@@ -29,6 +38,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   useEffect(() => {
     if (query.trim() === '') {
       setAppliedQuery('');
+      lastProcessedRef.current = '';
     }
   }, [query]);
 
@@ -38,7 +48,6 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
 
     setQuery(value);
     applyQuery(trimmed || '');
-
     onSelected(null);
     setIsDropdownOpen(true);
   };
@@ -69,17 +78,24 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
           value={query}
           onChange={handleInput}
           onFocus={() => setIsDropdownOpen(true)}
+          data-qa="search-input"
           data-cy="search-input"
         />
       </div>
 
-      <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+      <div
+        className="dropdown-menu"
+        role="menu"
+        data-qa="suggestions-list"
+        data-cy="suggestions-list"
+      >
         <div className="dropdown-content">
           {filteredPeople.length > 0 ? (
             filteredPeople.map(person => (
               <div
                 key={person.slug}
                 className="dropdown-item"
+                data-qa="suggestion-item"
                 data-cy="suggestion-item"
                 onClick={() => handleSuggestionClick(person)}
               >
@@ -95,6 +111,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
           ) : (
             <div
               className="notification is-danger is-light mt-3"
+              data-qa="no-suggestions-message"
               data-cy="no-suggestions-message"
             >
               No matching suggestions
