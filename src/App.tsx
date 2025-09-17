@@ -1,12 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import debounce from 'lodash/debounce';
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  useRef,
-  useEffect,
-} from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -19,43 +13,43 @@ type AppProps = {
 export const App: React.FC<AppProps> = ({ delay = 300, onSelected }) => {
   const [chosenPerson, setChosenPerson] = useState<Person | null>(null);
   const [rawInput, setRawInput] = useState<string>('');
-  const [searchPerson, setSearchPerson] = useState<string>('');
+  const [debouncedQuery, setDebouncedQuery] = useState<string>('');
   const [isFocused, setIsFocused] = useState<boolean>(false);
-
-  const lastSearchRef = useRef<string>(''); // для пропуску дублюючих фільтрацій
 
   const { name, born, died } = chosenPerson || {};
 
-  // debounced handler
-  const debouncedUpdate = useMemo(() => {
-    const handler = debounce((value: string) => {
-      const trimmed = value.trim();
-
-      if (trimmed !== '' && trimmed !== lastSearchRef.current) {
-        setSearchPerson(trimmed);
-        lastSearchRef.current = trimmed;
-      } else if (trimmed === '') {
-        setSearchPerson('');
-        lastSearchRef.current = '';
-      }
-    }, delay);
-
-    return handler;
-  }, [delay]);
+  // Debounced handler для внутрішньої оптимізації
+  const debouncedUpdate = useMemo(
+    () =>
+      debounce((value: string) => {
+        setDebouncedQuery(value.trim());
+      }, delay),
+    [delay],
+  );
 
   useEffect(() => {
-    // cleanup debounce при анмаунті
-    return () => {
-      debouncedUpdate.cancel();
-    };
+    return () => debouncedUpdate.cancel();
   }, [debouncedUpdate]);
 
-  // фільтрація
+  // Скидаємо вибрану особу, якщо input не співпадає з нею
+  useEffect(() => {
+    if (chosenPerson && rawInput.trim() !== chosenPerson.name) {
+      setChosenPerson(null);
+    }
+  }, [rawInput, chosenPerson]);
+
+  // Фільтрація миттєво по rawInput, щоб dropdown завжди відображався
   const filteredPeople = useMemo(() => {
+    const trimmed = rawInput.trim();
+
+    if (trimmed === '') {
+      return peopleFromServer;
+    }
+
     return peopleFromServer.filter(person =>
-      person.name.toLowerCase().includes(searchPerson.toLowerCase()),
+      person.name.toLowerCase().includes(trimmed.toLowerCase()),
     );
-  }, [searchPerson]);
+  }, [rawInput]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,47 +57,41 @@ export const App: React.FC<AppProps> = ({ delay = 300, onSelected }) => {
 
       setRawInput(value);
 
-      if (chosenPerson) {
-        setChosenPerson(null);
-      }
-
-      const trimmed = value.trim();
-
-      if (trimmed === '') {
+      if (value.trim() === '') {
         debouncedUpdate.cancel();
-        setSearchPerson('');
-        lastSearchRef.current = '';
+        setDebouncedQuery('');
       } else {
         debouncedUpdate(value);
       }
     },
-    [chosenPerson, debouncedUpdate],
+    [debouncedUpdate],
   );
 
   const handleSelect = useCallback(
     (person: Person) => {
+      debouncedUpdate.cancel();
       setChosenPerson(person);
       setRawInput(person.name);
-      setSearchPerson(person.name);
+      setDebouncedQuery(person.name);
       setIsFocused(false);
 
       if (onSelected) {
         onSelected(person);
       }
     },
-    [onSelected],
+    [debouncedUpdate, onSelected],
   );
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-qa="title">
+        <h1 className="title" data-cy="title">
           {chosenPerson ? `${name} (${born} - ${died})` : 'No selected person'}
         </h1>
 
         <div
           className={isFocused ? 'dropdown is-active' : 'dropdown'}
-          data-qa="search-dropdown"
+          data-cy="search-dropdown"
         >
           <div className="dropdown-trigger">
             <input
@@ -111,7 +99,7 @@ export const App: React.FC<AppProps> = ({ delay = 300, onSelected }) => {
               placeholder="Enter a part of the name"
               className="input"
               value={rawInput}
-              data-qa="search-input"
+              data-cy="search-input"
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               onChange={handleInputChange}
@@ -119,11 +107,11 @@ export const App: React.FC<AppProps> = ({ delay = 300, onSelected }) => {
           </div>
 
           <div className="dropdown-menu" role="menu">
-            <div className="dropdown-content" data-qa="suggestions-list">
+            <div className="dropdown-content" data-cy="suggestions-list">
               {rawInput.trim() !== '' && filteredPeople.length === 0 && (
                 <div
                   className="dropdown-item is-disabled has-text-grey"
-                  data-qa="no-suggestions-message"
+                  data-cy="no-suggestions-message"
                 >
                   No matching suggestions
                 </div>
@@ -133,9 +121,9 @@ export const App: React.FC<AppProps> = ({ delay = 300, onSelected }) => {
                 <div
                   key={person.name}
                   className="dropdown-item has-text-link"
-                  data-qa="suggestion-item"
+                  data-cy="suggestion-item"
                   onMouseDown={e => {
-                    e.preventDefault(); // не дає onBlur закрити список раніше
+                    e.preventDefault(); // запобігає blur до вибору
                     handleSelect(person);
                   }}
                 >
