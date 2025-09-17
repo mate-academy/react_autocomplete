@@ -47,9 +47,20 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
     const trimmed = value.trim();
 
     setQuery(value);
-    applyQuery(trimmed || '');
     onSelected(null);
     setIsDropdownOpen(true);
+
+    if (trimmed === '') {
+      // повністю очищаємо стан
+      setAppliedQuery('');
+      lastProcessedRef.current = '';
+      applyQuery.cancel(); // прибираємо відкладений виклик
+
+      return;
+    }
+
+    // тільки для непорожніх значень
+    applyQuery(trimmed);
   };
 
   const filteredPeople = useMemo(() => {
