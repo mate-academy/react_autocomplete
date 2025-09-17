@@ -14,7 +14,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   onSelected,
 }) => {
   const [query, setQuery] = useState('');
-  const [appliedQuery, setAppliedQuery] = useState('');
+  const [appliedQuery22, setAppliedQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const lastProcessedRef = useRef<string>('');
 
@@ -64,14 +64,14 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   };
 
   const filteredPeople = useMemo(() => {
-    if (appliedQuery === '') {
+    if (appliedQuery22 === '') {
       return people;
     }
 
     return people.filter(p =>
-      p.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+      p.name.toLowerCase().includes(appliedQuery22.toLowerCase()),
     );
-  }, [appliedQuery, people]);
+  }, [appliedQuery22, people]);
 
   const handleSuggestionClick = (person: Person) => {
     setQuery(person.name);
