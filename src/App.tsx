@@ -13,11 +13,13 @@ export const App: React.FC = () => {
   };
 
   const filteredPeople = useMemo(() => {
-    return searchQuery.trim() === ''
-      ? peopleFromServer
-      : peopleFromServer.filter(pers =>
-        pers.name.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
+    if (searchQuery.trim() === '') {
+      return peopleFromServer;
+    }
+
+    return peopleFromServer.filter(pers =>
+      pers.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
   }, [searchQuery]);
 
   return (
