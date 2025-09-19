@@ -29,9 +29,11 @@ const AutocompleteComponent: React.FC<AutocompleteProps> = ({
 
   React.useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (value !== previousValue) {
-        onSearchTermChange(value);
-        setPreviousValue(value);
+      const trimmed = value.trim();
+
+      if (trimmed !== previousValue && trimmed !== '') {
+        onSearchTermChange(trimmed);
+        setPreviousValue(trimmed);
       }
     }, delay);
 
@@ -42,7 +44,7 @@ const AutocompleteComponent: React.FC<AutocompleteProps> = ({
     <>
       <div
         className={classNames('dropdown', {
-          'is-active': isFocused && !isEmpty,
+          'is-active': isFocused,
         })}
         onBlur={() => setIsFocused(false)}
       >
@@ -52,46 +54,49 @@ const AutocompleteComponent: React.FC<AutocompleteProps> = ({
             placeholder="Enter a part of the name"
             className="input"
             data-cy="search-input"
+            data-qa="search-input"
             value={value}
             onChange={handleOnInputChange}
             onFocus={() => setIsFocused(true)}
           />
         </div>
-        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+        <div
+          className="dropdown-menu"
+          role="menu"
+          data-cy="suggestions-list"
+          data-qa="suggestions-list"
+        >
           <div className="dropdown-content">
-            {people.map(person => (
+            {isEmpty ? (
               <div
-                className="dropdown-item"
-                data-cy="suggestion-item"
-                key={person.slug}
-                onMouseDown={() => {
-                  setValue(person.name);
-                  onSelected(person);
-                }}
-                style={{ cursor: 'pointer' }}
+                className="notification is-danger is-light"
+                role="alert"
+                data-cy="no-suggestions-message"
+                data-qa="no-suggestions-message"
               >
-                <p className="has-text-link">{person.name}</p>
+                <p className="has-text-danger">No matching suggestions</p>
               </div>
-            ))}
+            ) : (
+              people.map(person => (
+                <div
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                  data-qa="suggestion-item"
+                  key={person.slug}
+                  onMouseDown={() => {
+                    setValue(person.name);
+                    onSelected(person);
+                    setIsFocused(false);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <p className="has-text-link">{person.name}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
-
-      {isEmpty && (
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
-      )}
     </>
   );
 };
