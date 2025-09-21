@@ -147,9 +147,9 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
         {isDropdownActive && hasSuggestions && (
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              {suggestions.map((person, index) => (
+              {suggestions.map(person => (
                 <div
-                  key={`${person.name}-${index}`}
+                  key={`${person.name}-${person.born}`}
                   className="dropdown-item"
                   onClick={() => handleSuggestionClick(person)}
                   onMouseDown={e => e.preventDefault()}
