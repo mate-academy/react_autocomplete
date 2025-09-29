@@ -1,18 +1,19 @@
 import React, { useMemo, useState } from 'react';
 import { Person } from '../../types/Person';
 import debounce from 'lodash.debounce';
+import classNames from 'classnames';
 
 type Props = {
   people: Person[];
   onSearch?: (value: string) => void;
   delay?: number;
-  peopleId?: (value: string) => void;
+  onSelected?: (value: string | null) => void;
 };
 
 export const Autocomplete: React.FC<Props> = ({
   people,
   onSearch = () => {},
-  peopleId = () => {},
+  onSelected = () => {},
   delay = 300,
 }) => {
   const [inputValue, setInputValue] = useState('');
@@ -23,13 +24,14 @@ export const Autocomplete: React.FC<Props> = ({
     [onSearch, delay],
   );
 
-  const handleChangeUser = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setInputValue(event.target.value);
-    peopleId(event.target.value);
+  const handleChangeUser = (name: string) => {
+    setInputValue(name);
+    onSelected(name);
     setSearchByName(false);
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onSelected(null);
     const newValue = event.target.value;
 
     setInputValue(newValue);
@@ -65,21 +67,21 @@ export const Autocomplete: React.FC<Props> = ({
           role="menu"
           data-cy="suggestions-list"
         >
-          <select className="dropdown-content" onChange={handleChangeUser}>
-            <option value="0" disabled>
-              Select a person
-            </option>
+          <div className="dropdown-content">
             {people.map(person => (
-              <option
-                className="dropdown-item"
+              <div
+                className={classNames('dropdown-item', {
+                  'is-active': person.name === inputValue,
+                })}
                 data-cy="suggestion-item"
                 key={person.name}
-                value={person.name}
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleChangeUser(person.name)}
               >
                 {person.name}
-              </option>
+              </div>
             ))}
-          </select>
+          </div>
         </div>
       )}
 

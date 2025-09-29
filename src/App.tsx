@@ -12,14 +12,18 @@ export const App: React.FC = () => {
   const { name, born, died } = peopleFromServer[peopleTarget ?? 0];
 
   const filterList = useMemo(() => {
-    setPeopleTarget(null);
-
     return peopleFromServer.filter(person =>
-      person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+      person.name.toLowerCase().includes(appliedQuery.trim().toLowerCase()),
     );
   }, [appliedQuery]);
 
-  const handlePeopleSelect = (event: string) => {
+  const handlePeopleSelect = (event: string | null) => {
+    if (event === null) {
+      setPeopleTarget(null);
+
+      return;
+    }
+
     const select = peopleFromServer.findIndex(person => person.name === event);
 
     setPeopleTarget(select);
@@ -38,7 +42,7 @@ export const App: React.FC = () => {
           people={filterList}
           onSearch={setAppliedQuery}
           delay={300}
-          peopleId={handlePeopleSelect}
+          onSelected={handlePeopleSelect}
         />
       </main>
     </div>
