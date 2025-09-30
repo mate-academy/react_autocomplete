@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Autocomplete } from './components/Autocomplete/Autocomplete';
@@ -7,15 +7,8 @@ const NO_SELECTED_PERSON = 'No selected person';
 
 export const App: React.FC = () => {
   const [peopleTarget, setPeopleTarget] = useState<number | null>(null);
-  const [appliedQuery, setAppliedQuery] = useState('');
 
   const { name, born, died } = peopleFromServer[peopleTarget ?? 0];
-
-  const filterList = useMemo(() => {
-    return peopleFromServer.filter(person =>
-      person.name.toLowerCase().includes(appliedQuery.trim().toLowerCase()),
-    );
-  }, [appliedQuery]);
 
   const handlePeopleSelect = (event: string | null) => {
     if (event === null) {
@@ -25,6 +18,10 @@ export const App: React.FC = () => {
     }
 
     const select = peopleFromServer.findIndex(person => person.name === event);
+
+    if (select === -1) {
+      return;
+    }
 
     setPeopleTarget(select);
   };
@@ -39,8 +36,7 @@ export const App: React.FC = () => {
         </h1>
 
         <Autocomplete
-          people={filterList}
-          onSearch={setAppliedQuery}
+          people={peopleFromServer}
           delay={300}
           onSelected={handlePeopleSelect}
         />

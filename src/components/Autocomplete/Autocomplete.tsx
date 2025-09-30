@@ -5,24 +5,29 @@ import classNames from 'classnames';
 
 type Props = {
   people: Person[];
-  onSearch?: (value: string) => void;
   delay?: number;
   onSelected?: (value: string | null) => void;
 };
 
 export const Autocomplete: React.FC<Props> = ({
   people,
-  onSearch = () => {},
   onSelected = () => {},
   delay = 300,
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [searchByName, setSearchByName] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const applyQuery = useMemo(
-    () => debounce(onSearch, delay),
-    [onSearch, delay],
+    () => debounce(setSearchQuery, delay),
+    [setSearchQuery, delay],
   );
+
+  const filterList = useMemo(() => {
+    return people.filter(person =>
+      person.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }, [searchQuery, people]);
 
   const handleChangeUser = (name: string) => {
     setInputValue(name);
@@ -35,30 +40,21 @@ export const Autocomplete: React.FC<Props> = ({
     const newValue = event.target.value;
 
     setInputValue(newValue);
-    applyQuery(newValue);
+    applyQuery(newValue.trim());
   };
 
   return (
     <div className="dropdown is-active">
       <div className="dropdown-trigger">
-        <button
-          className="button"
-          aria-haspopup="true"
-          aria-controls="dropdown-menu"
-        >
-          <input
-            type="text"
-            placeholder="Enter a part of the name"
-            value={inputValue}
-            className="input"
-            data-cy="search-input"
-            onFocus={() => setSearchByName(true)}
-            onChange={handleChange}
-          />
-          <span className="icon is-small">
-            <i className="fas fa-angle-down" aria-hidden="true"></i>
-          </span>
-        </button>
+        <input
+          type="text"
+          placeholder="Enter a part of the name"
+          value={inputValue}
+          className="input"
+          data-cy="search-input"
+          onFocus={() => setSearchByName(true)}
+          onChange={handleChange}
+        />
       </div>
       {searchByName && people.length !== 0 && (
         <div
@@ -68,7 +64,7 @@ export const Autocomplete: React.FC<Props> = ({
           data-cy="suggestions-list"
         >
           <div className="dropdown-content">
-            {people.map(person => (
+            {filterList.map(person => (
               <div
                 className={classNames('dropdown-item', {
                   'is-active': person.name === inputValue,
@@ -79,13 +75,14 @@ export const Autocomplete: React.FC<Props> = ({
                 onClick={() => handleChangeUser(person.name)}
               >
                 {person.name}
+                <hr className="dropdown-divider" />
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {people.length === 0 && (
+      {filterList.length === 0 && (
         <div
           className="
           notification
