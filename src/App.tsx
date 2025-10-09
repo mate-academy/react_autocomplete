@@ -28,12 +28,12 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-qa="title">
-          {selected
+          {selected?.name === query
             ? `${selected.name} (${selected.born} - ${selected.died})`
             : `No selected person`}
         </h1>
 
-        <div className="dropdown is-active">
+        <div className={`dropdown ${menuVisability ? 'is-active' : ''}`}>
           <div className="dropdown-trigger">
             <Autocomplete
               delay={300}
@@ -42,6 +42,7 @@ export const App: React.FC = () => {
               setQuery={setQuery}
               setFilteredPeople={setFilteredPeople}
               peopleFromServer={peopleFromServer}
+              setSelected={setSelected}
             ></Autocomplete>
           </div>
 

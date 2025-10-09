@@ -9,6 +9,7 @@ interface Props {
   setQuery: (value: string) => void;
   setFilteredPeople: (people: Person[]) => void;
   peopleFromServer: Person[];
+  setSelected: (value: Person | null) => void;
 }
 
 export const Autocomplete: React.FC<Props> = ({
@@ -18,6 +19,7 @@ export const Autocomplete: React.FC<Props> = ({
   setQuery,
   setFilteredPeople,
   peopleFromServer,
+  setSelected,
 }) => {
   const lastFilteredRef = useRef<string>('');
 
@@ -34,7 +36,7 @@ export const Autocomplete: React.FC<Props> = ({
 
         setFilteredPeople(
           peopleFromServer.filter(person =>
-            person.name.toLowerCase().includes(value.toLowerCase()),
+            person.name.toLowerCase().includes(normalizedValue),
           ),
         );
       }, delay),
@@ -47,7 +49,7 @@ export const Autocomplete: React.FC<Props> = ({
 
     setQuery(value);
     handleQuery(value);
-    // setSelected(null);
+    setSelected(null);
   };
 
   return (
