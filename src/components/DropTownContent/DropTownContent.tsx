@@ -3,7 +3,7 @@ import { Person } from '../../types/Person';
 
 interface Props {
   people: Person[];
-  onSelect: () => void;
+  onSelect: (person: Person) => void;
 }
 
 export const DropTownContent: React.FC<Props> = ({ people, onSelect }) => {
