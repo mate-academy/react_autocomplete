@@ -12,9 +12,10 @@ import debounce from 'lodash.debounce';
 
 type Props = {
   delay?: number;
+  onSelected?: (person: Person) => void;
 };
 
-export const App: React.FC<Props> = ({ delay = 300 }) => {
+export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<Person | null>(null);
@@ -23,12 +24,10 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
   const lastAppliedRef = useRef('');
   const debouncedApplyQuery = useRef<ReturnType<typeof debounce>>();
 
-  // Initialize debounce
   useEffect(() => {
     debouncedApplyQuery.current = debounce((raw: string) => {
       const normalized = raw.toLowerCase().trim();
 
-      // Skip redundant updates
       if (normalized === lastAppliedRef.current) {
         return;
       }
@@ -47,14 +46,15 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
       const value = event.target.value;
       const trimmed = value.trim();
 
-      // Skip filtering if only spaces
+      setQuery(value);
+
+      // Clear selection if input is only spaces
       if (value.length > 0 && trimmed === '') {
-        setQuery(value);
+        setSelectedUser(null);
 
         return;
       }
 
-      setQuery(value);
       setSelectedUser(null);
       debouncedApplyQuery.current?.(value);
     },
@@ -69,13 +69,21 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
     }
   }, [query]);
 
-  const handleSelect = useCallback((person: Person) => {
-    setQuery(person.name);
-    setSelectedUser(person);
-    setIsOpen(false);
-    setAppliedQuery('');
-    lastAppliedRef.current = '';
+  const handleBlur = useCallback(() => {
+    setTimeout(() => setIsOpen(false), 100);
   }, []);
+
+  const handleSelect = useCallback(
+    (person: Person) => {
+      setQuery(person.id);
+      setSelectedUser(person);
+      setIsOpen(false);
+      setAppliedQuery('');
+      lastAppliedRef.current = '';
+      onSelected?.(person);
+    },
+    [onSelected],
+  );
 
   const filteredUsers = useMemo(() => {
     if (appliedQuery === '') {
@@ -83,7 +91,7 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
     }
 
     return peopleFromServer.filter(user =>
-      user.name.toLowerCase().includes(appliedQuery),
+      user.id.toLowerCase().includes(appliedQuery),
     );
   }, [appliedQuery]);
 
@@ -93,9 +101,9 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
+        <h1 className="title" data-qa="title">
           {selectedUser
-            ? `${selectedUser.name} (${selectedUser.born} - ${selectedUser.died})`
+            ? `${selectedUser.id} (${selectedUser.born} - ${selectedUser.died})`
             : 'No selected person'}
         </h1>
 
@@ -108,20 +116,21 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
               type="text"
               placeholder="Enter a part of the name"
               className="input"
-              data-cy="search-input"
+              data-qa="search-input"
               value={query}
               onChange={handleQueryChange}
               onFocus={handleFocus}
+              onBlur={handleBlur}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+          <div className="dropdown-menu" role="menu" data-qa="suggestions-list">
             <div className="dropdown-content">
               {filteredUsers.map(user => (
                 <div
-                  key={user.name}
+                  key={user.id}
                   className="dropdown-item"
-                  data-cy="suggestion-item"
+                  data-qa="suggestion-item"
                   onClick={() => handleSelect(user)}
                 >
                   <p
@@ -129,19 +138,19 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
                       user.sex === 'f' ? 'has-text-danger' : 'has-text-link'
                     }
                   >
-                    {user.name}
+                    {user.id}
                   </p>
                 </div>
               ))}
 
               {showNoSuggestions && (
                 <div
-                  className={`
-                    notification is-danger is-light
-                    mt-3 is-align-self-flex-start
-                  `}
+                  className={
+                    'notification is-danger is-light mt-3 ' +
+                    'is-align-self-flex-start'
+                  }
                   role="alert"
-                  data-cy="no-suggestions-message"
+                  data-qa="no-suggestions-message"
                 >
                   <p className="has-text-danger">No matching suggestions</p>
                 </div>
