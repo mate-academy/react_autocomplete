@@ -27,17 +27,25 @@ export const Autocomplete: React.FC<Props> = ({
     };
   }, [applyQuery]);
 
-  const filtredList = useMemo(() => {
-    if (!appliedQuery.trim() && isShowDropDown) {
-      return people;
+  // Открываем dropdown после обновления appliedQuery (после debounce)
+  React.useEffect(() => {
+    if (appliedQuery.trim() !== '' && !isShowDropDown) {
+      setIsShowDropdown(true);
     }
+  }, [appliedQuery, isShowDropDown]);
 
+  const filtredList = useMemo(() => {
+    // Если есть текст - фильтруем
     if (appliedQuery.trim()) {
       return people.filter(person => {
         return person.name
           .toUpperCase()
           .includes(appliedQuery.toUpperCase().trim());
       });
+    }
+
+    if (isShowDropDown) {
+      return people;
     }
 
     return [];
@@ -50,15 +58,14 @@ export const Autocomplete: React.FC<Props> = ({
     const newQuery = event.target.value;
 
     setQuery(newQuery);
-    applyQuery(newQuery);
+
+    if (newQuery.trim() !== appliedQuery.trim()) {
+      applyQuery(newQuery);
+    }
 
     if (selectedPersonName && newQuery !== selectedPersonName) {
       setSelectedPersonName('');
       onSelected(null);
-    }
-
-    if (!isShowDropDown) {
-      setIsShowDropdown(true);
     }
   }
 
@@ -82,7 +89,7 @@ export const Autocomplete: React.FC<Props> = ({
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            data-cy="search-input"
+            data-qa="search-input"
             onChange={handleQuery}
             value={query}
             onFocus={() => setIsShowDropdown(true)}
@@ -94,13 +101,13 @@ export const Autocomplete: React.FC<Props> = ({
           />
         </div>
 
-        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+        <div className="dropdown-menu" role="menu" data-qa="suggestions-list">
           <div className="dropdown-content">
             {filtredList.map(person => {
               return (
                 <div
                   className="dropdown-item"
-                  data-cy="suggestion-item"
+                  data-qa="suggestion-item"
                   key={person.slug}
                   onMouseDown={e => {
                     e.preventDefault();
@@ -125,7 +132,7 @@ export const Autocomplete: React.FC<Props> = ({
             is-align-self-flex-start
           "
           role="alert"
-          data-cy="no-suggestions-message"
+          data-qa="no-suggestions-message"
         >
           <p className="has-text-danger">No matching suggestions</p>
         </div>
