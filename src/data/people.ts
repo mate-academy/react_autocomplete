@@ -2,7 +2,7 @@ import { Person } from '../types/Person';
 
 export const peopleFromServer: Person[] = [
   {
-    name: 'Carolus Haverbeke',
+    id: 'Carolus Haverbeke',
     sex: 'm',
     born: 1832,
     died: 1905,
@@ -11,7 +11,7 @@ export const peopleFromServer: Person[] = [
     slug: 'carolus-haverbeke-1832',
   },
   {
-    name: 'Emma de Milliano',
+    id: 'Emma de Milliano',
     sex: 'f',
     born: 1876,
     died: 1956,
@@ -20,7 +20,7 @@ export const peopleFromServer: Person[] = [
     slug: 'emma-de-milliano-1876',
   },
   {
-    name: 'Maria de Rycke',
+    id: 'Maria de Rycke',
     sex: 'f',
     born: 1683,
     died: 1724,
@@ -29,7 +29,7 @@ export const peopleFromServer: Person[] = [
     slug: 'maria-de-rycke-1683',
   },
   {
-    name: 'Jan van Brussel',
+    id: 'Jan van Brussel',
     sex: 'm',
     born: 1714,
     died: 1748,
@@ -38,7 +38,7 @@ export const peopleFromServer: Person[] = [
     slug: 'jan-van-brussel-1714',
   },
   {
-    name: 'Philibert Haverbeke',
+    id: 'Philibert Haverbeke',
     sex: 'm',
     born: 1907,
     died: 1997,
@@ -47,7 +47,7 @@ export const peopleFromServer: Person[] = [
     slug: 'philibert-haverbeke-1907',
   },
   {
-    name: 'Jan Frans van Brussel',
+    id: 'Jan Frans van Brussel',
     sex: 'm',
     born: 1761,
     died: 1833,
@@ -56,7 +56,7 @@ export const peopleFromServer: Person[] = [
     slug: 'jan-frans-van-brussel-1761',
   },
   {
-    name: 'Pauwels van Haverbeke',
+    id: 'Pauwels van Haverbeke',
     sex: 'm',
     born: 1535,
     died: 1582,
@@ -65,7 +65,7 @@ export const peopleFromServer: Person[] = [
     slug: 'pauwels-van-haverbeke-1535',
   },
   {
-    name: 'Clara Aernoudts',
+    id: 'Clara Aernoudts',
     sex: 'f',
     born: 1918,
     died: 2012,
@@ -74,7 +74,7 @@ export const peopleFromServer: Person[] = [
     slug: 'clara-aernoudts-1918',
   },
   {
-    name: 'Emile Haverbeke',
+    id: 'Emile Haverbeke',
     sex: 'm',
     born: 1877,
     died: 1968,
@@ -83,7 +83,7 @@ export const peopleFromServer: Person[] = [
     slug: 'emile-haverbeke-1877',
   },
   {
-    name: 'Lieven de Causmaecker',
+    id: 'Lieven de Causmaecker',
     sex: 'm',
     born: 1696,
     died: 1724,
@@ -92,7 +92,7 @@ export const peopleFromServer: Person[] = [
     slug: 'lieven-de-causmaecker-1696',
   },
   {
-    name: 'Pieter Haverbeke',
+    id: 'Pieter Haverbeke',
     sex: 'm',
     born: 1602,
     died: 1642,
@@ -101,7 +101,7 @@ export const peopleFromServer: Person[] = [
     slug: 'pieter-haverbeke-1602',
   },
   {
-    name: 'Livina Haverbeke',
+    id: 'Livina Haverbeke',
     sex: 'f',
     born: 1692,
     died: 1743,
@@ -110,7 +110,7 @@ export const peopleFromServer: Person[] = [
     slug: 'livina-haverbeke-1692',
   },
   {
-    name: 'Pieter Bernard Haverbeke',
+    id: 'Pieter Bernard Haverbeke',
     sex: 'm',
     born: 1695,
     died: 1762,
@@ -119,7 +119,7 @@ export const peopleFromServer: Person[] = [
     slug: 'pieter-bernard-haverbeke-1695',
   },
   {
-    name: 'Lieven van Haverbeke',
+    id: 'Lieven van Haverbeke',
     sex: 'm',
     born: 1570,
     died: 1636,
@@ -128,7 +128,7 @@ export const peopleFromServer: Person[] = [
     slug: 'lieven-van-haverbeke-1570',
   },
   {
-    name: 'Joanna de Causmaecker',
+    id: 'Joanna de Causmaecker',
     sex: 'f',
     born: 1762,
     died: 1807,
@@ -137,7 +137,7 @@ export const peopleFromServer: Person[] = [
     slug: 'joanna-de-causmaecker-1762',
   },
   {
-    name: 'Willem Haverbeke',
+    id: 'Willem Haverbeke',
     sex: 'm',
     born: 1668,
     died: 1731,
@@ -146,7 +146,7 @@ export const peopleFromServer: Person[] = [
     slug: 'willem-haverbeke-1668',
   },
   {
-    name: 'Pieter Antone Haverbeke',
+    id: 'Pieter Antone Haverbeke',
     sex: 'm',
     born: 1753,
     died: 1798,
@@ -155,7 +155,7 @@ export const peopleFromServer: Person[] = [
     slug: 'pieter-antone-haverbeke-1753',
   },
   {
-    name: 'Maria van Brussel',
+    id: 'Maria van Brussel',
     sex: 'f',
     born: 1801,
     died: 1834,
@@ -164,7 +164,7 @@ export const peopleFromServer: Person[] = [
     slug: 'maria-van-brussel-1801',
   },
   {
-    name: 'Angela Haverbeke',
+    id: 'Angela Haverbeke',
     sex: 'f',
     born: 1728,
     died: 1734,
@@ -173,7 +173,7 @@ export const peopleFromServer: Person[] = [
     slug: 'angela-haverbeke-1728',
   },
   {
-    name: 'Elisabeth Haverbeke',
+    id: 'Elisabeth Haverbeke',
     sex: 'f',
     born: 1711,
     died: 1754,
@@ -182,7 +182,7 @@ export const peopleFromServer: Person[] = [
     slug: 'elisabeth-haverbeke-1711',
   },
   {
-    name: 'Lievijne Jans',
+    id: 'Lievijne Jans',
     sex: 'f',
     born: 1542,
     died: 1582,
@@ -191,7 +191,7 @@ export const peopleFromServer: Person[] = [
     slug: 'lievijne-jans-1542',
   },
   {
-    name: 'Bernardus de Causmaecker',
+    id: 'Bernardus de Causmaecker',
     sex: 'm',
     born: 1721,
     died: 1789,
@@ -200,7 +200,7 @@ export const peopleFromServer: Person[] = [
     slug: 'bernardus-de-causmaecker-1721',
   },
   {
-    name: 'Jacoba Lammens',
+    id: 'Jacoba Lammens',
     sex: 'f',
     born: 1699,
     died: 1740,
@@ -209,7 +209,7 @@ export const peopleFromServer: Person[] = [
     slug: 'jacoba-lammens-1699',
   },
   {
-    name: 'Pieter de Decker',
+    id: 'Pieter de Decker',
     sex: 'm',
     born: 1705,
     died: 1780,
@@ -218,7 +218,7 @@ export const peopleFromServer: Person[] = [
     slug: 'pieter-de-decker-1705',
   },
   {
-    name: 'Joanna de Pape',
+    id: 'Joanna de Pape',
     sex: 'f',
     born: 1654,
     died: 1723,
@@ -227,7 +227,7 @@ export const peopleFromServer: Person[] = [
     slug: 'joanna-de-pape-1654',
   },
   {
-    name: 'Daniel Haverbeke',
+    id: 'Daniel Haverbeke',
     sex: 'm',
     born: 1652,
     died: 1723,
@@ -236,7 +236,7 @@ export const peopleFromServer: Person[] = [
     slug: 'daniel-haverbeke-1652',
   },
   {
-    name: 'Lieven Haverbeke',
+    id: 'Lieven Haverbeke',
     sex: 'm',
     born: 1631,
     died: 1676,
@@ -245,7 +245,7 @@ export const peopleFromServer: Person[] = [
     slug: 'lieven-haverbeke-1631',
   },
   {
-    name: 'Martina de Pape',
+    id: 'Martina de Pape',
     sex: 'f',
     born: 1666,
     died: 1727,
@@ -254,7 +254,7 @@ export const peopleFromServer: Person[] = [
     slug: 'martina-de-pape-1666',
   },
   {
-    name: 'Jan Francies Haverbeke',
+    id: 'Jan Francies Haverbeke',
     sex: 'm',
     born: 1725,
     died: 1779,
@@ -263,7 +263,7 @@ export const peopleFromServer: Person[] = [
     slug: 'jan-francies-haverbeke-1725',
   },
   {
-    name: 'Maria Haverbeke',
+    id: 'Maria Haverbeke',
     sex: 'm',
     born: 1905,
     died: 1997,
@@ -272,7 +272,7 @@ export const peopleFromServer: Person[] = [
     slug: 'maria-haverbeke-1905',
   },
   {
-    name: 'Petronella de Decker',
+    id: 'Petronella de Decker',
     sex: 'f',
     born: 1731,
     died: 1781,
@@ -281,7 +281,7 @@ export const peopleFromServer: Person[] = [
     slug: 'petronella-de-decker-1731',
   },
   {
-    name: 'Livina Sierens',
+    id: 'Livina Sierens',
     sex: 'f',
     born: 1761,
     died: 1826,
@@ -290,7 +290,7 @@ export const peopleFromServer: Person[] = [
     slug: 'livina-sierens-1761',
   },
   {
-    name: 'Laurentia Haverbeke',
+    id: 'Laurentia Haverbeke',
     sex: 'f',
     born: 1710,
     died: 1786,
@@ -299,7 +299,7 @@ export const peopleFromServer: Person[] = [
     slug: 'laurentia-haverbeke-1710',
   },
   {
-    name: 'Carel Haverbeke',
+    id: 'Carel Haverbeke',
     sex: 'm',
     born: 1796,
     died: 1837,
@@ -308,7 +308,7 @@ export const peopleFromServer: Person[] = [
     slug: 'carel-haverbeke-1796',
   },
   {
-    name: 'Elisabeth Hercke',
+    id: 'Elisabeth Hercke',
     sex: 'f',
     born: 1632,
     died: 1674,
@@ -317,7 +317,7 @@ export const peopleFromServer: Person[] = [
     slug: 'elisabeth-hercke-1632',
   },
   {
-    name: 'Jan Haverbeke',
+    id: 'Jan Haverbeke',
     sex: 'm',
     born: 1671,
     died: 1731,
@@ -326,7 +326,7 @@ export const peopleFromServer: Person[] = [
     slug: 'jan-haverbeke-1671',
   },
   {
-    name: 'Anna van Hecke',
+    id: 'Anna van Hecke',
     sex: 'f',
     born: 1607,
     died: 1670,
@@ -335,7 +335,7 @@ export const peopleFromServer: Person[] = [
     slug: 'anna-van-hecke-1607',
   },
   {
-    name: 'Maria Sturm',
+    id: 'Maria Sturm',
     sex: 'f',
     born: 1835,
     died: 1917,
@@ -344,7 +344,7 @@ export const peopleFromServer: Person[] = [
     slug: 'maria-sturm-1835',
   },
   {
-    name: 'Jacobus Bernardus van Brussel',
+    id: 'Jacobus Bernardus van Brussel',
     sex: 'm',
     born: 1736,
     died: 1809,
