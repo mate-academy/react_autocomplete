@@ -18,6 +18,7 @@ export const Autocomplete: React.FC<Props> = ({
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isShowDropDown, setIsShowDropdown] = useState(false);
   const [selectedPersonName, setSelectedPersonName] = useState('');
+  const isSelectionRef = React.useRef(false);
 
   const applyQuery = useMemo(() => debounce(setAppliedQuery, delay), [delay]);
 
@@ -29,6 +30,12 @@ export const Autocomplete: React.FC<Props> = ({
 
   // Открываем dropdown после обновления appliedQuery (после debounce)
   React.useEffect(() => {
+    if (isSelectionRef.current) {
+      isSelectionRef.current = false;
+
+      return;
+    }
+
     if (appliedQuery.trim() !== '' && !isShowDropDown) {
       setIsShowDropdown(true);
     }
@@ -73,8 +80,9 @@ export const Autocomplete: React.FC<Props> = ({
     onSelected(person);
     setIsShowDropdown(false);
     setQuery(person.name);
-    setAppliedQuery(person.name);
     setSelectedPersonName(person.name);
+    isSelectionRef.current = true;
+    setAppliedQuery(person.name);
   }
 
   return (
@@ -92,7 +100,11 @@ export const Autocomplete: React.FC<Props> = ({
             data-qa="search-input"
             onChange={handleQuery}
             value={query}
-            onFocus={() => setIsShowDropdown(true)}
+            onFocus={() => {
+              if (query.trim() === '') {
+                setIsShowDropdown(true);
+              }
+            }}
             onBlur={() => {
               setTimeout(() => {
                 setIsShowDropdown(false);
