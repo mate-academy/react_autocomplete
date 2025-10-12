@@ -1,39 +1,94 @@
-import React, { useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
 
-export const App: React.FC = () => {
+type Props = {
+  delay?: number;
+};
+
+export const App: React.FC<Props> = ({ delay = 300 }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<Person | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleSelectedUser = (person: Person) => {
-    setSelectedUser(person);
-    setQuery(person.name);
-  };
+  const lastAppliedRef = useRef('');
+  const debouncedApplyQuery = useRef<ReturnType<typeof debounce>>();
 
-  const debouncedApplyQuery = useMemo(
-    () => debounce((q: string) => setAppliedQuery(q.toLowerCase().trim()), 300),
+  // Initialize debounce
+  useEffect(() => {
+    debouncedApplyQuery.current = debounce((raw: string) => {
+      const normalized = raw.toLowerCase().trim();
+
+      // Skip redundant updates
+      if (normalized === lastAppliedRef.current) {
+        return;
+      }
+
+      lastAppliedRef.current = normalized;
+      setAppliedQuery(normalized);
+    }, delay);
+
+    return () => {
+      debouncedApplyQuery.current?.cancel();
+    };
+  }, [delay]);
+
+  const handleQueryChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      const trimmed = value.trim();
+
+      // Skip filtering if only spaces
+      if (value.length > 0 && trimmed === '') {
+        setQuery(value);
+
+        return;
+      }
+
+      setQuery(value);
+      setSelectedUser(null);
+      debouncedApplyQuery.current?.(value);
+    },
     [],
   );
 
-  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+  const handleFocus = useCallback(() => {
+    setIsOpen(true);
+    if (query.trim() === '') {
+      setAppliedQuery('');
+      lastAppliedRef.current = '';
+    }
+  }, [query]);
 
-    setQuery(value);
-    setSelectedUser(null);
-    debouncedApplyQuery(value);
-  };
+  const handleSelect = useCallback((person: Person) => {
+    setQuery(person.name);
+    setSelectedUser(person);
+    setIsOpen(false);
+    setAppliedQuery('');
+    lastAppliedRef.current = '';
+  }, []);
 
   const filteredUsers = useMemo(() => {
+    if (appliedQuery === '') {
+      return peopleFromServer;
+    }
+
     return peopleFromServer.filter(user =>
       user.name.toLowerCase().includes(appliedQuery),
     );
   }, [appliedQuery]);
 
-  const showNoSuggestions = appliedQuery !== '' && filteredUsers.length === 0;
+  const showNoSuggestions =
+    isOpen && appliedQuery !== '' && filteredUsers.length === 0;
 
   return (
     <div className="container">
@@ -44,7 +99,10 @@ export const App: React.FC = () => {
             : 'No selected person'}
         </h1>
 
-        <div className="dropdown is-active">
+        <div
+          className={`dropdown ${isOpen ? 'is-active' : ''}`}
+          data-qa="autocomplete"
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
@@ -53,6 +111,7 @@ export const App: React.FC = () => {
               data-cy="search-input"
               value={query}
               onChange={handleQueryChange}
+              onFocus={handleFocus}
             />
           </div>
 
@@ -63,7 +122,7 @@ export const App: React.FC = () => {
                   key={user.name}
                   className="dropdown-item"
                   data-cy="suggestion-item"
-                  onClick={() => handleSelectedUser(user)}
+                  onClick={() => handleSelect(user)}
                 >
                   <p
                     className={
