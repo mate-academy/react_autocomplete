@@ -73,12 +73,6 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
     setTimeout(() => setIsDropdownActive(false), 300);
   };
 
-  useEffect(() => {
-    return () => {
-      filterSuggestions.cancel();
-    };
-  }, [filterSuggestions, suggestions]);
-
   return (
     <div className={`dropdown ${isDropdownActive ? 'is-active' : ''}`}>
       <div className="dropdown-trigger">
@@ -90,10 +84,16 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
           onChange={handleInputChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          data-qa="search-input"
           data-cy="search-input"
         />
       </div>
-      <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+      <div
+        className="dropdown-menu"
+        role="menu"
+        data-qa="suggestions-list"
+        data-cy="suggestions-list"
+      >
         {isDropdownActive && (
           <div className="dropdown-content">
             {suggestions.length > 0 ? (
@@ -101,6 +101,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
                 <div
                   key={person.name}
                   className="dropdown-item"
+                  data-qa="suggestion-item"
                   data-cy="suggestion-item"
                   onClick={() => handleSuggestionClick(person)}
                 >
@@ -111,6 +112,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
               <div
                 className="notification is-danger is-light mt-3"
                 role="alert"
+                data-qa="no-suggestions-message"
                 data-cy="no-suggestions-message"
               >
                 <p className="has-text-danger">No matching suggestions</p>
