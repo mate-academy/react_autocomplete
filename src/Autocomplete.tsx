@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { debounce } from 'lodash';
 
 interface Person {
@@ -15,27 +15,44 @@ interface AutocompleteProps {
 
 export const Autocomplete: React.FC<AutocompleteProps> = ({
   people,
-  delay = 100,
+  delay = 300,
   onSelected,
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState<Person[]>(people);
   const [isDropdownActive, setIsDropdownActive] = useState(false);
 
-  const filterSuggestions = debounce((query: string) => {
-    const filtered = people.filter(person =>
-      person.name.toLowerCase().includes(query.toLowerCase()),
-    );
+  const filterSuggestions = useMemo(() => {
+    return debounce((query: string) => {
+      const filtered = people.filter(person =>
+        person.name.toLowerCase().includes(query.toLowerCase()),
+      );
 
-    setSuggestions(filtered);
-  }, delay);
+      setSuggestions(filtered);
+    }, delay);
+  }, [people, delay]);
+
+  useEffect(() => {
+    return () => {
+      filterSuggestions.cancel();
+    };
+  }, [filterSuggestions]);
+
+  const lastFilteredText = useRef('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    const trimmed = value.trim();
 
     setInputValue(value);
-    setIsDropdownActive(true); // Ensure dropdown stays open
-    filterSuggestions(value);
+    setIsDropdownActive(true);
+
+    if (trimmed === '' || trimmed === lastFilteredText.current) {
+      return;
+    }
+
+    lastFilteredText.current = trimmed;
+    filterSuggestions(trimmed);
     onSelected(null);
   };
 
