@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import cn from 'classnames';
 import { Person } from '../types/Person';
 import { useDebounce } from '../hooks/useDebounce';
 import { AutocompleteProps } from './types';
@@ -10,83 +11,81 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   delayMs = 300,
   placeholder = 'Enter a part of the name',
 }) => {
-  const [query, setQuery] = useState<string>('');
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [suggestions, setSuggestions] = useState<Person[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [filteredPeople, setFilteredPeople] = useState<Person[]>([]); 
 
-  const debounced = useDebounce(query, delayMs);
-  const lastFilteredRef = useRef<string>('');
+  const debouncedSearchQuery = useDebounce(searchQuery, delayMs); 
+  const lastSearchQueryRef = useRef<string>('');
+
   const handleFocus = () => {
-    setIsOpen(true);
+    setIsDropdownOpen(true);
 
-    if (query.trim() === '') {
-      setSuggestions(people);
-      lastFilteredRef.current = '';
+    if (searchQuery.trim() === '') {
+      setFilteredPeople(people);
+      lastSearchQueryRef.current = '';
     }
   };
 
   const handleBlur = () => {
-    window.setTimeout(() => setIsOpen(false), 100);
+    window.setTimeout(() => setIsDropdownOpen(false), 100);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const next = e.target.value;
-
-    setQuery(next);
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => { 
+    const inputValue = event.target.value;
+    setSearchQuery(inputValue);
 
     if (selectedPerson) {
       onSelected(null);
     }
 
-    if (!isOpen) {
-      setIsOpen(true);
+    if (!isDropdownOpen) {
+      setIsDropdownOpen(true);
     }
   };
 
-  const handleSelect = (person: Person) => {
-    setQuery(person.name);
+  const handleSelectPerson = (person: Person) => {
+    setSearchQuery(person.name);
     onSelected(person);
-    setIsOpen(false);
+    setIsDropdownOpen(false);
   };
 
   useEffect(() => {
-    if (debounced === lastFilteredRef.current) {
+    if (debouncedSearchQuery === lastSearchQueryRef.current) { 
       return;
     }
 
-    lastFilteredRef.current = debounced;
+    lastSearchQueryRef.current = debouncedSearchQuery;
 
-    const normalized = debounced.trim().toLowerCase();
+    const normalizedQuery = debouncedSearchQuery.trim().toLowerCase();
 
-    if (normalized === '') {
-      setSuggestions(isOpen ? people : []);
-
+    if (normalizedQuery === '') {
+      setFilteredPeople(isDropdownOpen ? people : []);
       return;
     }
 
-    const result = people.filter(p =>
-      p.name.toLowerCase().includes(normalized),
+    const matchingPeople = people.filter(person =>
+      person.name.toLowerCase().includes(normalizedQuery),
     );
 
-    setSuggestions(result);
-  }, [debounced, isOpen, people]);
+    setFilteredPeople(matchingPeople);
+  }, [debouncedSearchQuery, isDropdownOpen, people]);
 
-  const showNoMatches = useMemo(() => {
-    const typed = debounced.trim();
-
-    return isOpen && typed !== '' && suggestions.length === 0;
-  }, [debounced, isOpen, suggestions.length]);
+  const shouldShowNoMatches = 
+    isDropdownOpen &&
+    debouncedSearchQuery.trim() !== '' &&
+    filteredPeople.length === 0;
 
   return (
     <>
-      <div className={`dropdown ${isOpen ? 'is-active' : ''}`}>
+      <div className={cn('dropdown', { 'is-active': isDropdownOpen })}> {}
         <div className="dropdown-trigger">
           <input
             type="text"
             className="input"
             placeholder={placeholder}
             data-cy="search-input"
-            value={query}
+            value={searchQuery}
             onChange={handleChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
@@ -96,12 +95,12 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           <div className="dropdown-content">
-            {suggestions.map(person => (
+            {filteredPeople.map(person => (
               <div
                 key={person.name}
                 className="dropdown-item"
                 data-cy="suggestion-item"
-                onMouseDown={() => handleSelect(person)}
+                onMouseDown={() => handleSelectPerson(person)}
               >
                 <p className="has-text-link">{person.name}</p>
               </div>
@@ -110,7 +109,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
         </div>
       </div>
 
-      {showNoMatches && (
+      {shouldShowNoMatches && (
         <div
           className="notification is-danger is-light mt-3"
           role="alert"
