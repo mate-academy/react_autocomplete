@@ -1,10 +1,21 @@
 {
   "extends": "@mate-academy/students-ts-config",
-  "include": [
-    "src"
-  ],
+  "include": ["src/**/*"],
   "compilerOptions": {
-    "sourceMap": false,
-    "types": ["node", "cypress"]
+    "sourceMap": true, // Set to true for better debugging in browsers
+    "types": ["node", "cypress", "@types/react", "@types/react-dom"],
+    "jsx": "react-jsx", // Enable JSX for React (modern setting)
+    "module": "esnext", // Use ES modules for modern JavaScript
+    "target": "es5", // Support older browsers (adjust if needed)
+    "moduleResolution": "node", // Match Node.js module resolution
+    "esModuleInterop": true, // Improve compatibility with CommonJS modules
+    "allowSyntheticDefaultImports": true, // Allow default imports from modules
+    "strict": true, // Enable strict type checking for better error catching
+    "noImplicitAny": true, // Prevent implicit 'any' types
+    "skipLibCheck": true, // Skip type checking of declaration files for faster compilation
+    "baseUrl": "src", // Allow relative imports from 'src' (optional, adjust as needed)
+    "paths": {
+      "*": ["*"] // Support absolute imports (optional)
+    }
   }
 }
