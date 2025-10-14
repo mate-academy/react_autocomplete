@@ -1,0 +1,126 @@
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { debounce } from 'lodash';
+
+interface Person {
+  name: string;
+  born: number;
+  died: number;
+}
+
+interface AutocompleteProps {
+  people: Person[];
+  delay?: number;
+  onSelected: (person: Person | null) => void;
+}
+
+export const Autocomplete: React.FC<AutocompleteProps> = ({
+  people,
+  delay = 300,
+  onSelected,
+}) => {
+  const [inputValue, setInputValue] = useState('');
+  const [suggestions, setSuggestions] = useState<Person[]>(people);
+  const [isDropdownActive, setIsDropdownActive] = useState(false);
+
+  const filterSuggestions = useMemo(() => {
+    return debounce((query: string) => {
+      const filtered = people.filter(person =>
+        person.name.toLowerCase().includes(query.toLowerCase()),
+      );
+
+      setSuggestions(filtered);
+    }, delay);
+  }, [people, delay]);
+
+  useEffect(() => {
+    return () => {
+      filterSuggestions.cancel();
+    };
+  }, [filterSuggestions]);
+
+  const lastFilteredText = useRef('');
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const trimmed = value.trim();
+
+    setInputValue(value);
+    setIsDropdownActive(true);
+
+    if (trimmed === '' || trimmed === lastFilteredText.current) {
+      return;
+    }
+
+    lastFilteredText.current = trimmed;
+    filterSuggestions(trimmed);
+    onSelected(null);
+  };
+
+  const handleSuggestionClick = (person: Person) => {
+    setInputValue(person.name);
+    setIsDropdownActive(false);
+    onSelected(person);
+  };
+
+  const handleFocus = () => {
+    setIsDropdownActive(true);
+    if (!inputValue) {
+      setSuggestions(people);
+    }
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => setIsDropdownActive(false), 300);
+  };
+
+  return (
+    <div className={`dropdown ${isDropdownActive ? 'is-active' : ''}`}>
+      <div className="dropdown-trigger">
+        <input
+          type="text"
+          placeholder="Enter a part of the name"
+          className="input"
+          value={inputValue}
+          onChange={handleInputChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          data-qa="search-input"
+          data-cy="search-input"
+        />
+      </div>
+      <div
+        className="dropdown-menu"
+        role="menu"
+        data-qa="suggestions-list"
+        data-cy="suggestions-list"
+      >
+        {isDropdownActive && (
+          <div className="dropdown-content">
+            {suggestions.length > 0 ? (
+              suggestions.map(person => (
+                <div
+                  key={person.name}
+                  className="dropdown-item"
+                  data-qa="suggestion-item"
+                  data-cy="suggestion-item"
+                  onClick={() => handleSuggestionClick(person)}
+                >
+                  <p className="has-text-link">{person.name}</p>
+                </div>
+              ))
+            ) : (
+              <div
+                className="notification is-danger is-light mt-3"
+                role="alert"
+                data-qa="no-suggestions-message"
+                data-cy="no-suggestions-message"
+              >
+                <p className="has-text-danger">No matching suggestions</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
