@@ -1,0 +1,19 @@
+.dropdown-menu {
+  overflow: auto;
+  height: 200px;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgb(30, 30, 30); /* цвет зоны отслеживания */
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(62, 62, 131);
+    border-radius: 20px;
+  }
+}
+
+.dropdown-item{
+  cursor: pointer;
+}
