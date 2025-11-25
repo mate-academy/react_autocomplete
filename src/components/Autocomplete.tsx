@@ -19,11 +19,13 @@ export const Autocomplete: React.FC<Props> = ({
 
   const getFilteredSuggestions = useCallback(
     (value: string): Person[] => {
-      if (!value) {
+      const trimmed = value.trim();
+
+      if (!trimmed) {
         return people;
       }
 
-      const lowerCaseValue = value.toLowerCase();
+      const lowerCaseValue = trimmed.toLowerCase();
 
       return people.filter(person =>
         person.name.toLowerCase().includes(lowerCaseValue),
@@ -51,7 +53,6 @@ export const Autocomplete: React.FC<Props> = ({
     const { value } = event.target;
 
     setQuery(value);
-
     onSelected(null);
   };
 
@@ -63,7 +64,7 @@ export const Autocomplete: React.FC<Props> = ({
 
   const showSuggestions = isDropdownActive && suggestions.length > 0;
   const showNoSuggestions =
-    isDropdownActive && suggestions.length === 0 && query !== '';
+    isDropdownActive && suggestions.length === 0 && query.trim() !== '';
 
   return (
     <div className={`dropdown ${isDropdownActive ? 'is-active' : ''}`}>
@@ -93,7 +94,6 @@ export const Autocomplete: React.FC<Props> = ({
                   href="#"
                   className="dropdown-item"
                   data-cy="suggestion-item"
-                  // Use onMouseDown to prevent onBlur from closing the dropdown before the click is registered
                   onMouseDown={() => handleSuggestionClick(person)}
                 >
                   <p
