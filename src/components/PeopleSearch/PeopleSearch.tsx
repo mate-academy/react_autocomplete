@@ -49,7 +49,7 @@ export const PeopleSearch: React.FC<Props> = ({
     );
   }, [debouncedQuery, people]);
 
-  // const visiblePeople = debouncedQuery === '' ? people : filteredPeople;
+  const visiblePeople = debouncedQuery === '' ? people : filteredPeople;
 
   const handleSelect = (person: Person) => {
     setQuery(person.name);
@@ -76,7 +76,7 @@ export const PeopleSearch: React.FC<Props> = ({
         {isFocused && (
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              {filteredPeople.map(person => (
+              {visiblePeople.map(person => (
                 <div
                   key={person.slug}
                   className="dropdown-item"
@@ -97,7 +97,7 @@ export const PeopleSearch: React.FC<Props> = ({
         )}
       </div>
 
-      {filteredPeople.length === 0 && selectedPerson === null && isFocused &&(
+      {filteredPeople.length === 0 && selectedPerson === null && isFocused && (
         <div
           className="
             notification
