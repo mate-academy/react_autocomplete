@@ -23,7 +23,6 @@ export const PeopleSearch: React.FC<Props> = ({
     const value = event.target.value;
 
     setQuery(value);
-    setDebouncedQuery(value);
 
     if (selectedPerson && value !== selectedPerson.name) {
       onSelected(null);
@@ -32,13 +31,15 @@ export const PeopleSearch: React.FC<Props> = ({
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedQuery(query.trim().toLowerCase());
+      if (debouncedQuery !== query.trim().toLowerCase()) {
+        setDebouncedQuery(query.trim().toLowerCase());
+      }
     }, delay);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [query, delay]);
+  }, [query, delay, debouncedQuery]);
 
   const people = [...peopleData].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -53,7 +54,6 @@ export const PeopleSearch: React.FC<Props> = ({
   const handleSelect = (person: Person) => {
     setQuery(person.name);
     onSelected(person);
-    setDebouncedQuery(person.name);
     setIsFocused(false);
   };
 
@@ -97,7 +97,7 @@ export const PeopleSearch: React.FC<Props> = ({
         )}
       </div>
 
-      {filteredPeople.length === 0 && selectedPerson === null && (
+      {filteredPeople.length === 0 && selectedPerson === null && isFocused &&(
         <div
           className="
             notification
