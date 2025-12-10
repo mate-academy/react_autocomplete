@@ -1,15 +1,61 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+interface Props {
+  delay?: number;
+  onSelected?: (Person: Person) => void;
+}
+
+export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
+  const [query, setQuery] = useState('');
+  const [focused, setFocused] = useState(false);
+  const [selected, setSelected] = useState<Person | null>(null);
+  const [suggestions, setSuggestions] = useState<Person[]>([]);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      const q = query.trim().toLowerCase();
+
+      if (q === '') {
+        setSuggestions(focused ? peopleFromServer : []);
+      } else {
+        setSuggestions(
+          peopleFromServer.filter(p => p.name.toLowerCase().includes(q)),
+        );
+      }
+    }, delay);
+
+    return () => clearTimeout(timerId);
+  }, [query, focused, delay]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    setFocused(true);
+
+    if (selected) {
+      setSelected(null);
+    }
+  };
+
+  const handleSelect = (person: Person) => {
+    setSelected(person);
+    setQuery(person.name);
+    setFocused(false);
+
+    if (onSelected) {
+      onSelected(person);
+    }
+  };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selected
+            ? `${selected?.name} (${selected?.born} - ${selected?.died})`
+            : 'No selected person'}
         </h1>
 
         <div className="dropdown is-active">
@@ -19,55 +65,54 @@ export const App: React.FC = () => {
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
+              value={query}
+              onChange={handleChange}
+              onFocus={() => setFocused(true)}
+              onBlur={() => {
+                setTimeout(() => setFocused(false), 150);
+              }}
             />
           </div>
-
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
+          {focused && (
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
+              <div className="dropdown-content">
+                {suggestions.map(person => {
+                  return (
+                    <div
+                      className="dropdown-item"
+                      data-cy="suggestion-item"
+                      key={person.slug}
+                      onMouseDown={() => handleSelect(person)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <p className="has-text-link">{person.name}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          </div>
+          )}
         </div>
 
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        {suggestions.length === 0 && query !== '' && focused && (
+          <div
+            className="
+                notification
+                is-danger
+                is-light
+                mt-3
+                is-align-self-flex-start
+              "
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
