@@ -42,9 +42,7 @@ export const Autocomplete = ({ people, delay, onSelected }: Props) => {
   }, [query, people, delay]);
 
   const handleFocus = () => setIsDropdownOpen(true);
-  const handleBlur = () => {
-    setIsDropdownOpen(false);
-  };
+  const handleBlur = () => setIsDropdownOpen(false);
 
   const handleSuggestionClick = (person: Person) => {
     setQuery(person.name);
@@ -76,7 +74,7 @@ export const Autocomplete = ({ people, delay, onSelected }: Props) => {
                 className="dropdown-item"
                 data-cy="suggestion-item"
                 key={person.slug}
-                onClick={() => handleSuggestionClick(person)}
+                onMouseDown={() => handleSuggestionClick(person)}
               >
                 {' '}
                 <p
