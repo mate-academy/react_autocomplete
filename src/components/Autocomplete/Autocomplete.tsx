@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 
@@ -6,7 +6,7 @@ import { Person } from '../../types/Person';
 
 type Props = {
   people: Person[];
-  onSelect?: (person: Person | null) => void;
+  onSelect: (person: Person | null) => void;
   delay?: number;
 };
 
@@ -18,39 +18,40 @@ export const Autocomplete: React.FC<Props> = ({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const debouncedApplyQuery = useMemo(
     () => debounce(setAppliedQuery, delay),
     [delay],
   );
 
-  const visiblePeople = people.filter(person =>
-    person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
-  );
+  useEffect(() => () => debouncedApplyQuery.cancel(), [debouncedApplyQuery]);
 
-  const handleInputChange = (value: string) => {
+  const visiblePeople = useMemo(() => {
+    const normalizedQuery = appliedQuery.trim().toLowerCase();
+
+    if (!normalizedQuery) {
+      return people;
+    }
+
+    return people.filter(person =>
+      person.name.toLowerCase().includes(normalizedQuery),
+    );
+  }, [appliedQuery, people]);
+
+  const handleChange = (value: string) => {
     setQuery(value);
     debouncedApplyQuery(value);
-    setSelectedPerson(null);
-    onSelect?.(null);
+    onSelect(null);
   };
 
   const handleSelectPerson = (person: Person) => {
-    setSelectedPerson(person);
+    setQuery(person.name);
     setShowDropdown(false);
-    setQuery('');
-    onSelect?.(person);
+    onSelect(person);
   };
 
   return (
     <>
-      <h1 className="title" data-cy="title">
-        {selectedPerson
-          ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-          : 'No selected person'}
-      </h1>
-
       <div
         className={classNames('dropdown', {
           'is-active': showDropdown && visiblePeople.length > 0,
@@ -63,8 +64,11 @@ export const Autocomplete: React.FC<Props> = ({
             placeholder="Enter a part of the name"
             data-cy="search-input"
             value={query}
-            onChange={e => handleInputChange(e.target.value)}
+            onChange={e => handleChange(e.target.value)}
             onFocus={() => setShowDropdown(true)}
+            onBlur={() => {
+              setTimeout(() => setShowDropdown(false), 150);
+            }}
           />
         </div>
 

@@ -1,14 +1,28 @@
+import { useState } from 'react';
 import './App.scss';
 import 'bulma/css/bulma.min.css';
 
 import { peopleFromServer } from './data/people';
 import { Autocomplete } from './components/Autocomplete';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <Autocomplete people={peopleFromServer} delay={300} />
+        <h1 className="title" data-cy="title">
+          {selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+            : 'No selected person'}
+        </h1>
+
+        <Autocomplete
+          people={peopleFromServer}
+          delay={300}
+          onSelect={setSelectedPerson}
+        />
       </main>
     </div>
   );
