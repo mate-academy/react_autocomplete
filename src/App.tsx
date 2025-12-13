@@ -1,73 +1,93 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
+import 'bulma/css/bulma.min.css';
+import debounce from 'lodash.debounce';
+import classNames from 'classnames';
+
 import { peopleFromServer } from './data/people';
+import { Autocomplete } from './components/Autocomplete';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const persons = peopleFromServer;
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const [showField, setShowField] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+
+  const debouncedApplyQuery = useMemo(() => debounce(setAppliedQuery, 300), []);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+
+    setQuery(value);
+    debouncedApplyQuery(value);
+    setSelectedPerson(null);
+  };
+
+  const visiblePersons = persons.filter(person =>
+    person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+  );
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
-        </h1>
+        <Autocomplete person={selectedPerson} />
 
-        <div className="dropdown is-active">
+        <div
+          className={classNames('dropdown', {
+            'is-active': showField && visiblePersons.length > 0,
+          })}
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
-              placeholder="Enter a part of the name"
               className="input"
+              placeholder="Enter a part of the name"
               data-cy="search-input"
+              value={query}
+              onChange={handleInputChange}
+              onFocus={() => setShowField(true)}
             />
           </div>
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
+              {visiblePersons.map(person => (
+                <div
+                  key={person.slug}
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                  onClick={() => {
+                    setSelectedPerson(person);
+                    setShowField(false);
+                    setQuery('');
+                  }}
+                >
+                  <p
+                    className={classNames({
+                      'has-text-link': person.sex === 'm',
+                      'has-text-danger': person.sex === 'f',
+                    })}
+                  >
+                    {person.name}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        {showField && visiblePersons.length === 0 && (
+          <div
+            className="notification
+            is-danger is-light mt-3 is-align-self-flex-start"
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
