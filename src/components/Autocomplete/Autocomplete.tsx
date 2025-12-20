@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Person } from '../../types/Person';
 
 interface Props {
@@ -11,6 +11,9 @@ export const Autocomplete = ({ people, delay, onSelected }: Props) => {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState(people);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Referência para gerenciar o timeout de fechamento
+  const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = event.target.value;
@@ -41,8 +44,22 @@ export const Autocomplete = ({ people, delay, onSelected }: Props) => {
     };
   }, [query, people, delay]);
 
-  const handleFocus = () => setIsDropdownOpen(true);
-  const handleBlur = () => setIsDropdownOpen(false);
+  const handleFocus = () => {
+    // Limpa qualquer fechamento agendado se o usuário focar novamente
+    if (blurTimeoutRef.current) {
+      clearTimeout(blurTimeoutRef.current);
+      blurTimeoutRef.current = null;
+    }
+
+    setIsDropdownOpen(true);
+  };
+
+  const handleBlur = () => {
+    // Adiciona um pequeno atraso para permitir cliques na barra de rolagem
+    blurTimeoutRef.current = setTimeout(() => {
+      setIsDropdownOpen(false);
+    }, 200);
+  };
 
   const handleSuggestionClick = (person: Person) => {
     setQuery(person.name);
@@ -53,7 +70,6 @@ export const Autocomplete = ({ people, delay, onSelected }: Props) => {
   return (
     <div className={`dropdown ${isDropdownOpen ? 'is-active' : ''}`}>
       <div className="dropdown-trigger">
-        {' '}
         <input
           type="text"
           placeholder="Enter a part of the name"
@@ -63,10 +79,9 @@ export const Autocomplete = ({ people, delay, onSelected }: Props) => {
           onChange={handleInputChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
-        />{' '}
+        />
       </div>
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-        {' '}
         <div className="dropdown-content">
           {suggestions.length > 0 &&
             suggestions.map(person => (
@@ -76,23 +91,22 @@ export const Autocomplete = ({ people, delay, onSelected }: Props) => {
                 key={person.slug}
                 onMouseDown={() => handleSuggestionClick(person)}
               >
-                {' '}
                 <p
                   className={
                     person.sex === 'm' ? 'has-text-link' : 'has-text-danger'
                   }
                 >
                   {person.name}
-                </p>{' '}
+                </p>
               </div>
             ))}
           {suggestions.length === 0 && query.trim() !== '' && (
             <div className="dropdown-item" data-cy="no-suggestions-message">
               <p className="has-text-danger">No matching suggestions</p>
             </div>
-          )}{' '}
-        </div>{' '}
-      </div>{' '}
+          )}
+        </div>
+      </div>
     </div>
   );
 };
