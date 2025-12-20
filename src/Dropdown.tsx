@@ -27,6 +27,13 @@ export const Dropdown: React.FC<Props> = ({ people, onSelected, delay }) => {
     timeoutRef.current = setTimeout(() => {
       const normalizedQuery = query.trim().toLowerCase();
 
+      if (normalizedQuery === '') {
+        setFilteredPeople(people);
+        lastQueryRef.current = query;
+
+        return;
+      }
+
       const result = people.filter(person =>
         person.name.toLowerCase().includes(normalizedQuery),
       );
