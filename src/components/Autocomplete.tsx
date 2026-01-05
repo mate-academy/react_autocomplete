@@ -23,11 +23,16 @@ export const Autocomplete: React.FC<Props> = ({
     }
 
     const timeoutId = setTimeout(() => {
-      const normalizedQuery = query.toLowerCase();
+      const trimmedQuery = query.trim();
+      let filtered: Person[];
 
-      const filtered = people.filter(person =>
-        person.name.toLowerCase().includes(normalizedQuery),
-      );
+      if (trimmedQuery) {
+        filtered = people.filter(person =>
+          person.name.toLowerCase().includes(trimmedQuery.toLowerCase()),
+        );
+      } else {
+        filtered = people;
+      }
 
       setSuggestions(filtered);
       setLastQuery(query);
@@ -53,7 +58,6 @@ export const Autocomplete: React.FC<Props> = ({
           data-cy="search-input"
           onFocus={() => {
             setIsOpen(true);
-
             if (!query) {
               setSuggestions(people);
             }
