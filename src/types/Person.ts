@@ -7,3 +7,9 @@ export interface Person {
   motherName: string | null;
   slug: string;
 }
+
+export type AutocompleteProps = {
+  items: Person[];
+  onSelected: (p: Person | null) => void;
+  delay?: number;
+};
