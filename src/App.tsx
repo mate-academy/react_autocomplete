@@ -4,13 +4,18 @@ import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
 
-export const App: React.FC = () => {
+type Props = {
+  debounceDelay?: number;
+  onSelected?: (person: Person) => void;
+};
+
+export const App: React.FC<Props> = ({ debounceDelay = 300, onSelected }) => {
   const [searchPart, setSearchPart] = useState('');
   const [currentPerson, setCurrentPerson] = useState<Person | null>(null);
   const [display, setDisplay] = useState(false);
 
   const setQuery = useMemo(() => {
-    return debounce((value: string) => setSearchPart(value), 300);
+    return debounce((value: string) => setSearchPart(value), debounceDelay);
   }, []);
 
   useEffect(() => {
@@ -36,6 +41,7 @@ export const App: React.FC = () => {
   const handleChoose = (person: Person) => {
     setCurrentPerson(person);
     setDisplay(false);
+    onSelected?.(person);
   };
 
   return (
