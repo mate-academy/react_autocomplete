@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Autocomplete } from './components/Autocomplete';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [selectedPerson, setSelectedPerson] = useState<Person>(
+    peopleFromServer[0],
+  );
+  const { name, born, died } = selectedPerson;
 
   return (
     <div className="container">
@@ -13,7 +17,7 @@ export const App: React.FC = () => {
           {`${name} (${born} - ${died})`}
         </h1>
 
-        <Autocomplete people={peopleFromServer} />
+        <Autocomplete people={peopleFromServer} onSelect={setSelectedPerson} />
         <div
           className="
             notification
