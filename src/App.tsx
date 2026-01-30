@@ -5,32 +5,23 @@ import { Autocomplete } from './components/Autocomplete';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {
-  const [selectedPerson, setSelectedPerson] = useState<Person>(
-    peopleFromServer[0],
-  );
-  const { name, born, died } = selectedPerson;
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const { name, born, died } = selectedPerson ?? {};
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selectedPerson
+            ? name && `${name} (${born} - ${died})`
+            : 'No selected person'}
         </h1>
 
-        <Autocomplete people={peopleFromServer} onSelect={setSelectedPerson} />
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+        <Autocomplete
+          people={peopleFromServer}
+          onSelect={setSelectedPerson}
+          onClear={() => setSelectedPerson(null)}
+        />
       </main>
     </div>
   );

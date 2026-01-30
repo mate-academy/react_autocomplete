@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 
@@ -7,49 +7,78 @@ import { Person } from '../types/Person';
 type AutocompleteProps = {
   people: Person[];
   onSelect: (person: Person) => void;
+  onClear?: () => void;
   delay?: number;
 };
 
 export const Autocomplete = ({
   people,
   onSelect,
-  delay = 500,
+  onClear,
+  delay = 300,
 }: AutocompleteProps) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [curruntInput, setCurruntInput] = useState('');
+  const [currentInput, setCurrentInput] = useState('');
   const [query, setQuery] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const filteredPeople = people.filter(person =>
     person.name.toLowerCase().includes(query.toLowerCase()),
   );
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsFocused(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const debouncedSetQuery = useMemo(
-    () => debounce((value: string) => setQuery(value), delay),
-    [delay],
+    () =>
+      debounce((value: string) => {
+        if (value !== query) {
+          setQuery(value);
+        }
+      }, delay),
+    [delay, query],
   );
 
   const handleSelectPerson = (person: Person) => {
-    setQuery('');
-    setCurruntInput('');
+    setQuery(person.name);
+    setCurrentInput(person.name);
     setIsFocused(false);
     onSelect(person);
+    inputRef.current?.blur();
   };
 
   return (
-    <div className={classNames('dropdown', { 'is-active': isFocused })}>
+    <div
+      className={classNames('dropdown', { 'is-active': isFocused })}
+      ref={dropdownRef}
+    >
       <div className="dropdown-trigger">
         <input
+          ref={inputRef}
           type="text"
           placeholder="Enter a part of the name"
           className="input"
           data-cy="search-input"
-          value={curruntInput}
+          value={currentInput}
           onChange={e => {
-            setCurruntInput(e.target.value);
+            setCurrentInput(e.target.value);
             debouncedSetQuery(e.target.value);
+            onClear?.();
           }}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
         />
       </div>
 
@@ -68,6 +97,22 @@ export const Autocomplete = ({
               <p className="has-text-link">{person.name}</p>
             </div>
           ))}
+
+          {filteredPeople.length === 0 && (
+            <div
+              className="
+            notification
+            is-danger
+            is-light
+            mt-3
+            is-align-self-flex-start
+          "
+              role="alert"
+              data-cy="no-suggestions-message"
+            >
+              <p className="has-text-danger">No matching suggestions</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
