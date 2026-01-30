@@ -6,14 +6,14 @@ import { Person } from '../types/Person';
 
 type AutocompleteProps = {
   people: Person[];
-  onSelect: (person: Person) => void;
+  onSelected: (person: Person) => void;
   onClear?: () => void;
   delay?: number;
 };
 
 export const Autocomplete = ({
   people,
-  onSelect,
+  onSelected,
   onClear,
   delay = 300,
 }: AutocompleteProps) => {
@@ -45,8 +45,10 @@ export const Autocomplete = ({
   const debouncedSetQuery = useMemo(
     () =>
       debounce((value: string) => {
-        if (value !== query) {
-          setQuery(value);
+        const trimmedValue = value.trim();
+
+        if (trimmedValue !== query) {
+          setQuery(trimmedValue);
         }
       }, delay),
     [delay, query],
@@ -56,7 +58,7 @@ export const Autocomplete = ({
     setQuery(person.name);
     setCurrentInput(person.name);
     setIsFocused(false);
-    onSelect(person);
+    onSelected(person);
     inputRef.current?.blur();
   };
 

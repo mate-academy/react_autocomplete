@@ -19,7 +19,7 @@ export const App: React.FC = () => {
 
         <Autocomplete
           people={peopleFromServer}
-          onSelect={setSelectedPerson}
+          onSelected={setSelectedPerson}
           onClear={() => setSelectedPerson(null)}
         />
       </main>
