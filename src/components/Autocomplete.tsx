@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import debounce from 'lodash.debounce';
 import { Person } from '../types/Person';
 
@@ -16,6 +16,7 @@ export const Autocomplete: React.FC<Props> = ({
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const blurTimeoutRef = useRef<number>(0);
 
   const applyQuery = useMemo(() => debounce(setAppliedQuery, delay), [delay]);
 
@@ -36,7 +37,19 @@ export const Autocomplete: React.FC<Props> = ({
     onSelected(person);
   };
 
-  const showDropdown = isFocused && (query === '' || filteredPeople.length > 0);
+  const handleFocus = () => {
+    clearTimeout(blurTimeoutRef.current);
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    blurTimeoutRef.current = window.setTimeout(() => {
+      setIsFocused(false);
+    }, 200);
+  };
+
+  const showDropdown =
+    isFocused && (query === '' || filteredPeople.length > 0);
 
   return (
     <div className="dropdown is-active">
@@ -48,8 +61,8 @@ export const Autocomplete: React.FC<Props> = ({
           placeholder="Enter a part of the name"
           value={query}
           onChange={handleChange}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
       </div>
 
@@ -72,8 +85,8 @@ export const Autocomplete: React.FC<Props> = ({
 
       {isFocused && appliedQuery && filteredPeople.length === 0 && (
         <div
-          className="notification
-          is-danger is-light mt-3 is-align-self-flex-start"
+          className="notification is-danger is-light mt-3
+            is-align-self-flex-start"
           role="alert"
           data-cy="no-suggestions-message"
         >
