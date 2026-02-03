@@ -20,9 +20,13 @@ export const Autocomplete: React.FC<Props> = ({
 
   const applyQuery = useMemo(() => debounce(setAppliedQuery, delay), [delay]);
 
-  const filteredPeople = people.filter(person =>
-    person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
-  );
+  const filteredPeople = useMemo(() => {
+    const trimmedQuery = appliedQuery.trim().toLowerCase();
+
+    return people.filter(person =>
+      person.name.toLowerCase().includes(trimmedQuery),
+    );
+  }, [appliedQuery, people]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -48,8 +52,7 @@ export const Autocomplete: React.FC<Props> = ({
     }, 200);
   };
 
-  const showDropdown =
-    isFocused && (query === '' || filteredPeople.length > 0);
+  const showDropdown = isFocused && (query === '' || filteredPeople.length > 0);
 
   return (
     <div className="dropdown is-active">
