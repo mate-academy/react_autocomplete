@@ -52,7 +52,8 @@ export const Autocomplete: React.FC<Props> = ({
     }, 200);
   };
 
-  const showDropdown = isFocused && (query === '' || filteredPeople.length > 0);
+  const showDropdown =
+    isFocused && query === appliedQuery && filteredPeople.length > 0;
 
   return (
     <div className="dropdown is-active">
