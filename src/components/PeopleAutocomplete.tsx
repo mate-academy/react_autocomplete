@@ -3,7 +3,7 @@ import { Person } from '../types/Person';
 
 interface Props {
   people: Person[];
-  onSelected: (person: Person | null) => void;
+  onSelected?: (person: Person | null) => void;
   delay?: number;
 }
 
@@ -23,12 +23,18 @@ export const PeopleAutocomplete: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
-    const timerId = window.setTimeout(() => setAppliedQuery(query), delay);
+    const timerId = window.setTimeout(() => {
+      const normalizedQuery = query.trim();
+
+      if (normalizedQuery !== appliedQuery) {
+        setAppliedQuery(query);
+      }
+    }, delay);
 
     return () => {
       clearTimeout(timerId);
     };
-  }, [query, delay]);
+  }, [query, delay, appliedQuery]);
 
   const visiblePeople = people.filter(person =>
     person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
