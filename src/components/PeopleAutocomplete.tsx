@@ -3,13 +3,13 @@ import { Person } from '../types/Person';
 
 interface Props {
   people: Person[];
-  onSelected?: (person: Person | null) => void;
+  onSelected: (person: Person | null) => void;
   delay?: number;
 }
 
 export const PeopleAutocomplete: React.FC<Props> = ({
   people,
-  onSelected: onSelected = () => {},
+  onSelected,
   delay = 300,
 }) => {
   const [query, setQuery] = useState('');
@@ -27,7 +27,7 @@ export const PeopleAutocomplete: React.FC<Props> = ({
       const normalizedQuery = query.trim();
 
       if (normalizedQuery !== appliedQuery) {
-        setAppliedQuery(query);
+        setAppliedQuery(normalizedQuery);
       }
     }, delay);
 
