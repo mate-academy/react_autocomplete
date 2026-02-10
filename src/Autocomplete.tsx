@@ -28,18 +28,19 @@ export const Autocomplete: React.FC<Props> = ({
     return () => clearTimeout(handler);
   }, [query, delay]);
 
-  const trimmedQuery = debouncedQuery.trim();
+  const trimmedQuery = query.trim(); // natychmiastowa wartość inputa
 
-  // 2. Filtracja sugestii (useMemo, nie filtrujemy przy samych spacjach)
   const suggestions = React.useMemo(() => {
+    // Jeśli input pusty, pokaż wszystkich od razu
     if (trimmedQuery === '') {
       return people;
-    } // show all when input empty
+    }
 
+    // W przeciwnym razie filtruj po debouncedQuery
     return people.filter(person =>
-      person.name.toLowerCase().includes(trimmedQuery.toLowerCase()),
+      person.name.toLowerCase().includes(debouncedQuery.toLowerCase()),
     );
-  }, [trimmedQuery, people]);
+  }, [trimmedQuery, debouncedQuery, people]);
 
   // 3. Wybór osoby
   const handleSelect = (person: Person) => {
