@@ -19,23 +19,7 @@ export const Autocomplete: React.FC<Props> = ({
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // 1. Zamykanie po kliknięciu poza komponentem
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setDropdownActive(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // 2. Obsługa opóźnienia (Debounce)
+  // 1. Obsługa opóźnienia (Debounce)
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(query);
@@ -44,10 +28,20 @@ export const Autocomplete: React.FC<Props> = ({
     return () => clearTimeout(handler);
   }, [query, delay]);
 
-  const suggestions = people.filter(person =>
-    person.name.toLowerCase().includes(debouncedQuery.toLowerCase()),
-  );
+  const trimmedQuery = debouncedQuery.trim();
 
+  // 2. Filtracja sugestii (useMemo, nie filtrujemy przy samych spacjach)
+  const suggestions = React.useMemo(() => {
+    if (trimmedQuery === '') {
+      return people;
+    } // show all when input empty
+
+    return people.filter(person =>
+      person.name.toLowerCase().includes(trimmedQuery.toLowerCase()),
+    );
+  }, [trimmedQuery, people]);
+
+  // 3. Wybór osoby
   const handleSelect = (person: Person) => {
     setQuery(person.name);
     setSelectedPerson(person);
@@ -59,6 +53,14 @@ export const Autocomplete: React.FC<Props> = ({
     setQuery('');
     setSelectedPerson(null);
     onSelected(null);
+    setDropdownActive(true); // optionally reopen dropdown on clear
+  };
+
+  // 4. Obsługa zamykania dropdown po utracie fokusu
+  const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDropdownActive(false);
+    }
   };
 
   return (
@@ -66,6 +68,8 @@ export const Autocomplete: React.FC<Props> = ({
       className={`dropdown ${isDropdownActive ? 'is-active' : ''}`}
       ref={dropdownRef}
       style={{ width: '100%' }}
+      onBlur={handleBlur}
+      tabIndex={-1} // needed for onBlur to fire on div
     >
       <div className="dropdown-trigger">
         <div className="control has-icons-right">
@@ -83,19 +87,25 @@ export const Autocomplete: React.FC<Props> = ({
             }}
             onFocus={() => setDropdownActive(true)}
             data-cy="search-input"
+            data-qa="search-input"
           />
 
           {/* Przycisk "X" do kasowania */}
           {query && (
-            <span
-              className="icon is-right is-clickable"
+            <button
+              className="delete is-small"
               onClick={handleClear}
-              style={{ pointerEvents: 'all' }}
-            >
-              <i className="fas fa-times"></i>{' '}
-              {/* Upewnij się, że masz FontAwesome lub użyj zwykłego "x" */}
-              <button className="delete is-small"></button>
-            </span>
+              aria-label="Clear input"
+              style={{
+                pointerEvents: 'all',
+                position: 'absolute',
+                right: '0.5rem',
+                top: '50%',
+                transform: 'translateY(-50%)',
+              }}
+              data-cy="clear-button"
+              data-qa="clear-button"
+            ></button>
           )}
         </div>
       </div>
@@ -105,6 +115,7 @@ export const Autocomplete: React.FC<Props> = ({
         id="dropdown-menu"
         role="menu"
         data-cy="suggestions-list"
+        data-qa="suggestions-list"
       >
         <div className="dropdown-content">
           {suggestions.length > 0 ? (
@@ -114,6 +125,7 @@ export const Autocomplete: React.FC<Props> = ({
                 className="dropdown-item"
                 onClick={() => handleSelect(person)}
                 data-cy="suggestion-item"
+                data-qa="suggestion-item"
               >
                 <span
                   className={
@@ -125,7 +137,11 @@ export const Autocomplete: React.FC<Props> = ({
               </a>
             ))
           ) : (
-            <div className="dropdown-item" data-cy="no-suggestions-message">
+            <div
+              className="dropdown-item"
+              data-cy="no-suggestions-message"
+              data-qa="no-suggestions-message"
+            >
               <p className="has-text-danger">No matching suggestions</p>
             </div>
           )}
