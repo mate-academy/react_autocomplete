@@ -11,11 +11,11 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         {currentPerson ? (
-          <h1 className="title" data-cy="title">
+          <h1 className="title" data-qa="title">
             {`${currentPerson.name} (${currentPerson.born} - ${currentPerson.died})`}
           </h1>
         ) : (
-          <h1 className="title" data-cy="title">
+          <h1 className="title" data-qa="title">
             No selected person
           </h1>
         )}

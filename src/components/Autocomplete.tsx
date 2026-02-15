@@ -51,6 +51,12 @@ export const Autocomplete: React.FC<Props> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
+    if (value.toLowerCase().trim() === currentQuery.toLowerCase().trim()) {
+      setCurrentQuery(value);
+
+      return;
+    }
+
     setCurrentQuery(value);
     onSelected(null);
 
@@ -70,7 +76,7 @@ export const Autocomplete: React.FC<Props> = ({
           type="text"
           placeholder="Enter a part of the name"
           className="input"
-          data-cy="search-input"
+          data-qa="search-input"
           value={currentQuery}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
@@ -79,7 +85,7 @@ export const Autocomplete: React.FC<Props> = ({
       </div>
 
       {focused && shownPeople.length > 0 && (
-        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+        <div className="dropdown-menu" role="menu" data-qa="suggestions-list">
           <div className="dropdown-content">
             {shownPeople.map(person => (
               <a
@@ -89,7 +95,7 @@ export const Autocomplete: React.FC<Props> = ({
                   'has-text-link': person.sex === 'm',
                   'has-text-danger': person.sex === 'f',
                 })}
-                data-cy="suggestion-item"
+                data-qa="suggestion-item"
                 style={{ cursor: 'pointer' }}
               >
                 {person.name}
@@ -103,7 +109,7 @@ export const Autocomplete: React.FC<Props> = ({
         <div
           className="notification is-danger is-light mt-3"
           role="alert"
-          data-cy="no-suggestions-message"
+          data-qa="no-suggestions-message"
           onMouseDown={e => e.preventDefault()}
         >
           <p className="has-text-danger">No matching suggestions</p>
