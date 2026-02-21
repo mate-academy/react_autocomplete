@@ -23,6 +23,12 @@ export const Autocomplete: React.FC<Props> = ({
       return;
     }
 
+    if (query.trim() === '') {
+      setFilteredPeople(people);
+
+      return;
+    }
+
     const handler = setTimeout(() => {
       const normalizedQuery = query.toLowerCase();
 
@@ -77,7 +83,6 @@ export const Autocomplete: React.FC<Props> = ({
                 setQuery(person.name);
                 setIsOpen(false);
                 lastRefQuery.current = person.name;
-                setFilteredPeople([]);
                 onSelected(person);
               }}
             >
