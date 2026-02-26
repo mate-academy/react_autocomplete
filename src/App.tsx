@@ -15,7 +15,9 @@ export const App: React.FC = () => {
 
   const createdFilteredPeople = useMemo(
     () =>
-      peopleFromServer.filter(person => person.name.includes(preparedQuery)),
+      peopleFromServer.filter(person =>
+        person.name.includes(preparedQuery.trim()),
+      ),
     [preparedQuery],
   );
 
@@ -23,15 +25,15 @@ export const App: React.FC = () => {
   const loseQuery = useCallback(debounce(setBlured, 1000), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value.trim());
-    applyQuery(event.target.value.trim());
+    setQuery(event.target.value);
+    applyQuery(event.target.value);
     setSelected(null);
   };
 
   const handleSelect = (personSelected: Person) => {
     setSelected(personSelected);
     setBlured(false);
-    setQuery('');
+    setQuery(personSelected.name);
   };
 
   return (
