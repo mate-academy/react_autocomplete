@@ -23,9 +23,15 @@ export const App: React.FC = () => {
   const loseQuery = useCallback(debounce(setBlured, 1000), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
+    setQuery(event.target.value.trim());
+    applyQuery(event.target.value.trim());
     setSelected(null);
+  };
+
+  const handleSelect = (personSelected: Person) => {
+    setSelected(personSelected);
+    setBlured(false);
+    setQuery('');
   };
 
   return (
@@ -52,12 +58,12 @@ export const App: React.FC = () => {
           {blured && (
             <SuggestionList
               filteredPeople={createdFilteredPeople}
-              onSelected={setSelected}
+              onSelected={handleSelect}
             />
           )}
         </div>
 
-        {createdFilteredPeople.length === 0 && (
+        {createdFilteredPeople.length === 0 && preparedQuery && blured && (
           <div
             className="
               notification
