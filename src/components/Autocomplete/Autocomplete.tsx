@@ -1,14 +1,14 @@
-import { useState, useMemo, ChangeEvent } from 'react';
+import { useState, useMemo, useEffect, ChangeEvent } from 'react';
 import debounce from 'lodash.debounce';
 import { Person } from '../../types/Person';
 import { peopleFromServer } from '../../data/people';
 
 type Props = {
-  delay: number;
+  delay?: number;
   onSelected: (person: Person | null) => void;
 };
 
-export const Autocomplete = ({ delay, onSelected }: Props) => {
+export const Autocomplete = ({ delay = 300, onSelected }: Props) => {
   const [showList, setShowList] = useState(false);
   const [inputName, setInputName] = useState('');
   const [people, setPeople] = useState<Person[]>([...peopleFromServer]);
@@ -21,6 +21,8 @@ export const Autocomplete = ({ delay, onSelected }: Props) => {
     if (trimmed === '') {
       setPeople([...peopleFromServer]);
       setHasMatchedError(false);
+      onSelected(null);
+      setShowList(true);
 
       return;
     }
@@ -40,8 +42,12 @@ export const Autocomplete = ({ delay, onSelected }: Props) => {
   );
 
   // Input onChange function
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+
+    if (value === inputName) {
+      return;
+    }
 
     setInputName(value);
     debouncedFilter(value);
@@ -49,15 +55,17 @@ export const Autocomplete = ({ delay, onSelected }: Props) => {
     setHasMatchedError(false);
     onSelected(null);
 
-    if (value === '') {
-      setShowList(false);
-      onSelected(null);
-    }
+    // if (value === '') {
+    //   setShowList(false);
+    //   onSelected(null);
+    // }
 
-    if (people.length === 0) {
-      setHasMatchedError(true);
-    }
+    // if (people.length === 0) {
+    //   setHasMatchedError(true);
+    // }
   };
+
+  useEffect(() => () => debouncedFilter.cancel(), [debouncedFilter]);
 
   return (
     <>
@@ -65,8 +73,12 @@ export const Autocomplete = ({ delay, onSelected }: Props) => {
         <div className="dropdown-trigger">
           <input
             value={inputName}
-            onChange={onChange}
-            onFocus={() => setShowList(true)}
+            onChange={handleChange}
+            onFocus={() => {
+              setPeople([...peopleFromServer]);
+              setShowList(true);
+              setHasMatchedError(false);
+            }}
             onBlur={() => setShowList(false)}
             type="text"
             placeholder="Enter a part of the name"
@@ -83,7 +95,8 @@ export const Autocomplete = ({ delay, onSelected }: Props) => {
                   className="dropdown-item"
                   data-cy="suggestion-item"
                   key={person.name}
-                  onMouseDown={() => {
+                  onMouseDown={e => {
+                    e.preventDefault();
                     onSelected(person);
                     setInputName(person.name);
                     setShowList(false);
