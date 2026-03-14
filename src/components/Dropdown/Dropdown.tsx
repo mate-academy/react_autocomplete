@@ -9,17 +9,13 @@ interface Props {
   delay?: number;
 }
 
-export const Dropdown = ({
-  people,
-  onSelected,
-  delay = 1000,
-}: Props) => {
+export const Dropdown = ({ people, onSelected, delay = 300 }: Props) => {
   const [inputText, setInputText] = useState('');
   const [filterQuery, setFilterQuery] = useState('');
   const [isPersonSelected, setIsPersonSelected] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const onTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsPersonSelected(false);
     onSelected(null);
     setInputText(event.target.value);
@@ -34,11 +30,11 @@ export const Dropdown = ({
   }, [inputText]);
 
   const filteredPeople = useMemo(() => {
-    if (!filterQuery) {
+    const normalizedQuery = filterQuery.toLowerCase().trim();
+
+    if (!normalizedQuery) {
       return people;
     }
-
-    const normalizedQuery = filterQuery.toLowerCase().trim();
 
     return people.filter(person => {
       return person.name.toLowerCase().includes(normalizedQuery);
@@ -70,7 +66,7 @@ export const Dropdown = ({
             className="input"
             data-cy="search-input"
             value={inputText}
-            onChange={onTextChange}
+            onChange={handleTextChange}
             onFocus={() => setIsOpen(true)}
             onBlur={() => setIsOpen(false)}
           />
