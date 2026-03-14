@@ -6,9 +6,14 @@ import { clsx } from 'clsx';
 interface Props {
   people: Person[];
   onSelected: (value: Person | null) => void;
+  delay?: number;
 }
 
-export const Dropdown = ({ people, onSelected }: Props) => {
+export const Dropdown = ({
+  people,
+  onSelected,
+  delay = 1000,
+}: Props) => {
   const [inputText, setInputText] = useState('');
   const [filterQuery, setFilterQuery] = useState('');
   const [isPersonSelected, setIsPersonSelected] = useState(false);
@@ -23,7 +28,7 @@ export const Dropdown = ({ people, onSelected }: Props) => {
   useEffect(() => {
     const timerId = setTimeout(() => {
       setFilterQuery(inputText);
-    }, 1000);
+    }, delay);
 
     return () => clearTimeout(timerId);
   }, [inputText]);
@@ -33,7 +38,7 @@ export const Dropdown = ({ people, onSelected }: Props) => {
       return people;
     }
 
-    const normalizedQuery = filterQuery.toLowerCase();
+    const normalizedQuery = filterQuery.toLowerCase().trim();
 
     return people.filter(person => {
       return person.name.toLowerCase().includes(normalizedQuery);
