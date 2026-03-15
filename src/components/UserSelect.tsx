@@ -18,9 +18,7 @@ export const UserSelect = ({
   const [appliedQuery, setAppliedQuery] = React.useState('');
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), [
-    appliedQuery,
-  ]);
+  const applyQuery = useCallback(debounce(setAppliedQuery, delay), [delay]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -29,7 +27,7 @@ export const UserSelect = ({
   };
 
   const filterPeople = useMemo(() => {
-    if (!appliedQuery) {
+    if (!appliedQuery.trim()) {
       return people;
     }
 
@@ -48,7 +46,6 @@ export const UserSelect = ({
             value={query}
             onChange={handleQueryChange}
             onFocus={() => setIsDropdownOpen(true)}
-            onBlur={() => setIsDropdownOpen(false)}
           />
         </div>
 
@@ -60,7 +57,10 @@ export const UserSelect = ({
                   className="dropdown-item"
                   key={person.slug}
                   data-cy="suggestion-item"
-                  onClick={() => onSelect(person)}
+                  onClick={() => {
+                    onSelect(person);
+                    setQuery(person.name);
+                  }}
                 >
                   <p
                     className={classNames({
