@@ -37,15 +37,14 @@ export const Autocomplete: React.FC<Props> = ({
     }
 
     prevQuery.current = debouncedQuery;
-    const normalized = debouncedQuery.toLowerCase();
+    const normalized = debouncedQuery.trim().toLowerCase(); // <-- обрізаємо пробіли
 
-    // eslint-disable-next-line prettier/prettier
     const result =
-      debouncedQuery === ''
-        ? people // Показати всіх людей, якщо поле пусте
+      normalized === '' // якщо після trim пустий рядок, показуємо всіх людей
+        ? people
         : people.filter(person =>
-          person.name.toLowerCase().includes(normalized),
-        );
+            person.name.toLowerCase().includes(normalized),
+          );
 
     setFilteredPeople(result);
   }, [debouncedQuery, people]);
