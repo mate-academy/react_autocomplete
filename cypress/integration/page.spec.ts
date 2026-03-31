@@ -152,6 +152,8 @@ describe('Page', () => {
       page.searchInput()
         .type('{backspace}');
 
+      page.waitForDebounce();
+
       page.title()
         .should('contain', 'No selected person');
     });

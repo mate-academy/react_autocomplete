@@ -1,72 +1,100 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Autocomplete } from './autocomplete';
+import { Person } from './types/Person';
+import debounce from 'lodash.debounce';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+function getSuggestions(people: Person[], query: string) {
+  let preparedSuggestions;
+  const normalizedQuery = query.trim().toLowerCase();
+
+  if (normalizedQuery) {
+    preparedSuggestions = people.filter(person =>
+      person.name.toLowerCase().startsWith(normalizedQuery),
+    );
+  }
+
+  return preparedSuggestions !== undefined ? preparedSuggestions : people;
+}
+
+type AppProps = {
+  debounceDelay?: number;
+};
+
+export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
+  const [query, setQuery] = React.useState('');
+  const [inputValue, setInputValue] = React.useState('');
+  const [isInputFocused, setIsInputFocused] = React.useState(false);
+  const [selectedPerson, setSelectedPerson] = React.useState<Person | null>(
+    null,
+  );
+
+  const suggestions =
+    query.trim() || isInputFocused
+      ? getSuggestions(peopleFromServer, query)
+      : [];
+
+  const handleSelectPerson = (person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+    setInputValue(person.name);
+  };
+
+  const applyQueryDebounce = useCallback(
+    debounce((value: string) => {
+      setQuery(value);
+      setSelectedPerson(null);
+    }, debounceDelay),
+    [debounceDelay],
+  );
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+
+    setInputValue(value);
+    applyQueryDebounce(value);
+  };
+
+  const handleInputFocus = () => {
+    setIsInputFocused(true);
+  };
+
+  const handleInputBlur = () => {
+    setIsInputFocused(false);
+  };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {!selectedPerson
+            ? 'No selected person'
+            : `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
         </h1>
 
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
             <input
+              value={inputValue}
+              onChange={handleQueryChange}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
               type="text"
               placeholder="Enter a part of the name"
               className="input"
               data-cy="search-input"
             />
           </div>
-
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
+              <Autocomplete
+                people={suggestions}
+                onSelect={handleSelectPerson}
+                isFocused={isInputFocused}
+              />
             </div>
           </div>
-        </div>
-
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
         </div>
       </main>
     </div>
