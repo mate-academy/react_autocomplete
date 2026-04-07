@@ -26,7 +26,7 @@ export const Autocomplete = ({
     }, delay);
   }, [delay]);
 
-  const showDropManu = (): void => {
+  const handleFocus = (): void => {
     setIsFocused(true);
   };
 
@@ -39,8 +39,14 @@ export const Autocomplete = ({
   };
 
   const getFilteredPeople = (valueInp: string): Person[] => {
+    const normalizedValue = valueInp.trim();
+
+    if (!normalizedValue) {
+      return peopleFromServer;
+    }
+
     return peopleFromServer.filter(el =>
-      el.name.toLowerCase().includes(valueInp.toLowerCase()),
+      el.name.toLowerCase().includes(normalizedValue.toLowerCase()),
     );
   };
 
@@ -74,7 +80,7 @@ export const Autocomplete = ({
   return (
     <>
       <div ref={containerRef} className="dropdown is-active">
-        <Input value={value} onChange={handleInput} onFocus={showDropManu} />
+        <Input value={value} onChange={handleInput} onFocus={handleFocus} />
         {isFocused && (
           <>
             {query === '' && (

@@ -7,13 +7,14 @@ interface ItemPerson {
 export const Item = ({ user, onSelect }: ItemPerson) => {
   return (
     <>
-      <div className="dropdown-item is-clickable" data-cy="suggestion-item">
-        <p
-          onClick={() => {
-            onSelect(user);
-          }}
-          className={user.sex === 'm' ? 'has-text-link' : 'has-text-danger'}
-        >
+      <div
+        className="dropdown-item is-clickable"
+        data-cy="suggestion-item"
+        onClick={() => {
+          onSelect(user);
+        }}
+      >
+        <p className={user.sex === 'm' ? 'has-text-link' : 'has-text-danger'}>
           {user.name}
         </p>
       </div>
