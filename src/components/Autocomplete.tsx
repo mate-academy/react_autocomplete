@@ -52,6 +52,8 @@ export const Autocomplete = ({
 
   const result = getFilteredPeople(query);
 
+  const normalizedQuery = query.trim();
+
   // .. для вставки у інпут значення
   const handleSelect = (person: Person) => {
     setValue(person.name); // вставляємо в input
@@ -83,15 +85,15 @@ export const Autocomplete = ({
         <Input value={value} onChange={handleInput} onFocus={handleFocus} />
         {isFocused && (
           <>
-            {query === '' && (
+            {!normalizedQuery && (
               <List result={peopleFromServer} onSelect={handleSelect} />
             )}
 
-            {query !== '' && result.length > 0 && (
+            {normalizedQuery && result.length > 0 && (
               <List result={result} onSelect={handleSelect} />
             )}
 
-            {query !== '' && result.length === 0 && <NoSuggestions />}
+            {normalizedQuery && result.length === 0 && <NoSuggestions />}
           </>
         )}
       </div>
