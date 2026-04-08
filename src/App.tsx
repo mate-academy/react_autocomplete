@@ -9,7 +9,7 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const filteredPeople = useMemo(() => {
-    const searchTerm = query.toLowerCase() || '';
+    const searchTerm = query.trim().toLowerCase() || '';
 
     return peopleFromServer.filter(person =>
       person.name.toLowerCase().includes(searchTerm),

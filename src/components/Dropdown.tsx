@@ -34,8 +34,8 @@ export const Dropdown: React.FC<DropdownProps> = React.memo(
               data-cy="search-input"
               value={value}
               onChange={e => {
-                setValue(e.target.value.trim());
-                debouncedSetQuery(e.target.value.trim());
+                setValue(e.target.value);
+                debouncedSetQuery(e.target.value);
               }}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
@@ -66,7 +66,7 @@ export const Dropdown: React.FC<DropdownProps> = React.memo(
           </div>
         </div>
 
-        {people.length === 0 && (
+        {isFocused && value && people.length === 0 && (
           <div
             className="
             notification
