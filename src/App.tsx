@@ -10,7 +10,7 @@ export const App: React.FC = () => {
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
+        <h1 className="title" data-cy="title" data-qa="title">
           {selectedPerson
             ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
             : 'No selected person'}

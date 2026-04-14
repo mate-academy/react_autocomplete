@@ -1,5 +1,5 @@
 import { Person } from '../types/Person';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 interface Props {
   person: Person[];
   delay?: number;
@@ -16,15 +16,22 @@ export default function Input({
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<Person[]>([]);
+  const lastTrimmedRef = useRef('');
 
   useEffect(() => {
-    const queryLower = query.trim().toLowerCase();
+    const trimmed = query.trim().toLowerCase();
+
+    if (lastTrimmedRef.current === trimmed) {
+      return;
+    }
+
+    lastTrimmedRef.current = trimmed;
 
     const timeout = window.setTimeout(() => {
       const nextSuggestions =
-        queryLower === ''
+        trimmed === ''
           ? person
-          : person.filter(pers => pers.name.toLowerCase().includes(queryLower));
+          : person.filter(pers => pers.name.toLowerCase().includes(trimmed));
 
       setSuggestions(nextSuggestions);
     }, delay);
@@ -53,14 +60,24 @@ export default function Input({
             setIsOpen(true);
             onInputChange?.();
           }}
-          onFocus={() => setIsOpen(true)}
+          onFocus={() => {
+            setIsOpen(true);
+            if (query.trim() === '') {
+              setSuggestions(person);
+            }
+          }}
           data-cy="search-input"
+          data-qa="search-input"
         />
       </div>
       <div className="dropdown-menu" id="dropdown-menu" role="menu">
         <div className="dropdown-content" data-cy="suggestions-list">
           {query !== '' && suggestions.length === 0 ? (
-            <div className="dropdown-item" data-cy="no-suggestions-message">
+            <div
+              className="dropdown-item"
+              data-cy="no-suggestions-message"
+              data-qa="no-suggestions-message"
+            >
               No matching suggestions
             </div>
           ) : (
@@ -70,6 +87,7 @@ export default function Input({
                 href="#"
                 className="dropdown-item"
                 data-cy="suggestion-item"
+                data-qa="suggestion-item"
                 onMouseDown={e => {
                   e.preventDefault();
                   handleSelect(pers);
