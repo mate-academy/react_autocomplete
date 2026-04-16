@@ -1,0 +1,108 @@
+import { Person } from '../types/Person';
+import { useEffect, useRef, useState } from 'react';
+interface Props {
+  people: Person[];
+  delay?: number;
+  onSelected: (person: Person) => void;
+  onInputChange?: () => void;
+}
+
+export default function Input({
+  people,
+  delay = 300,
+  onSelected,
+  onInputChange,
+}: Props) {
+  const [query, setQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState<Person[]>([]);
+  const lastTrimmedRef = useRef('');
+
+  useEffect(() => {
+    const trimmed = query.trim().toLowerCase();
+
+    if (lastTrimmedRef.current === trimmed) {
+      return;
+    }
+
+    lastTrimmedRef.current = trimmed;
+
+    const timeout = window.setTimeout(() => {
+      const nextSuggestions =
+        trimmed === ''
+          ? people
+          : people.filter(pers => pers.name.toLowerCase().includes(trimmed));
+
+      setSuggestions(nextSuggestions);
+    }, delay);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [query, delay, people]);
+
+  const handleSelect = (selectedPerson: Person) => {
+    setQuery(selectedPerson.name);
+    setIsOpen(false);
+    onSelected(selectedPerson);
+  };
+
+  return (
+    <div className={isOpen ? 'dropdown is-active' : 'dropdown'}>
+      <div className="dropdown-trigger">
+        <input
+          className="input is-medium"
+          type="text"
+          placeholder="Enter a part of the name"
+          value={query}
+          onChange={e => {
+            setQuery(e.target.value);
+            setIsOpen(true);
+            onInputChange?.();
+          }}
+          onFocus={() => {
+            setIsOpen(true);
+            if (query.trim() === '') {
+              setSuggestions(people);
+            }
+          }}
+          data-cy="search-input"
+          data-qa="search-input"
+        />
+      </div>
+      <div className="dropdown-menu" id="dropdown-menu" role="menu">
+        <div
+          className="dropdown-content"
+          data-cy="suggestions-list"
+          data-qa="suggestions-list"
+        >
+          {query.trim() !== '' && suggestions.length === 0 ? (
+            <div
+              className="dropdown-item"
+              data-cy="no-suggestions-message"
+              data-qa="no-suggestions-message"
+            >
+              No matching suggestions
+            </div>
+          ) : (
+            suggestions.map(pers => (
+              <button
+                key={pers.slug}
+                type="button"
+                className="dropdown-item"
+                data-cy="suggestion-item"
+                data-qa="suggestion-item"
+                onMouseDown={e => {
+                  e.preventDefault();
+                  handleSelect(pers);
+                }}
+              >
+                {pers.name}
+              </button>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
