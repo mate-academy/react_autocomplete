@@ -16,7 +16,7 @@ export const App: React.FC = () => {
             : 'No selected person'}
         </h1>
         <Input
-          person={peopleFromServer}
+          people={peopleFromServer}
           delay={300}
           onSelected={person => setSelectedPerson(person)}
           onInputChange={() => setSelectedPerson(null)}

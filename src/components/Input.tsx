@@ -1,14 +1,14 @@
 import { Person } from '../types/Person';
 import { useEffect, useRef, useState } from 'react';
 interface Props {
-  person: Person[];
+  people: Person[];
   delay?: number;
   onSelected: (person: Person) => void;
   onInputChange?: () => void;
 }
 
 export default function Input({
-  person,
+  people,
   delay = 300,
   onSelected,
   onInputChange,
@@ -30,8 +30,8 @@ export default function Input({
     const timeout = window.setTimeout(() => {
       const nextSuggestions =
         trimmed === ''
-          ? person
-          : person.filter(pers => pers.name.toLowerCase().includes(trimmed));
+          ? people
+          : people.filter(pers => pers.name.toLowerCase().includes(trimmed));
 
       setSuggestions(nextSuggestions);
     }, delay);
@@ -39,7 +39,7 @@ export default function Input({
     return () => {
       clearTimeout(timeout);
     };
-  }, [query, delay, person]);
+  }, [query, delay, people]);
 
   const handleSelect = (selectedPerson: Person) => {
     setQuery(selectedPerson.name);
@@ -63,7 +63,7 @@ export default function Input({
           onFocus={() => {
             setIsOpen(true);
             if (query.trim() === '') {
-              setSuggestions(person);
+              setSuggestions(people);
             }
           }}
           data-cy="search-input"
@@ -71,8 +71,12 @@ export default function Input({
         />
       </div>
       <div className="dropdown-menu" id="dropdown-menu" role="menu">
-        <div className="dropdown-content" data-cy="suggestions-list">
-          {query !== '' && suggestions.length === 0 ? (
+        <div
+          className="dropdown-content"
+          data-cy="suggestions-list"
+          data-qa="suggestions-list"
+        >
+          {query.trim() !== '' && suggestions.length === 0 ? (
             <div
               className="dropdown-item"
               data-cy="no-suggestions-message"
@@ -82,9 +86,9 @@ export default function Input({
             </div>
           ) : (
             suggestions.map(pers => (
-              <a
+              <button
                 key={pers.slug}
-                href="#"
+                type="button"
                 className="dropdown-item"
                 data-cy="suggestion-item"
                 data-qa="suggestion-item"
@@ -94,7 +98,7 @@ export default function Input({
                 }}
               >
                 {pers.name}
-              </a>
+              </button>
             ))
           )}
         </div>
