@@ -60,20 +60,20 @@ export const Autocomplete: React.FC<Props> = ({
           type="text"
           placeholder="Enter a part of the name"
           className="input"
-          data-qa="search-input"
+          data-cy="search-input"
           value={query}
           onChange={handleQueryChange}
           onFocus={handleFocus}
         />
       </div>
 
-      <div className="dropdown-menu" role="menu" data-qa="suggestions-list">
+      <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
         <div className="dropdown-content">
           {suggestions.map((human: Person) => (
             <div
-              key={human.name + human.born}
+              key={human.slug}
               className="dropdown-item"
-              data-qa="suggestion-item"
+              data-cy="suggestion-item"
               onMouseDown={() => {
                 setQuery(human.name);
                 setIsOpen(false);
@@ -96,7 +96,7 @@ export const Autocomplete: React.FC<Props> = ({
             is-align-self-flex-start
           "
           role="alert"
-          data-qa="no-suggestions-message"
+          data-cy="no-suggestions-message"
         >
           <p className="has-text-danger">No matching suggestions</p>
         </div>
