@@ -1,15 +1,55 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Autocomplete } from './components/Autocomplete';
+import { Person } from './types/Person';
+
+function debounce(callback: unknown, delay = 300) {
+  let timerId: unknown = 0;
+
+  return (...args: unknown[]) => {
+    if (typeof timerId === 'number') {
+      clearTimeout(timerId);
+    }
+
+    timerId = setTimeout(() => {
+      if (typeof callback === 'function') {
+        callback(...args);
+      }
+    }, delay);
+  };
+}
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const [people, setPeople] = useState(peopleFromServer);
+  const [selected, onSelected] = useState<Person | null>(null);
+  const [showList, setShowList] = useState(false);
+
+  const [value, setValue] = useState('');
+
+  const filterPeople = useMemo(() => debounce(setPeople, 1000), []);
+
+  useEffect(() => {
+    const filter = peopleFromServer.filter(onePeople => {
+      if (onePeople.name.toLowerCase().includes(value)) {
+        return true;
+      }
+    });
+
+    filterPeople(filter);
+  }, [value]);
+
+  useEffect(() => {
+    setShowList(false);
+  }, [selected]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selected && selected?.name === value
+            ? `${selected.name} (${selected.born} - ${selected.died})`
+            : `No selected person`}
         </h1>
 
         <div className="dropdown is-active">
@@ -18,56 +58,40 @@ export const App: React.FC = () => {
               type="text"
               placeholder="Enter a part of the name"
               className="input"
+              value={value}
               data-cy="search-input"
+              onFocus={() => setShowList(true)}
+              onChange={e => {
+                setValue(e.target.value);
+              }}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
+          {showList && (
+            <Autocomplete
+              people={people}
+              onNewSelected={prev => onSelected(prev)}
+              setNewValue={prev => setValue(prev)}
+            />
+          )}
         </div>
-
-        <div
-          className="
+        {people.length > 0 ? (
+          ''
+        ) : (
+          <div
+            className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
           "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
