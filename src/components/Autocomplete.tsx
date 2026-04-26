@@ -8,12 +8,6 @@ type Props = {
   setNewValue: (name: string) => void;
 };
 
-function randomId() {
-  const id: number = +String(Math.random()).slice(2);
-
-  return id;
-}
-
 export const Autocomplete: React.FC<Props> = ({
   people,
   onNewSelected,
@@ -26,7 +20,7 @@ export const Autocomplete: React.FC<Props> = ({
           {people.map(person => {
             return (
               <div
-                key={randomId()}
+                key={person.slug}
                 className="dropdown-item"
                 data-cy="suggestion-item"
                 style={{ cursor: 'pointer' }}

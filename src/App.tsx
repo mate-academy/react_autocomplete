@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Autocomplete } from './components/Autocomplete';
@@ -27,11 +27,15 @@ export const App: React.FC = () => {
 
   const [value, setValue] = useState('');
 
-  const filterPeople = useMemo(() => debounce(setPeople, 1000), []);
+  const filterPeople = useCallback(debounce(setPeople), []);
+
+  if (selected && selected.name !== value.trim()) {
+    onSelected(null);
+  }
 
   useEffect(() => {
     const filter = peopleFromServer.filter(onePeople => {
-      if (onePeople.name.toLowerCase().includes(value)) {
+      if (onePeople.name.toLowerCase().includes(value.toLowerCase())) {
         return true;
       }
     });
@@ -39,15 +43,11 @@ export const App: React.FC = () => {
     filterPeople(filter);
   }, [value]);
 
-  useEffect(() => {
-    setShowList(false);
-  }, [selected]);
-
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selected && selected?.name === value
+          {selected && selected.name === value
             ? `${selected.name} (${selected.born} - ${selected.died})`
             : `No selected person`}
         </h1>
@@ -66,6 +66,7 @@ export const App: React.FC = () => {
               }}
             />
           </div>
+          <div>{`${value}, ${selected?.name}`}</div>
 
           {showList && (
             <Autocomplete
@@ -75,9 +76,7 @@ export const App: React.FC = () => {
             />
           )}
         </div>
-        {people.length > 0 ? (
-          ''
-        ) : (
+        {people.length === 0 && !selected ? (
           <div
             className="
             notification
@@ -91,6 +90,8 @@ export const App: React.FC = () => {
           >
             <p className="has-text-danger">No matching suggestions</p>
           </div>
+        ) : (
+          ''
         )}
       </main>
     </div>
