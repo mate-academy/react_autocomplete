@@ -89,8 +89,8 @@ module.exports = {
     // Typescript
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-unused-vars': ['error'],
-    '@typescript-eslint/indent': ['error', 2],
+  '@typescript-eslint/no-unused-vars': ['error'],
+  '@typescript-eslint/indent': 'off',
     '@typescript-eslint/ban-types': ['error', {
         extendDefaults: true,
         types: {
