@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
 import classNames from 'classnames';
@@ -34,6 +34,12 @@ export const Autocomplete: React.FC<Props> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyQuery = useCallback(debounce(isAppliedQuery, delay), [delay]);
 
+  useEffect(() => {
+  return () => {
+    applyQuery.cancel();
+  };
+}, [applyQuery]);
+
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onQueryChange(event.target.value);
     applyQuery(event.target.value);
@@ -41,9 +47,10 @@ export const Autocomplete: React.FC<Props> = ({
 
   const normalizedQuery = appliedQuery.trim().toLowerCase();
 
-  const filteredPeople = appliedQuery
+  const filteredPeople = normalizedQuery
     ? people.filter(person =>
-        person.name.toLowerCase().includes(normalizedQuery))
+        person.name.toLowerCase().includes(normalizedQuery),
+      )
     : people;
 
   return (
