@@ -70,5 +70,6 @@ export const App: React.FC = () => {
         </div>
       </main>
     </div>
+    // The above code is a simple React component that displays a title with a person's name and birth/death years, an input field for searching, a dropdown list of suggestions, and a notification message when there are no matching suggestions. The component uses Bulma CSS classes for styling and includes data-cy attributes for testing purposes.
   );
 };
