@@ -4,7 +4,7 @@ import { Person } from './types/Person';
 type Props = {
   people: Person[];
   onSelected: (person: Person | null) => void;
-  delay: number;
+  delay?: number;
 };
 
 export const Autocomplete = ({
@@ -20,6 +20,10 @@ export const Autocomplete = ({
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (inputValue === prevValue.current) {
+        return;
+      }
+
+      if (inputValue.trim() === '') {
         return;
       }
 
@@ -48,7 +52,12 @@ export const Autocomplete = ({
               setInputValue(e.target.value);
               onSelected(null);
             }}
-            onFocus={() => setIsOpen(true)}
+            onFocus={() => {
+              setIsOpen(true);
+              if (inputValue.trim() === '') {
+                setFilteredPeople(people);
+              }
+            }}
           />
         </div>
 
