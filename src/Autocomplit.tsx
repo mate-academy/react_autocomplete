@@ -12,10 +12,8 @@ export const Autocomplete: React.FC<Props> = ({ people, onSelected, delay = 300 
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-
   const lastAppliedQuery = useRef('');
 
-  // Debounce logic: update appliedQuery only after typing stops
   useEffect(() => {
     const handler = setTimeout(() => {
       if (query !== lastAppliedQuery.current) {
@@ -32,7 +30,9 @@ export const Autocomplete: React.FC<Props> = ({ people, onSelected, delay = 300 
   );
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+    const value = event.target.value;
+    setQuery(value);
+    setIsOpen(true);
     onSelected(null);
   };
 
@@ -45,46 +45,39 @@ export const Autocomplete: React.FC<Props> = ({ people, onSelected, delay = 300 
   };
 
   return (
-    <div className={classNames("dropdown", { "is-active": isOpen })}>
+    <div className={classNames('dropdown', { 'is-active': isOpen })}>
       <div className="dropdown-trigger">
         <input
           type="text"
-          placeholder="Enter a part of the name"
           className="input"
+          placeholder="Enter a part of the name"
           data-cy="search-input"
           value={query}
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
-          onBlur={() => setTimeout(() => setIsOpen(false), 300)}
+          // Невелика затримка, щоб клік по випадному списку встиг спрацювати
+          onBlur={() => setTimeout(() => setIsOpen(false), 200)}
         />
       </div>
 
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
         <div className="dropdown-content">
-          {filteredPeople.map(p => (
-            <a
-              key={p.name}
-              className="dropdown-item"
-              data-cy="suggestion-item"
-              onClick={() => handleSelect(p)}
-            >
-              <p className="has-text-link">{p.name}</p>
-            </a>
-          ))}
-
-          {filteredPeople.length === 0 && (
-            <div
-              className="
-                notification
-                is-danger
-                is-light
-                mt-3
-                is-align-self-flex-start
-              "
-              role="alert"
-              data-cy="no-suggestions-message"
-            >
-              <p className="has-text-danger">No matching suggestions</p>
+          {filteredPeople.length > 0 ? (
+            filteredPeople.map(p => (
+              <a
+                key={p.name}
+                className="dropdown-item"
+                data-cy="suggestion-item"
+                onClick={() => handleSelect(p)}
+              >
+                <p className="has-text-link">{p.name}</p>
+              </a>
+            ))
+          ) : (
+            <div className="dropdown-item">
+              <p className="has-text-danger" data-cy="no-suggestions-message">
+                No matching suggestions
+              </p>
             </div>
           )}
         </div>
