@@ -5,12 +5,14 @@ type Props = {
   people: Person[];
   delay?: number;
   onSelected: (person: Person | null) => void;
+  selectedPerson: Person | null;
 };
 
 export const Autocomplete: React.FC<Props> = ({
   people,
   delay = 300,
   onSelected,
+  selectedPerson,
 }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -27,15 +29,24 @@ export const Autocomplete: React.FC<Props> = ({
   }, [query, delay]);
 
   const visiblePeople = useMemo(() => {
+    if (appliedQuery.trim() === '') {
+      return people;
+    }
+
     return people.filter(person =>
       person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
     );
   }, [people, appliedQuery]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+    const newQuery = event.target.value;
+
+    setQuery(newQuery);
     setIsOpen(true);
-    onSelected(null);
+
+    if (selectedPerson && newQuery !== selectedPerson.name) {
+      onSelected(null);
+    }
   };
 
   const handleSelect = (person: Person) => {
