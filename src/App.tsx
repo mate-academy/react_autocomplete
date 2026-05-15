@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
-import { Autocomplete } from './components/Autocomplete/Autocomplete.tsx';
+import { Autocomplete } from './components/Autocomplete/Autocomplete';
 import { Person } from './types/Person';
 
 export const App: React.FC = () => {

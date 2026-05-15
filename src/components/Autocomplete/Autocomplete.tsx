@@ -21,10 +21,11 @@ export const Autocomplete: React.FC<Props> = React.memo(function Autocomplete({
   const [isOpen, setIsOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState<number>(-1);
 
-  const applyQuery = useCallback(
-    () => debounce((value: string) => setAppliedQuery(value), delay),
-    [delay],
-  );
+  const applyQuery = useMemo(() => {
+    return debounce((value: string) => {
+      setAppliedQuery(value);
+    }, delay);
+  }, [delay]);
 
   const handleQueryChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
