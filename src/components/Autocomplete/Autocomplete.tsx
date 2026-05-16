@@ -29,8 +29,15 @@ export const Autocomplete: React.FC<Props> = React.memo(function Autocomplete({
 
   const handleQueryChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(event.target.value);
-      applyQuery(event.target.value);
+      const input = event.target.value;
+
+      setQuery(input);
+
+      if (!input.trim()) {
+        return;
+      }
+
+      applyQuery(input);
       onChange();
       setIsOpen(true);
       setHighlightIndex(-1);
@@ -87,6 +94,7 @@ export const Autocomplete: React.FC<Props> = React.memo(function Autocomplete({
           onKeyDown={handleKeyDown}
           aria-expanded={isOpen}
           aria-controls="suggestions-list"
+          data-cy="search-input"
         />
       </div>
 
@@ -100,7 +108,8 @@ export const Autocomplete: React.FC<Props> = React.memo(function Autocomplete({
           <div className="dropdown-content">
             {suggestions.map((person, index) => (
               <div
-                key={`${person.slug}-${index}`}
+                // key={`${person.slug}-${index}`} //
+                key={person.slug}
                 role="option"
                 aria-selected={highlightIndex === index}
                 className={cn('dropdown-item', {
