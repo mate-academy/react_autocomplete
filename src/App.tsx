@@ -5,9 +5,10 @@ import { Person } from './types/Person';
 
 type Props = {
   delay?: number;
+  onSelected?: (person: Person) => void;
 };
 
-export const App: React.FC<Props> = ({ delay = 300 }) => {
+export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState(peopleFromServer);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -39,6 +40,8 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
     setSelectedPerson(person);
     setQuery(person.name);
     setIsDropdownVisible(false);
+
+    onSelected?.(person);
   };
 
   return (
