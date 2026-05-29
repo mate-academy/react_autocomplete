@@ -15,9 +15,10 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [debouncedQuery, setDebouncedQuery] = useState('');
-  const visiblePeople = people.filter(person =>
-    person.name.toLowerCase().includes(debouncedQuery.toLowerCase().trim()),
-  );
+  const cleanQuery = debouncedQuery.trim().toLowerCase();
+  const visiblePeople = cleanQuery
+    ? people.filter(person => person.name.toLowerCase().includes(cleanQuery))
+    : people;
 
   React.useEffect(() => {
     const timerId = setTimeout(() => {
@@ -26,6 +27,9 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
 
     return () => clearTimeout(timerId);
   }, [query, delay]);
+
+  const shouldShowNoResults =
+    isOpen && cleanQuery && visiblePeople.length === 0;
 
   return (
     <>
@@ -51,7 +55,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
               <div
                 className="dropdown-item"
                 data-cy="suggestion-item"
-                key={person.name}
+                key={person.id}
                 onClick={() => {
                   onSelected(person);
                   setQuery(person.name);
@@ -65,17 +69,15 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
         </div>
       </div>
 
-      {isOpen &&
-        debouncedQuery.trim().length > 0 &&
-        visiblePeople.length === 0 && (
+      {shouldShowNoResults && (
         <div
           className="
-          notification
-          is-danger
-          is-light
-          mt-3
-          is-align-self-flex-start
-        "
+            notification
+            is-danger
+            is-light
+            mt-3
+            is-align-self-flex-start
+            "
           role="alert"
           data-cy="no-suggestions-message"
         >
