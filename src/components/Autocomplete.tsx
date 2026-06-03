@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, } from 'react';
 import { Person } from '../types/Person';
 import classNames from 'classnames';
-import { useMemo } from 'react';
+
 
 type Props = {
   people: Person[]; //це не знаю чи правильно
   onSelected: (person: Person) => void;
   onClear: () => void;
+  delay?: number;
 };
 
 export const Autocomplete: React.FC<Props> = ({
   people,
   onSelected,
   onClear,
+  delay = 300,
 }) => {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -28,12 +30,12 @@ export const Autocomplete: React.FC<Props> = ({
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(query.trim());
-    }, 1000);
+    }, delay);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [query]);
+  }, [query, delay]);
 
   return (
     <div
