@@ -2,13 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 
-interface Person {
+export interface Person {
   name: string;
   born: number;
   died: number;
 }
 
-export const App: React.FC = () => {
+interface Props {
+  delay?: number;
+  onSelected?: (person: Person | null) => void;
+}
+
+export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -18,15 +23,21 @@ export const App: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setAppliedQuery(query);
-    }, 300);
+    }, delay);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [query]);
+  }, [query, delay]);
 
   const filteredPerson = peopleFromServer.filter(person => {
-    return person.name.toLowerCase().includes(appliedQuery.toLowerCase());
+    const trimmedQuery = appliedQuery.trim();
+
+    if (!trimmedQuery) {
+      return true;
+    }
+
+    return person.name.toLowerCase().includes(trimmedQuery.toLowerCase());
   });
 
   let suggestionsContent;
@@ -41,6 +52,10 @@ export const App: React.FC = () => {
           style={{ cursor: 'pointer' }}
           onClick={() => {
             setSelectedPerson(person);
+            if (onSelected) {
+              onSelected(person);
+            }
+
             setQuery(person.name);
             setAppliedQuery(person.name);
             setIsOpen(false);
@@ -77,6 +92,10 @@ export const App: React.FC = () => {
               value={query}
               onChange={e => {
                 setSelectedPerson(null);
+                if (onSelected) {
+                  onSelected(null);
+                }
+
                 setQuery(e.target.value);
                 setIsOpen(true);
               }}
