@@ -1,19 +1,29 @@
-import React from "react";
-import { Person } from "../types/Person";
+import React from 'react';
+import classNames from 'classnames';
+import { Person } from '../types/Person';
 
 type Props = {
   person: Person;
   onClick: (person: Person) => void;
-}
+};
 
-export const PersonInfo: React.FC<Props> = ({person, onClick}) => {
+export const PersonInfo: React.FC<Props> = ({ person, onClick }) => {
+  const itemClass = classNames('dropdown-item', {
+    'has-text-link': person.sex === 'm',
+    'has-text-danger': person.sex === 'f',
+  });
+
   return (
-    <div
-      className="dropdown-item"
+    <a
+      href="#"
+      className={itemClass}
       data-cy="suggestion-item"
-      onClick={() => onClick(person)}
+      onClick={e => {
+        e.preventDefault();
+        onClick(person);
+      }}
     >
-      <p className="has-text-link">{person.name}</p>
-    </div>
-  )
-}
+      {person.name}
+    </a>
+  );
+};
