@@ -25,20 +25,22 @@ export const SelectForm: React.FC<Props> = ({
 
   useEffect(() => {
     // wenn input ist leer -> personList ohne pause kommt
-    if (!query) {
+    const trimed = query.trim();
+    if (!trimed) {
       setDeboucedQuery('');
+      onSelect(null);
 
       return;
     }
 
     const timeoutId = setTimeout(() => {
-      setDeboucedQuery(query);
+      setDeboucedQuery(trimed);
     }, delay);
 
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [query]);
+  }, [query, delay, onSelect]);
 
   const filteredPeople = useMemo<Person[]>(() => {
     const newFilteredList = peoples.filter(person => {
@@ -51,6 +53,12 @@ export const SelectForm: React.FC<Props> = ({
   const handelPerson = (person: Person) => {
     onSelect(person);
     setQuery(person.name);
+
+    if (blurTimeoutRef.current) {
+      clearTimeout(blurTimeoutRef.current)
+    }
+
+    setIsActiveFocus(false);
   };
 
   return (
