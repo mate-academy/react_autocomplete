@@ -31,6 +31,12 @@ export const Autocomplete: React.FC<Props> = ({ delay = 300, onSelected }) => {
       return;
     }
 
+    if (inputValue.trim() === '') {
+      setDebouncedInputValue('');
+
+      return;
+    }
+
     const handler = setTimeout(() => {
       setDebouncedInputValue(inputValue);
     }, delay);
