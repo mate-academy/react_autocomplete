@@ -1,15 +1,19 @@
-import { useState, useMemo } from "react";
-import debounce from "lodash.debounce";
-import { Person } from "../types/Person";
-import classNames from "classnames";
+import { useState, useMemo } from 'react';
+import debounce from 'lodash.debounce';
+import { Person } from '../types/Person';
+import classNames from 'classnames';
 
 interface AutocompleteProps {
   people: Person[];
-  onSelected?: (person: Person | null) => void;
+  onPersonSelect ?: (person: Person | null) => void;
   delay?: number;
 }
 
-export const Autocomplete = ({ people, onSelected = () => {}, delay }: AutocompleteProps) => {
+export const Autocomplete = ({
+  people,
+  onPersonSelect = () => {},
+  delay,
+}: AutocompleteProps) => {
   const effectiveDelay = delay ?? 300;
 
   const [query, setQuery] = useState('');
@@ -21,12 +25,12 @@ export const Autocomplete = ({ people, onSelected = () => {}, delay }: Autocompl
     () =>
       debounce((searchText: string) => {
         setFilteredPeople(
-          people.filter((person) =>
-            person.name.toLowerCase().includes(searchText.toLowerCase())
-          )
+          people.filter(person =>
+            person.name.toLowerCase().includes(searchText.toLowerCase()),
+          ),
         );
       }, effectiveDelay),
-    [people, effectiveDelay]
+    [people, effectiveDelay],
   );
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +42,7 @@ export const Autocomplete = ({ people, onSelected = () => {}, delay }: Autocompl
 
     setQuery(text);
     setIsOpen(true);
-    onSelected(null);
+    onPersonSelect(null);
 
     if (text.trim().length === 0) {
       setFilteredPeople(people);
@@ -55,7 +59,7 @@ export const Autocomplete = ({ people, onSelected = () => {}, delay }: Autocompl
   };
 
   const handleSelect = (user: Person) => {
-    onSelected(user);
+    onPersonSelect(user);
     setQuery(user.name);
     setIsOpen(false);
   };
@@ -77,15 +81,19 @@ export const Autocomplete = ({ people, onSelected = () => {}, delay }: Autocompl
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           <div className="dropdown-content">
-            {filteredPeople.map((user) => (
+            {filteredPeople.map(user => (
               <div
                 style={{ cursor: 'pointer' }}
                 className="dropdown-item"
                 data-cy="suggestion-item"
-                key={user.slug|| user.name}
+                key={user.slug || user.name}
                 onClick={() => handleSelect(user)}
               >
-                <p className={classNames(`has-text-${user.sex === 'm' ? "link" : "danger"}`)}>
+                <p
+                  className={classNames(
+                    `has-text-${user.sex === 'm' ? 'link' : 'danger'}`,
+                  )}
+                >
                   {user.name}
                 </p>
               </div>
