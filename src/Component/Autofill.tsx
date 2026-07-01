@@ -1,50 +1,68 @@
-import debounce from 'lodash.debounce';
-import { useEffect, useMemo, useState } from 'react';
-import { Person } from '../types/Person';
-import classNames from 'classnames';
+import { useState, useMemo } from "react";
+import debounce from "lodash.debounce";
+import { Person } from "../types/Person";
+import classNames from "classnames";
 
 interface AutocompleteProps {
   people: Person[];
-  onSelected?: (pesron: Person | null) => void;
-  delay: number;
+  onSelected?: (person: Person | null) => void;
+  delay?: number;
 }
 
-export const Autocomplete = ({
-  people,
-  onSelected = () => {},
-  delay,
-}: AutocompleteProps) => {
-  const [query, setQuery] = useState('');
+export const Autocomplete = ({ people, onSelected = () => {}, delay }: AutocompleteProps) => {
+  const effectiveDelay = delay ?? 300;
 
+  const [query, setQuery] = useState('');
   const [filteredPeople, setFilteredPeople] = useState<Person[]>(people);
+
+  const [isOpen, setIsOpen] = useState(false);
+
   const debouncedFilter = useMemo(
-      () =>
-        debounce((searchText: string) => {
-          setFilteredPeople(
-            people.filter((person) =>
-              person.name.toLowerCase().includes(searchText.toLowerCase())
-            )
-          );
-        }, delay),
-      [people, delay]
-    );
-  useEffect(() => {
-    return () => {
-      debouncedFilter.cancel();
-    };
-  }, [debouncedFilter]);
+    () =>
+      debounce((searchText: string) => {
+        setFilteredPeople(
+          people.filter((person) =>
+            person.name.toLowerCase().includes(searchText.toLowerCase())
+          )
+        );
+      }, effectiveDelay),
+    [people, effectiveDelay]
+  );
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const text = event.target.value;
 
+    if (text === query) {
+      return;
+    }
+
     setQuery(text);
-    debouncedFilter(text);
+    setIsOpen(true);
     onSelected(null);
+
+    if (text.trim().length === 0) {
+      setFilteredPeople(people);
+    } else {
+      debouncedFilter(text.trim());
+    }
+  };
+
+  const handleFocus = () => {
+    setIsOpen(true);
+    if (query.trim().length === 0) {
+      setFilteredPeople(people);
+    }
+  };
+
+  const handleSelect = (user: Person) => {
+    onSelected(user);
+    setQuery(user.name);
+    setIsOpen(false);
   };
 
   return (
     <>
-      <div className="dropdown is-active">
+      <div className={classNames('dropdown', { 'is-active': isOpen })}>
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -53,38 +71,30 @@ export const Autocomplete = ({
             className="input"
             data-cy="search-input"
             onChange={handleInputChange}
+            onFocus={handleFocus}
           />
         </div>
 
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           <div className="dropdown-content">
-            {filteredPeople.map(user => {
-              return (
-                <div
-                  style={{ cursor: 'pointer' }}
-                  className="dropdown-item"
-                  data-cy="suggestion-item"
-                  onClick={() => {
-                    onSelected(user);
-                    setQuery(user.name);
-                  }}
-                  key={user.name}
-                >
-                  <p
-                    className={classNames(
-                      `has-text-${user.sex === 'm' ? 'link' : 'danger'}`,
-                    )}
-                  >
-                    {user.name}
-                  </p>
-                </div>
-              );
-            })}
+            {filteredPeople.map((user) => (
+              <div
+                style={{ cursor: 'pointer' }}
+                className="dropdown-item"
+                data-cy="suggestion-item"
+                key={user.slug|| user.name}
+                onClick={() => handleSelect(user)}
+              >
+                <p className={classNames(`has-text-${user.sex === 'm' ? "link" : "danger"}`)}>
+                  {user.name}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {filteredPeople.length === 0 && query !== '' && (
+      {filteredPeople.length === 0 && query.trim() !== '' && isOpen && (
         <div
           className="
             notification
