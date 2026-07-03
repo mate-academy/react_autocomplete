@@ -1,33 +1,46 @@
 import debounce from 'lodash.debounce';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import './App.scss';
 import { Autocomplete } from './components/autocomplete/Autocomplete';
-import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
 import { UserInfo } from './components/selectedUserInfo/UserInfo';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
 
 interface Props {
-  delayMS: number;
+  delayMS?: number;
 }
 
 export const App: React.FC<Props> = ({ delayMS = 300 }) => {
   const [personName, setPersonName] = useState('');
   const [debouncePersonName, setDebouncePersonName] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | undefined>(
+    undefined,
+  );
 
   const debouncedSearch = useMemo(
     () =>
       debounce((newValue: string) => {
-        setDebouncePersonName(newValue);
+        const trimmed = newValue.trim();
+
+        setDebouncePersonName(prev => (prev === trimmed ? prev : trimmed));
       }, delayMS),
     [delayMS],
   );
 
-  const handleNameChange = (value: string) => {
-    setPersonName(value);
-    debouncedSearch(value);
-  };
+  const handleNameChange = useCallback(
+    (value: string) => {
+      setPersonName(value);
+      debouncedSearch(value);
+      setSelectedPerson(undefined);
+    },
+    [debouncedSearch],
+  );
 
   const filteredPersons = useMemo(() => {
+    if (!debouncePersonName) {
+      return peopleFromServer;
+    }
+
     return peopleFromServer.filter(person =>
       person.name
         .trim()
@@ -36,9 +49,11 @@ export const App: React.FC<Props> = ({ delayMS = 300 }) => {
     );
   }, [debouncePersonName]);
 
-  const selectedPerson = peopleFromServer.find(
-    person => person.name === personName,
-  );
+  const handleSelected = useCallback((person: Person) => {
+    setSelectedPerson(person);
+    setPersonName(person.name);
+    setDebouncePersonName(person.name.trim());
+  }, []);
 
   return (
     <div className="container">
@@ -54,8 +69,8 @@ export const App: React.FC<Props> = ({ delayMS = 300 }) => {
           persons={filteredPersons}
           personName={personName}
           setPersonName={handleNameChange}
+          onSelected={handleSelected}
         />
-        {filteredPersons.length <= 0 && <ErrorMessage />}
       </main>
     </div>
   );

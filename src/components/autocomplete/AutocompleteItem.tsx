@@ -5,13 +5,13 @@ import { Person } from '../../types/Person';
 interface Props {
   person: Person;
   name: string;
-  setName: (newValue: string) => void;
+  onSelected: (person: Person) => void;
 }
 
 export const AutocompleteItem: React.FC<Props> = ({
   person,
   name,
-  setName,
+  onSelected,
 }) => {
   return (
     <div
@@ -19,7 +19,10 @@ export const AutocompleteItem: React.FC<Props> = ({
         back: person.name === name,
       })}
       data-cy="suggestion-item"
-      onMouseDown={() => setName(person.name)}
+      onMouseDown={e => {
+        e.preventDefault();
+        onSelected(person);
+      }}
     >
       <p className={classNames('has-text-link')}>{person.name}</p>
     </div>

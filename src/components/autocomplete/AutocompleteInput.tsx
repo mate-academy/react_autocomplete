@@ -9,7 +9,7 @@ interface Props {
 export const AutocompleteInput: React.FC<Props> = ({
   onFocus,
   name,
-  setName = () => {},
+  setName,
 }) => {
   return (
     <input
@@ -20,7 +20,10 @@ export const AutocompleteInput: React.FC<Props> = ({
       onBlur={() => onFocus(false)}
       data-cy="search-input"
       value={name}
-      onChange={event => setName(event.target.value)}
+      onChange={event => {
+        setName(event.target.value);
+        onFocus(true);
+      }}
     />
   );
 };
