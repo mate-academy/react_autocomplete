@@ -16,6 +16,8 @@ export const Autocomplete: React.FC<Props> = ({
   const [debounceQuery, setDebounceQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  const previousQueryRef = useRef('');
+
   const lastResultRef = useRef<Person[]>(people);
 
   const filteredPeople = useMemo(() => {
@@ -38,8 +40,11 @@ export const Autocomplete: React.FC<Props> = ({
 
   useEffect(() => {
     const timerId = window.setTimeout(() => {
-      setDebounceQuery(query);
-    }, 300);
+      if (query !== previousQueryRef.current) {
+        setDebounceQuery(query);
+        previousQueryRef.current = query;
+      }
+    }, delay);
 
     return () => {
       window.clearTimeout(timerId);
@@ -53,9 +58,18 @@ export const Autocomplete: React.FC<Props> = ({
     onSelected(null);
   };
 
-  const handleSuggestionClick = (personItem: Person) => {
-    setQuery(personItem.name);
-    onSelected(personItem);
+  const handleSuggestionClick = (
+    eventSuggestion: React.MouseEvent<HTMLDivElement>,
+  ) => {
+    const personName = eventSuggestion.currentTarget.dataset.personName;
+
+    if (personName) {
+      setQuery(personName);
+    }
+
+    const selected = people.find(person => person.name === personName) || null;
+
+    onSelected(selected);
     setIsDropdownOpen(false);
   };
 
@@ -85,7 +99,8 @@ export const Autocomplete: React.FC<Props> = ({
                 key={personItem.name}
                 className="dropdown-item"
                 data-cy="suggestion-item"
-                onClick={() => handleSuggestionClick(personItem)}
+                data-person-name={personItem.name}
+                onClick={handleSuggestionClick}
               >
                 <p
                   className={
