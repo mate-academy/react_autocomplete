@@ -1,28 +1,28 @@
 import React from 'react';
 
 interface Props {
-  onFocus: (isOpen: boolean) => void;
+  onFocusChange: (isOpen: boolean) => void;
   name: string;
-  setName: (value: string) => void;
+  onNameChange: (value: string) => void;
 }
 
 export const AutocompleteInput: React.FC<Props> = ({
-  onFocus,
+  onFocusChange,
   name,
-  setName,
+  onNameChange,
 }) => {
   return (
     <input
       type="text"
       placeholder="Enter a part of the name"
       className="input"
-      onFocus={() => onFocus(true)}
-      onBlur={() => onFocus(false)}
+      onFocus={() => onFocusChange(true)}
+      onBlur={() => onFocusChange(false)}
       data-cy="search-input"
       value={name}
       onChange={event => {
-        setName(event.target.value);
-        onFocus(true);
+        onNameChange(event.target.value);
+        onFocusChange(true);
       }}
     />
   );

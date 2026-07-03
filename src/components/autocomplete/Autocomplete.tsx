@@ -8,14 +8,14 @@ import { AutocompleteItem } from './AutocompleteItem';
 interface Props {
   persons: Person[];
   personName: string;
-  setPersonName: (value: string) => void;
+  onNameChange: (value: string) => void;
   onSelected: (person: Person) => void;
 }
 
 export const Autocomplete: React.FC<Props> = ({
   persons,
   personName,
-  setPersonName,
+  onNameChange,
   onSelected,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -33,9 +33,9 @@ export const Autocomplete: React.FC<Props> = ({
     >
       <div className="dropdown-trigger">
         <AutocompleteInput
-          onFocus={setIsFocused}
+          onFocusChange={setIsFocused}
           name={personName}
-          setName={setPersonName}
+          onNameChange={onNameChange}
         />
       </div>
 
@@ -45,7 +45,7 @@ export const Autocomplete: React.FC<Props> = ({
             persons.map(person => {
               return (
                 <AutocompleteItem
-                  key={person.name}
+                  key={person.slug}
                   person={person}
                   name={personName}
                   onSelected={handleSelect}

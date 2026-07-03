@@ -68,7 +68,7 @@ export const App: React.FC<Props> = ({ delayMS = 300 }) => {
         <Autocomplete
           persons={filteredPersons}
           personName={personName}
-          setPersonName={handleNameChange}
+          onNameChange={handleNameChange}
           onSelected={handleSelected}
         />
       </main>
