@@ -1,3 +1,12 @@
 iframe {
   display: none;
 }
+
+.back {
+  background-color: grey;
+}
+
+.dropdown-item:hover {
+  background-color: grey;
+  cursor: pointer;
+}
