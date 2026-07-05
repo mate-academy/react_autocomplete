@@ -27,9 +27,6 @@ const AutocompleteComponent = ({
 
   const handleQueryChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      onChange();
-      setQuery(event.target.value);
-
       const newValue = event.target.value;
 
       if (newValue === query) {
@@ -40,6 +37,8 @@ const AutocompleteComponent = ({
         return;
       }
 
+      onChange();
+      setQuery(event.target.value);
       applyQuery(event.target.value);
     },
     [query, applyQuery, onChange],
