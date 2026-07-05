@@ -11,6 +11,7 @@ type Props = {
   onChange: () => void;
   delay: number;
 };
+
 const AutocompleteComponent = ({
   people,
   onSelect = () => {},
@@ -26,11 +27,22 @@ const AutocompleteComponent = ({
 
   const handleQueryChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(event.target.value);
-      applyQuery(event.target.value);
       onChange();
+      setQuery(event.target.value);
+
+      const newValue = event.target.value;
+
+      if (newValue === query) {
+        return;
+      }
+
+      if (newValue.trim() === '' && newValue !== '') {
+        return;
+      }
+
+      applyQuery(event.target.value);
     },
-    [applyQuery, onChange],
+    [query, applyQuery, onChange],
   );
 
   const handleSelect = useCallback(
