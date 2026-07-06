@@ -1,5 +1,7 @@
 # React Autocomplete
 
+[DEMO LINK](https://ikseloi.github.io/react_autocomplete/)
+
 You have an array of people. Implement the Autocomplete component
 using [Bulma Dropdown](https://bulma.io/documentation/components/dropdown/)
 that will suggest people matching an entered text.
@@ -15,6 +17,7 @@ that will suggest people matching an entered text.
 - when the selected person is displayed in the title, but the value in the input changes, the selected person should be cleared and `No selected person` should be shown.
 
 ## Instructions
+
 - Install Prettier Extention and use this [VSCode settings](https://mate-academy.github.io/fe-program/tools/vscode/settings.json) to enable format on save.
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
