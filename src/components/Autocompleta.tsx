@@ -80,6 +80,7 @@ const AutocompleteComponent = ({
             value={query}
             onChange={handleQueryChange}
             onFocus={() => setIsOpen(true)}
+            onBlur={() => setIsOpen(false)}
           />
         </div>
 
@@ -90,7 +91,8 @@ const AutocompleteComponent = ({
                 key={person.slug}
                 className="dropdown-item"
                 data-cy="suggestion-item"
-                onClick={() => handleSelect(person)}
+                style={{ cursor: 'pointer' }}
+                onMouseDown={() => handleSelect(person)}
               >
                 <p className="has-text-link">{person.name}</p>
               </div>
