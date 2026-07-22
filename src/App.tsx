@@ -1,4 +1,11 @@
-import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
@@ -16,8 +23,8 @@ export const App: React.FC<Props> = ({
   onSelected,
 }) => {
   const [activeSearch, setActiveSearch] = useState(false);
-  const searchField = useRef<HTMLInputElement>(null); 
-  const dropdown = useRef<HTMLDivElement>(null); 
+  const searchField = useRef<HTMLInputElement>(null);
+  const dropdown = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -25,19 +32,25 @@ export const App: React.FC<Props> = ({
   const filteredUsers = useMemo(() => {
     const normalized = appliedQuery.trim().toLowerCase();
 
-    if (!normalized) return people;
+    if (!normalized) {
+      return people;
+    }
 
     return people.filter(p => p.name.toLowerCase().trim().includes(normalized));
   }, [appliedQuery, people]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdown.current && !dropdown.current.contains(event.target as Node)) {
+      if (
+        dropdown.current &&
+        !dropdown.current.contains(event.target as Node)
+      ) {
         setActiveSearch(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
+
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
@@ -45,13 +58,17 @@ export const App: React.FC<Props> = ({
     debounce((newQuery: string) => {
       setAppliedQuery(newQuery);
     }, delay),
-    [delay]
+    [delay],
   );
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newQuery = e.target.value;
+
     setQuery(newQuery);
-    applyQueryDebounced(newQuery);
+
+    if(newQuery.trim().length > 0) {
+      applyQueryDebounced(newQuery);
+    }
 
     setSelectedPerson(null);
     if (onSelected) {
@@ -74,12 +91,15 @@ export const App: React.FC<Props> = ({
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {selectedPerson 
-            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})` 
+          {selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
             : 'No selected person'}
         </h1>
 
-        <div className={`dropdown ${activeSearch ? 'is-active' : ''}`} ref={dropdown}>
+        <div
+          className={`dropdown ${activeSearch ? 'is-active' : ''}`}
+          ref={dropdown}
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
@@ -94,7 +114,11 @@ export const App: React.FC<Props> = ({
           </div>
 
           {activeSearch && (
-            <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+            <div
+              className="dropdown-menu"
+              role="menu"
+              data-cy="suggestions-list"
+            >
               <div className="dropdown-content">
                 {filteredUsers.length > 0 ? (
                   filteredUsers.map(p => (
@@ -103,7 +127,7 @@ export const App: React.FC<Props> = ({
                       href={`#${p.name}`}
                       className="dropdown-item"
                       data-cy="suggestion-item"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         handleSelectPerson(p);
                       }}
@@ -112,7 +136,10 @@ export const App: React.FC<Props> = ({
                     </a>
                   ))
                 ) : (
-                  <div className="dropdown-item" data-cy="no-suggestions-message">
+                  <div
+                    className="dropdown-item"
+                    data-cy="no-suggestions-message"
+                  >
                     <p className="has-text-danger">No matching suggestions</p>
                   </div>
                 )}
