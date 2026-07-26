@@ -34,12 +34,14 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   const visiblePeople = useMemo(() => {
-    if (!debouncedText) {
+    const normalaizedText = debouncedText.trim().toLowerCase();
+
+    if (!normalaizedText) {
       return people;
     }
 
     return people.filter(person =>
-      person.name.toLowerCase().includes(debouncedText.toLowerCase()),
+      person.name.toLowerCase().includes(normalaizedText),
     );
   }, [people, debouncedText]);
 
