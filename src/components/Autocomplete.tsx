@@ -5,36 +5,39 @@ import { Person } from '../types/Person';
 
 type Props = {
   onSelected: (person: Person | null) => void;
+  delay?: number;
 };
-export const Autocomplete = ({ onSelected }: Props) => {
+export const Autocomplete = ({ onSelected, delay = 300 }: Props) => {
   const [text, setText] = useState('');
   const [tip, setTip] = useState(peopleFromServer);
   const [open, setOpen] = useState(false);
 
   const handleOnFocus = () => {
-    if (text === '') {
+    if (text.trim() === '') {
       setOpen(true);
       setTip(peopleFromServer);
     }
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (text === '') {
-        setTip(peopleFromServer);
-      } else {
-        const filtered = peopleFromServer.filter(person =>
-          person.name.toLowerCase().includes(text.toLowerCase()),
-        );
+    if (text.trim() === '') {
+      setTip(peopleFromServer);
 
-        setTip(filtered);
-      }
-    }, 300);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      const filtered = peopleFromServer.filter(person =>
+        person.name.toLowerCase().includes(text.toLowerCase()),
+      );
+
+      setTip(filtered);
+    }, delay);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [text]);
+  }, [text, delay]);
 
   const handleSelect = (person: Person) => {
     setText(person.name);
