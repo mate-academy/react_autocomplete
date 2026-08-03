@@ -1,16 +1,11 @@
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
+import { Person } from './types/Person';
 
 interface AutocompleteProps {
   people: Person[];
   delay?: number;
   onSelected: (person: Person | null) => void;
-}
-
-interface Person {
-  name: string;
-  born: number;
-  died: number;
 }
 
 export const Autocomplete: React.FC<AutocompleteProps> = ({
@@ -19,7 +14,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   onSelected,
 }) => {
   const [query, setQuery] = useState('');
-  const [setSelectedPerson] = useState<Person | null>(null);
+  const [, setSelectedPerson] = useState<Person | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
