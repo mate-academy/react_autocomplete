@@ -7,6 +7,12 @@ import { Autocomplete } from './components/Autocomplete/Autocomplete';
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
+  const handleInputChange = (inputValue: string) => {
+    if (selectedPerson && inputValue !== selectedPerson.name) {
+      setSelectedPerson(null);
+    }
+  };
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
@@ -19,6 +25,7 @@ export const App: React.FC = () => {
         <Autocomplete
           people={peopleFromServer}
           onSelected={setSelectedPerson}
+          onInputChange={handleInputChange}
         />
       </main>
     </div>

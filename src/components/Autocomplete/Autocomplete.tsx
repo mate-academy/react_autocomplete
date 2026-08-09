@@ -4,12 +4,14 @@ import { Person } from '../../types/Person';
 interface Props {
   people: Person[];
   onSelected: (person: Person | null) => void;
+  onInputChange?: (value: string) => void;
   delay?: number;
 }
 
 export const Autocomplete: React.FC<Props> = ({
   people,
   onSelected,
+  onInputChange,
   delay = 300,
 }) => {
   const [query, setQuery] = useState('');
@@ -33,15 +35,20 @@ export const Autocomplete: React.FC<Props> = ({
       return people;
     }
 
-    return people.filter(person =>
+    return people.filter((person) =>
       person.name.toLowerCase().includes(normalizedQuery),
     );
   }, [people, debouncedQuery]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    onSelected(null);
+    const newValue = event.target.value;
+
+    setQuery(newValue);
     setIsOpen(true);
+
+    if (onInputChange) {
+      onInputChange(newValue);
+    }
   };
 
   const handleInputFocus = () => {
@@ -77,7 +84,7 @@ export const Autocomplete: React.FC<Props> = ({
               data-cy="suggestions-list"
             >
               <div className="dropdown-content">
-                {filteredPeople.map(person => (
+                {filteredPeople.map((person) => (
                   <div
                     key={person.slug}
                     className="dropdown-item"
