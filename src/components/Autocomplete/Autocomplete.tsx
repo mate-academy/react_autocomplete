@@ -15,7 +15,13 @@ export const Autocomplete = ({ people, onSelected, delay = 300 }: Props) => {
 
   useEffect(() => {
     const timerId = setTimeout(() => {
-      setAppliedQuery(query);
+      const trimmedQuery = query.trim();
+
+      if (trimmedQuery) {
+        setAppliedQuery(trimmedQuery);
+      } else {
+        setAppliedQuery('');
+      }
     }, delay);
 
     return () => {
@@ -86,7 +92,7 @@ export const Autocomplete = ({ people, onSelected, delay = 300 }: Props) => {
         </div>
       </div>
 
-      {visiblePeople.length === 0 && (
+      {isOpen && visiblePeople.length === 0 && (
         <div
           className="
             notification
