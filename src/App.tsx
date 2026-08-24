@@ -4,6 +4,19 @@ import { Autocomplete } from './components/Autocomplete';
 import { Person } from './types/Person';
 import { useState } from 'react';
 
+let count = 0;
+
+const preparedPeople = peopleFromServer.map(person => {
+  const newPerson = {
+    id: count,
+    ...person,
+  };
+
+  count++;
+
+  return newPerson;
+});
+
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
@@ -25,7 +38,7 @@ export const App: React.FC = () => {
         </h1>
 
         <Autocomplete
-          people={peopleFromServer}
+          people={preparedPeople}
           onSelected={handleSelectedPerson}
           onQueryChange={handleQueryChange}
           delay={300}

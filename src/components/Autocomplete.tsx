@@ -82,7 +82,7 @@ export const Autocomplete: React.FC<Props> = ({
             <div className="dropdown-content">
               {filteredList.map((person: Person) => (
                 <div
-                  key={person.born}
+                  key={person.id}
                   onMouseDown={() => {
                     handleSelect(person);
                   }}
