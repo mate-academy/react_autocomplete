@@ -1,41 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Person } from '../types/Person';
 
 type Props = {
   people: Person[];
   onSelected: (person: Person) => void;
   onQueryChange: () => void;
+  delay: number;
 };
+
+function useDebounce<T>(value: T, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 export const Autocomplete: React.FC<Props> = ({
   people,
   onSelected,
   onQueryChange,
+  delay,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [query, setQuery] = useState('');
 
-  function useDebounce<T>(value: T, delay: number) {
-    const [debouncedValue, setDebouncedValue] = useState(value);
+  const debouncedQuery = useDebounce(query, delay);
 
-    useEffect(() => {
-      const handler = setTimeout(() => {
-        setDebouncedValue(value);
-      }, delay);
+  const filteredList = useMemo(() => {
+    const searchQuery = debouncedQuery.trim().toLowerCase();
 
-      return () => {
-        clearTimeout(handler);
-      };
-    }, [value, delay]);
+    if (searchQuery.length === 0) {
+      return people;
+    }
 
-    return debouncedValue;
-  }
-
-  const debouncedQuery = useDebounce(query, 300);
-
-  const filteredList = people.filter((person: Person) =>
-    person.name.toLowerCase().includes(debouncedQuery.toLowerCase()),
-  );
+    return people.filter(person =>
+      person.name.toLowerCase().includes(searchQuery),
+    );
+  }, [people, debouncedQuery]);
 
   const handleSelect = (person: Person) => {
     setQuery(person.name);
@@ -70,9 +80,9 @@ export const Autocomplete: React.FC<Props> = ({
         {isVisible && (
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              {filteredList.map((person: Person, index: number) => (
+              {filteredList.map((person: Person) => (
                 <div
-                  key={index}
+                  key={person.born}
                   onMouseDown={() => {
                     handleSelect(person);
                   }}
@@ -87,7 +97,7 @@ export const Autocomplete: React.FC<Props> = ({
         )}
       </div>
 
-      {query && filteredList.length === 0 && (
+      {debouncedQuery.trim().length > 0 && filteredList.length === 0 && (
         <div
           className="
               notification

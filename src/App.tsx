@@ -28,6 +28,7 @@ export const App: React.FC = () => {
           people={peopleFromServer}
           onSelected={handleSelectedPerson}
           onQueryChange={handleQueryChange}
+          delay={300}
         />
       </main>
     </div>
