@@ -14,7 +14,12 @@ function debounce<T>(callback: (value: T) => void, delay: number) {
   };
 }
 
-export const App: React.FC = () => {
+type Props = {
+  delay?: number;
+  onSelected?: (person: Person | null) => void;
+};
+
+export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
   const [selectedPeople, setSelectedPeople] = useState<Person | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useState<string>('');
@@ -28,15 +33,19 @@ export const App: React.FC = () => {
   const isEmpty = filteredPeoples.length === 0;
 
   const applyFilter = useMemo(
-    () => debounce((val: string) => setQuery(val), 300),
-    [],
+    () => debounce((val: string) => setQuery(val), delay),
+    [delay],
   );
 
-  const handleSelect = useCallback((ppl: Person) => {
-    setSelectedPeople(ppl);
-    setIsFocused(false);
-    setInput(ppl.name);
-  }, []);
+  const handleSelect = useCallback(
+    (ppl: Person) => {
+      setSelectedPeople(ppl);
+      setIsFocused(false);
+      setInput(ppl.name);
+      onSelected?.(ppl);
+    },
+    [onSelected],
+  );
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,14 +53,15 @@ export const App: React.FC = () => {
 
       setInput(e.target.value);
       setSelectedPeople(null);
+      onSelected?.(null);
 
-      if (trimVal === query) {
+      if (trimVal === '' || trimVal === query) {
         return;
       }
 
       applyFilter(trimVal);
     },
-    [],
+    [query, applyFilter, onSelected],
   );
 
   return (
@@ -85,7 +95,7 @@ export const App: React.FC = () => {
             <div className="dropdown-content">
               {filteredPeoples.map(ppl => (
                 <div
-                  key={ppl.name}
+                  key={ppl.slug}
                   className="dropdown-item"
                   data-cy="suggestion-item"
                   onMouseDown={() => handleSelect(ppl)}
