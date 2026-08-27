@@ -4,7 +4,15 @@ import { peopleFromServer } from './data/people';
 
 type Person = (typeof peopleFromServer)[number];
 
-export const App: React.FC = () => {
+type Props = {
+  delay?: number;
+  onSelected?: (person: Person | null) => void;
+};
+
+export const App: React.FC<Props> = ({
+  delay = 300,
+  onSelected = () => {},
+}) => {
   const [selectedPerson, setSelectedPerson] = React.useState<Person | null>(
     null,
   );
@@ -14,18 +22,24 @@ export const App: React.FC = () => {
   const [isFocused, setIsFocused] = React.useState(false);
 
   React.useEffect(() => {
+    if (query.trim() === '') {
+      setDebouncedQuery('');
+
+      return;
+    }
+
     if (query === debouncedQuery) {
       return;
     }
 
     const timeoutId = setTimeout(() => {
       setDebouncedQuery(query);
-    }, 300);
+    }, delay);
 
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [query, debouncedQuery]);
+  }, [query, debouncedQuery, delay]);
 
   const visiblePeople = peopleFromServer.filter(person =>
     person.name.toLowerCase().includes(debouncedQuery.toLowerCase()),
@@ -51,6 +65,7 @@ export const App: React.FC = () => {
               onChange={event => {
                 setQuery(event.target.value);
                 setSelectedPerson(null);
+                onSelected(null);
               }}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
@@ -68,6 +83,7 @@ export const App: React.FC = () => {
                     setQuery(person.name);
                     setSelectedPerson(person);
                     setIsFocused(false);
+                    onSelected(person);
                   }}
                 >
                   <p className="has-text-link">{person.name}</p>
