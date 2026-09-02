@@ -4,28 +4,13 @@ import { peopleFromServer } from './data/people';
 import { Autocomplete } from './components/Autocomplete/Autocomplete';
 import { Person } from './types/Person';
 
-function debounce(callback: (...args: string[]) => void, delay: number) {
-  let timerId: number | undefined = undefined;
-
-  return (...args: string[]) => {
-    window.clearTimeout(timerId);
-    timerId = window.setTimeout(() => {
-      callback(...args);
-    }, delay);
-  };
-}
-
 export const App: React.FC = () => {
   const persons = useMemo(() => [...peopleFromServer], []);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
-  const [appliedQuery, setAppliedQuery] = useState('');
-
-  const applyQuery = debounce(setAppliedQuery, 300);
 
   const handleQueryStringChange = (value: string) => {
     setQuery(value);
-    applyQuery(value);
   };
 
   useEffect(() => {
@@ -39,12 +24,6 @@ export const App: React.FC = () => {
     setQuery(person.name);
   };
 
-  const filteredPersons = useMemo(() => {
-    return persons.filter(person =>
-      person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
-    );
-  }, [appliedQuery, persons]);
-
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
@@ -54,12 +33,13 @@ export const App: React.FC = () => {
             : `No selected person`}
         </h1>
         <Autocomplete
-          persons={query ? filteredPersons : persons}
+          persons={persons}
           onQueryChange={handleQueryStringChange}
           onSelected={handleSelectPerson}
           query={query}
+          debounceDelay={300}
         />
-        {filteredPersons.length === 0 && (
+        {persons.length === 0 && (
           <div
             className="
             notification
