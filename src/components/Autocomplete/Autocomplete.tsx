@@ -40,9 +40,8 @@ export const Autocomplete: React.FC<Props> = ({
             person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
           );
 
-    return filtered.map((person, index) => ({
+    return filtered.map(person => ({
       ...person,
-      id: index + 1,
     }));
   }, [appliedQuery, persons]);
 
@@ -92,7 +91,11 @@ export const Autocomplete: React.FC<Props> = ({
         </div>
       </div>
       {filteredPersons.length === 0 && appliedQuery.trim().length > 0 && (
-        <div className="notification is-danger is-light mt-3" role="alert">
+        <div
+          className="notification is-danger is-light mt-3"
+          role="alert"
+          data-cy="no-suggestions-message"
+        >
           <p className="has-text-danger">No matching suggestions</p>
         </div>
       )}
