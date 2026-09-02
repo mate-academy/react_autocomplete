@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/indent */
+/* eslint-disable prettier/prettier */
 import { useMemo, useState } from 'react';
 import { Person } from '../../types/Person';
 import classNames from 'classnames';
@@ -31,13 +33,17 @@ export const Autocomplete: React.FC<Props> = ({
   );
 
   const filteredPersons = useMemo(() => {
-    if (appliedQuery.trim().length === 0) {
-      return persons;
-    }
+    const filtered =
+      appliedQuery.trim().length === 0
+        ? persons
+        : persons.filter(person =>
+            person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+          );
 
-    return persons.filter(person =>
-      person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
-    );
+    return filtered.map((person, index) => ({
+      ...person,
+      id: index + 1,
+    }));
   }, [appliedQuery, persons]);
 
   return (
@@ -71,7 +77,7 @@ export const Autocomplete: React.FC<Props> = ({
             {filteredPersons.map(person => (
               <div
                 className="dropdown-item"
-                key={person.slug}
+                key={person.id}
                 onClick={() => {
                   onSelected?.(person);
                   setFocus(false);
@@ -85,6 +91,11 @@ export const Autocomplete: React.FC<Props> = ({
           </div>
         </div>
       </div>
+      {filteredPersons.length === 0 && appliedQuery.trim().length > 0 && (
+        <div className="notification is-danger is-light mt-3" role="alert">
+          <p className="has-text-danger">No matching suggestions</p>
+        </div>
+      )}
     </>
   );
 };
