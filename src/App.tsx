@@ -1,73 +1,79 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Autocomplete } from './components/Autocomplete/Autocomplete';
+import { Person } from './types/Person';
+
+function debounce(callback: (...args: string[]) => void, delay: number) {
+  let timerId: number | undefined = undefined;
+
+  return (...args: string[]) => {
+    window.clearTimeout(timerId);
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+  const persons = useMemo(() => [...peopleFromServer], []);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  const applyQuery = debounce(setAppliedQuery, 300);
+
+  const handleQueryStringChange = (value: string) => {
+    setQuery(value);
+    applyQuery(value);
+  };
+
+  useEffect(() => {
+    if (selectedPerson && query !== selectedPerson.name) {
+      setSelectedPerson(null);
+    }
+  }, [query, selectedPerson]);
+
+  const handleSelectPerson = (person: Person) => {
+    setSelectedPerson(person);
+    setQuery(person.name);
+  };
+
+  const filteredPersons = useMemo(() => {
+    return persons.filter(person =>
+      person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+    );
+  }, [appliedQuery, persons]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+            : `No selected person`}
         </h1>
-
-        <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
-            />
-          </div>
-
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="
+        <Autocomplete
+          persons={query ? filteredPersons : persons}
+          onQueryChange={handleQueryStringChange}
+          onSelected={handleSelectPerson}
+          query={query}
+        />
+        {filteredPersons.length === 0 && (
+          <div
+            className="
             notification
             is-danger
             is-light
             mt-3
             is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+            "
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
