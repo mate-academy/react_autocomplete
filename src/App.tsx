@@ -1,15 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Person } from './types/Person';
+import { useDebounce } from './hooks/useDebounce';
+import { Dropdown } from './components/Dropdown';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+type Props = {
+  delay?: number;
+  onSelected: (person: Person) => void;
+};
+
+export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
+  const [query, setQuery] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const appliedQuery = useDebounce(query, delay);
+
+  const filteredPeople = peopleFromServer.filter(person =>
+    person.name.toLowerCase().includes(appliedQuery.trim().toLowerCase()),
+  );
+
+  const handleSelect = (person: Person) => {
+    setQuery(person.name);
+    setSelectedPerson(person);
+    onSelected(person);
+  };
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {selectedPerson === null
+            ? `No selected person`
+            : `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
         </h1>
 
         <div className="dropdown is-active">
@@ -18,55 +41,20 @@ export const App: React.FC = () => {
               type="text"
               placeholder="Enter a part of the name"
               className="input"
+              value={query}
               data-cy="search-input"
+              onChange={event => {
+                setQuery(event.target.value);
+                setSelectedPerson(null);
+              }}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="
-            notification
-            is-danger
-            is-light
-            mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
+          {isFocused && (
+            <Dropdown people={filteredPeople} onSelected={handleSelect} />
+          )}
         </div>
       </main>
     </div>
