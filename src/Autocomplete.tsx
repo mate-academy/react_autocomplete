@@ -81,7 +81,7 @@ export const Autocomplete: React.FC<Props> = ({
         </div>
       </div>
 
-      {filteredPeople.length === 0 && query.trim() !== '' && (
+      {filteredPeople.length === 0 && debouncedQuery.trim() !== '' && (
         <div
           className="
             notification
