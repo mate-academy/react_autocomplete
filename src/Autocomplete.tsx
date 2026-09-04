@@ -27,9 +27,21 @@ export const Autocomplete: React.FC<Props> = ({
     };
   }, [query, delay]);
 
-  const filteredPeople = people.filter(person =>
-    person.name.toLowerCase().includes(debouncedQuery.toLowerCase()),
-  );
+  let filteredPeople = people;
+
+  if (debouncedQuery.trim() !== '') {
+    const lowerCaseQuery = debouncedQuery.toLowerCase();
+
+    filteredPeople = people.filter(person =>
+      person.name.toLowerCase().includes(lowerCaseQuery),
+    );
+  } else if (query.trim() !== '') {
+    const lowerCaseQuery = query.toLowerCase();
+
+    filteredPeople = people.filter(person =>
+      person.name.toLowerCase().includes(lowerCaseQuery),
+    );
+  }
 
   return (
     <>
@@ -69,7 +81,7 @@ export const Autocomplete: React.FC<Props> = ({
         </div>
       </div>
 
-      {filteredPeople.length === 0 && query !== '' && (
+      {filteredPeople.length === 0 && query.trim() !== '' && (
         <div
           className="
             notification
