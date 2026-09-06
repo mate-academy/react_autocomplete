@@ -7,6 +7,8 @@ import { People } from './components/People/People';
 const DEFAULT_VALUES = {
   QUERY: '',
   DELAY: 300,
+  FOCUS: false,
+  SELECTED_PERSON: null,
 };
 
 function getPreparedData(query: string): Person[] {
@@ -33,11 +35,14 @@ function debounce(
 }
 
 export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
   const [searchInput, setSearchInput] = useState<string>(DEFAULT_VALUES.QUERY);
   const [immediateSearchInput, setimmediateSearchInput] =
     useState<string>(searchInput);
   const [delay, setDelay] = useState<number>(DEFAULT_VALUES.DELAY);
+  const [isFocused, setIsFocused] = useState<boolean>(DEFAULT_VALUES.FOCUS);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(
+    DEFAULT_VALUES.SELECTED_PERSON,
+  );
 
   const applySearchInputChange = useMemo(
     () => debounce(setSearchInput, delay),
@@ -49,16 +54,23 @@ export const App: React.FC = () => {
 
     setimmediateSearchInput(eventValue);
     applySearchInputChange(eventValue);
+    setSelectedPerson(DEFAULT_VALUES.SELECTED_PERSON);
   };
 
   const people = useMemo(() => getPreparedData(searchInput), [searchInput]);
   const noMatches = people.length === 0;
 
+  let titleMessage = 'No selected person';
+
+  if (selectedPerson) {
+    titleMessage = `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`;
+  }
+
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {titleMessage}
         </h1>
         <div className="delay">
           <label htmlFor="delayInput">Delay: </label>
@@ -69,6 +81,7 @@ export const App: React.FC = () => {
             style={{ width: '100px' }}
             onChange={event => setDelay(+event.target.value)}
             value={delay}
+            step={50}
           />
         </div>
         <div className="dropdown is-active">
@@ -80,10 +93,21 @@ export const App: React.FC = () => {
               data-cy="search-input"
               onChange={handleSearchChange}
               value={immediateSearchInput}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
             />
           </div>
 
-          {!noMatches && <People people={people} />}
+          {!noMatches && !selectedPerson && isFocused && (
+            <People
+              people={people}
+              onClick={(person: Person) => {
+                setSearchInput(person.name);
+                setimmediateSearchInput(person.name);
+                setSelectedPerson(person);
+              }}
+            />
+          )}
         </div>
 
         {noMatches && (

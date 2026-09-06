@@ -4,16 +4,25 @@ import { Person } from '../../types/Person';
 
 interface Props {
   people: Person[];
+  onClick: (person: Person) => void;
 }
 
-export const People: React.FC<Props> = React.memo(({ people }) => (
-  <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+export const People: React.FC<Props> = React.memo(({ people, onClick }) => (
+  <div
+    className="dropdown-menu"
+    role="menu"
+    data-cy="suggestions-list"
+    onMouseDown={event => event.preventDefault()}
+  >
     <div className="dropdown-content">
       {people.map(person => (
         <div
           className="dropdown-item"
           data-cy="suggestion-item"
           key={person.slug}
+          onClick={() => {
+            onClick(person);
+          }}
         >
           <p
             className={cn(
