@@ -7,6 +7,11 @@ interface Props {
   onClick: (person: Person) => void;
 }
 
+enum PersonSex {
+  Female = 'f',
+  Male = 'm',
+}
+
 export const People: React.FC<Props> = React.memo(({ people, onClick }) => (
   <div
     className="dropdown-menu"
@@ -26,8 +31,8 @@ export const People: React.FC<Props> = React.memo(({ people, onClick }) => (
         >
           <p
             className={cn(
-              { 'has-text-link': person.sex === 'm' },
-              { 'has-text-danger': person.sex === 'f' },
+              { 'has-text-link': person.sex === PersonSex.Male },
+              { 'has-text-danger': person.sex === PersonSex.Female },
             )}
           >
             {person.name}

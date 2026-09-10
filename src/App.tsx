@@ -94,7 +94,7 @@ export const App: React.FC = () => {
               onChange={handleSearchChange}
               value={immediateSearchInput}
               onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
+              onBlur={() => setIsFocused(DEFAULT_VALUES.FOCUS)}
             />
           </div>
 
