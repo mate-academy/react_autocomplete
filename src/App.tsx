@@ -12,7 +12,7 @@ const DEFAULT_VALUES = {
 };
 
 function getPreparedData(query: string): Person[] {
-  if (query === DEFAULT_VALUES.QUERY) {
+  if (query.trim() === DEFAULT_VALUES.QUERY) {
     return peopleFromServer;
   }
 
@@ -101,7 +101,7 @@ export const App: React.FC = () => {
           {!noMatches && !selectedPerson && isFocused && (
             <People
               people={people}
-              onClick={(person: Person) => {
+              onSelected={(person: Person) => {
                 setSearchInput(person.name);
                 setimmediateSearchInput(person.name);
                 setSelectedPerson(person);

@@ -4,7 +4,7 @@ import { Person } from '../../types/Person';
 
 interface Props {
   people: Person[];
-  onClick: (person: Person) => void;
+  onSelected: (person: Person) => void;
 }
 
 enum PersonSex {
@@ -12,7 +12,7 @@ enum PersonSex {
   Male = 'm',
 }
 
-export const People: React.FC<Props> = React.memo(({ people, onClick }) => (
+export const People: React.FC<Props> = React.memo(({ people, onSelected }) => (
   <div
     className="dropdown-menu"
     role="menu"
@@ -26,7 +26,7 @@ export const People: React.FC<Props> = React.memo(({ people, onClick }) => (
           data-cy="suggestion-item"
           key={person.slug}
           onClick={() => {
-            onClick(person);
+            onSelected(person);
           }}
         >
           <p
