@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 
+type Person = (typeof peopleFromServer)[0];
+
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState(peopleFromServer);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState<
-  (typeof peopleFromServer)[0] | null
-  >(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const lastQuery = useRef('');
 
@@ -53,7 +53,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleSelect = (person: (typeof peopleFromServer)[0]) => {
+  const handleSelect = (person: Person) => {
     setQuery(person.name);
     setSelectedPerson(person);
     setIsOpen(false);
@@ -97,7 +97,9 @@ export const App: React.FC = () => {
                   >
                     <p
                       className={
-                        person.sex === 'm' ? 'has-text-link' : 'has-text-danger'
+                        person.sex === 'm'
+                          ? 'has-text-link'
+                          : 'has-text-danger'
                       }
                     >
                       {person.name}
@@ -114,7 +116,9 @@ export const App: React.FC = () => {
               role="alert"
               data-cy="no-suggestions-message"
             >
-              <p className="has-text-danger">No matching suggestions</p>
+              <p className="has-text-danger">
+                No matching suggestions
+              </p>
             </div>
           )}
         </div>
