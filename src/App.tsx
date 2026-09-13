@@ -1,15 +1,38 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 import debounce from 'lodash.debounce';
 import classNames from 'classnames';
 
-export const App: React.FC = () => {
+type Props = {
+  delay?: number;
+  onSelected?: (person: Person) => void;
+};
+
+export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Person[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const debouncedFilter = useMemo(
     () =>
@@ -27,8 +50,8 @@ export const App: React.FC = () => {
         );
 
         setSuggestions(filtered);
-      }, 300),
-    [],
+      }, delay),
+    [delay],
   );
 
   useEffect(() => {
@@ -61,14 +84,14 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleInputBlur = () => {
-    setIsOpen(false);
-  };
-
   const handleSuggestionClick = (person: Person) => {
     setQuery(person.name);
     setSelectedPerson(person);
     setIsOpen(false);
+
+    if (onSelected) {
+      onSelected(person);
+    }
   };
 
   return (
@@ -80,7 +103,10 @@ export const App: React.FC = () => {
             : 'No selected person'}
         </h1>
 
-        <div className={classNames('dropdown', { 'is-active': isOpen })}>
+        <div
+          ref={dropdownRef}
+          className={classNames('dropdown', { 'is-active': isOpen })}
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
@@ -90,7 +116,6 @@ export const App: React.FC = () => {
               value={query}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
-              onBlur={handleInputBlur}
             />
           </div>
 
@@ -106,7 +131,7 @@ export const App: React.FC = () => {
                     key={person.slug}
                     className="dropdown-item"
                     data-cy="suggestion-item"
-                    onMouseDown={() => handleSuggestionClick(person)}
+                    onClick={() => handleSuggestionClick(person)}
                   >
                     <p
                       className={
@@ -122,7 +147,7 @@ export const App: React.FC = () => {
           )}
         </div>
 
-        {isOpen && query && suggestions.length === 0 && (
+        {isOpen && query.trim() && suggestions.length === 0 && (
           <div
             className="
             notification
