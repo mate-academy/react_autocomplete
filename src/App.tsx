@@ -32,6 +32,12 @@ export const App: React.FC = () => {
   );
 
   useEffect(() => {
+    if (!query.trim()) {
+      setSuggestions(peopleFromServer);
+
+      return;
+    }
+
     debouncedFilter(query);
 
     return () => {
@@ -53,6 +59,10 @@ export const App: React.FC = () => {
     if (!query.trim()) {
       setSuggestions(peopleFromServer);
     }
+  };
+
+  const handleInputBlur = () => {
+    setIsOpen(false);
   };
 
   const handleSuggestionClick = (person: Person) => {
@@ -80,10 +90,11 @@ export const App: React.FC = () => {
               value={query}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
             />
           </div>
 
-          {isOpen && (
+          {isOpen && suggestions.length > 0 && (
             <div
               className="dropdown-menu"
               role="menu"
@@ -95,7 +106,7 @@ export const App: React.FC = () => {
                     key={person.slug}
                     className="dropdown-item"
                     data-cy="suggestion-item"
-                    onClick={() => handleSuggestionClick(person)}
+                    onMouseDown={() => handleSuggestionClick(person)}
                   >
                     <p
                       className={
@@ -111,7 +122,7 @@ export const App: React.FC = () => {
           )}
         </div>
 
-        {isOpen && query.trim() && suggestions.length === 0 && (
+        {isOpen && query && suggestions.length === 0 && (
           <div
             className="
             notification
