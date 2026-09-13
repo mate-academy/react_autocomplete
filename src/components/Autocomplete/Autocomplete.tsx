@@ -20,9 +20,11 @@ export const Autocomplete: React.FC<Props> = ({
   const applyQuery = React.useMemo(() => debounce(setAppliedQuery, delay), []);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
+    const value = event.target.value;
+
+    setQuery(value);
     onSelected(null);
+    applyQuery(value.trim());
   };
 
   const handleFocus = () => {
