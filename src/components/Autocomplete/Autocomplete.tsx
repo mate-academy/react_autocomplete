@@ -26,8 +26,12 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   const debouncedQueryChangeHandler = useCallback(
-    debounce(queryChangeHandler, delay),
-    [delay],
+    debounce((value: string) => {
+      if (value.trim() !== '') {
+        queryChangeHandler(value);
+      }
+    }, delay),
+    [delay, queryChangeHandler],
   );
 
   return (
@@ -45,7 +49,9 @@ export const Autocomplete: React.FC<Props> = ({
           }}
           data-cy="search-input"
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onBlur={() => {
+            setTimeout(() => setIsFocused(false), 0);
+          }}
         />
       </div>
 
