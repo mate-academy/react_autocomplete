@@ -53,7 +53,7 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
               value={query}
               onChange={handleQueryChange}
               onFocus={() => setIsFocused(true)}
-              onBlur={() => setTimeout(() => setIsFocused(false), 150)}
+              // onBlur={() => setIsFocused(false)}
             />
           </div>
 
