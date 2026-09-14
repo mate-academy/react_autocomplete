@@ -39,7 +39,11 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
             : 'No selected person'}
         </h1>
 
-        <div className="dropdown is-active">
+        <div
+          className={cn('dropdown', {
+            'is-active': isFocused && filteredList.length > 0,
+          })}
+        >
           <div className="dropdown-trigger">
             <input
               type="text"
