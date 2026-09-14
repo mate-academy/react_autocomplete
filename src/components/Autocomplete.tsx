@@ -17,6 +17,12 @@ export const Autocomplete: React.FC<Props> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    if (query.trim() === '') {
+      setSuggestions(people);
+
+      return;
+    }
+
     const timer = setTimeout(() => {
       const filteredPeople = people.filter(person =>
         person.name.toLowerCase().includes(query.toLowerCase()),
@@ -31,10 +37,10 @@ export const Autocomplete: React.FC<Props> = ({
   }, [query, delay, people]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  setQuery(event.target.value);
-  setIsOpen(true);
-  onSelected(null);
-};
+    setQuery(event.target.value);
+    setIsOpen(true);
+    onSelected(null);
+  };
 
   const handleFocus = () => {
     setIsOpen(true);

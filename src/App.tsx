@@ -3,10 +3,10 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Autocomplete } from './components/Autocomplete';
 
+type Person = (typeof peopleFromServer)[number];
+
 export const App: React.FC = () => {
-  const [selectedPerson, setSelectedPerson] = useState<
-    (typeof peopleFromServer)[number] | null
-  >(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   return (
     <div className="container">
@@ -18,9 +18,9 @@ export const App: React.FC = () => {
         </h1>
 
         <Autocomplete
-  people={peopleFromServer}
-  onSelected={setSelectedPerson}
-/>
+          people={peopleFromServer}
+          onSelected={setSelectedPerson}
+        />
       </main>
     </div>
   );
