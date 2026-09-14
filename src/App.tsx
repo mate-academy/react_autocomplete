@@ -49,10 +49,11 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
               value={query}
               onChange={handleQueryChange}
               onFocus={() => setIsFocused(true)}
+              onBlur={() => setTimeout(() => setIsFocused(false), 150)}
             />
           </div>
 
-          {filteredList.length !== 0 && isFocused && (
+          {filteredList.length > 0 && isFocused && (
             <div
               className="dropdown-menu"
               role="menu"
