@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import cn from 'classnames';
@@ -16,7 +16,7 @@ export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const applyQuery = useCallback(debounce(setAppliedQuery, delay), [delay]);
+  const applyQuery = useMemo(() => debounce(setAppliedQuery, delay), [delay]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
