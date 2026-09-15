@@ -20,6 +20,10 @@ export const Autocomplete = ({
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      if (query.trim() === '') {
+        return;
+      }
+
       setFilteredPeople(
         people.filter(person =>
           person.name.toLowerCase().includes(query.trim().toLowerCase()),
