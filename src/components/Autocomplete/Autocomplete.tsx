@@ -29,6 +29,8 @@ export const Autocomplete: React.FC<Props> = ({
     debounce((value: string) => {
       if (value.trim() !== '') {
         queryChangeHandler(value);
+      } else {
+        queryChangeHandler(''); // Call with empty string to reset the list when input is cleared
       }
     }, delay),
     [delay, queryChangeHandler],
