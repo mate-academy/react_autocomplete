@@ -6,7 +6,6 @@ import { Person } from './types/Person';
 const DELAY = 300;
 
 export const App: React.FC = () => {
-  // const { name, born, died } = peopleFromServer[0];
   const [peopleASelected, setPeopleASelected] = useState<Person | null>(null);
   const [visibilitedPeople, setVisibilitedPeople] = useState(peopleFromServer);
   const [query, setQuery] = useState('');
