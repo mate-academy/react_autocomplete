@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 import debounce from 'lodash/debounce';
@@ -18,9 +18,14 @@ export const App: React.FC<Props> = ({
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Person | null>(null);
 
-  const debounced = useRef(debounce(setQuery, delay)).current;
+  const debouncedSearch = useMemo(
+    () => debounce((value: string) => setQuery(value), delay),
+    [delay],
+  );
 
-  useEffect(() => () => debounced.cancel(), [debounced]);
+  useEffect(() => {
+    return () => debouncedSearch.cancel();
+  }, [debouncedSearch]);
 
   const filtered = useMemo(() => {
     const search = query.trim().toLowerCase();
@@ -35,8 +40,9 @@ export const App: React.FC<Props> = ({
 
     setText(value);
     setSelected(null);
+
     if (value !== query) {
-      debounced(value);
+      debouncedSearch(value);
     }
   };
 
