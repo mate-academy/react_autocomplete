@@ -1,9 +1,9 @@
-export interface Person {
+export type Person = {
   name: string;
-  sex: 'm' | 'f';
+  sex: string;
   born: number;
   died: number;
   fatherName: string | null;
   motherName: string | null;
   slug: string;
-}
+};
