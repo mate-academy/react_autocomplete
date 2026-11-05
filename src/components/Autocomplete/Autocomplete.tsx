@@ -24,16 +24,21 @@ export const Autocomplete: React.FC<Props> = ({
     return () => clearTimeout(timer);
   }, [query, delay]);
 
-  const filteredPeople = people.filter(person =>
-    person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
-  );
+  const trimmedQuery = appliedQuery.trim();
+
+  let filteredPeople = people;
+
+  if (trimmedQuery) {
+    filteredPeople = people.filter(person =>
+      person.name.toLowerCase().includes(trimmedQuery.toLowerCase()),
+    );
+  }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newText = event.target.value;
 
     setQuery(newText);
     setIsOpen(true);
-
     onSelected(null);
   };
 
