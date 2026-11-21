@@ -22,8 +22,8 @@ export const Autocomplete: React.FC<Props> = ({
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    onQueryChange();
     setIsFocused(true);
+    onQueryChange();
   };
 
   const handleSelect = (person: Person) => {
@@ -34,7 +34,7 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (query === '') {
+    if (query.trim() === '') {
       previousQuery.current = query;
       setSuggestions(people);
 
@@ -76,12 +76,6 @@ export const Autocomplete: React.FC<Props> = ({
           onChange={handleChange}
           onFocus={() => {
             setIsFocused(true);
-
-            const filteredPeople = people.filter(person =>
-              person.name.toLowerCase().includes(query.toLowerCase()),
-            );
-
-            setSuggestions(filteredPeople);
           }}
           onBlur={() => setIsFocused(false)}
         />
