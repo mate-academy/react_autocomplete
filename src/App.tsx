@@ -1,73 +1,115 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
+import { Trigger } from './components/Trigger';
+import { Menu } from './components/Menu';
 
-export const App: React.FC = () => {
-  const { name, born, died } = peopleFromServer[0];
+import { Person } from './types/Person';
+
+type Props = {
+  delay?: number;
+  onSelected?: (person: Person) => void;
+};
+
+export const App: React.FC<Props> = ({ delay = 300, onSelected }) => {
+  const [title, setTitle] = useState('No selected person');
+
+  const [filteredPeople, setFilteredPeople] = useState([...peopleFromServer]);
+  const [hasMatches, setHasMatches] = useState(false);
+
+  const [inputValue, setInputValue] = useState<string>('');
+
+  const [focusInput, setFocusInput] = useState<true | false>(false);
+
+  const [clickOnPerson, setClickOnPerson] = useState<true | false>(true);
+
+  const handleInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+    setClickOnPerson(true);
+    setTitle('No selected person');
+  };
+
+  const handleInputFocus = () => {
+    setFocusInput(true);
+  };
+
+  const handleInputBlur = () => {
+    setFocusInput(false);
+  };
+
+  const handleSelectedSuggestion = (person: Person) => {
+    setClickOnPerson(false);
+    setInputValue(person.name);
+    setTitle(`${person.name} (${person.born} - ${person.died})`);
+  };
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+
+    if (clickOnPerson) {
+      timer = setTimeout(() => {
+        const value: string = inputValue;
+        let currFilteredPeople: Person[] = [...peopleFromServer];
+
+        if (value.trim() !== '') {
+          currFilteredPeople = [...peopleFromServer].filter(person =>
+            person.name.includes(value.trim()),
+          );
+        }
+
+        if (currFilteredPeople.length === 0 && value.trim() !== '') {
+          setHasMatches(true); //showmessage
+        } else if (currFilteredPeople.length !== 0 && clickOnPerson) {
+          setHasMatches(false);
+        }
+
+        setFilteredPeople(currFilteredPeople);
+      }, delay);
+
+      return () => clearTimeout(timer);
+    } else {
+      return;
+    }
+  }, [inputValue, delay, clickOnPerson]);
 
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {`${name} (${born} - ${died})`}
+          {title}
         </h1>
 
         <div className="dropdown is-active">
-          <div className="dropdown-trigger">
-            <input
-              type="text"
-              placeholder="Enter a part of the name"
-              className="input"
-              data-cy="search-input"
+          <Trigger
+            currValue={inputValue}
+            onChange={handleInputValue}
+            onFocused={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+
+          {focusInput && clickOnPerson && !hasMatches && (
+            <Menu
+              people={filteredPeople}
+              onMouseDown={handleSelectedSuggestion}
+              onSelected={onSelected}
             />
-          </div>
-
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
-            <div className="dropdown-content">
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Bernard Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter Antone Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Haverbeke</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-link">Pieter de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Petronella de Decker</p>
-              </div>
-
-              <div className="dropdown-item" data-cy="suggestion-item">
-                <p className="has-text-danger">Elisabeth Hercke</p>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
 
-        <div
-          className="
+        {hasMatches && (
+          <div
+            className="
             notification
             is-danger
             is-light
             mt-3
-            is-align-self-flex-start
-          "
-          role="alert"
-          data-cy="no-suggestions-message"
-        >
-          <p className="has-text-danger">No matching suggestions</p>
-        </div>
+            is - align - self - flex - start"
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
