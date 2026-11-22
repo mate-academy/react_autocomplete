@@ -23,6 +23,13 @@ export const Autocomplete: React.FC<Props> = ({
     const timer = setTimeout(() => {
       const normalizedQuery = query.trim().toLowerCase();
 
+      if (query.length > 0 && normalizedQuery === '') {
+        setSuggestions([]);
+        setIsFiltering(false);
+
+        return;
+      }
+
       const filteredPeople = people.filter(person =>
         person.name.toLowerCase().includes(normalizedQuery),
       );
