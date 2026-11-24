@@ -64,10 +64,11 @@ export const Autocomplete: React.FC<Props> = ({
         </div>
 
         <div
-        className="dropdown-menu"
-        role="menu"
-        data-cy="suggestions-list"
-        data-qa="suggestions-list">
+          className="dropdown-menu"
+          role="menu"
+          data-cy="suggestions-list"
+          data-qa="suggestions-list"
+        >
           <div className="dropdown-content">
             {filteredPeople.map(suggestion => {
               return (
