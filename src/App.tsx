@@ -14,7 +14,7 @@ export const App: React.FC = () => {
         <h1 className="title" data-cy="title">
           {selectedPerson !== null
             ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
-            : "No selected person"}
+            : 'No selected person'}
         </h1>
 
         <Autocomplete onSelected={onSelected} delay={300} />

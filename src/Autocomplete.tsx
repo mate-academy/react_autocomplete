@@ -17,18 +17,18 @@ export const Autocomplete: React.FC<Props> = ({
   const [filteredPeople, setFilteredPeople] = useState<Person[]>([]);
   const [hasFiltered, setHasFiltered] = useState(false);
 
-  const handleClick = ((person: Person) => {
+  const handleClick = (person: Person) => {
     setPersonName(person.name);
     setIsActive(false);
     onSelected(person);
-  });
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setFilteredPeople(
-        peopleFromServer.filter((person) =>
-          person.name.toLowerCase().includes(personName.toLowerCase())
-        )
+        peopleFromServer.filter(person =>
+          person.name.toLowerCase().includes(personName.toLowerCase()),
+        ),
       );
       setHasFiltered(true);
     }, delay);
@@ -38,7 +38,7 @@ export const Autocomplete: React.FC<Props> = ({
 
   return (
     <>
-      <div className={"dropdown" + (isActive === true ? " is-active" : '')}>
+      <div className={'dropdown' + (isActive === true ? ' is-active' : '')}>
         <div className="dropdown-trigger">
           <input
             type="text"
@@ -48,7 +48,7 @@ export const Autocomplete: React.FC<Props> = ({
             value={personName}
             onFocus={() => setIsActive(true)}
             onBlur={() => setIsActive(false)}
-            onChange={(event) => {
+            onChange={event => {
               setPersonName(event.target.value);
               onSelected(null);
             }}
@@ -62,15 +62,13 @@ export const Autocomplete: React.FC<Props> = ({
                 <div
                   className="dropdown-item"
                   data-cy="suggestion-item"
-                  key= {index}
+                  key={index}
                   onMouseDown={() => handleClick(suggestion)}
                 >
                   <p className="has-text-link">{suggestion.name}</p>
                 </div>
               );
-            })
-            }
-
+            })}
           </div>
         </div>
       </div>
