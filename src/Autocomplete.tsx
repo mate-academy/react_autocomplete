@@ -51,7 +51,7 @@ export const Autocomplete: React.FC<Props> = ({
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            data-qa="search-input"
+            data-cy="search-input"
             value={personName}
             onFocus={() => setIsActive(true)}
             onBlur={() => setIsActive(false)}
@@ -62,13 +62,13 @@ export const Autocomplete: React.FC<Props> = ({
           />
         </div>
 
-        <div className="dropdown-menu" role="menu" data-qa="suggestions-list">
+        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
           <div className="dropdown-content">
             {filteredPeople.map(suggestion => {
               return (
                 <div
                   className="dropdown-item"
-                  data-qa="suggestion-item"
+                  data-cy="suggestion-item"
                   key={suggestion.slug}
                   onMouseDown={() => handleClick(suggestion)}
                 >
@@ -89,7 +89,7 @@ export const Autocomplete: React.FC<Props> = ({
             mt-3
             is-align-self-flex-start"
           role="alert"
-          data-qa="no-suggestions-message"
+          data-cy="no-suggestions-message"
         >
           <p className="has-text-danger">No matching suggestions</p>
         </div>
