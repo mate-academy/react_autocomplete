@@ -24,6 +24,13 @@ export const Autocomplete: React.FC<Props> = ({
   };
 
   useEffect(() => {
+    if (!personName.trim()) {
+      setFilteredPeople(peopleFromServer);
+      setHasFiltered(true);
+
+      return;
+    }
+
     const timer = setTimeout(() => {
       setFilteredPeople(
         peopleFromServer.filter(person =>
@@ -44,7 +51,7 @@ export const Autocomplete: React.FC<Props> = ({
             type="text"
             placeholder="Enter a part of the name"
             className="input"
-            data-cy="search-input"
+            data-qa="search-input"
             value={personName}
             onFocus={() => setIsActive(true)}
             onBlur={() => setIsActive(false)}
@@ -55,14 +62,14 @@ export const Autocomplete: React.FC<Props> = ({
           />
         </div>
 
-        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+        <div className="dropdown-menu" role="menu" data-qa="suggestions-list">
           <div className="dropdown-content">
-            {filteredPeople.map((suggestion, index) => {
+            {filteredPeople.map((suggestion) => {
               return (
                 <div
                   className="dropdown-item"
-                  data-cy="suggestion-item"
-                  key={index}
+                  data-qa="suggestion-item"
+                  key={suggestion.slug}
                   onMouseDown={() => handleClick(suggestion)}
                 >
                   <p className="has-text-link">{suggestion.name}</p>
@@ -82,7 +89,7 @@ export const Autocomplete: React.FC<Props> = ({
             mt-3
             is-align-self-flex-start"
           role="alert"
-          data-cy="no-suggestions-message"
+          data-qa="no-suggestions-message"
         >
           <p className="has-text-danger">No matching suggestions</p>
         </div>

@@ -6,7 +6,7 @@ import { Person } from './types/Person';
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  const onSelected = (person: Person | null) => setSelectedPerson(person);
+  const handleSelected = (person: Person | null) => setSelectedPerson(person);
 
   return (
     <div className="container">
@@ -17,7 +17,7 @@ export const App: React.FC = () => {
             : 'No selected person'}
         </h1>
 
-        <Autocomplete onSelected={onSelected} delay={300} />
+        <Autocomplete onSelected={handleSelected} delay={300} />
       </main>
     </div>
   );
