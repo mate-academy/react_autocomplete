@@ -71,6 +71,10 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
 
     if (value.trim() !== '') {
       debouncedFilter(value);
+    } else {
+      debouncedFilter.cancel();
+      setSuggestions(people);
+      setIsOpen(true);
     }
   };
 
