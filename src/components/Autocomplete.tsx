@@ -69,7 +69,9 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
       onSelected(null);
     }
 
-    debouncedFilter(value);
+    if (value.trim() !== '') {
+      debouncedFilter(value);
+    }
   };
 
   const handleFocus = () => {
@@ -98,6 +100,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
           placeholder="Enter a part of the name"
           className="input"
           data-cy="search-input"
+          data-qa="search-input"
           value={inputValue}
           onChange={e => handleInputChange(e.target.value)}
           onFocus={handleFocus}
@@ -106,7 +109,12 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
       </div>
 
       {isOpen && (
-        <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+        <div
+          className="dropdown-menu"
+          role="menu"
+          data-cy="suggestions-list"
+          data-qa="suggestions-list"
+        >
           <div className="dropdown-content">
             {suggestions.length > 0 ? (
               suggestions.map(person => (
@@ -114,6 +122,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
                   key={person.slug}
                   className="dropdown-item"
                   data-cy="suggestion-item"
+                  data-qa="suggestion-item"
                   role="menuitem"
                   onClick={() => handleSelect(person)}
                 >
@@ -124,6 +133,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
               <div
                 className="dropdown-item"
                 data-cy="no-suggestions-message"
+                data-qa="no-suggestions-message"
                 role="menuitem"
               >
                 <p className="has-text-danger">No matching suggestions</p>
