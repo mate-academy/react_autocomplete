@@ -26,6 +26,10 @@ export const Autocomplete: React.FC<Props> = ({
   }, [applyQuery]);
 
   const filteredPeople = useMemo(() => {
+    if (!query.trim()) {
+      return people;
+    }
+
     const normalizedQuery = appliedQuery.trim().toLowerCase();
 
     if (!normalizedQuery) {
@@ -35,7 +39,7 @@ export const Autocomplete: React.FC<Props> = ({
     return people.filter(person =>
       person.name.toLowerCase().includes(normalizedQuery),
     );
-  }, [people, appliedQuery]);
+  }, [query, appliedQuery, people]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
@@ -45,9 +49,15 @@ export const Autocomplete: React.FC<Props> = ({
     }
 
     setQuery(newValue);
-    applyQuery(newValue);
     onSelected?.(null);
     setIsOpenList(true);
+
+    if (!newValue.trim()) {
+      applyQuery.cancel();
+      setAppliedQuery('');
+    } else {
+      applyQuery(newValue);
+    }
   };
 
   const handleSelectPerson = (person: Person) => {
@@ -69,6 +79,7 @@ export const Autocomplete: React.FC<Props> = ({
             placeholder="Enter a part of the name"
             className="input"
             data-cy="search-input"
+            data-qa="search-input"
             value={query}
             onFocus={() => setIsOpenList(true)}
             onBlur={() => setIsOpenList(false)}
@@ -79,11 +90,12 @@ export const Autocomplete: React.FC<Props> = ({
         {isOpenList && (
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-              {filteredPeople.map((person: Person, index: number) => (
+              {filteredPeople.map((person: Person) => (
                 <div
-                  key={index}
+                  key={person.slug}
                   className="dropdown-item"
                   data-cy="suggestion-item"
+                  data-qa="suggestion-item"
                   onMouseDown={event => {
                     event.preventDefault();
                     handleSelectPerson(person);
@@ -107,6 +119,7 @@ export const Autocomplete: React.FC<Props> = ({
           "
           role="alert"
           data-cy="no-suggestions-message"
+          data-qa="no-suggestions-message"
         >
           <p className="has-text-danger">No matching suggestions</p>
         </div>
