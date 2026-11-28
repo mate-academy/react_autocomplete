@@ -24,11 +24,18 @@ export const Autocomplete: React.FC<Props> = ({
   }, [people, appliedQuery]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+    const newQuery = event.target.value;
+
+    setQuery(newQuery);
     onSelected(null);
     window.clearTimeout(timerId.current);
+
+    if (newQuery !== '' && newQuery.trim() === '') {
+      return;
+    }
+
     timerId.current = window.setTimeout(() => {
-      setAppliedQuery(event.target.value.trim());
+      setAppliedQuery(newQuery.trim());
     }, delay);
   };
 
@@ -40,7 +47,7 @@ export const Autocomplete: React.FC<Props> = ({
     setIsFocused(false);
   };
 
-  const handleSelect = (person: Person) => {
+  const handleSelectPerson = (person: Person) => () => {
     onSelected(person);
     setIsFocused(false);
     setQuery(person.name);
@@ -68,7 +75,7 @@ export const Autocomplete: React.FC<Props> = ({
                 key={person.slug}
                 className="dropdown-item"
                 data-cy="suggestion-item"
-                onMouseDown={() => handleSelect(person)}
+                onMouseDown={handleSelectPerson(person)}
               >
                 <p
                   className={`has-text-${person.sex === 'm' ? 'link' : 'danger'}`}
