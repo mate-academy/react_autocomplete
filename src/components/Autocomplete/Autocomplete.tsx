@@ -23,6 +23,29 @@ export const Autocomplete: React.FC<Props> = ({
     );
   }, [people, appliedQuery]);
 
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+    onSelected(null);
+    window.clearTimeout(timerId.current);
+    timerId.current = window.setTimeout(() => {
+      setAppliedQuery(event.target.value.trim());
+    }, delay);
+  };
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+  };
+
+  const handleSelect = (person: Person) => {
+    onSelected(person);
+    setIsFocused(false);
+    setQuery(person.name);
+  };
+
   return (
     <>
       <div className={`dropdown ${isFocused ? 'is-active' : ''}`}>
@@ -33,16 +56,9 @@ export const Autocomplete: React.FC<Props> = ({
             placeholder="Enter a part of the name"
             data-cy="search-input"
             value={query}
-            onChange={event => {
-              setQuery(event.target.value);
-              onSelected(null);
-              window.clearTimeout(timerId.current);
-              timerId.current = window.setTimeout(() => {
-                setAppliedQuery(event.target.value);
-              }, delay);
-            }}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
+            onChange={handleQueryChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
           />
         </div>
         <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
@@ -52,11 +68,7 @@ export const Autocomplete: React.FC<Props> = ({
                 key={person.slug}
                 className="dropdown-item"
                 data-cy="suggestion-item"
-                onMouseDown={() => {
-                  onSelected(person);
-                  setIsFocused(false);
-                  setQuery(person.name);
-                }}
+                onMouseDown={() => handleSelect(person)}
               >
                 <p
                   className={`has-text-${person.sex === 'm' ? 'link' : 'danger'}`}
